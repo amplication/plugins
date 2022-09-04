@@ -1,0 +1,19 @@
+{
+  "name": "plugins",
+  "version": "1.0.0",
+  "description": "Amplication DSG plugins",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amplication/plugins.git"
+  },
+  "author": "barshimi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/amplication/plugins/issues"
+  },
+  "homepage": "https://github.com/amplication/plugins#readme"
+}
