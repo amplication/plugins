@@ -1,54 +1,57 @@
-import { resolve } from "path";
+import { DsgContext, AmplicationPlugin } from "@amplication/code-gen-types";
+import { Events } from "@amplication/code-gen-types/dist/plugin-events";
 import {
-  DsgContext,
-  CreateAuthModulesParams,
-  AmplicationPlugin,
-  Events,
-  CreateAdminModulesParams,
-} from "@amplication/code-gen-types";
-import { EnumAuthProviderType } from "@amplication/code-gen-types/dist/models";
+  CreateServerDockerComposeDBParams,
+  CreateServerDockerComposeParams,
+  CreateServerDotEnvParams,
+} from "@amplication/code-gen-types/dist/plugin-events-params";
 
 class JwtAuthPlugin implements AmplicationPlugin {
   static srcDir = "";
-  
+
   register(): Events {
     return {
-      createAdminModules: {
-        before: this.beforeCreateAdminModules,
+      CreateServerDotEnv: {
+        before: this.beforeCreateServerDotEnv,
       },
-      createAuthModules: {
-        before: this.beforeCreateAuthModules,
-        after: this.afterCreateAuthModules,
-      }
+      CreateServerDockerCompose: {
+        before: this.beforeCreateServerDockerCompose,
+      },
+      CreateServerDockerComposeDB: {
+        before: this.beforeCreateServerDockerComposeDB,
+      },
     };
   }
-  
-  beforeCreateAdminModules(
+
+  beforeCreateServerDotEnv(
     context: DsgContext,
-    eventParams: CreateAdminModulesParams["before"]
+    eventParams: CreateServerDotEnvParams["before"]
   ) {
-    context.appInfo.settings.authProvider = EnumAuthProviderType.Jwt;
+    eventParams.envVariables = [
+      { POSTGRESQL_USER: "${dbUser}" },
+      { POSTGRESQL_PASSWORD: "${dbPassword}" },
+      { POSTGRESQL_PORT: "${dbPort}" },
+      {
+        POSTGRESQL_URL:
+          "postgres://${dbUser}:${dbPassword}@${dbHost}:${dbPort}${dbName}",
+      },
+    ];
 
     return eventParams;
   }
 
-  beforeCreateAuthModules(
+  beforeCreateServerDockerCompose(
     context: DsgContext,
-    eventParams: CreateAuthModulesParams["before"]
+    eventParams: CreateServerDockerComposeParams["before"]
   ) {
-    context.utils.skipDefaultBehavior = true;
-    JwtAuthPlugin.srcDir = eventParams.srcDir;
     return eventParams;
   }
 
-  async afterCreateAuthModules(
+  beforeCreateServerDockerComposeDB(
     context: DsgContext,
-    eventParams: CreateAuthModulesParams["after"]
+    eventParams: CreateServerDockerComposeDBParams["before"]
   ) {
-    const staticPath = resolve(__dirname, "../static");
-    const staticsFiles = await context.utils.importStaticModules(staticPath, JwtAuthPlugin.srcDir);
-
-    return staticsFiles
+    return eventParams;
   }
 }
 
