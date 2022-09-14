@@ -1,3 +1,4 @@
+import { resolve } from "path";
 import {
   DsgContext,
   AmplicationPlugin,
@@ -12,6 +13,7 @@ import { Events } from "@amplication/code-gen-types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 
 class PostgresPlugin implements AmplicationPlugin {
+  static baseDir = "";
   envVariables: VariableDictionary = [
     { POSTGRESQL_USER: "${dbUser}" },
     { POSTGRESQL_PASSWORD: "${dbPassword}" },
@@ -87,6 +89,7 @@ class PostgresPlugin implements AmplicationPlugin {
       },
       CreateServerDockerComposeDB: {
         before: this.beforeCreateServerDockerComposeDB,
+        after: this.afterCreateServerDockerComposeDB,
       },
       CreatePrismaSchema: {
         before: this.beforeCreatePrismaSchema,
@@ -115,8 +118,22 @@ class PostgresPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDockerComposeDBParams["before"]
   ) {
-    eventParams.updateProperties = this.updateDockerComposeDBProperties;
+    context.utils.skipDefaultBehavior = true;
+    PostgresPlugin.baseDir = context.serverDirectories.baseDirectory;
     return eventParams;
+  }
+
+  async afterCreateServerDockerComposeDB(
+    context: DsgContext,
+    modules: CreateServerDockerComposeDBParams["after"]
+  ) {
+    const staticPath = resolve(__dirname, "../static");
+    const staticsFiles = await context.utils.importStaticModules(
+      staticPath,
+      PostgresPlugin.baseDir
+    );
+
+    return staticsFiles;
   }
 
   beforeCreatePrismaSchema(

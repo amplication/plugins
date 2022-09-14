@@ -1,3 +1,4 @@
+import { resolve } from "path";
 import {
   DsgContext,
   AmplicationPlugin,
@@ -7,11 +8,13 @@ import {
   CreateServerDotEnvParams,
   CreatePrismaSchemaParams,
   VariableDictionary,
+  Module,
 } from "@amplication/code-gen-types";
 import { Events } from "@amplication/code-gen-types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 
 class MySQLPlugin implements AmplicationPlugin {
+  static baseDir = "";
   envVariables: VariableDictionary = [
     { MYSQL_USER: "${dbUser}" },
     { MYSQL_ROOT_PASSWORD: "${dbPassword}" },
@@ -91,6 +94,7 @@ class MySQLPlugin implements AmplicationPlugin {
       },
       CreateServerDockerComposeDB: {
         before: this.beforeCreateServerDockerComposeDB,
+        after: this.afterCreateServerDockerComposeDB,
       },
       CreatePrismaSchema: {
         before: this.beforeCreatePrismaSchema,
@@ -119,8 +123,22 @@ class MySQLPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDockerComposeDBParams["before"]
   ) {
-    eventParams.updateProperties = this.updateDockerComposeDBProperties;
+    context.utils.skipDefaultBehavior = true;
+    MySQLPlugin.baseDir = context.serverDirectories.baseDirectory;
     return eventParams;
+  }
+
+  async afterCreateServerDockerComposeDB(
+    context: DsgContext,
+    modules: CreateServerDockerComposeDBParams["after"]
+  ) {
+    const staticPath = resolve(__dirname, "../static");
+    const staticsFiles = await context.utils.importStaticModules(
+      staticPath,
+      MySQLPlugin.baseDir
+    );
+
+    return staticsFiles;
   }
 
   beforeCreatePrismaSchema(
