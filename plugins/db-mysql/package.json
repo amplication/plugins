@@ -1,0 +1,29 @@
+{
+  "name": "@amplication/plugin-db-mysql",
+  "version": "1.0.0",
+  "description": "set mysql as a DB for Amplication build",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "abrl91",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/lodash": "^4.14.182",
+    "@types/normalize-path": "^3.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.33.0",
+    "@typescript-eslint/parser": "^5.33.0",
+    "eslint": "^8.21.0",
+    "prettier": "^2.7.1",
+    "typescript": "4.6.2"
+  },
+  "dependencies": {
+    "@amplication/code-gen-types": "^0.16.0",
+    "@babel/parser": "^7.18.11",
+    "@babel/types": "^7.18.10",
+    "jest-mock-extended": "^2.0.7",
+    "lodash": "^4.17.21",
+    "passport-jwt": "4.0.0"
+  }
+}
