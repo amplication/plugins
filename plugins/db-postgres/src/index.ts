@@ -7,7 +7,7 @@ import {
   VariableDictionary,
 } from "@amplication/code-gen-types/dist/plugin-events-params";
 
-class JwtAuthPlugin implements AmplicationPlugin {
+class PostgresPlugin implements AmplicationPlugin {
   envVariables: VariableDictionary = [
     { POSTGRESQL_USER: "${dbUser}" },
     { POSTGRESQL_PASSWORD: "${dbPassword}" },
@@ -102,4 +102,4 @@ class JwtAuthPlugin implements AmplicationPlugin {
   }
 }
 
-export default JwtAuthPlugin;
+export default PostgresPlugin;

@@ -7,7 +7,7 @@ import {
   VariableDictionary,
 } from "@amplication/code-gen-types/dist/plugin-events-params";
 
-class JwtAuthPlugin implements AmplicationPlugin {
+class MySQLPlugin implements AmplicationPlugin {
   envVariables: VariableDictionary = [
     { MYSQL_USER: "${dbUser}" },
     { MYSQL_ROOT_PASSWORD: "${dbPassword}" },
@@ -106,4 +106,4 @@ class JwtAuthPlugin implements AmplicationPlugin {
   }
 }
 
-export default JwtAuthPlugin;
+export default MySQLPlugin;
