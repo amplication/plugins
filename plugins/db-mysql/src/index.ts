@@ -1,11 +1,17 @@
-import { DsgContext, AmplicationPlugin } from "@amplication/code-gen-types";
+import {
+  DsgContext,
+  AmplicationPlugin,
+  PrismaDataSource,
+} from "@amplication/code-gen-types";
 import { Events } from "@amplication/code-gen-types/dist/plugin-events";
 import {
   CreateServerDockerComposeDBParams,
   CreateServerDockerComposeParams,
   CreateServerDotEnvParams,
+  CreatePrismaSchemaParams,
   VariableDictionary,
 } from "@amplication/code-gen-types/dist/plugin-events-params";
+import * as PrismaSchemaDSL from "prisma-schema-dsl";
 
 class MySQLPlugin implements AmplicationPlugin {
   envVariables: VariableDictionary = [
@@ -66,6 +72,17 @@ class MySQLPlugin implements AmplicationPlugin {
     },
   };
 
+  clientGenerator: PrismaSchemaDSL.Generator = PrismaSchemaDSL.createGenerator(
+    "client",
+    "prisma-client-js"
+  );
+
+  dataSource: PrismaDataSource = {
+    name: "mysql",
+    provider: PrismaSchemaDSL.DataSourceProvider.MySQL,
+    url: new PrismaSchemaDSL.DataSourceURLEnv("MYSQL_URL"),
+  };
+
   register(): Events {
     return {
       CreateServerDotEnv: {
@@ -76,6 +93,9 @@ class MySQLPlugin implements AmplicationPlugin {
       },
       CreateServerDockerComposeDB: {
         before: this.beforeCreateServerDockerComposeDB,
+      },
+      CreatePrismaSchema: {
+        before: this.beforeCreatePrismaSchema,
       },
     };
   }
@@ -103,6 +123,17 @@ class MySQLPlugin implements AmplicationPlugin {
   ) {
     eventParams.updateProperties = this.updateDockerComposeDBProperties;
     return eventParams;
+  }
+
+  beforeCreatePrismaSchema(
+    context: DsgContext,
+    eventParams: CreatePrismaSchemaParams["before"]
+  ) {
+    return (eventParams = {
+      ...eventParams,
+      clientGenerator: this.clientGenerator,
+      dataSource: this.dataSource,
+    });
   }
 }
 
