@@ -2,15 +2,13 @@ import {
   DsgContext,
   AmplicationPlugin,
   PrismaDataSource,
-} from "@amplication/code-gen-types";
-import { Events } from "@amplication/code-gen-types/dist/plugin-events";
-import {
   CreateServerDockerComposeDBParams,
   CreateServerDockerComposeParams,
   CreateServerDotEnvParams,
   CreatePrismaSchemaParams,
   VariableDictionary,
-} from "@amplication/code-gen-types/dist/plugin-events-params";
+} from "@amplication/code-gen-types";
+import { Events } from "@amplication/code-gen-types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 
 class MySQLPlugin implements AmplicationPlugin {
