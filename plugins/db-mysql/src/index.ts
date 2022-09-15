@@ -100,6 +100,7 @@ class MySQLPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDotEnvParams["before"]
   ) {
+    context.logger.info("mysql !!!!!!!!!!!! mysql !!!!!!");
     return {
       ...eventParams,
       envVariables: this.envVariables,
@@ -129,7 +130,7 @@ class MySQLPlugin implements AmplicationPlugin {
     modules: CreateServerDockerComposeDBParams["after"]
   ) {
     MySQLPlugin.baseDir = context.serverDirectories.baseDirectory;
-    const staticPath = resolve(__dirname, "../static");
+    const staticPath = resolve(__dirname, "../static", "docker-compose.db.yml");
     const staticsFiles = await context.utils.importStaticModules(
       staticPath,
       MySQLPlugin.baseDir

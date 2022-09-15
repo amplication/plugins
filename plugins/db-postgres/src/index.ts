@@ -125,7 +125,7 @@ class PostgresPlugin implements AmplicationPlugin {
     modules: CreateServerDockerComposeDBParams["after"]
   ) {
     PostgresPlugin.baseDir = context.serverDirectories.baseDirectory;
-    const staticPath = resolve(__dirname, "../static");
+    const staticPath = resolve(__dirname, "../static", "docker-compose.db.yml");
     const staticsFiles = await context.utils.importStaticModules(
       staticPath,
       PostgresPlugin.baseDir
