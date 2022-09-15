@@ -68,11 +68,6 @@ class PostgresPlugin implements AmplicationPlugin {
     },
   };
 
-  clientGenerator: PrismaSchemaDSL.Generator = PrismaSchemaDSL.createGenerator(
-    "client",
-    "prisma-client-js"
-  );
-
   dataSource: PrismaDataSource = {
     name: "postgres",
     provider: PrismaSchemaDSL.DataSourceProvider.PostgreSQL,
@@ -101,17 +96,20 @@ class PostgresPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDotEnvParams["before"]
   ) {
-    eventParams.envVariables = this.envVariables;
-
-    return eventParams;
+    return {
+      ...eventParams,
+      envVariables: this.envVariables,
+    };
   }
 
   beforeCreateServerDockerCompose(
     context: DsgContext,
     eventParams: CreateServerDockerComposeParams["before"]
   ) {
-    eventParams.updateProperties = this.updateDockerComposeProperties;
-    return eventParams;
+    return {
+      ...eventParams,
+      updateProperties: this.updateDockerComposeProperties,
+    };
   }
 
   beforeCreateServerDockerComposeDB(
@@ -119,7 +117,6 @@ class PostgresPlugin implements AmplicationPlugin {
     eventParams: CreateServerDockerComposeDBParams["before"]
   ) {
     context.utils.skipDefaultBehavior = true;
-    PostgresPlugin.baseDir = context.serverDirectories.baseDirectory;
     return eventParams;
   }
 
@@ -127,6 +124,7 @@ class PostgresPlugin implements AmplicationPlugin {
     context: DsgContext,
     modules: CreateServerDockerComposeDBParams["after"]
   ) {
+    PostgresPlugin.baseDir = context.serverDirectories.baseDirectory;
     const staticPath = resolve(__dirname, "../static");
     const staticsFiles = await context.utils.importStaticModules(
       staticPath,
@@ -142,7 +140,6 @@ class PostgresPlugin implements AmplicationPlugin {
   ) {
     return (eventParams = {
       ...eventParams,
-      clientGenerator: this.clientGenerator,
       dataSource: this.dataSource,
     });
   }
