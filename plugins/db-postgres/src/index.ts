@@ -40,7 +40,7 @@ class PostgresPlugin implements AmplicationPlugin {
         path: "services.db.volumes",
         value: ["postgres:/var/lib/postgresql/data"],
       },
-      { path: "volumes.postgres", value: null },
+      { path: "volumes", value: { postgres: null } },
     ];
 
   static updateDockerComposeProperties: CreateServerDockerComposeParams["before"]["updateProperties"] =
@@ -57,8 +57,12 @@ class PostgresPlugin implements AmplicationPlugin {
         },
       },
       {
-        path: "services.migrate.environment.POSTGRESQL_URL",
-        value: "postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@db:5432",
+        path: "services.migrate.environment",
+        value: {
+          POSTGRESQL_URL:
+            "postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@db:5432",
+          BCRYPT_SALT: "${BCRYPT_SALT}",
+        },
       },
       { path: "services.db.image", value: "postgres:12" },
       { path: "services.db.ports", value: ["${POSTGRESQL_PORT}:5432"] },
@@ -74,8 +78,8 @@ class PostgresPlugin implements AmplicationPlugin {
         value: ["postgres:/var/lib/postgresql/data"],
       },
       {
-        path: "volumes.postgres",
-        value: null,
+        path: "volumes",
+        value: { postgres: null },
       },
     ];
 
