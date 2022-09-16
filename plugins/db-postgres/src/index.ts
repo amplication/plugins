@@ -10,11 +10,10 @@ import {
   VariableDictionary,
 } from "@amplication/code-gen-types";
 import { Events } from "@amplication/code-gen-types";
-import * as PrismaSchemaDSL from "prisma-schema-dsl";
 
 class PostgresPlugin implements AmplicationPlugin {
   static baseDir = "";
-  envVariables: VariableDictionary = [
+  static envVariables: VariableDictionary = [
     { POSTGRESQL_USER: "${dbUser}" },
     { POSTGRESQL_PASSWORD: "${dbPassword}" },
     { POSTGRESQL_DB_NAME: "${dbName}" },
@@ -26,28 +25,29 @@ class PostgresPlugin implements AmplicationPlugin {
     },
   ];
 
-  updateDockerComposeDBProperties = {
-    services: {
-      db: {
-        image: "postgres:12",
-        ports: ["${POSTGRESQL_PORT}:5432"],
-        environment: {
-          POSTGRES_USER: "${POSTGRESQL_USER}",
-          POSTGRES_PASSWORD: "${POSTGRESQL_PASSWORD}",
+  static updateDockerComposeDBProperties: CreateServerDockerComposeDBParams["before"]["updateProperties"] =
+    [
+      {
+        path: "services.db",
+        value: {
+          image: "postgres:12",
+          ports: ["${POSTGRESQL_PORT}:5432"],
+          environment: {
+            POSTGRES_USER: "${POSTGRESQL_USER}",
+            POSTGRES_PASSWORD: "${POSTGRESQL_PASSWORD}",
+          },
+          volumes: ["postgres:/var/lib/postgresql/data"],
         },
-        volumes: ["postgres:/var/lib/postgresql/data"],
       },
-    },
-    volumes: {
-      postgres: null,
-    },
-  };
+      { path: "volumes", value: { postgres: null } },
+    ];
 
-  updateDockerComposeProperties = {
-    services: {
-      server: {
-        ports: ["${SERVER_PORT}:3000"],
-        environment: {
+  static updateDockerComposeProperties: CreateServerDockerComposeParams["before"]["updateProperties"] =
+    [
+      { path: "services.server.ports", value: ["${SERVER_PORT}:3000"] },
+      {
+        path: "services.server.environment",
+        value: {
           POSTGRESQL_URL:
             "postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@db:5433",
           BCRYPT_SALT: "${BCRYPT_SALT}",
@@ -55,23 +55,37 @@ class PostgresPlugin implements AmplicationPlugin {
           JWT_EXPIRATION: "${JWT_EXPIRATION}",
         },
       },
-      migrate: {
-        environment: {
+      {
+        path: "services.migrate.environment",
+        value: {
           POSTGRESQL_URL:
             "postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@db:5432",
         },
       },
-      db: this.updateDockerComposeDBProperties.services.db,
-    },
-    volumes: {
-      postgres: null,
-    },
-  };
+      {
+        path: "services.db",
+        value: {
+          image: "postgres:12",
+          ports: ["${POSTGRESQL_PORT}:5432"],
+          environment: {
+            POSTGRES_USER: "${POSTGRESQL_USER}",
+            POSTGRES_PASSWORD: "${POSTGRESQL_PASSWORD}",
+          },
+          volumes: ["postgres:/var/lib/postgresql/data"],
+        },
+      },
+      {
+        path: "volumes",
+        value: {
+          postgres: null,
+        },
+      },
+    ];
 
-  dataSource: PrismaDataSource = {
+  static dataSource: PrismaDataSource = {
     name: "postgres",
-    provider: PrismaSchemaDSL.DataSourceProvider.PostgreSQL,
-    url: new PrismaSchemaDSL.DataSourceURLEnv("POSTGRESQL_URL"),
+    provider: "PostgreSQL",
+    urlEnv: "POSTGRESQL_URL",
   };
 
   register(): Events {
@@ -96,10 +110,12 @@ class PostgresPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDotEnvParams["before"]
   ) {
-    return {
-      ...eventParams,
-      envVariables: this.envVariables,
-    };
+    eventParams.envVariables = [
+      ...eventParams.envVariables,
+      ...PostgresPlugin.envVariables,
+    ];
+
+    return eventParams;
   }
 
   beforeCreateServerDockerCompose(
@@ -108,7 +124,7 @@ class PostgresPlugin implements AmplicationPlugin {
   ) {
     return {
       ...eventParams,
-      updateProperties: this.updateDockerComposeProperties,
+      updateProperties: { ...PostgresPlugin.updateDockerComposeProperties },
     };
   }
 
@@ -125,7 +141,7 @@ class PostgresPlugin implements AmplicationPlugin {
     modules: CreateServerDockerComposeDBParams["after"]
   ) {
     PostgresPlugin.baseDir = context.serverDirectories.baseDirectory;
-    const staticPath = resolve(__dirname, "../static", "docker-compose.db.yml");
+    const staticPath = resolve(__dirname, "../static");
     const staticsFiles = await context.utils.importStaticModules(
       staticPath,
       PostgresPlugin.baseDir
@@ -138,10 +154,8 @@ class PostgresPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreatePrismaSchemaParams["before"]
   ) {
-    return (eventParams = {
-      ...eventParams,
-      dataSource: this.dataSource,
-    });
+    eventParams.dataSource = PostgresPlugin.dataSource;
+    return eventParams;
   }
 }
 
