@@ -27,19 +27,20 @@ class PostgresPlugin implements AmplicationPlugin {
 
   static updateDockerComposeDBProperties: CreateServerDockerComposeDBParams["before"]["updateProperties"] =
     [
+      { path: "services.db.image", value: "postgres:12" },
+      { path: "services.db.ports", value: ["${POSTGRESQL_PORT}:5432"] },
       {
-        path: "services.db",
+        path: "services.db.environment",
         value: {
-          image: "postgres:12",
-          ports: ["${POSTGRESQL_PORT}:5432"],
-          environment: {
-            POSTGRES_USER: "${POSTGRESQL_USER}",
-            POSTGRES_PASSWORD: "${POSTGRESQL_PASSWORD}",
-          },
-          volumes: ["postgres:/var/lib/postgresql/data"],
+          POSTGRES_USER: "${POSTGRESQL_USER}",
+          POSTGRES_PASSWORD: "${POSTGRESQL_PASSWORD}",
         },
       },
-      { path: "volumes", value: { postgres: null } },
+      {
+        path: "services.db.volumes",
+        value: ["postgres:/var/lib/postgresql/data"],
+      },
+      { path: "volumes.postgres", value: null },
     ];
 
   static updateDockerComposeProperties: CreateServerDockerComposeParams["before"]["updateProperties"] =
@@ -56,29 +57,25 @@ class PostgresPlugin implements AmplicationPlugin {
         },
       },
       {
-        path: "services.migrate.environment",
+        path: "services.migrate.environment.POSTGRESQL_URL",
+        value: "postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@db:5432",
+      },
+      { path: "services.db.image", value: "postgres:12" },
+      { path: "services.db.ports", value: ["${POSTGRESQL_PORT}:5432"] },
+      {
+        path: "services.db.environment",
         value: {
-          POSTGRESQL_URL:
-            "postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@db:5432",
+          POSTGRES_USER: "${POSTGRESQL_USER}",
+          POSTGRES_PASSWORD: "${POSTGRESQL_PASSWORD}",
         },
       },
       {
-        path: "services.db",
-        value: {
-          image: "postgres:12",
-          ports: ["${POSTGRESQL_PORT}:5432"],
-          environment: {
-            POSTGRES_USER: "${POSTGRESQL_USER}",
-            POSTGRES_PASSWORD: "${POSTGRESQL_PASSWORD}",
-          },
-          volumes: ["postgres:/var/lib/postgresql/data"],
-        },
+        path: "services.db.volumes",
+        value: ["postgres:/var/lib/postgresql/data"],
       },
       {
-        path: "volumes",
-        value: {
-          postgres: null,
-        },
+        path: "volumes.postgres",
+        value: null,
       },
     ];
 
@@ -124,7 +121,7 @@ class PostgresPlugin implements AmplicationPlugin {
   ) {
     return {
       ...eventParams,
-      updateProperties: { ...PostgresPlugin.updateDockerComposeProperties },
+      updateProperties: PostgresPlugin.updateDockerComposeProperties,
     };
   }
 
@@ -154,8 +151,10 @@ class PostgresPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreatePrismaSchemaParams["before"]
   ) {
-    eventParams.dataSource = PostgresPlugin.dataSource;
-    return eventParams;
+    return {
+      ...eventParams,
+      dataSource: PostgresPlugin.dataSource,
+    };
   }
 }
 
