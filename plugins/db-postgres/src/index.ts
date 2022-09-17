@@ -15,8 +15,6 @@ import {
 } from "@amplication/code-gen-types";
 
 class PostgresPlugin implements AmplicationPlugin {
-  static baseDir = "";
-
   register(): Events {
     return {
       CreateServerDotEnv: {
@@ -48,10 +46,8 @@ class PostgresPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDockerComposeParams["before"]
   ) {
-    return {
-      ...eventParams,
-      updateProperties: updateDockerComposeProperties,
-    };
+    eventParams.updateProperties = updateDockerComposeProperties;
+    return eventParams;
   }
 
   beforeCreateServerDockerComposeDB(
@@ -63,11 +59,10 @@ class PostgresPlugin implements AmplicationPlugin {
   }
 
   async afterCreateServerDockerComposeDB(context: DsgContext) {
-    PostgresPlugin.baseDir = context.serverDirectories.baseDirectory;
     const staticPath = resolve(__dirname, "../static");
     const staticsFiles = await context.utils.importStaticModules(
       staticPath,
-      PostgresPlugin.baseDir
+      context.serverDirectories.baseDirectory
     );
 
     return staticsFiles;
