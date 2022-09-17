@@ -18,7 +18,6 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["bef
     {
       services: {
         server: {
-          ports: ["${SERVER_PORT}:3000"],
           environment: {
             DB_URL: "postgres://${DB_USER}:${DB_PASSWORD}@db:5433",
           },

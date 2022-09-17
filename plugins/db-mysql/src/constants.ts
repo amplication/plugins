@@ -6,7 +6,7 @@ import {
 
 export const envVariables: VariableDictionary = [
   { DB_USER: "${dbUser}" },
-  { DB_ROOT_PASSWORD: "${dbPassword}" },
+  { DB_PASSWORD: "${dbPassword}" },
   { DB_PORT: "${dbPort}" },
   {
     DB_URL: "mysql://${dbUser}:${dbPassword}@${dbHost}:${dbPort}${dbName}",
@@ -18,14 +18,13 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["bef
     {
       services: {
         server: {
-          ports: ["${SERVER_PORT}:3000"],
           environment: {
-            DB_URL: "mysql://${DB_USER}:${DB_ROOT_PASSWORD}@db:3306",
+            DB_URL: "mysql://${DB_USER}:${DB_PASSWORD}@db:3306",
           },
         },
         migrate: {
           environment: {
-            DB_URL: "mysql://${DB_USER}:${DB_ROOT_PASSWORD}@db:3306",
+            DB_URL: "mysql://${DB_USER}:${DB_PASSWORD}@db:3306",
           },
         },
         adminer: {
@@ -39,7 +38,7 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["bef
           restart: "always",
           ports: ["${DB_PORT}:3306"],
           environment: {
-            DB_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}",
+            DB_ROOT_PASSWORD: "${DB_PASSWORD}",
           },
           volumes: ["mysql:/var/lib/mysql/data"],
           healthcheck: {
