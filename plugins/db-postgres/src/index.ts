@@ -46,7 +46,7 @@ class PostgresPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDockerComposeParams["before"]
   ) {
-    eventParams.updateProperties = updateDockerComposeProperties;
+    eventParams.updateProperties.push(...updateDockerComposeProperties);
     return eventParams;
   }
 
