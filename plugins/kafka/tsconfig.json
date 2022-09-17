@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "skipDefaultLibCheck": true,
+    "experimentalDecorators": true,
+    "strictNullChecks": true,
+    "esModuleInterop": true
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules", "./static"]
+}
