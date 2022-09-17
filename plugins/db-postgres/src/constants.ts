@@ -5,11 +5,11 @@ import {
 } from "@amplication/code-gen-types";
 
 export const envVariables: VariableDictionary = [
-  { POSTGRESQL_USER: "${dbUser}" },
-  { POSTGRESQL_PASSWORD: "${dbPassword}" },
-  { POSTGRESQL_PORT: "${dbPort}" },
+  { DB_USER: "${dbUser}" },
+  { DB_PASSWORD: "${dbPassword}" },
+  { DB_PORT: "${dbPort}" },
   {
-    POSTGRESQL_URL:
+    DB_URL:
       "postgres://${dbUser}:${dbPassword}@${dbHost}:${dbPort}${dbName}",
   },
 ];
@@ -20,8 +20,8 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["bef
     {
       path: "services.server.environment",
       value: {
-        POSTGRESQL_URL:
-          "postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@db:5433",
+        DB_URL:
+          "postgres://${DB_USER}:${DB_PASSWORD}@db:5433",
         BCRYPT_SALT: "${BCRYPT_SALT}",
         JWT_SECRET_KEY: "${JWT_SECRET_KEY}",
         JWT_EXPIRATION: "${JWT_EXPIRATION}",
@@ -30,8 +30,8 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["bef
     {
       path: "services.migrate.environment",
       value: {
-        POSTGRESQL_URL:
-          "postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@db:5432",
+        DB_URL:
+          "postgres://${DB_USER}:${DB_PASSWORD}@db:5432",
         BCRYPT_SALT: "${BCRYPT_SALT}",
       },
     },
@@ -39,10 +39,10 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["bef
       path: "services.db",
       value: {
         image: "postgres:12",
-        ports: ["${POSTGRESQL_PORT}:5432"],
+        ports: ["${DB_PORT}:5432"],
         environment: {
-          POSTGRES_USER: "${POSTGRESQL_USER}",
-          POSTGRES_PASSWORD: "${POSTGRESQL_PASSWORD}",
+          POSTGRES_USER: "${DB_USER}",
+          POSTGRES_PASSWORD: "${DB_PASSWORD}",
         },
         volumes: ["postgres:/var/lib/postgresql/data"],
         healthcheck: {
@@ -51,9 +51,9 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["bef
             "pg_isready",
             "-q",
             "-d",
-            "${POSTGRESQL_DB_NAME}",
+            "${DB_DB_NAME}",
             "-U",
-            "${POSTGRESQL_USER}",
+            "${DB_USER}",
           ],
         },
       },
@@ -67,5 +67,5 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["bef
 export const dataSource: PrismaDataSource = {
   name: "postgres",
   provider: "PostgreSQL",
-  urlEnv: "POSTGRESQL_URL",
+  urlEnv: "DB_URL",
 };
