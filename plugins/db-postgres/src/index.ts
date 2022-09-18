@@ -35,7 +35,7 @@ class PostgresPlugin implements AmplicationPlugin {
 
   beforeCreateServerDotEnv(
     context: DsgContext,
-    eventParams: CreateServerDotEnvParams["before"]
+    eventParams: CreateServerDotEnvParams
   ) {
     eventParams.envVariables = [...eventParams.envVariables, ...envVariables];
 
@@ -44,7 +44,7 @@ class PostgresPlugin implements AmplicationPlugin {
 
   beforeCreateServerDockerCompose(
     context: DsgContext,
-    eventParams: CreateServerDockerComposeParams["before"]
+    eventParams: CreateServerDockerComposeParams
   ) {
     eventParams.updateProperties.push(...updateDockerComposeProperties);
     return eventParams;
@@ -52,7 +52,7 @@ class PostgresPlugin implements AmplicationPlugin {
 
   beforeCreateServerDockerComposeDB(
     context: DsgContext,
-    eventParams: CreateServerDockerComposeDBParams["before"]
+    eventParams: CreateServerDockerComposeDBParams
   ) {
     context.utils.skipDefaultBehavior = true;
     return eventParams;
@@ -70,7 +70,7 @@ class PostgresPlugin implements AmplicationPlugin {
 
   beforeCreatePrismaSchema(
     context: DsgContext,
-    eventParams: CreatePrismaSchemaParams["before"]
+    eventParams: CreatePrismaSchemaParams
   ) {
     return {
       ...eventParams,
