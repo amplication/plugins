@@ -13,7 +13,7 @@ export const envVariables: VariableDictionary = [
   },
 ];
 
-export const updateDockerComposeProperties: CreateServerDockerComposeParams["before"]["updateProperties"] =
+export const updateDockerComposeProperties: CreateServerDockerComposeParams["updateProperties"] =
   [
     {
       services: {
