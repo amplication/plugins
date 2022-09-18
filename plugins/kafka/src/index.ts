@@ -49,7 +49,7 @@ class KafkaPlugin implements AmplicationPlugin {
 
   async afterCreateMessageBrokerClientOptionsFactory(
     context: DsgContext,
-    module: CreateMessageBrokerClientOptionsFactoryParams["before"]
+    eventParams: CreateMessageBrokerClientOptionsFactoryParams["after"]
   ): Promise<Module[]> {
     const { serverDirectories } = context;
     const templatePath = resolve(
@@ -85,7 +85,7 @@ class KafkaPlugin implements AmplicationPlugin {
 
   async afterCreateMessageBrokerNestJSModule(
     context: DsgContext,
-    eventParams: CreateMessageBrokerNestJSModuleParams["before"]
+    eventParams: CreateMessageBrokerNestJSModuleParams["after"]
   ) {
     const templatePath = resolve(staticDirectory, "kafka.module.template.ts");
 
@@ -140,7 +140,7 @@ class KafkaPlugin implements AmplicationPlugin {
 
   async afterCreateMessageBrokerService(
     context: DsgContext,
-    modules: CreateMessageBrokerServiceParams["after"]
+    eventParams: CreateMessageBrokerServiceParams["after"]
   ): Promise<Module[]> {
     const { serverDirectories } = context;
     const { messageBrokerDirectory } = serverDirectories;
@@ -150,12 +150,11 @@ class KafkaPlugin implements AmplicationPlugin {
     const generateFileName = `kafka.service.ts`;
 
     const path = join(messageBrokerDirectory, generateFileName);
-    modules.push({ code: template, path });
-    return modules;
+    return [{ code: template, path }];
   }
   async afterCreateMessageBrokerServiceBase(
     context: DsgContext,
-    modules: CreateMessageBrokerServiceBaseParams["after"]
+    eventParams: CreateMessageBrokerServiceBaseParams["after"]
   ): Promise<Module[]> {
     const { serverDirectories } = context;
     const { messageBrokerDirectory } = serverDirectories;
@@ -168,8 +167,7 @@ class KafkaPlugin implements AmplicationPlugin {
     const generateFileName = `kafka.service.base.ts`;
 
     const path = join(messageBrokerDirectory, "base", generateFileName);
-    modules.push({ code: template, path });
-    return modules;
+    return [{ code: template, path }];
   }
 
   beforeUpdateDockerCompose(
