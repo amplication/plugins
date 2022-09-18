@@ -1,16 +1,16 @@
 {
-  "name": "@amplication/plugin-kafka",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@amplication/plugin-broker-kafka",
+  "version": "0.0.1",
+  "description": "Use a Kafka message broker to communicate between services generated with Amplication",
   "main": "./dist/index.js",
   "scripts": {
     "build": "tsc"
   },
   "keywords": [],
-  "author": "tupe12334",
-  "license": "ISC",
+  "author": "Ofek Gabay",
+  "license": "Apache-2.0",
   "dependencies": {
-    "@amplication/code-gen-types": "0.16.0",
+    "@amplication/code-gen-types": "0.16.2",
     "lodash": "4.17.21"
   },
   "devDependencies": {

@@ -20,6 +20,18 @@ class KafkaPlugin implements AmplicationPlugin {
   init?: ((name: string, version: string) => void) | undefined;
   register(): Events {
     return {
+      CreateServerDotEnv: {
+        before: this.beforeCreateServerDotEnv,
+      },
+      CreatePackageJson: {
+        before: this.beforeUpdateJson,
+      },
+      CreateServerDockerCompose: {
+        before: this.beforeCreateDockerCompose,
+      },
+      CreateMessageBroker: {
+        before: this.beforeCreateBroker,
+      },
       CreateMessageBrokerClientOptionsFactory: {
         after: this.afterCreateMessageBrokerClientOptionsFactory,
       },
@@ -32,18 +44,6 @@ class KafkaPlugin implements AmplicationPlugin {
       CreateMessageBrokerServiceBase: {
         after: this.afterCreateMessageBrokerServiceBase,
       },
-      CreateServerDotEnv: {
-        before: this.beforeUpdateEnv,
-      },
-      CreatePackageJson: {
-        before: this.beforeUpdateJson,
-      },
-      CreateMessageBroker: {
-        before: this.beforeCreateBroker,
-      },
-      CreateServerDockerCompose: {
-        before: this.beforeUpdateDockerCompose,
-      },
     };
   }
 
@@ -52,11 +52,8 @@ class KafkaPlugin implements AmplicationPlugin {
     eventParams: CreateMessageBrokerClientOptionsFactoryParams["after"]
   ): Promise<Module[]> {
     const { serverDirectories } = context;
-    const templatePath = resolve(
-      staticDirectory,
-      "generateKafkaClientOptions.template.ts"
-    );
-    const template = await readFile(templatePath, "utf8");
+    const filePath = resolve(staticDirectory, "generateKafkaClientOptions.ts");
+    const file = await readFile(filePath, "utf8");
     const generateFileName = "generateKafkaClientOptions.ts";
 
     const path = join(
@@ -66,7 +63,7 @@ class KafkaPlugin implements AmplicationPlugin {
 
     return [
       {
-        code: template,
+        code: file,
         path,
       },
     ];
@@ -77,7 +74,7 @@ class KafkaPlugin implements AmplicationPlugin {
     eventParams: CreateMessageBrokerParams["before"]
   ): CreateMessageBrokerParams["before"] {
     dsgContext.serverDirectories.messageBrokerDirectory = join(
-      dsgContext.serverDirectories.messageBrokerDirectory,
+      dsgContext.serverDirectories.srcDirectory,
       "kafka"
     );
     return eventParams;
@@ -87,29 +84,27 @@ class KafkaPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateMessageBrokerNestJSModuleParams["after"]
   ) {
-    const templatePath = resolve(staticDirectory, "kafka.module.template.ts");
+    const filePath = resolve(staticDirectory, "kafka.module.ts");
 
     const { serverDirectories } = context;
     const { messageBrokerDirectory } = serverDirectories;
-    const template = await readFile(templatePath, "utf8");
+    const file = await readFile(filePath, "utf8");
     const generateFileName = "kafka.module.ts";
 
     return [
       {
-        code: template,
+        code: file,
         path: join(messageBrokerDirectory, generateFileName),
       },
     ];
   }
 
-  beforeUpdateEnv(
+  beforeCreateServerDotEnv(
     context: DsgContext,
     eventParams: CreateServerDotEnvParams["before"]
   ): CreateServerDotEnvParams["before"] {
     const resourceName = context.resourceInfo?.name;
-    if (!resourceName) {
-      throw new Error("Resource name is missing");
-    }
+
     const vars = {
       KAFKA_BROKERS: "localhost:9092",
       KAFKA_ENABLE_SSL: "false",
@@ -144,13 +139,13 @@ class KafkaPlugin implements AmplicationPlugin {
   ): Promise<Module[]> {
     const { serverDirectories } = context;
     const { messageBrokerDirectory } = serverDirectories;
-    const templatePath = resolve(staticDirectory, `kafka.service.template.ts`);
+    const filePath = resolve(staticDirectory, `kafka.service.ts`);
 
-    const template = await readFile(templatePath, "utf8");
+    const file = await readFile(filePath, "utf8");
     const generateFileName = `kafka.service.ts`;
 
     const path = join(messageBrokerDirectory, generateFileName);
-    return [{ code: template, path }];
+    return [{ code: file, path }];
   }
   async afterCreateMessageBrokerServiceBase(
     context: DsgContext,
@@ -158,19 +153,16 @@ class KafkaPlugin implements AmplicationPlugin {
   ): Promise<Module[]> {
     const { serverDirectories } = context;
     const { messageBrokerDirectory } = serverDirectories;
-    const templatePath = resolve(
-      staticDirectory,
-      `kafka.service.base.template.ts`
-    );
+    const filePath = resolve(staticDirectory, `kafka.service.base.ts`);
 
-    const template = await readFile(templatePath, "utf8");
+    const file = await readFile(filePath, "utf8");
     const generateFileName = `kafka.service.base.ts`;
 
     const path = join(messageBrokerDirectory, "base", generateFileName);
-    return [{ code: template, path }];
+    return [{ code: file, path }];
   }
 
-  beforeUpdateDockerCompose(
+  beforeCreateDockerCompose(
     dsgContext: DsgContext,
     eventParams: CreateServerDockerComposeParams["before"]
   ): CreateServerDockerComposeParams["before"] {
