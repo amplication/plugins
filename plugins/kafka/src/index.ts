@@ -49,7 +49,7 @@ class KafkaPlugin implements AmplicationPlugin {
 
   async afterCreateMessageBrokerClientOptionsFactory(
     context: DsgContext,
-    eventParams: CreateMessageBrokerClientOptionsFactoryParams["after"]
+    eventParams: CreateMessageBrokerClientOptionsFactoryParams
   ): Promise<Module[]> {
     const { serverDirectories } = context;
     const filePath = resolve(staticDirectory, "generateKafkaClientOptions.ts");
@@ -71,8 +71,8 @@ class KafkaPlugin implements AmplicationPlugin {
 
   beforeCreateBroker(
     dsgContext: DsgContext,
-    eventParams: CreateMessageBrokerParams["before"]
-  ): CreateMessageBrokerParams["before"] {
+    eventParams: CreateMessageBrokerParams
+  ): CreateMessageBrokerParams {
     dsgContext.serverDirectories.messageBrokerDirectory = join(
       dsgContext.serverDirectories.srcDirectory,
       "kafka"
@@ -82,7 +82,7 @@ class KafkaPlugin implements AmplicationPlugin {
 
   async afterCreateMessageBrokerNestJSModule(
     context: DsgContext,
-    eventParams: CreateMessageBrokerNestJSModuleParams["after"]
+    eventParams: CreateMessageBrokerNestJSModuleParams
   ) {
     const filePath = resolve(staticDirectory, "kafka.module.ts");
 
@@ -101,8 +101,8 @@ class KafkaPlugin implements AmplicationPlugin {
 
   beforeCreateServerDotEnv(
     context: DsgContext,
-    eventParams: CreateServerDotEnvParams["before"]
-  ): CreateServerDotEnvParams["before"] {
+    eventParams: CreateServerDotEnvParams
+  ): CreateServerDotEnvParams {
     const resourceName = context.resourceInfo?.name;
 
     const vars = {
@@ -120,8 +120,8 @@ class KafkaPlugin implements AmplicationPlugin {
 
   beforeUpdateJson(
     context: DsgContext,
-    eventParams: CreateServerPackageJsonParams["before"]
-  ): CreateServerPackageJsonParams["before"] {
+    eventParams: CreateServerPackageJsonParams
+  ): CreateServerPackageJsonParams {
     const myValues = {
       dependencies: {
         "@nestjs/microservices": "^8.2.3",
@@ -135,7 +135,7 @@ class KafkaPlugin implements AmplicationPlugin {
 
   async afterCreateMessageBrokerService(
     context: DsgContext,
-    eventParams: CreateMessageBrokerServiceParams["after"]
+    eventParams: CreateMessageBrokerServiceParams
   ): Promise<Module[]> {
     const { serverDirectories } = context;
     const { messageBrokerDirectory } = serverDirectories;
@@ -149,7 +149,7 @@ class KafkaPlugin implements AmplicationPlugin {
   }
   async afterCreateMessageBrokerServiceBase(
     context: DsgContext,
-    eventParams: CreateMessageBrokerServiceBaseParams["after"]
+    eventParams: CreateMessageBrokerServiceBaseParams
   ): Promise<Module[]> {
     const { serverDirectories } = context;
     const { messageBrokerDirectory } = serverDirectories;
@@ -164,8 +164,8 @@ class KafkaPlugin implements AmplicationPlugin {
 
   beforeCreateDockerCompose(
     dsgContext: DsgContext,
-    eventParams: CreateServerDockerComposeParams["before"]
-  ): CreateServerDockerComposeParams["before"] {
+    eventParams: CreateServerDockerComposeParams
+  ): CreateServerDockerComposeParams {
     const KAFKA_NAME = "kafka";
     const ZOOKEEPER_NAME = "zookeeper";
     const NETWORK = "internal";
