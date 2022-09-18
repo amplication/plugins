@@ -44,7 +44,7 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["bef
           healthcheck: {
             test: [
               "CMD",
-              "pg_isready",
+              "mysql_isready",
               "-q",
               "-d",
               "${DB_DB_NAME}",
