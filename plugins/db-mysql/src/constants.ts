@@ -44,11 +44,11 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["bef
           healthcheck: {
             test: [
               "CMD",
-              "mysql_isready",
-              "-q",
-              "-d",
-              "${DB_DB_NAME}",
-              "-U",
+              "mysqladmin",
+              "ping",
+              "-h",
+              "localhost",
+              "-u",
               "${DB_USER}",
             ],
             timeout: "45s",
