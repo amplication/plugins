@@ -21,10 +21,10 @@ class KafkaPlugin implements AmplicationPlugin {
   register(): Events {
     return {
       CreateMessageBrokerClientOptionsFactory: {
-        after: this.createMessageBrokerClientOptionsFactory,
+        after: this.afterCreateMessageBrokerClientOptionsFactory,
       },
       CreateMessageBrokerNestJSModule: {
-        after: this.createMessageBrokerNestJSModule,
+        after: this.afterCreateMessageBrokerNestJSModule,
       },
       CreateMessageBrokerService: {
         after: this.afterCreateMessageBrokerService,
@@ -33,21 +33,21 @@ class KafkaPlugin implements AmplicationPlugin {
         after: this.afterCreateMessageBrokerServiceBase,
       },
       CreateServerDotEnv: {
-        before: this.updateEnv,
+        before: this.beforeUpdateEnv,
       },
       CreatePackageJson: {
-        before: this.updateJson,
+        before: this.beforeUpdateJson,
       },
       CreateMessageBroker: {
-        before: this.updateContext,
+        before: this.beforeCreateBroker,
       },
       CreateServerDockerCompose: {
-        before: this.updateDockerCompose,
+        before: this.beforeUpdateDockerCompose,
       },
     };
   }
 
-  async createMessageBrokerClientOptionsFactory(
+  async afterCreateMessageBrokerClientOptionsFactory(
     context: DsgContext,
     module: CreateMessageBrokerClientOptionsFactoryParams["before"]
   ): Promise<Module[]> {
@@ -72,7 +72,7 @@ class KafkaPlugin implements AmplicationPlugin {
     ];
   }
 
-  updateContext(
+  beforeCreateBroker(
     dsgContext: DsgContext,
     eventParams: CreateMessageBrokerParams["before"]
   ): CreateMessageBrokerParams["before"] {
@@ -83,7 +83,7 @@ class KafkaPlugin implements AmplicationPlugin {
     return eventParams;
   }
 
-  async createMessageBrokerNestJSModule(
+  async afterCreateMessageBrokerNestJSModule(
     context: DsgContext,
     eventParams: CreateMessageBrokerNestJSModuleParams["before"]
   ) {
@@ -102,7 +102,7 @@ class KafkaPlugin implements AmplicationPlugin {
     ];
   }
 
-  updateEnv(
+  beforeUpdateEnv(
     context: DsgContext,
     eventParams: CreateServerDotEnvParams["before"]
   ): CreateServerDotEnvParams["before"] {
@@ -123,7 +123,7 @@ class KafkaPlugin implements AmplicationPlugin {
     return { envVariables: newEnvParams };
   }
 
-  updateJson(
+  beforeUpdateJson(
     context: DsgContext,
     eventParams: CreatePackageJsonParams["before"]
   ): CreatePackageJsonParams["before"] {
@@ -172,7 +172,7 @@ class KafkaPlugin implements AmplicationPlugin {
     return modules;
   }
 
-  updateDockerCompose(
+  beforeUpdateDockerCompose(
     dsgContext: DsgContext,
     eventParams: CreateServerDockerComposeParams["before"]
   ): CreateServerDockerComposeParams["before"] {
