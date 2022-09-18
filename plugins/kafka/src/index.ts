@@ -5,7 +5,7 @@ import {
   CreateMessageBrokerParams,
   CreateMessageBrokerServiceBaseParams,
   CreateMessageBrokerServiceParams,
-  CreatePackageJsonParams,
+  CreateServerPackageJsonParams,
   CreateServerDockerComposeParams,
   CreateServerDotEnvParams,
   DsgContext,
@@ -125,8 +125,8 @@ class KafkaPlugin implements AmplicationPlugin {
 
   beforeUpdateJson(
     context: DsgContext,
-    eventParams: CreatePackageJsonParams["before"]
-  ): CreatePackageJsonParams["before"] {
+    eventParams: CreateServerPackageJsonParams["before"]
+  ): CreateServerPackageJsonParams["before"] {
     const myValues = {
       dependencies: {
         "@nestjs/microservices": "^8.2.3",
@@ -179,7 +179,7 @@ class KafkaPlugin implements AmplicationPlugin {
     const NETWORK = "internal";
     const ZOOKEEPER_PORT = "2181";
     const KAFKA_PORT = "9092";
-    const newParams = merge(eventParams.updateProperties, {
+    const newParams = {
       services: {
         [ZOOKEEPER_NAME]: {
           image: "confluentinc/cp-zookeeper:5.2.4",
@@ -213,8 +213,9 @@ class KafkaPlugin implements AmplicationPlugin {
           driver: "bridge",
         },
       },
-    });
-    return { ...eventParams, updateProperties: newParams };
+    };
+    eventParams.updateProperties.push(newParams);
+    return eventParams;
   }
 }
 
