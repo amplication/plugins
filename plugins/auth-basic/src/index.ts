@@ -10,7 +10,7 @@ import { EnumAuthProviderType } from "@amplication/code-gen-types/dist/models";
 
 class BasicAuthPlugin implements AmplicationPlugin {
   static srcDir = "";
-  
+
   register(): Events {
     return {
       createAdminModules: {
@@ -19,22 +19,24 @@ class BasicAuthPlugin implements AmplicationPlugin {
       createAuthModules: {
         before: this.beforeCreateAuthModules,
         after: this.afterCreateAuthModules,
-      }
+      },
     };
   }
-  
+
   beforeCreateAdminModules(
     context: DsgContext,
-    eventParams: CreateAdminModulesParams["before"]
+    eventParams: CreateAdminModulesParams
   ) {
-    context.appInfo.settings.authProvider = EnumAuthProviderType.Http;
+    if (context.resourceInfo) {
+      context.resourceInfo.settings.authProvider = EnumAuthProviderType.Http;
+    }
 
     return eventParams;
   }
 
   beforeCreateAuthModules(
     context: DsgContext,
-    eventParams: CreateAuthModulesParams["before"]
+    eventParams: CreateAuthModulesParams
   ) {
     context.utils.skipDefaultBehavior = true;
     BasicAuthPlugin.srcDir = eventParams.srcDir;
@@ -43,12 +45,15 @@ class BasicAuthPlugin implements AmplicationPlugin {
 
   async afterCreateAuthModules(
     context: DsgContext,
-    eventParams: CreateAuthModulesParams["after"]
+    eventParams: CreateAuthModulesParams
   ) {
     const staticPath = resolve(__dirname, "../static");
-    const staticsFiles = await context.utils.importStaticModules(staticPath, BasicAuthPlugin.srcDir);
+    const staticsFiles = await context.utils.importStaticModules(
+      staticPath,
+      BasicAuthPlugin.srcDir
+    );
 
-    return staticsFiles
+    return staticsFiles;
   }
 }
 

@@ -10,7 +10,7 @@ import { EnumAuthProviderType } from "@amplication/code-gen-types/dist/models";
 
 class JwtAuthPlugin implements AmplicationPlugin {
   static srcDir = "";
-  
+
   register(): Events {
     return {
       createAdminModules: {
@@ -19,22 +19,24 @@ class JwtAuthPlugin implements AmplicationPlugin {
       createAuthModules: {
         before: this.beforeCreateAuthModules,
         after: this.afterCreateAuthModules,
-      }
+      },
     };
   }
-  
+
   beforeCreateAdminModules(
     context: DsgContext,
-    eventParams: CreateAdminModulesParams["before"]
+    eventParams: CreateAdminModulesParams
   ) {
-    context.appInfo.settings.authProvider = EnumAuthProviderType.Jwt;
+    if (context.resourceInfo) {
+      context.resourceInfo.settings.authProvider = EnumAuthProviderType.Jwt;
+    }
 
     return eventParams;
   }
 
   beforeCreateAuthModules(
     context: DsgContext,
-    eventParams: CreateAuthModulesParams["before"]
+    eventParams: CreateAuthModulesParams
   ) {
     context.utils.skipDefaultBehavior = true;
     JwtAuthPlugin.srcDir = eventParams.srcDir;
@@ -43,12 +45,15 @@ class JwtAuthPlugin implements AmplicationPlugin {
 
   async afterCreateAuthModules(
     context: DsgContext,
-    eventParams: CreateAuthModulesParams["after"]
+    eventParams: CreateAuthModulesParams
   ) {
     const staticPath = resolve(__dirname, "../static");
-    const staticsFiles = await context.utils.importStaticModules(staticPath, JwtAuthPlugin.srcDir);
+    const staticsFiles = await context.utils.importStaticModules(
+      staticPath,
+      JwtAuthPlugin.srcDir
+    );
 
-    return staticsFiles
+    return staticsFiles;
   }
 }
 
