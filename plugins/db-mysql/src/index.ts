@@ -13,6 +13,7 @@ import {
   CreatePrismaSchemaParams,
   Events,
 } from "@amplication/code-gen-types";
+import { kebabCase } from "lodash";
 
 class MySQLPlugin implements AmplicationPlugin {
   register(): Events {
@@ -37,6 +38,13 @@ class MySQLPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDotEnvParams
   ) {
+    if (context.resourceInfo) {
+      context.resourceInfo.settings.dbName = kebabCase(
+        context.resourceInfo.name
+      );
+      context.resourceInfo.settings.dbUser = "root";
+      context.resourceInfo.settings.dbPort = 3306;
+    }
     eventParams.envVariables = [...eventParams.envVariables, ...envVariables];
 
     return eventParams;
