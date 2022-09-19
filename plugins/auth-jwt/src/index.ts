@@ -9,8 +9,6 @@ import {
 import { EnumAuthProviderType } from "@amplication/code-gen-types/dist/models";
 
 class JwtAuthPlugin implements AmplicationPlugin {
-  static srcDir = "";
-
   register(): Events {
     return {
       createAdminModules: {
@@ -39,7 +37,6 @@ class JwtAuthPlugin implements AmplicationPlugin {
     eventParams: CreateAuthModulesParams
   ) {
     context.utils.skipDefaultBehavior = true;
-    JwtAuthPlugin.srcDir = eventParams.srcDir;
     return eventParams;
   }
 
@@ -50,7 +47,7 @@ class JwtAuthPlugin implements AmplicationPlugin {
     const staticPath = resolve(__dirname, "../static");
     const staticsFiles = await context.utils.importStaticModules(
       staticPath,
-      JwtAuthPlugin.srcDir
+      context.serverDirectories.srcDirectory
     );
 
     return staticsFiles;
