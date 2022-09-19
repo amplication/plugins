@@ -9,8 +9,6 @@ import {
 import { EnumAuthProviderType } from "@amplication/code-gen-types/dist/models";
 
 class BasicAuthPlugin implements AmplicationPlugin {
-  static srcDir = "";
-
   register(): Events {
     return {
       createAdminModules: {
@@ -39,7 +37,6 @@ class BasicAuthPlugin implements AmplicationPlugin {
     eventParams: CreateAuthModulesParams
   ) {
     context.utils.skipDefaultBehavior = true;
-    BasicAuthPlugin.srcDir = eventParams.srcDir;
     return eventParams;
   }
 
@@ -50,7 +47,7 @@ class BasicAuthPlugin implements AmplicationPlugin {
     const staticPath = resolve(__dirname, "../static");
     const staticsFiles = await context.utils.importStaticModules(
       staticPath,
-      BasicAuthPlugin.srcDir
+      context.serverDirectories.srcDirectory
     );
 
     return staticsFiles;
