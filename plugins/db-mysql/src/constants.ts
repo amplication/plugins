@@ -39,8 +39,8 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
           ports: ["${DB_PORT}:3306"],
           environment: {
             DB_ROOT_PASSWORD: "${DB_PASSWORD}",
+            MYSQL_USER: "${DB_USER}",
           },
-          volumes: ["mysql:/var/lib/mysql/data"],
           healthcheck: {
             test: [
               "CMD",
