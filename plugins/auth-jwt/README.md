@@ -2,7 +2,7 @@
 
 [![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-auth-jwt)](https://www.npmjs.com/package/@amplication/plugin-auth-jwt) 
 
-Enable JWT authentication a service
+Enable JWT authentication on a service
 
 ## Purpose
 
