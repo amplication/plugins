@@ -8,8 +8,6 @@ services:
       - ${DB_PORT}:3306
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - mysql:/var/lib/mysql/data
   adminer:
     image: adminer
     restart: always

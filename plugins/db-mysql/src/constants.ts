@@ -40,7 +40,6 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
           environment: {
             DB_ROOT_PASSWORD: "${DB_PASSWORD}",
           },
-          volumes: ["mysql:/var/lib/mysql/data"],
           healthcheck: {
             test: [
               "CMD",
