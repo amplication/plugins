@@ -1,8 +1,8 @@
-# kafka-plugin
+# @amplication/plugin-kafka
 
 [![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-db-postgres)](https://www.npmjs.com/package/@amplication/plugin-kafka)
 
-Use this plugin to implement Kafka as the message broker in your Amplication's generated services.
+Implement Kafka as the message broker in your Amplication's generated services.
 
 ## Purpose
 
