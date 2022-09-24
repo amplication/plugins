@@ -40,15 +40,19 @@ class MySQLPlugin implements AmplicationPlugin {
   }
 
   beforeCreateServer(context: DsgContext, eventParams: CreateServerParams) {
-    const message = `MultiSelectOptionSet (list of primitives type) is not supported by MySQL prisma provider. 
+    const generateErrorMessage = (
+      entityName: string,
+      fieldName: string
+    ) => `MultiSelectOptionSet on entity ${entityName}, field ${fieldName} (list of primitives type) is not supported by MySQL prisma provider. 
     You can select another data type or change your DB to PostgreSQL`;
-    context.entities?.forEach(({ fields }) => {
-      const isEntityWithMultiSelectOptionSetField = fields.some(
+
+    context.entities?.forEach(({ name: entityName, fields }) => {
+      const field = fields.find(
         ({ dataType }) => dataType === EnumDataType.MultiSelectOptionSet
       );
-      if (isEntityWithMultiSelectOptionSetField) {
-        context.logger.error(message);
-        return;
+      if (field) {
+        context.logger.error(generateErrorMessage(entityName, field.name));
+        throw new Error(generateErrorMessage(entityName, field.name));
       }
     });
 
