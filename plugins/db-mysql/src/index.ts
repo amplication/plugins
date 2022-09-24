@@ -12,7 +12,7 @@ import {
   CreateServerDotEnvParams,
   CreatePrismaSchemaParams,
   Events,
-  CreateServerModulesParams,
+  CreateServerParams,
   EnumDataType,
 } from "@amplication/code-gen-types";
 import { kebabCase } from "lodash";
@@ -20,7 +20,7 @@ import { kebabCase } from "lodash";
 class MySQLPlugin implements AmplicationPlugin {
   register(): Events {
     return {
-      createServerModules: {
+      CreateServer: {
         before: this.beforeCreateServer,
       },
       CreateServerDotEnv: {
@@ -39,10 +39,7 @@ class MySQLPlugin implements AmplicationPlugin {
     };
   }
 
-  beforeCreateServer(
-    context: DsgContext,
-    eventParams: CreateServerModulesParams
-  ) {
+  beforeCreateServer(context: DsgContext, eventParams: CreateServerParams) {
     const message = `MultiSelectOptionSet (list of primitives type) is not supported by MySQL prisma provider. 
     You can select another data type or change your DB to PostgreSQL`;
     context.entities?.forEach(({ fields }) => {
