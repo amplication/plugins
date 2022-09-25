@@ -43,7 +43,7 @@ class MySQLPlugin implements AmplicationPlugin {
     const generateErrorMessage = (
       entityName: string,
       fieldName: string
-    ) => `MultiSelectOptionSet on entity ${entityName}, field ${fieldName} (list of primitives type) is not supported by MySQL prisma provider. 
+    ) => `MultiSelectOptionSet (list of primitives type) on entity: ${entityName}, field: ${fieldName}, is not supported by MySQL prisma provider. 
     You can select another data type or change your DB to PostgreSQL`;
 
     context.entities?.forEach(({ name: entityName, fields }) => {
