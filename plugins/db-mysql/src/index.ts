@@ -12,12 +12,17 @@ import {
   CreateServerDotEnvParams,
   CreatePrismaSchemaParams,
   Events,
+  CreateServerParams,
+  EnumDataType,
 } from "@amplication/code-gen-types";
 import { kebabCase } from "lodash";
 
 class MySQLPlugin implements AmplicationPlugin {
   register(): Events {
     return {
+      CreateServer: {
+        before: this.beforeCreateServer,
+      },
       CreateServerDotEnv: {
         before: this.beforeCreateServerDotEnv,
       },
@@ -32,6 +37,26 @@ class MySQLPlugin implements AmplicationPlugin {
         before: this.beforeCreatePrismaSchema,
       },
     };
+  }
+
+  beforeCreateServer(context: DsgContext, eventParams: CreateServerParams) {
+    const generateErrorMessage = (
+      entityName: string,
+      fieldName: string
+    ) => `MultiSelectOptionSet (list of primitives type) on entity: ${entityName}, field: ${fieldName}, is not supported by MySQL prisma provider. 
+    You can select another data type or change your DB to PostgreSQL`;
+
+    context.entities?.forEach(({ name: entityName, fields }) => {
+      const field = fields.find(
+        ({ dataType }) => dataType === EnumDataType.MultiSelectOptionSet
+      );
+      if (field) {
+        context.logger.error(generateErrorMessage(entityName, field.name));
+        throw new Error(generateErrorMessage(entityName, field.name));
+      }
+    });
+
+    return eventParams;
   }
 
   beforeCreateServerDotEnv(
