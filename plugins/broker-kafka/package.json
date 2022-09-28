@@ -14,7 +14,7 @@
     "lodash": "4.17.21"
   },
   "devDependencies": {
-    "@nestjs/microservices": "9.0.11",
+    "@nestjs/microservices": "8.2.3",
     "@types/lodash": "4.14.185",
     "@types/node": "18.7.18",
     "typescript": "^4.8.3"

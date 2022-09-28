@@ -124,8 +124,8 @@ class KafkaPlugin implements AmplicationPlugin {
   ): CreateServerPackageJsonParams {
     const myValues = {
       dependencies: {
-        "@nestjs/microservices": "^8.2.3",
-        kafkajs: "^2.2.0",
+        "@nestjs/microservices": "8.2.3",
+        kafkajs: "2.2.0",
       },
     };
     const newValues = merge(eventParams.updateValues, myValues);
