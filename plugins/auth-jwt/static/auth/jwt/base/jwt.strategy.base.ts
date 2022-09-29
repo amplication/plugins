@@ -4,12 +4,13 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 import { IAuthStrategy } from "../../IAuthStrategy";
 // @ts-ignore
 // eslint-disable-next-line
-import { UserService } from "../../user/user.service";
+import { UserService } from "../../../user/user.service";
 import { UserInfo } from "../../UserInfo";
 
 export class JwtStrategyBase
   extends PassportStrategy(Strategy)
-  implements IAuthStrategy {
+  implements IAuthStrategy
+{
   constructor(
     protected readonly userService: UserService,
     protected readonly secretOrKey: string
