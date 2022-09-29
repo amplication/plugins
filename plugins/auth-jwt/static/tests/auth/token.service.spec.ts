@@ -5,7 +5,7 @@ import {
   INVALID_PASSWORD_ERROR,
   INVALID_USERNAME_ERROR,
 } from "../../auth/constants";
-import { SIGN_TOKEN, VALID_CREDENTIALS } from "./constants";
+import { SIGN_TOKEN, VALID_CREDENTIALS, VALID_ID } from "./constants";
 
 describe("Testing the TokenServiceBase", () => {
   let tokenServiceBase: TokenServiceBase;
@@ -19,7 +19,7 @@ describe("Testing the TokenServiceBase", () => {
       jwtService.signAsync.mockReturnValue(Promise.resolve(SIGN_TOKEN));
       expect(
         await tokenServiceBase.createToken({
-          id: VALID_CREDENTIALS.id,
+          id: VALID_ID,
           username: VALID_CREDENTIALS.username,
           password: VALID_CREDENTIALS.password,
         })
@@ -27,7 +27,8 @@ describe("Testing the TokenServiceBase", () => {
     });
     it("should reject when username missing", () => {
       const result = tokenServiceBase.createToken({
-        id: VALID_CREDENTIALS.id,
+        id: VALID_ID,
+        //@ts-ignore
         username: null,
         password: VALID_CREDENTIALS.password,
       });
@@ -35,8 +36,9 @@ describe("Testing the TokenServiceBase", () => {
     });
     it("should reject when password missing", () => {
       const result = tokenServiceBase.createToken({
-        id: VALID_CREDENTIALS.id,
+        id: VALID_ID,
         username: VALID_CREDENTIALS.username,
+        //@ts-ignore
         password: null,
       });
       return expect(result).rejects.toBe(INVALID_PASSWORD_ERROR);
