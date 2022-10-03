@@ -5,9 +5,10 @@ import {
   CreateMessageBrokerParams,
   CreateMessageBrokerServiceBaseParams,
   CreateMessageBrokerServiceParams,
-  CreateServerPackageJsonParams,
+  CreateServerAppModuleParams,
   CreateServerDockerComposeParams,
   CreateServerDotEnvParams,
+  CreateServerPackageJsonParams,
   DsgContext,
   Events,
   Module,
@@ -17,6 +18,7 @@ import { kebabCase, merge } from "lodash";
 import { join, resolve } from "path";
 import { staticDirectory } from "./constants";
 class KafkaPlugin implements AmplicationPlugin {
+  private moduleFile: Module | undefined;
   init?: ((name: string, version: string) => void) | undefined;
   register(): Events {
     return {
@@ -31,6 +33,9 @@ class KafkaPlugin implements AmplicationPlugin {
       },
       CreateMessageBroker: {
         before: this.beforeCreateBroker,
+      },
+      CreateServerAppModule: {
+        before: this.beforeCreateServerAppModule,
       },
       CreateMessageBrokerClientOptionsFactory: {
         after: this.afterCreateMessageBrokerClientOptionsFactory,
@@ -91,12 +96,11 @@ class KafkaPlugin implements AmplicationPlugin {
     const file = await readFile(filePath, "utf8");
     const generateFileName = "kafka.module.ts";
 
-    return [
-      {
-        code: file,
-        path: join(messageBrokerDirectory, generateFileName),
-      },
-    ];
+    this.moduleFile = {
+      code: file,
+      path: join(messageBrokerDirectory, generateFileName),
+    };
+    return [this.moduleFile];
   }
 
   beforeCreateServerDotEnv(
@@ -207,6 +211,18 @@ class KafkaPlugin implements AmplicationPlugin {
       },
     };
     eventParams.updateProperties.push(newParams);
+    return eventParams;
+  }
+
+  beforeCreateServerAppModule(
+    dsgContext: DsgContext,
+    eventParams: CreateServerAppModuleParams
+  ) {
+    const file = this.moduleFile;
+    if (!file) {
+      throw new Error("Kafka module file not found");
+    }
+    eventParams.modulesFiles.push(file);
     return eventParams;
   }
 }
