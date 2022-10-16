@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-broker-kafka",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Use a Kafka message broker to communicate between services generated with Amplication",
   "main": "dist/index.js",
   "scripts": {
