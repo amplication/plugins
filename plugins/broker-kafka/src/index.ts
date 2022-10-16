@@ -25,8 +25,8 @@ class KafkaPlugin implements AmplicationPlugin {
       CreateServerDotEnv: {
         before: this.beforeCreateServerDotEnv,
       },
-      CreatePackageJson: {
-        before: this.beforeUpdateJson,
+      CreateServerPackageJson: {
+        before: this.beforeCreateServerPackageJson,
       },
       CreateServerDockerCompose: {
         before: this.beforeCreateDockerCompose,
@@ -122,19 +122,23 @@ class KafkaPlugin implements AmplicationPlugin {
     return { envVariables: newEnvParams };
   }
 
-  beforeUpdateJson(
+  beforeCreateServerPackageJson(
     context: DsgContext,
     eventParams: CreateServerPackageJsonParams
   ): CreateServerPackageJsonParams {
-    const myValues = {
-      dependencies: {
-        "@nestjs/microservices": "8.2.3",
-        kafkajs: "2.2.0",
+    const myValues = [
+      {
+        dependencies: {
+          "@nestjs/microservices": "8.2.3",
+          kafkajs: "2.2.0",
+        },
       },
-    };
-    const newValues = merge(eventParams.updateValues, myValues);
+    ];
+    eventParams.updateProperties.forEach((updateProperty) =>
+      merge(updateProperty, myValues)
+    );
 
-    return { ...eventParams, updateValues: newValues };
+    return eventParams;
   }
 
   async afterCreateMessageBrokerService(

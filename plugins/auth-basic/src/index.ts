@@ -1,20 +1,20 @@
 import { resolve } from "path";
 import {
   DsgContext,
-  CreateAuthModulesParams,
+  CreateServerAuthParams,
   AmplicationPlugin,
   Events,
-  CreateAdminModulesParams,
+  CreateAdminUIParams,
 } from "@amplication/code-gen-types";
 import { EnumAuthProviderType } from "@amplication/code-gen-types/dist/models";
 
 class BasicAuthPlugin implements AmplicationPlugin {
   register(): Events {
     return {
-      createAdminModules: {
+      CreateAdminUI: {
         before: this.beforeCreateAdminModules,
       },
-      createAuthModules: {
+      CreateServerAuth: {
         before: this.beforeCreateAuthModules,
         after: this.afterCreateAuthModules,
       },
@@ -23,7 +23,7 @@ class BasicAuthPlugin implements AmplicationPlugin {
 
   beforeCreateAdminModules(
     context: DsgContext,
-    eventParams: CreateAdminModulesParams
+    eventParams: CreateAdminUIParams
   ) {
     if (context.resourceInfo) {
       context.resourceInfo.settings.authProvider = EnumAuthProviderType.Http;
@@ -34,7 +34,7 @@ class BasicAuthPlugin implements AmplicationPlugin {
 
   beforeCreateAuthModules(
     context: DsgContext,
-    eventParams: CreateAuthModulesParams
+    eventParams: CreateServerAuthParams
   ) {
     context.utils.skipDefaultBehavior = true;
     return eventParams;
@@ -42,7 +42,7 @@ class BasicAuthPlugin implements AmplicationPlugin {
 
   async afterCreateAuthModules(
     context: DsgContext,
-    eventParams: CreateAuthModulesParams
+    eventParams: CreateServerAuthParams
   ) {
     const staticPath = resolve(__dirname, "../static");
     const staticsFiles = await context.utils.importStaticModules(
