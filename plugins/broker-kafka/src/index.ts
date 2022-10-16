@@ -18,7 +18,7 @@ import { kebabCase, merge } from "lodash";
 import { join, resolve } from "path";
 import { staticDirectory } from "./constants";
 class KafkaPlugin implements AmplicationPlugin {
-  private moduleFile: Module | undefined;
+  static moduleFile: Module | undefined;
   init?: ((name: string, version: string) => void) | undefined;
   register(): Events {
     return {
@@ -96,11 +96,11 @@ class KafkaPlugin implements AmplicationPlugin {
     const file = await readFile(filePath, "utf8");
     const generateFileName = "kafka.module.ts";
 
-    this.moduleFile = {
+    KafkaPlugin.moduleFile = {
       code: file,
       path: join(messageBrokerDirectory, generateFileName),
     };
-    return [this.moduleFile];
+    return [KafkaPlugin.moduleFile];
   }
 
   beforeCreateServerDotEnv(
@@ -221,7 +221,8 @@ class KafkaPlugin implements AmplicationPlugin {
     dsgContext: DsgContext,
     eventParams: CreateServerAppModuleParams
   ) {
-    const file = this.moduleFile;
+    const file = KafkaPlugin.moduleFile;
+    console.log(file, 'file!!!');
     if (!file) {
       throw new Error("Kafka module file not found");
     }
