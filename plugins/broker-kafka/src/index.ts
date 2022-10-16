@@ -222,7 +222,6 @@ class KafkaPlugin implements AmplicationPlugin {
     eventParams: CreateServerAppModuleParams
   ) {
     const file = KafkaPlugin.moduleFile;
-    console.log(file, 'file!!!');
     if (!file) {
       throw new Error("Kafka module file not found");
     }
