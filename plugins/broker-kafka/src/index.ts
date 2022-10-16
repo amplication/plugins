@@ -126,14 +126,13 @@ class KafkaPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerPackageJsonParams
   ): CreateServerPackageJsonParams {
-    const myValues = [
-      {
-        dependencies: {
-          "@nestjs/microservices": "8.2.3",
-          kafkajs: "2.2.0",
-        },
+    const myValues = {
+      dependencies: {
+        "@nestjs/microservices": "8.2.3",
+        kafkajs: "2.2.0",
       },
-    ];
+    };
+
     eventParams.updateProperties.forEach((updateProperty) =>
       merge(updateProperty, myValues)
     );
