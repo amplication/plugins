@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-auth-basic",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "set basic auth for Amplication build",
   "main": "dist/index.js",
   "scripts": {
