@@ -1,3 +1,4 @@
+import { resolve } from "path";
 import {
   DsgContext,
   AmplicationPlugin,
@@ -16,17 +17,17 @@ class ExamplePlugin implements AmplicationPlugin {
   register(): Events {
     return {
     [EventNames.CreateServer]: {
-      before: this.beforeCreateExample,
-      after: this.afterCreateExample
+      before: this.beforeCreateServer,
+      after: this.afterCreateServer
     },
     [EventNames.CreateAdminUI]: {
-      before: this.beforeCreateAdminExample
+      before: this.beforeCreateAdminUI
     }
     };
   }
   // you can combine many events in one plugin in order to change the related files.
 
-  beforeCreateExample (
+  beforeCreateServer (
     context: DsgContext,
     eventParams: CreateServerParams
   ) {
@@ -37,19 +38,24 @@ class ExamplePlugin implements AmplicationPlugin {
     return eventParams // eventParams must return from before function. it will be use for the builder function.
   }
 
-  afterCreateExample (
+  async afterCreateServer (
     context: DsgContext,
     eventParams: CreateServerParams,
     modules: Module[]
   ) {
     // here you can get the context, eventParams and the modules Amplication created
     // then you can manipulate the modules or add new ones or create your own.
+    const staticPath = resolve(__dirname, "../static");
+    const staticsFiles = await context.utils.importStaticModules(
+      staticPath,
+      context.serverDirectories.srcDirectory
+    );
 
-    return modules; // you must return the generated modules you want to generate at this part of the build
+    return [ ...modules, ...staticsFiles]; // you must return the generated modules you want to generate at this part of the build
   }
 
 
-  beforeCreateAdminExample (
+  beforeCreateAdminUI (
     context: DsgContext,
     eventParams: CreateAdminUIParams
   ) {
