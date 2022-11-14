@@ -1,4 +1,4 @@
-// @Amplication Plugin Template
+// @Amplication Plugin Template.
 // This is an example static file, it should be removed after cloning the template.
 
 /**
