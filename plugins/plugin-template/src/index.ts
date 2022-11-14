@@ -12,7 +12,7 @@ import {
 
 class ExamplePlugin implements AmplicationPlugin {
   /**
-   * this is mandatory function that return object with events name. each event can have before or/and after
+   * This is mandatory function that returns an object with the event name. Each event can have before or/and after
    */
   register(): Events {
     return {
