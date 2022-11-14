@@ -25,17 +25,17 @@ class ExamplePlugin implements AmplicationPlugin {
     }
     };
   }
-  // you can combine many events in one plugin in order to change the related files.
+  // You can combine many events in one plugin in order to change the related files.
 
   beforeCreateServer (
     context: DsgContext,
     eventParams: CreateServerParams
   ) {
-    // here you can manipulate the context or save any context variable for your after function
-    // you can also manipulate the eventParams so it will change the result of Amplication function
+    // Here you can manipulate the context or save any context variable for your after function.
+    // You can also manipulate the eventParams so it will change the result of Amplication function
     // context.utils.skipDefaultBehavior = true; this will prevent the default behavior and skip our handler.
 
-    return eventParams // eventParams must return from before function. it will be use for the builder function.
+    return eventParams // eventParams must return from before function. It will be used for the builder function.
   }
 
   async afterCreateServer (
@@ -43,8 +43,8 @@ class ExamplePlugin implements AmplicationPlugin {
     eventParams: CreateServerParams,
     modules: Module[]
   ) {
-    // here you can get the context, eventParams and the modules Amplication created
-    // then you can manipulate the modules or add new ones or create your own.
+    // Here you can get the context, eventParams and the modules Amplication created.
+    // Then you can manipulate the modules, add new ones, or create your own.
     const staticPath = resolve(__dirname, "../static");
     const staticsFiles = await context.utils.importStaticModules(
       staticPath,
