@@ -1,6 +1,6 @@
 /**
  * @Amplication example constants file.
- * Add here all your constants
+ * Add all your constants here.
  */
 
 export const ExampleConst = "example";
