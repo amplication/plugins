@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-broker-kafka",
-  "version": "0.0.10",
+  "version": "0.2.0",
   "description": "Use a Kafka message broker to communicate between services generated with Amplication",
   "main": "dist/index.js",
   "scripts": {
@@ -10,13 +10,13 @@
   "author": "Ofek Gabay",
   "license": "Apache-2.0",
   "dependencies": {
-    "@amplication/code-gen-types": "^1.0.4",
+    "@amplication/code-gen-types": "^1.1.0",
     "lodash": "4.17.21"
   },
   "devDependencies": {
-    "@nestjs/microservices": "8.2.3",
-    "@types/lodash": "4.14.185",
-    "@types/node": "18.7.18",
+    "@nestjs/microservices": "^8.2.3",
+    "@types/lodash": "^4.14.185",
+    "@types/node": "^18.7.18",
     "typescript": "^4.8.3"
   }
 }

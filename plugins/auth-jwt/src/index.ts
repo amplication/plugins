@@ -6,7 +6,7 @@ import {
   Events,
   CreateAdminUIParams,
 } from "@amplication/code-gen-types";
-import { EnumAuthProviderType } from "@amplication/code-gen-types/dist/models";
+import { EnumAuthProviderType } from "@amplication/code-gen-types/src/models";
 
 class JwtAuthPlugin implements AmplicationPlugin {
   register(): Events {
