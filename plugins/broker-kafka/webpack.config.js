@@ -1,26 +1,38 @@
-const path = require('path');
-const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
+const path = require("path");
+const webpack = require("webpack");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = {
-  mode: 'production',
-  entry: './src/index.ts',
+  mode: "production",
+  target: "node",
+  entry: "./src/index.ts",
   plugins: [
-    new NodePolyfillPlugin(),
+    new webpack.SourceMapDevToolPlugin({
+      filename: "[name].js.map",
+    }),
+    new CopyWebpackPlugin({
+      patterns: [{ from: "src/static", to: "static" }],
+    }),
   ],
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
+        use: "ts-loader",
         exclude: /node_modules/,
       },
     ],
   },
   resolve: {
-    extensions: ['.ts', '.js']
+    extensions: [".ts", ".js"],
+  },
+  optimization: {
+    minimize: false
   },
   output: {
-    filename: 'index.js',
-    path: path.resolve(__dirname, 'dist'),
+    filename: "index.js",
+    path: path.resolve(__dirname, "dist"),
+    libraryTarget: "commonjs2",
+    clean: true,
   },
 };
