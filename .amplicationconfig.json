@@ -1,4 +1,8 @@
 {
+  "dsgImage": {
+    "repository": "public.ecr.aws/r7y2l7b7/dsg",
+    "tag": "latest"
+  },
   "plugins": [
     {
       "id": "plugin-template",
