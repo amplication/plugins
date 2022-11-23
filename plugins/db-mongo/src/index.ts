@@ -79,4 +79,6 @@ class PostgresPlugin implements AmplicationPlugin {
   }
 }
 
+console.log('hello 12345');
+
 export default PostgresPlugin;
