@@ -12,6 +12,9 @@ What is the purpose of this plugin and what exactly does it do.
 
 If a configuration is required, add it here. 
 
-## Usage
+# Scripts
+## `build`
+Running `npm run build` will bundle your plugin with Webpack for production.
 
-Explain the usage of this plugin and its effect on the final build.
+## `dev`
+Running `npm run dev` will watch your plugin's source code and automatically bundle it with every change.
