@@ -5,8 +5,8 @@
   },
   "plugins": [
     {
-      "id": "plugin-template",
-      "distPath": "./plugins/plugin-template/dist"
+      "id": "db-mongo",
+      "distPath": "./plugins/db-mongo/dist"
     }
   ]
 }

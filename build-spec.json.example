@@ -1,0 +1,9 @@
+{
+  "pluginInstallations": [
+    {
+      "id": "...",
+      "npm": "...",
+      "version": "..."
+    }
+  ]
+}
