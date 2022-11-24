@@ -5,8 +5,11 @@
   },
   "plugins": [
     {
-      "id": "db-mongo",
-      "distPath": "./plugins/db-mongo/dist"
+      "id": "ci-github",
+      "distPath": "./plugins/ci-github/dist"
     }
-  ]
+  ],
+  "experimental": {
+    "skipCleanup": true
+  }
 }

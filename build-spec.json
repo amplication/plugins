@@ -1,0 +1,9 @@
+{
+  "resourceInfo": {
+    "settings": {
+      "adminUISettings": {
+        "generateAdminUI": false
+      }
+    }
+  }
+}
