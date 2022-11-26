@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-auth-jwt",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "set jwt as provider for Amplication build",
   "main": "dist/index.js",
   "scripts": {
@@ -19,7 +19,7 @@
     "typescript": "^4.8.4"
   },
   "dependencies": {
-    "@amplication/code-gen-types": "^1.1.4-alpha.1",
+    "@amplication/code-gen-types": "^1.1.5",
     "@babel/parser": "^7.18.11",
     "@babel/types": "^7.18.10",
     "@nestjs/common": "^9.0.9",

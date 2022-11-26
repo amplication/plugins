@@ -1,8 +1,12 @@
 import {
   CreateServerDockerComposeParams,
-  PrismaDataSource,
   VariableDictionary,
 } from "@amplication/code-gen-types";
+import {
+  DataSource,
+  DataSourceProvider,
+  DataSourceURLEnv,
+} from "prisma-schema-dsl-types";
 
 export const envVariables: VariableDictionary = [
   { DB_USER: "${dbUser}" },
@@ -57,8 +61,8 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
     },
   ];
 
-export const dataSource: PrismaDataSource = {
+export const dataSource: DataSource = {
   name: "postgres",
-  provider: "PostgreSQL",
-  urlEnv: "DB_URL",
+  provider: DataSourceProvider.PostgreSQL,
+  url: new DataSourceURLEnv("DB_URL"),
 };
