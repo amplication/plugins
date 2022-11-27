@@ -11,7 +11,11 @@ module.exports = {
       filename: "[name].js.map",
     }),
     new CopyWebpackPlugin({
-      patterns: [{ from: "src/static", to: "static" }],
+      patterns: [{ from: "src/static", to: "static" }, {
+        from: "src/*/**.template.ts", to({ context, absoluteFilename, }) {
+          return path.join(__dirname, 'dist', absoluteFilename.replace(/^.*[\\\/]/, ''));
+        },
+      }],
     }),
   ],
   module: {
