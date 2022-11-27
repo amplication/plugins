@@ -11,7 +11,22 @@ For more information, read [Using Plugins](https://docs.amplication.com/docs/get
 ## Plugin Template
 We have created a basic plugin template available at [plugins/plugin-template](plugins/plugin-template/). Copy-paste it into a local directory on your machine and start developing. Please read the template's README.md file for more instructions.
 
+## Plugin file types
+
+As of now we support two types of files.
+
+### Static files
+
+- Job: those files are copied as is to the generated code.
+- Location: All files inside the `src/static` folder.
+
+### Template files
+
+- Job: files that serve as templates, We mutate them to provide the user with the source code.
+- Location: every file that ends with `*.template.ts`.
+
 ### IMPORTANT!
+
 For Amplication to be able to load your plugin on-demand, we require that your plugin is bundled together with its dependencies and static files. For this reason we strongly advise using Webpack, as implemented in our plugin template.
 
 # Amplication Plugin Tester
