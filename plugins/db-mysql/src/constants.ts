@@ -1,12 +1,8 @@
 import {
   VariableDictionary,
   CreateServerDockerComposeParams,
+  PrismaDataSource,
 } from "@amplication/code-gen-types";
-import {
-  DataSource,
-  DataSourceProvider,
-  DataSourceURLEnv,
-} from "prisma-schema-dsl-types";
 
 export const envVariables: VariableDictionary = [
   { DB_USER: "${dbUser}" },
@@ -66,8 +62,8 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
     },
   ];
 
-export const dataSource: DataSource = {
+export const dataSource: PrismaDataSource = {
   name: "mysql",
-  provider: DataSourceProvider.MySQL,
-  url: new DataSourceURLEnv("DB_URL"),
+  provider: "MySQL",
+  urlEnv: "DB_URL",
 };
