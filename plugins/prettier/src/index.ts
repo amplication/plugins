@@ -7,6 +7,7 @@ import {
   EventNames,
   CreateServerParams,
   CreateServerPackageJsonParams,
+  CreateAdminUIPackageJsonParams,
 } from "@amplication/code-gen-types";
 import { merge } from "lodash";
 
@@ -20,6 +21,9 @@ class ExamplePlugin implements AmplicationPlugin {
       [EventNames.CreateServerPackageJson]: {
         before: this.beforeCreateServerPackageJson,
       },
+      [EventNames.CreateAdminUIPackageJson]: {
+        before: this.beforeCreateClientPackageJson,
+      }
     };
   }
 
@@ -42,6 +46,26 @@ class ExamplePlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerPackageJsonParams
   ): CreateServerPackageJsonParams {
+    const myValues = {
+      devDependencies: {
+        "prettier": "^2.8.0",
+      },
+      scripts: {
+        "format": "prettier --write .",
+      }
+    };
+
+    eventParams.updateProperties.forEach((updateProperty) =>
+      merge(updateProperty, myValues)
+    );
+
+    return eventParams;
+  }
+
+  beforeCreateClientPackageJson(
+    context: DsgContext,
+    eventParams: CreateAdminUIPackageJsonParams
+  ): CreateAdminUIPackageJsonParams {
     const myValues = {
       devDependencies: {
         "prettier": "^2.8.0",
