@@ -12,9 +12,17 @@ import {
   CreateServerDotEnvParams,
   CreatePrismaSchemaParams,
   Events,
+  EnumDataType,
+  EntityField,
+  Entity,
+  LookupResolvedProperties,
 } from "@amplication/code-gen-types";
+import { ObjectField, ScalarField, ScalarType } from "prisma-schema-dsl-types";
+import * as PrismaSchemaDSL from "prisma-schema-dsl";
+import { camelCase } from "camel-case";
+import { pascalCase } from "pascal-case";
 
-class PostgresPlugin implements AmplicationPlugin {
+class MongoPlugin implements AmplicationPlugin {
   register(): Events {
     return {
       CreateServerDotEnv: {
@@ -72,11 +80,136 @@ class PostgresPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreatePrismaSchemaParams
   ) {
-    return {
-      ...eventParams,
-      dataSource: dataSource,
-    };
+
+    const originalHandler =  eventParams.createFieldsHandlers[EnumDataType.Lookup]; 
+
+    eventParams.createFieldsHandlers[EnumDataType.Lookup] =
+     (field: EntityField,
+       entity: Entity,
+      fieldNamesCount?: Record<string, number>):
+      [ScalarField] | [ObjectField] | [ObjectField, ScalarField] => 
+    {
+      const { properties,name } = field;
+      const {
+        relatedEntity,
+        allowMultipleSelection,
+        relatedField,
+        isOneToOneWithoutForeignKey,
+      } = properties as LookupResolvedProperties;
+
+      const mongoHasManyToManyRelation =
+         relatedEntity.fields.some(
+           (entityField) =>
+             entityField.id !== field.id &&
+             entityField.dataType === EnumDataType.Lookup &&
+             entityField.permanentId === field.properties?.relatedFieldId &&
+             allowMultipleSelection &&
+             entityField.properties?.allowMultipleSelection
+         );
+ 
+         if(!mongoHasManyToManyRelation) {    
+           return originalHandler(field,entity,fieldNamesCount);
+         }
+
+         else {
+          const hasAnotherRelation = entity.fields.some(
+            (entityField) =>
+              entityField.id !== field.id &&
+              entityField.dataType === EnumDataType.Lookup &&
+              entityField.properties.relatedEntity.name === relatedEntity.name
+          );
+      
+          const relationName = !hasAnotherRelation
+            ? null
+            : this.createRelationName(
+                entity,
+                field,
+                relatedEntity,
+                relatedField,
+                fieldNamesCount ? fieldNamesCount[field.name] === 1 : false,
+                fieldNamesCount ? fieldNamesCount[relatedField.name] === 1 : false
+              );
+    
+          const scalarRelationFieldName =`${name}Ids`;
+           return [
+              PrismaSchemaDSL.createObjectField(
+                name,
+                relatedEntity.name,
+                true,
+                true || field.required,
+                relationName,
+                [scalarRelationFieldName],
+                [
+                  "id",
+                ]
+              ),
+              // Prisma Scalar Relation Field
+              PrismaSchemaDSL.createScalarField(
+                scalarRelationFieldName,
+                ScalarType.String,
+                true,
+                true,
+                !field.properties.allowMultipleSelection &&
+                  !relatedField?.properties.allowMultipleSelection &&
+                  !isOneToOneWithoutForeignKey
+                  ? true
+                  : field.unique
+              ),
+            ]; 
+              }
+   }
+      return {
+        ...eventParams,
+        dataSource: dataSource,
+          }
+  }
+
+  private createRelationName(
+    entity: Entity,
+    field: EntityField,
+    relatedEntity: Entity,
+    relatedField: EntityField,
+    fieldHasUniqueName: boolean,
+    relatedFieldHasUniqueName: boolean
+  ): string {
+    const relatedEntityNames = [
+      relatedEntity.name,
+      pascalCase(relatedEntity.pluralName),
+    ];
+    const entityNames = [entity.name, pascalCase(entity.pluralName)];
+    const matchingRelatedEntityName = relatedEntityNames.find(
+      (name) => field.name === camelCase(name)
+    );
+    const matchingEntityName = entityNames.find(
+      (name) => relatedField.name === camelCase(name)
+    );
+    if (matchingRelatedEntityName && matchingEntityName) {
+      const names = [matchingRelatedEntityName, matchingEntityName];
+      // Sort names for deterministic results regardless of entity and related order
+      names.sort();
+      return names.join("On");
+    }
+    if (fieldHasUniqueName || relatedFieldHasUniqueName) {
+      const names = [];
+      if (fieldHasUniqueName) {
+        names.push(field.name);
+      }
+      if (relatedFieldHasUniqueName) {
+        names.push(relatedField.name);
+      }
+      // Sort names for deterministic results regardless of entity and related order
+      names.sort();
+      return names[0];
+    }
+    const entityAndField = [entity.name, field.name].join(" ");
+    const relatedEntityAndField = [relatedEntity.name, relatedField.name].join(
+      " "
+    );
+    const parts = [entityAndField, relatedEntityAndField];
+    // Sort parts for deterministic results regardless of entity and related order
+    parts.sort();
+    return pascalCase(parts.join(" "));
   }
 }
 
-export default PostgresPlugin;
+export default MongoPlugin;

@@ -33,7 +33,7 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
             POSTGRES_USER: "${DB_USER}",
             POSTGRES_PASSWORD: "${DB_PASSWORD}",
           },
-          volumes: ["mongodb:/var/lib/postgresql/data"],
+          volumes: ["mongodb:/var/lib/mongosql/data"],
           healthcheck: {
             test: [
               "CMD",
