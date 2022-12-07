@@ -16,8 +16,9 @@ import {
   EntityField,
   Entity,
   LookupResolvedProperties,
+  CreateSchemaFieldResult,
 } from "@amplication/code-gen-types";
-import { ObjectField, ScalarField, ScalarType } from "prisma-schema-dsl-types";
+import { ScalarType, ReferentialActions } from "prisma-schema-dsl-types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
@@ -80,16 +81,15 @@ class MongoPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreatePrismaSchemaParams
   ) {
+    const originalHandler =
+      eventParams.createFieldsHandlers[EnumDataType.Lookup];
 
-    const originalHandler =  eventParams.createFieldsHandlers[EnumDataType.Lookup]; 
-
-    eventParams.createFieldsHandlers[EnumDataType.Lookup] =
-     (field: EntityField,
-       entity: Entity,
-      fieldNamesCount?: Record<string, number>):
-      [ScalarField] | [ObjectField] | [ObjectField, ScalarField] => 
-    {
-      const { properties,name } = field;
+    eventParams.createFieldsHandlers[EnumDataType.Lookup] = (
+      field: EntityField,
+      entity: Entity,
+      fieldNamesCount?: Record<string, number>
+    ): CreateSchemaFieldResult => {
+      const { properties, name } = field;
       const {
         relatedEntity,
         allowMultipleSelection,
@@ -97,71 +97,79 @@ class MongoPlugin implements AmplicationPlugin {
         isOneToOneWithoutForeignKey,
       } = properties as LookupResolvedProperties;
 
-      const mongoHasManyToManyRelation =
-         relatedEntity.fields.some(
-           (entityField) =>
-             entityField.id !== field.id &&
-             entityField.dataType === EnumDataType.Lookup &&
-             entityField.permanentId === field.properties?.relatedFieldId &&
-             allowMultipleSelection &&
-             entityField.properties?.allowMultipleSelection
-         );
- 
-         if(!mongoHasManyToManyRelation) {    
-           return originalHandler(field,entity,fieldNamesCount);
-         }
+      const hasManyToManyRelation = relatedEntity.fields.some(
+        (entityField) =>
+          entityField.id !== field.id &&
+          entityField.dataType === EnumDataType.Lookup &&
+          entityField.permanentId === field.properties?.relatedFieldId &&
+          allowMultipleSelection &&
+          entityField.properties?.allowMultipleSelection
+      );
 
-         else {
-          const hasAnotherRelation = entity.fields.some(
-            (entityField) =>
-              entityField.id !== field.id &&
-              entityField.dataType === EnumDataType.Lookup &&
-              entityField.properties.relatedEntity.name === relatedEntity.name
-          );
-      
-          const relationName = !hasAnotherRelation
-            ? null
-            : this.createRelationName(
-                entity,
-                field,
-                relatedEntity,
-                relatedField,
-                fieldNamesCount ? fieldNamesCount[field.name] === 1 : false,
-                fieldNamesCount ? fieldNamesCount[relatedField.name] === 1 : false
-              );
+      if (hasManyToManyRelation) {
+        const hasAnotherRelation = entity.fields.some(
+          (entityField) =>
+            entityField.id !== field.id &&
+            entityField.dataType === EnumDataType.Lookup &&
+            entityField.properties.relatedEntity.name === relatedEntity.name
+        );
+
+        const isSelfRelation = relatedEntity.name === entity.name;
+
+        const relationName = !hasAnotherRelation
+          ? null
+          : this.createRelationName(
+              entity,
+              field,
+              relatedEntity,
+              relatedField,
+              fieldNamesCount ? fieldNamesCount[field.name] === 1 : false,
+              fieldNamesCount ? fieldNamesCount[relatedField.name] === 1 : false
+            );
+
+        const scalarRelationFieldName = `${name}Ids`;
+        return [
+          PrismaSchemaDSL.createObjectField(
+            name,
+            relatedEntity.name,
+            true,
+            true || field.required,
+            relationName,
+            [scalarRelationFieldName],
+            ["id"],
+            isSelfRelation
+              ? ReferentialActions.NoAction
+              : ReferentialActions.NONE,
+            isSelfRelation
+              ? ReferentialActions.NoAction
+              : ReferentialActions.NONE
+          ),
+          // Prisma Scalar Relation Field
+          PrismaSchemaDSL.createScalarField(
+            scalarRelationFieldName,
+            ScalarType.String,
+            true,
+            true,
+            !field.properties.allowMultipleSelection &&
+              !relatedField?.properties.allowMultipleSelection &&
+              !isOneToOneWithoutForeignKey
+              ? true
+              : field.unique,
+            false,
+            false,
+            undefined,
+            undefined,
+            true
+          ),
+        ];
+      }
+      return originalHandler(field, entity, fieldNamesCount);
+    };
     
-          const scalarRelationFieldName =`${name}Ids`;
-           return [
-              PrismaSchemaDSL.createObjectField(
-                name,
-                relatedEntity.name,
-                true,
-                true || field.required,
-                relationName,
-                [scalarRelationFieldName],
-                [
-                  "id",
-                ]
-              ),
-              // Prisma Scalar Relation Field
-              PrismaSchemaDSL.createScalarField(
-                scalarRelationFieldName,
-                ScalarType.String,
-                true,
-                true,
-                !field.properties.allowMultipleSelection &&
-                  !relatedField?.properties.allowMultipleSelection &&
-                  !isOneToOneWithoutForeignKey
-                  ? true
-                  : field.unique
-              ),
-            ]; 
-              }
-   }
-      return {
-        ...eventParams,
-        dataSource: dataSource,
-          }
+    return {
+      ...eventParams,
+      dataSource: dataSource,
+    };
   }
 
   private createRelationName(
