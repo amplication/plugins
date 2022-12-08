@@ -24,9 +24,11 @@ The plugin uses the parameters configured on the database tab on the service set
 This plugin integrates with the all default tasks and scripts used by the generated service:
 ```json
     "seed": "ts-node scripts/seed.ts",
-    "db:migrate-up": "prisma migrate deploy",
     "db:clean": "ts-node scripts/clean.ts",
     "prisma:generate": "prisma generate",
+    "prisma:init": "prisma init",
+    "prisma:pull":"prisma db pull",
+    "prisma:push":" prisma db push",
     "docker:db": "docker-compose -f docker-compose.db.yml up -d",
     "docker:build": "docker build .",
     "compose:up": "docker-compose up -d",
