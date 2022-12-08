@@ -42,6 +42,7 @@ class MongoPlugin implements AmplicationPlugin {
       },
       CreateServerPackageJson: {
         before: this.beforeCreateServerPackageJson,
+        after: this.afterCreateServerPackageJson
       },
     };
   }
