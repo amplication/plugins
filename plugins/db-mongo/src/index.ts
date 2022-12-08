@@ -17,6 +17,7 @@ import {
   Entity,
   LookupResolvedProperties,
   CreateSchemaFieldResult,
+  CreateServerPackageJsonParams,
 } from "@amplication/code-gen-types";
 import { ScalarType, ReferentialActions } from "prisma-schema-dsl-types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
@@ -39,7 +40,28 @@ class MongoPlugin implements AmplicationPlugin {
       CreatePrismaSchema: {
         before: this.beforeCreatePrismaSchema,
       },
+      CreateServerPackageJson: {
+        before: this.beforeCreateServerPackageJson,
+      },
     };
+  }
+
+  beforeCreateServerPackageJson(
+    context: DsgContext,
+    eventParams: CreateServerPackageJsonParams
+  ) {
+    context.utils.skipDefaultBehavior = true;
+    return eventParams;
+  }
+
+  async afterCreateServerPackageJson(context: DsgContext) {
+    const staticPath = resolve(__dirname, "../static/package-json");
+    const staticsFiles = await context.utils.importStaticModules(
+      staticPath,
+      context.serverDirectories.baseDirectory
+    );
+
+    return staticsFiles;
   }
 
   beforeCreateServerDotEnv(
@@ -165,7 +187,7 @@ class MongoPlugin implements AmplicationPlugin {
       }
       return originalHandler(field, entity, fieldNamesCount);
     };
-    
+
     return {
       ...eventParams,
       dataSource: dataSource,
