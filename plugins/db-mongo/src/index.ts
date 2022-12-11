@@ -64,7 +64,7 @@ class MongoPlugin implements AmplicationPlugin {
 
       if (idType === "AUTO_INCREMENT") {
         context.logger.error(generateErrorMessage());
-        throw new Error(generateErrorMessage());
+        context.utils.abortGeneration(generateErrorMessage());
       }
     });
 
