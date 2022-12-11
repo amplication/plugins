@@ -70,7 +70,7 @@ class MongoPlugin implements AmplicationPlugin {
       allAutoIncrementFields.length > 0
     ) {
       context.logger.error(generateErrorMessage());
-      context.utils.abortGeneration(generateErrorMessage());
+      throw new Error(generateErrorMessage());
     }
 
     return eventParams;
