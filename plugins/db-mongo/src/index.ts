@@ -18,6 +18,8 @@ import {
   LookupResolvedProperties,
   CreateSchemaFieldResult,
   CreateServerPackageJsonParams,
+  CreateServerParams,
+  types,
 } from "@amplication/code-gen-types";
 import { ScalarType, ReferentialActions } from "prisma-schema-dsl-types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
@@ -27,6 +29,9 @@ import { pascalCase } from "pascal-case";
 class MongoPlugin implements AmplicationPlugin {
   register(): Events {
     return {
+      CreateServer: {
+        before: this.beforeCreateServer,
+      },
       CreateServerDotEnv: {
         before: this.beforeCreateServerDotEnv,
       },
@@ -42,9 +47,28 @@ class MongoPlugin implements AmplicationPlugin {
       },
       CreateServerPackageJson: {
         before: this.beforeCreateServerPackageJson,
-        after: this.afterCreateServerPackageJson
+        after: this.afterCreateServerPackageJson,
       },
     };
+  }
+
+  beforeCreateServer(context: DsgContext, eventParams: CreateServerParams) {
+    const generateErrorMessage =
+      () => `Id type: Auto increment is not supported by Mongo prisma provider. 
+          You can select another id type or change your DB to PostgreSQL/MySQL`;
+
+    context.entities?.forEach(({ fields }) => {
+      const field = fields.find((field) => field.dataType === EnumDataType.Id);
+
+      const { idType } = (field?.properties as types.Id) || "CUID";
+
+      if (idType === "AUTO_INCREMENT") {
+        context.logger.error(generateErrorMessage());
+        throw new Error(generateErrorMessage());
+      }
+    });
+
+    return eventParams;
   }
 
   beforeCreateServerPackageJson(
