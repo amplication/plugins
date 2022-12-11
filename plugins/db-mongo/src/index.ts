@@ -58,7 +58,7 @@ class MongoPlugin implements AmplicationPlugin {
           To use MongoDB, You need to select another ID type for your entities`;
 
     const allAutoIncrementFields = context.entities?.filter((entity) =>
-      entity.fields.filter(
+      entity.fields.find(
         (field) =>
           field.dataType === EnumDataType.Id &&
           (field?.properties as types.Id).idType === "AUTO_INCREMENT"
