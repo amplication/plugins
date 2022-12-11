@@ -57,16 +57,21 @@ class MongoPlugin implements AmplicationPlugin {
       () => `The ID type: "Auto increment" is not supported by MongoDB Prisma provider. 
           To use MongoDB, You need to select another ID type for your entities`;
 
-    context.entities?.forEach(({ fields }) => {
-      const field = fields.find((field) => field.dataType === EnumDataType.Id);
+    const allAutoIncrementFields = context.entities?.filter((entity) =>
+      entity.fields.filter(
+        (field) =>
+          field.dataType === EnumDataType.Id &&
+          (field?.properties as types.Id).idType === "AUTO_INCREMENT"
+      )
+    );
 
-      const { idType } = (field?.properties as types.Id) || "CUID";
-
-      if (idType === "AUTO_INCREMENT") {
-        context.logger.error(generateErrorMessage());
-        context.utils.abortGeneration(generateErrorMessage());
-      }
-    });
+    if (
+      allAutoIncrementFields !== undefined &&
+      allAutoIncrementFields.length > 0
+    ) {
+      context.logger.error(generateErrorMessage());
+      context.utils.abortGeneration(generateErrorMessage());
+    }
 
     return eventParams;
   }
