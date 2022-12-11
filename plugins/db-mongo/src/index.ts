@@ -54,8 +54,8 @@ class MongoPlugin implements AmplicationPlugin {
 
   beforeCreateServer(context: DsgContext, eventParams: CreateServerParams) {
     const generateErrorMessage =
-      () => `Id type: Auto increment is not supported by Mongo prisma provider. 
-          You can select another id type or change your DB to PostgreSQL/MySQL`;
+      () => `The ID type: "Auto increment" is not supported by MongoDB Prisma provider. 
+          To use MongoDB, You need to select another ID type for your entities`;
 
     context.entities?.forEach(({ fields }) => {
       const field = fields.find((field) => field.dataType === EnumDataType.Id);
