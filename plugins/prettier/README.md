@@ -1,6 +1,6 @@
-# @amplication/plugin-prettier
+# @amplication/plugin-formatter-prettier
 
-[![NPM Downloads](https://img.shields.io/npm/dt/@amplication/prettier)](https://www.npmjs.com/package/@amplication/prettier) 
+[![NPM Downloads](https://img.shields.io/npm/dt/@amplication/formatter-prettier)](https://www.npmjs.com/package/@amplication/formatter-prettier) 
 
 The plugin integrates Prettier to the app.
 

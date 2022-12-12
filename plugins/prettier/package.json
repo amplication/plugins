@@ -1,14 +1,14 @@
 {
-  "name": "my-plugin",
+  "name": "@amplication/formatter-prettier",
   "version": "0.0.1",
-  "description": "Description of your plugin",
+  "description": "The plugin that integrates Prettier to the app",
   "main": "dist/index.js",
   "scripts": {
     "dev": "webpack --watch",
     "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Amplication Contributor",
+  "author": "Eugene Tseitlin",
   "license": "Apache-2.0",
   "dependencies": {
     "@amplication/code-gen-types": "^1.1.7",
