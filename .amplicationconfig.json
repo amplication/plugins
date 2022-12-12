@@ -1,12 +1,12 @@
 {
   "dsgImage": {
-    "repository": "public.ecr.aws/r7y2l7b7/dsg",
+    "repository": "amplication/data-service-generator",
     "tag": "latest"
   },
   "plugins": [
     {
-      "id": "db-mongo",
-      "distPath": "./plugins/db-mongo/dist"
+      "id": "prettier",
+      "distPath": "./plugins/prettier/dist"
     }
   ]
 }
