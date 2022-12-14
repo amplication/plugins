@@ -45,7 +45,7 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
               "pg_isready",
               "-q",
               "-d",
-              "${DB_DB_NAME}",
+              "${DB_NAME}",
               "-U",
               "${DB_USER}",
             ],
