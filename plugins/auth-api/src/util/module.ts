@@ -1,6 +1,7 @@
 import { memoize } from "lodash";
 import * as fs from "fs";
 import { namedTypes } from "ast-types";
+import { parse } from "./ast";
 
 export const readCode = memoize((path: string): Promise<string> => {
   return fs.promises.readFile(path, "utf-8");

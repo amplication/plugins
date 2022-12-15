@@ -1,6 +1,6 @@
 import { namedTypes } from "ast-types";
 import * as recast from "recast";
-import { parser } from "recast/parsers/babel";
+import * as parser from "./parser";
 
 export type ParseOptions = Omit<recast.Options, "parser">;
 declare var SyntaxError: SyntaxErrorConstructor;

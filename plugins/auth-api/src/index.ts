@@ -1,5 +1,6 @@
 import {
   AmplicationPlugin,
+  CreateEntityModuleBaseParams,
   CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
   DsgContext,
@@ -7,6 +8,8 @@ import {
 } from "@amplication/code-gen-types";
 import { envVariables } from "./constants";
 import { resolve } from "path";
+import { namedTypes } from "ast-types";
+import { parse } from "./util/ast";
 
 class BasicAuthPlugin implements AmplicationPlugin {
   register(): Events {
@@ -18,10 +21,9 @@ class BasicAuthPlugin implements AmplicationPlugin {
         before: this.beforeCreateServerPackageJson,
         after: this.afterCreateServerPackageJson,
       },
-      // CreateServerAuth: {
-      //   before: this.beforeCreateAuthModules,
-      //   after: this.afterCreateAuthModules,
-      // },
+      CreateEntityModuleBase: {
+        before: this.beforeCreateEntityModuleBase,
+      },
     };
   }
 
@@ -52,26 +54,24 @@ class BasicAuthPlugin implements AmplicationPlugin {
     return staticsFiles;
   }
 
-  // beforeCreateAuthModules(
-  //   context: DsgContext,
-  //   eventParams: CreateServerAuthParams
-  // ) {
-  //   context.utils.skipDefaultBehavior = true;
-  //   return eventParams;
-  // }
+  async beforeCreateEntityModuleBase(
+    context: DsgContext,
+    eventParams: CreateEntityModuleBaseParams
+  ) {
+    const moduleBaseTemplatePath = resolve(
+      __dirname,
+      "../src/module"
+    );
 
-  // async afterCreateAuthModules(
-  //   context: DsgContext,
-  //   eventParams: CreateServerAuthParams
-  // ) {
-  //   const staticPath = resolve(__dirname, "../static");
-  //   const staticsFiles = await context.utils.importStaticModules(
-  //     staticPath,
-  //     context.serverDirectories.srcDirectory
-  //   );
+    const moduleFiles = await context.utils.importStaticModules(
+      moduleBaseTemplatePath,
+      context.serverDirectories.baseDirectory
+    );
 
-  //   return staticsFiles;
-  // }
+    const newTemplate = await parse(moduleFiles[0].code) as namedTypes.File;
+    eventParams.template = newTemplate;
+    return eventParams;
+  }
 }
 
 export default BasicAuthPlugin;
