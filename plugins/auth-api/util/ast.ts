@@ -1,6 +1,8 @@
-import { namedTypes } from "ast-types";
+import { namedTypes, ASTNode } from "ast-types";
 import * as recast from "recast";
 import * as parser from "./parser";
+
+const TS_IGNORE_TEXT = "@ts-ignore";
 
 export type ParseOptions = Omit<recast.Options, "parser">;
 declare var SyntaxError: SyntaxErrorConstructor;
@@ -25,3 +27,14 @@ export class ParseError extends SyntaxError {
       throw error;
     }
   };
+
+  export function removeTSIgnoreComments(ast: ASTNode): void {
+    recast.visit(ast, {
+      visitComment(path) {
+        if (path.value.value.includes(TS_IGNORE_TEXT)) {
+          path.prune();
+        }
+        this.traverse(path);
+      },
+    });
+  }
