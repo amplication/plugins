@@ -1,6 +1,7 @@
 import {
   AmplicationPlugin,
   CreateEntityModuleBaseParams,
+  CreateServerAuthParams,
   CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
   DsgContext,
@@ -9,7 +10,8 @@ import {
 import { envVariables } from "./constants";
 import { resolve } from "path";
 import { namedTypes } from "ast-types";
-import { parse } from "./util/ast";
+import { parse } from "../util/ast";
+import { readFile } from "../util/module";
 
 class BasicAuthPlugin implements AmplicationPlugin {
   register(): Events {
@@ -23,6 +25,9 @@ class BasicAuthPlugin implements AmplicationPlugin {
       },
       CreateEntityModuleBase: {
         before: this.beforeCreateEntityModuleBase,
+      },
+      CreateServerAuth: {
+        before: this.beforeCreateServerAuth,
       },
     };
   }
@@ -58,19 +63,24 @@ class BasicAuthPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateEntityModuleBaseParams
   ) {
-    const moduleBaseTemplatePath = resolve(
+    const entityModuleBaseTemplatePath = resolve(
       __dirname,
-      "../src/module"
+      "../template/entity-module/module.base.template.ts"
     );
+    console.log(entityModuleBaseTemplatePath, "entityModuleBaseTemplatePath");
 
-    const moduleFiles = await context.utils.importStaticModules(
-      moduleBaseTemplatePath,
-      context.serverDirectories.baseDirectory
-    );
-
-    const newTemplate = await parse(moduleFiles[0].code) as namedTypes.File;
-    eventParams.template = newTemplate;
+    eventParams.template = await readFile(entityModuleBaseTemplatePath);
     return eventParams;
+  }
+
+  async beforeCreateServerAuth(
+    context: DsgContext,
+    eventParams: CreateServerAuthParams
+  ) {
+    // 1. create user info
+    // 2. create token payload interface
+    // 3. create token service
+    // 4. create token service test
   }
 }
 
