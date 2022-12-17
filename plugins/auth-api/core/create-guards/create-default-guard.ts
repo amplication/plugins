@@ -22,7 +22,7 @@ export async function createDefaultGuard(
   authPath: string
 ): Promise<Module> {
   const defaultAuthGuardPath = require.resolve(
-    "./defaultAuth.guard.template.ts"
+    "./default-auth-guard.template.ts"
   );
   const modulePath = `${authPath}/defaultAuth.guard.ts`;
 
