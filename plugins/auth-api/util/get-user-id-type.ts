@@ -1,12 +1,14 @@
-import { types } from "@amplication/code-gen-types";
-import DsgContext from "../dsg-context";
-import { EnumDataType } from "../models";
-import { USER_ENTITY_NAME } from "../server/user-entity";
+import {
+  DsgContext,
+  Entity,
+  EntityField,
+  types,
+} from "@amplication/code-gen-types";
 
-export const getUserIdType = () => {
-  const { entities } = DsgContext.getInstance;
-  const userEntity = entities.find(
-    (entity) => entity.name === USER_ENTITY_NAME
+export const getUserIdType = (dsgContext: DsgContext) => {
+  const { entities } = dsgContext;
+  const userEntity = entities?.find(
+    (entity: Entity) => entity.name === "User" // should be fixed and use the context after publishing the new version of code-gen-types
   );
 
   if (!userEntity) {
@@ -14,7 +16,7 @@ export const getUserIdType = () => {
   }
 
   const idField = userEntity.fields.find(
-    (field) => field.dataType === EnumDataType.Id
+    (field: EntityField) => field.dataType === "Id" // should be fixed moving dataTypes to a shared package
   );
   if (!idField) {
     throw new Error("User entity must have an id field");
