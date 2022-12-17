@@ -9,11 +9,16 @@ import {
 } from "@amplication/code-gen-types";
 import { envVariables } from "./constants";
 import { resolve } from "path";
-import { namedTypes } from "ast-types";
-import { parse } from "../util/ast";
-import { readFile } from "../util/module";
+import { readFile } from "@amplication/code-gen-utils";
+import {
+  createUserInfo,
+  createTokenPayloadInterface,
+  createAuthConstants,
+  createTokenService,
+  createTokenServiceTests,
+} from "../core";
 
-class BasicAuthPlugin implements AmplicationPlugin {
+class AuthCorePlugin implements AmplicationPlugin {
   register(): Events {
     return {
       CreateServerDotEnv: {
@@ -27,7 +32,7 @@ class BasicAuthPlugin implements AmplicationPlugin {
         before: this.beforeCreateEntityModuleBase,
       },
       CreateServerAuth: {
-        before: this.beforeCreateServerAuth,
+        after: this.afterCreateServerAuth,
       },
     };
   }
@@ -73,15 +78,25 @@ class BasicAuthPlugin implements AmplicationPlugin {
     return eventParams;
   }
 
-  async beforeCreateServerAuth(
-    context: DsgContext,
-    eventParams: CreateServerAuthParams
-  ) {
+  async afterCreateServerAuth(context: DsgContext) {
     // 1. create user info
+    const userInfo = await createUserInfo(context);
     // 2. create token payload interface
-    // 3. create token service
-    // 4. create token service test
+    const tokenPayloadInterface = await createTokenPayloadInterface(context);
+    // 3. create constants for tests
+    const athConstants = await createAuthConstants(context);
+    // 4. create token service
+    const tokenService = await createTokenService(context);
+    // 5. create token service test
+    const tokenServiceTest = await createTokenServiceTests(context);
+    return [
+      userInfo,
+      tokenPayloadInterface,
+      athConstants,
+      tokenService,
+      tokenServiceTest,
+    ];
   }
 }
 
-export default BasicAuthPlugin;
+export default AuthCorePlugin;
