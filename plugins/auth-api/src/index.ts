@@ -56,10 +56,7 @@ class AuthCorePlugin implements AmplicationPlugin {
 
   async afterCreateServerPackageJson(context: DsgContext) {
     const staticPath = resolve(__dirname, "../static/package-json");
-    const staticsFiles = await context.utils.importStaticModules(
-      staticPath,
-      context.serverDirectories.baseDirectory
-    );
+    const staticsFiles = await this.getStaticFiles(context, staticPath);
 
     return staticsFiles;
   }
@@ -79,6 +76,8 @@ class AuthCorePlugin implements AmplicationPlugin {
   }
 
   async afterCreateServerAuth(context: DsgContext) {
+    const staticPath = resolve(__dirname, "../static/auth");
+    const staticsFiles = await this.getStaticFiles(context, staticPath);
     // 1. create user info
     const userInfo = await createUserInfo(context);
     // 2. create token payload interface
@@ -95,7 +94,17 @@ class AuthCorePlugin implements AmplicationPlugin {
       athConstants,
       tokenService,
       tokenServiceTest,
+      ...staticsFiles,
     ];
+  }
+
+  private async getStaticFiles(context: DsgContext, staticPath: string) {
+    const staticsFiles = await context.utils.importStaticModules(
+      staticPath,
+      context.serverDirectories.baseDirectory
+    );
+
+    return staticsFiles;
   }
 }
 
