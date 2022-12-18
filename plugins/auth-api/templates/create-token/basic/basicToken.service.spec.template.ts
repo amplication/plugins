@@ -1,4 +1,4 @@
-import { TokenServiceBase } from "../../auth/base/token.service.base";
+import { TokenServiceBase } from "/../../auth/base/token.service.base";
 import {
   INVALID_USERNAME_ERROR,
   INVALID_PASSWORD_ERROR,

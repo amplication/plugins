@@ -1,15 +1,15 @@
 import { builders } from "ast-types";
 import { print } from "recast";
-import { EnumAuthProviderType } from "../../types";
+import { EnumAuthProviderType } from "../types";
 import { Module } from "@amplication/code-gen-types";
 import {
   addImports,
   importNames,
   interpolate,
   removeTSClassDeclares,
-} from "../../util/ast";
+} from "../util/ast";
 import { readFile } from "@amplication/code-gen-utils";
-import { relativeImportPath } from "../../util/module";
+import { relativeImportPath } from "../util/module";
 
 type AuthGuardMetaData = {
   path: string;

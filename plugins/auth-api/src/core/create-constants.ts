@@ -1,11 +1,11 @@
 import { types, Module, DsgContext } from "@amplication/code-gen-types";
 import { readFile } from "@amplication/code-gen-utils";
-import { interpolate, removeTSClassDeclares } from "../../util/ast";
+import { interpolate, removeTSClassDeclares } from "../util/ast";
 import { builders } from "ast-types";
 import { print } from "recast";
-import { getUserIdType } from "../../util/get-user-id-type";
+import { getUserIdType } from "../util/get-user-id-type";
 
-const templatePath = require.resolve("./create-constants.template.ts");
+const templatePath = require.resolve("../../templates/create-constants.template.ts");
 
 export async function createAuthConstants(
   dsgContext: DsgContext

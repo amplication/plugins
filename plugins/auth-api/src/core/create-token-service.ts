@@ -1,22 +1,28 @@
 import { print } from "recast";
-import { EnumAuthProviderType } from "../../types";
 import { DsgContext, Module } from "@amplication/code-gen-types";
+import { removeTSIgnoreComments } from "../../src/util/ast";
 import { readFile } from "@amplication/code-gen-utils";
+import { EnumAuthProviderType } from "../../src/types";
 
-export async function createTokenServiceTests(
+export async function createTokenService(
   dsgContext: DsgContext
 ): Promise<Module> {
   const { serverDirectories, resourceInfo } = dsgContext;
-  const authTestsDir = `${serverDirectories.srcDirectory}/tests/auth`;
   const authProvider: EnumAuthProviderType =
     resourceInfo?.settings.authProvider || EnumAuthProviderType.Jwt;
+  const authDir = `${serverDirectories.srcDirectory}/auth`;
   const name =
     authProvider === EnumAuthProviderType.Http ? "Basic" : authProvider;
   const templatePath = require.resolve(
-    `./${name.toLowerCase()}Token.service.spec.template.ts`
+    `../../templates/create-token/${name.toLowerCase()}/${name.toLowerCase()}Token.service.template.ts`
   );
   const file = await readFile(templatePath);
-  const filePath = `${authTestsDir}/token.service.spec.ts`;
+  const filePath = `${authDir}/base/token.service.base.ts`;
+
+  removeTSIgnoreComments(file);
 
   return { code: print(file).code, path: filePath };
 }
+
+
+

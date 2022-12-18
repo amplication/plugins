@@ -1,7 +1,6 @@
 import {
   AmplicationPlugin,
   CreateEntityModuleBaseParams,
-  CreateServerAuthParams,
   CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
   DsgContext,
@@ -16,7 +15,7 @@ import {
   createAuthConstants,
   createTokenService,
   createTokenServiceTests,
-} from "../core";
+} from "./core";
 
 class AuthCorePlugin implements AmplicationPlugin {
   register(): Events {
@@ -28,11 +27,11 @@ class AuthCorePlugin implements AmplicationPlugin {
         before: this.beforeCreateServerPackageJson,
         after: this.afterCreateServerPackageJson,
       },
-      CreateEntityModuleBase: {
-        before: this.beforeCreateEntityModuleBase,
-      },
       CreateServerAuth: {
         after: this.afterCreateServerAuth,
+      },
+      CreateEntityModuleBase: {
+        before: this.beforeCreateEntityModuleBase,
       },
     };
   }
@@ -56,28 +55,22 @@ class AuthCorePlugin implements AmplicationPlugin {
 
   async afterCreateServerPackageJson(context: DsgContext) {
     const staticPath = resolve(__dirname, "../static/package-json");
-    const staticsFiles = await this.getStaticFiles(context, staticPath);
+    const staticsFiles = await AuthCorePlugin.getStaticFiles(
+      context,
+      context.serverDirectories.baseDirectory,
+      staticPath
+    );
 
     return staticsFiles;
   }
 
-  async beforeCreateEntityModuleBase(
-    context: DsgContext,
-    eventParams: CreateEntityModuleBaseParams
-  ) {
-    const entityModuleBaseTemplatePath = resolve(
-      __dirname,
-      "../template/entity-module/module.base.template.ts"
-    );
-    console.log(entityModuleBaseTemplatePath, "entityModuleBaseTemplatePath");
-
-    eventParams.template = await readFile(entityModuleBaseTemplatePath);
-    return eventParams;
-  }
-
   async afterCreateServerAuth(context: DsgContext) {
     const staticPath = resolve(__dirname, "../static/auth");
-    const staticsFiles = await this.getStaticFiles(context, staticPath);
+    const staticsFiles = await AuthCorePlugin.getStaticFiles(
+      context,
+      context.serverDirectories.authDirectory,
+      staticPath
+    );
     // 1. create user info
     const userInfo = await createUserInfo(context);
     // 2. create token payload interface
@@ -98,10 +91,27 @@ class AuthCorePlugin implements AmplicationPlugin {
     ];
   }
 
-  private async getStaticFiles(context: DsgContext, staticPath: string) {
+  async beforeCreateEntityModuleBase(
+    context: DsgContext,
+    eventParams: CreateEntityModuleBaseParams
+  ) {
+    const entityModuleBaseTemplatePath = resolve(
+      __dirname,
+      "../templates/module.base.template.ts"
+    );
+
+    eventParams.template = await readFile(entityModuleBaseTemplatePath);
+    return eventParams;
+  }
+
+  private static async getStaticFiles(
+    context: DsgContext,
+    basePath: string,
+    staticPath: string
+  ) {
     const staticsFiles = await context.utils.importStaticModules(
       staticPath,
-      context.serverDirectories.baseDirectory
+      basePath
     );
 
     return staticsFiles;

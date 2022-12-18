@@ -1,15 +1,15 @@
 import { types, Module, DsgContext } from "@amplication/code-gen-types";
 import { readFile } from "@amplication/code-gen-utils";
-import { interpolate, removeTSClassDeclares } from "../../util/ast";
+import { interpolate, removeTSClassDeclares } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
 import { print } from "recast";
-import { getUserIdType } from "../../util/get-user-id-type";
+import { getUserIdType } from "../util/get-user-id-type";
 
-const templatePath = require.resolve("./token-payload-interface.template.ts");
+const templatePath = require.resolve("../../templates/create-token/token-payload-interface.template.ts");
 
 export async function createTokenPayloadInterface(dsgContext: DsgContext): Promise<Module> {
   const { serverDirectories } = dsgContext;
-  const authDir = `${serverDirectories.srcDirectory}/auth`;
+  const authDir = `${serverDirectories.authDirectory}`;
   const template = await readFile(templatePath);
   const idType = getUserIdType(dsgContext);
   const templateMapping = prepareTemplateMapping(idType);
