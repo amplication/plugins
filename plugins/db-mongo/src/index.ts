@@ -158,7 +158,9 @@ class MongoPlugin implements AmplicationPlugin {
           entityField.properties?.allowMultipleSelection
       );
 
-      if (hasManyToManyRelation) {
+      const isSelfRelation = relatedEntity.name === entity.name;
+
+      if (hasManyToManyRelation || isSelfRelation) {
         const hasAnotherRelation = entity.fields.some(
           (entityField) =>
             entityField.id !== field.id &&
@@ -166,11 +168,9 @@ class MongoPlugin implements AmplicationPlugin {
             entityField.properties.relatedEntity.name === relatedEntity.name
         );
 
-        const isSelfRelation = relatedEntity.name === entity.name;
-
         const relationName = !hasAnotherRelation
           ? null
-          : this.createRelationName(
+          : MongoPlugin.createRelationName(
               entity,
               field,
               relatedEntity,
@@ -179,13 +179,27 @@ class MongoPlugin implements AmplicationPlugin {
               fieldNamesCount ? fieldNamesCount[relatedField.name] === 1 : false
             );
 
-        const scalarRelationFieldName = `${name}Ids`;
+        if (allowMultipleSelection && isSelfRelation) {
+          return [
+            PrismaSchemaDSL.createObjectField(
+              name,
+              relatedEntity.name,
+              !isOneToOneWithoutForeignKey,
+              allowMultipleSelection || false,
+              relationName
+            ),
+          ];
+        }
+
+        const scalarRelationFieldName = allowMultipleSelection
+          ? `${name}Ids`
+          : `${name}Id`;
         return [
           PrismaSchemaDSL.createObjectField(
             name,
             relatedEntity.name,
-            true,
-            true || field.required,
+            allowMultipleSelection,
+            allowMultipleSelection,
             relationName,
             [scalarRelationFieldName],
             ["id"],
@@ -200,8 +214,8 @@ class MongoPlugin implements AmplicationPlugin {
           PrismaSchemaDSL.createScalarField(
             scalarRelationFieldName,
             ScalarType.String,
-            true,
-            true,
+            allowMultipleSelection,
+            allowMultipleSelection,
             !field.properties.allowMultipleSelection &&
               !relatedField?.properties.allowMultipleSelection &&
               !isOneToOneWithoutForeignKey
@@ -224,7 +238,7 @@ class MongoPlugin implements AmplicationPlugin {
     };
   }
 
-  private createRelationName(
+  private static createRelationName(
     entity: Entity,
     field: EntityField,
     relatedEntity: Entity,
