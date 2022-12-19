@@ -8,7 +8,6 @@ import {
 } from "@amplication/code-gen-types";
 import { envVariables } from "./constants";
 import { resolve } from "path";
-import { readFile } from "@amplication/code-gen-utils";
 import {
   createUserInfo,
   createTokenPayloadInterface,
@@ -16,6 +15,8 @@ import {
   createTokenService,
   createTokenServiceTests,
 } from "./core";
+import { addImports, importNames, interpolate } from "./util/ast";
+import { builders, namedTypes } from "ast-types";
 
 class AuthCorePlugin implements AmplicationPlugin {
   register(): Events {
@@ -95,12 +96,19 @@ class AuthCorePlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateEntityModuleBaseParams
   ) {
-    const entityModuleBaseTemplatePath = resolve(
-      __dirname,
-      "../templates/module.base.template.ts"
-    );
+    const aclModuleId = builders.identifier("ACLModule");
+    const checkAclModule = importNames([aclModuleId], "../../auth/acl.module");
 
-    eventParams.template = await readFile(entityModuleBaseTemplatePath);
+    interpolate(eventParams.template, {
+      ACL_MODULE: aclModuleId,
+    });
+
+    addImports(
+      eventParams.template,
+      [checkAclModule].filter(
+        (x) => x //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[]
+    );
     return eventParams;
   }
 
