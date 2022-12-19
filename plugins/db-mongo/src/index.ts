@@ -179,7 +179,12 @@ class MongoPlugin implements AmplicationPlugin {
               fieldNamesCount ? fieldNamesCount[relatedField.name] === 1 : false
             );
 
-        if (allowMultipleSelection && isSelfRelation) {
+        if (
+          (allowMultipleSelection &&
+            isSelfRelation &&
+            !hasManyToManyRelation) ||
+          isOneToOneWithoutForeignKey
+        ) {
           return [
             PrismaSchemaDSL.createObjectField(
               name,
@@ -203,10 +208,10 @@ class MongoPlugin implements AmplicationPlugin {
             relationName,
             [scalarRelationFieldName],
             ["id"],
-            isSelfRelation
+            isSelfRelation && !hasManyToManyRelation
               ? ReferentialActions.NoAction
               : ReferentialActions.NONE,
-            isSelfRelation
+            isSelfRelation && !hasManyToManyRelation
               ? ReferentialActions.NoAction
               : ReferentialActions.NONE
           ),
