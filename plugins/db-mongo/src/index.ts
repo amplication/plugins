@@ -196,6 +196,16 @@ class MongoPlugin implements AmplicationPlugin {
           ];
         }
 
+        const onDelete =
+          isSelfRelation && !hasManyToManyRelation
+            ? ReferentialActions.NoAction
+            : ReferentialActions.NONE;
+
+        const onUpdate =
+          isSelfRelation && !hasManyToManyRelation
+            ? ReferentialActions.NoAction
+            : ReferentialActions.NONE;
+
         const scalarRelationFieldName = allowMultipleSelection
           ? `${name}Ids`
           : `${name}Id`;
@@ -208,12 +218,8 @@ class MongoPlugin implements AmplicationPlugin {
             relationName,
             [scalarRelationFieldName],
             ["id"],
-            isSelfRelation && !hasManyToManyRelation
-              ? ReferentialActions.NoAction
-              : ReferentialActions.NONE,
-            isSelfRelation && !hasManyToManyRelation
-              ? ReferentialActions.NoAction
-              : ReferentialActions.NONE
+            onDelete,
+            onUpdate
           ),
           // Prisma Scalar Relation Field
           PrismaSchemaDSL.createScalarField(
