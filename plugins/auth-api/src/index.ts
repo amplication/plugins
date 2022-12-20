@@ -1,5 +1,6 @@
 import {
   AmplicationPlugin,
+  CreateEntityControllerBaseParams,
   CreateEntityModuleBaseParams,
   CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
@@ -33,6 +34,9 @@ class AuthCorePlugin implements AmplicationPlugin {
       },
       CreateEntityModuleBase: {
         before: this.beforeCreateEntityModuleBase,
+      },
+      CreateEntityControllerBase: {
+        before: this.beforeCreateControllerBaseModule,
       },
     };
   }
@@ -97,15 +101,43 @@ class AuthCorePlugin implements AmplicationPlugin {
     eventParams: CreateEntityModuleBaseParams
   ) {
     const aclModuleId = builders.identifier("ACLModule");
-    const checkAclModule = importNames([aclModuleId], "../../auth/acl.module");
+    const authModuleId = builders.identifier("AuthModule");
+    const forwardRefId = builders.identifier("forwardRef");
+    const forwardRefArrowFunction = builders.arrowFunctionExpression(
+      [],
+      authModuleId
+    );
 
-    interpolate(eventParams.template, {
-      ACL_MODULE: aclModuleId,
-    });
+    const forwardAuthId = builders.callExpression(forwardRefId, [
+      forwardRefArrowFunction,
+    ]);
+
+    const aclModuleImport = importNames([aclModuleId], "../../auth/acl.module");
+    const authModuleImport = importNames(
+      [authModuleId],
+      "../../auth/auth.module"
+    );
+    const forwardRefImport = importNames([forwardRefId], "@nestjs/common");
+
+    const importArray = builders.arrayExpression([
+      aclModuleId,
+      authModuleId,
+      forwardAuthId,
+      ...eventParams.templateMapping["IMPORTS_ARRAY"].elements,
+    ]);
+
+    const exportArray = builders.arrayExpression([
+      aclModuleId,
+      authModuleId,
+      ...eventParams.templateMapping["EXPORT_ARRAY"].elements,
+    ]);
+
+    eventParams.templateMapping["IMPORTS_ARRAY"] = importArray;
+    eventParams.templateMapping["EXPORT_ARRAY"] = exportArray;
 
     addImports(
       eventParams.template,
-      [checkAclModule].filter(
+      [aclModuleImport, authModuleImport, forwardRefImport].filter(
         (x) => x //remove nulls and undefined
       ) as namedTypes.ImportDeclaration[]
     );
@@ -123,6 +155,33 @@ class AuthCorePlugin implements AmplicationPlugin {
     );
 
     return staticsFiles;
+  }
+
+  beforeCreateControllerBaseModule(
+    context: DsgContext,
+    eventParams: CreateEntityControllerBaseParams
+  ) {
+    const nestAccessControlId = builders.identifier("nestAccessControl");
+    const forwardRefId = builders.identifier("forwardRef");
+
+    const nestAccessControlImport = importNames(
+      [nestAccessControlId],
+      "nest-access-control"
+    );
+
+    const defaultAuthGuardId = builders.identifier("defaultAuthGuard");
+    const defaultAuthGuardImport = importNames(
+      [defaultAuthGuardId],
+      "../../auth/defaultAuth.guard"
+    );
+
+    addImports(
+      eventParams.template,
+      [nestAccessControlImport, defaultAuthGuardImport].filter(
+        (x) => x //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[]
+    );
+    return eventParams;
   }
 }
 
