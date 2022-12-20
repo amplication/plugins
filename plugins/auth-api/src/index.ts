@@ -162,8 +162,7 @@ class AuthCorePlugin implements AmplicationPlugin {
     eventParams: CreateEntityControllerBaseParams
   ) {
     const nestAccessControlId = builders.identifier("nestAccessControl");
-    const forwardRefId = builders.identifier("forwardRef");
-
+    
     const nestAccessControlImport = importNames(
       [nestAccessControlId],
       "nest-access-control"
