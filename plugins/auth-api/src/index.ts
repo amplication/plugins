@@ -81,11 +81,23 @@ class AuthCorePlugin implements AmplicationPlugin {
 
   async afterCreateServerAuth(context: DsgContext) {
     const staticPath = resolve(__dirname, "../static/auth");
+    const interceptorsStaticPath = resolve(__dirname, "../static/interceptors");
+    const staticsInterceptorsFiles = await AuthCorePlugin.getStaticFiles(
+      context,
+      `${context.serverDirectories.srcDirectory}/interceptors`,
+      interceptorsStaticPath
+    );
+
     const staticsFiles = await AuthCorePlugin.getStaticFiles(
       context,
       context.serverDirectories.authDirectory,
       staticPath
     );
+
+    staticsInterceptorsFiles.forEach((file) => {
+      staticsFiles.push(file);
+    });
+
     // 1. create user info
     const userInfo = await createUserInfo(context);
     // 2. create token payload interface
@@ -214,6 +226,7 @@ class AuthCorePlugin implements AmplicationPlugin {
           setAuthPermissions(classDeclaration, methodId, action, entity.name);
         }
       );
+      console.log({ templateMapping });
 
       entity.fields.forEach((field) => {
         const relatedEntity = field.properties?.relatedEntity;
@@ -222,9 +235,10 @@ class AuthCorePlugin implements AmplicationPlugin {
             templateMapping,
             entity,
             relatedEntity
-          ).forEach(({ methodId, action, entity }) => {
-            setAuthPermissions(classDeclaration, methodId, action, entity.name);
-          });
+          );
+          // ).forEach(({ methodId, action, entity }) => {
+          //   setAuthPermissions(classDeclaration, methodId, action, entity.name);
+          // });
         }
       });
     }
