@@ -171,12 +171,15 @@ class AuthCorePlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateEntityControllerBaseParams
   ) {
-    const { templateMapping, entity } = eventParams;
+    const { templateMapping, entity, template, controllerBaseId } = eventParams;
+
+    interpolate(template, templateMapping);
 
     const classDeclaration = getClassDeclarationById(
-      eventParams.template,
-      eventParams.controllerBaseId
+      template,
+      controllerBaseId
     );
+
     const nestAccessControlId = builders.identifier("nestAccessControl");
 
     const nestAccessControlImport = importNames(
@@ -205,23 +208,26 @@ class AuthCorePlugin implements AmplicationPlugin {
         (x) => x //remove nulls and undefined
       ) as namedTypes.ImportDeclaration[]
     );
+    if (classDeclaration) {
+      controllerMethodsIdsActionPairs(templateMapping, entity).forEach(
+        ({ methodId, action, entity }) => {
+          setAuthPermissions(classDeclaration, methodId, action, entity.name);
+        }
+      );
 
-    controllerMethodsIdsActionPairs(templateMapping, entity).forEach(
-      ({ methodId, action, entity }) => {
-        setAuthPermissions(classDeclaration, methodId, action, entity.name);
-      }
-    );
-
-    entity.fields.forEach((field) => {
-      const relatedEntity = field.properties?.relatedEntity;
-      controllerToManyMethodsIdsActionPairs(
-        templateMapping,
-        entity,
-        relatedEntity
-      ).forEach(({ methodId, action, entity }) => {
-        setAuthPermissions(classDeclaration, methodId, action, entity.name);
+      entity.fields.forEach((field) => {
+        const relatedEntity = field.properties?.relatedEntity;
+        if (relatedEntity) {
+          controllerToManyMethodsIdsActionPairs(
+            templateMapping,
+            entity,
+            relatedEntity
+          ).forEach(({ methodId, action, entity }) => {
+            setAuthPermissions(classDeclaration, methodId, action, entity.name);
+          });
+        }
       });
-    });
+    }
 
     return eventParams;
   }
