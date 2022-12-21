@@ -23,12 +23,12 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
       services: {
         server: {
           environment: {
-            DB_URL: "postgres://${DB_USER}:${DB_PASSWORD}@db:5432",
+            DB_URL: "postgres://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}",
           },
         },
         migrate: {
           environment: {
-            DB_URL: "postgres://${DB_USER}:${DB_PASSWORD}@db:5432",
+            DB_URL: "postgres://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}",
           },
         },
         db: {
