@@ -16,8 +16,18 @@ import {
   createTokenService,
   createTokenServiceTests,
 } from "./core";
-import { addImports, importNames, interpolate } from "./util/ast";
+import {
+  addImports,
+  getClassDeclarationById,
+  importNames,
+  interpolate,
+} from "./util/ast";
 import { builders, namedTypes } from "ast-types";
+import { setAuthPermissions } from "./util/set-endpoint-permissions";
+import {
+  controllerMethodsIdsActionPairs,
+  controllerToManyMethodsIdsActionPairs,
+} from "./core/create-method-id-action-entity-map";
 
 class AuthCorePlugin implements AmplicationPlugin {
   register(): Events {
@@ -161,8 +171,14 @@ class AuthCorePlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateEntityControllerBaseParams
   ) {
+    const { templateMapping, entity } = eventParams;
+
+    const classDeclaration = getClassDeclarationById(
+      eventParams.template,
+      eventParams.controllerBaseId
+    );
     const nestAccessControlId = builders.identifier("nestAccessControl");
-    
+
     const nestAccessControlImport = importNames(
       [nestAccessControlId],
       "nest-access-control"
@@ -180,6 +196,24 @@ class AuthCorePlugin implements AmplicationPlugin {
         (x) => x //remove nulls and undefined
       ) as namedTypes.ImportDeclaration[]
     );
+
+    controllerMethodsIdsActionPairs(templateMapping, entity).forEach(
+      ({ methodId, action, entity }) => {
+        setAuthPermissions(classDeclaration, methodId, action, entity.name);
+      }
+    );
+
+    entity.fields.forEach((field) => {
+      const relatedEntity = field.properties?.relatedEntity;
+      controllerToManyMethodsIdsActionPairs(
+        templateMapping,
+        entity,
+        relatedEntity
+      ).forEach(({ methodId, action, entity }) => {
+        setAuthPermissions(classDeclaration, methodId, action, entity.name);
+      });
+    });
+
     return eventParams;
   }
 }
