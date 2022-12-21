@@ -24,7 +24,10 @@ export function setAuthPermissions(
   entityName: string
 ): void {
   const classMethod = getClassMethodById(classDeclaration, methodId);
-  assert(classMethod);
+
+  if(!classMethod){
+    return;
+  }
 
   if (action === EnumEntityAction.Search || action === EnumEntityAction.View) {
     const filterResponseInterceptor = buildNessJsInterceptorDecorator(

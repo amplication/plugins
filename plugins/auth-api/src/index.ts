@@ -28,7 +28,9 @@ import {
   controllerMethodsIdsActionPairs,
   controllerToManyMethodsIdsActionPairs,
 } from "./core/create-method-id-action-entity-map";
+import { camelCase } from "lodash";
 
+const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 class AuthCorePlugin implements AmplicationPlugin {
   register(): Events {
     return {
@@ -183,7 +185,13 @@ class AuthCorePlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateEntityControllerBaseParams
   ) {
-    const { templateMapping, entity, template, controllerBaseId } = eventParams;
+    const {
+      templateMapping,
+      entity,
+      template,
+      controllerBaseId,
+      toManyTemplate,
+    } = eventParams;
 
     interpolate(template, templateMapping);
 
@@ -226,19 +234,38 @@ class AuthCorePlugin implements AmplicationPlugin {
           setAuthPermissions(classDeclaration, methodId, action, entity.name);
         }
       );
-      console.log({ templateMapping });
 
       entity.fields.forEach((field) => {
         const relatedEntity = field.properties?.relatedEntity;
         if (relatedEntity) {
+          const toManyMapping = {
+            FIND_MANY: builders.identifier(camelCase(`findMany ${field.name}`)),
+            CONNECT: builders.identifier(camelCase(`connect ${field.name}`)),
+            DISCONNECT: builders.identifier(
+              camelCase(`disconnect ${field.name}`)
+            ),
+            UPDATE: builders.identifier(camelCase(`update ${field.name}`)),
+          };
+
+          interpolate(toManyTemplate, toManyMapping);
+
+          const toManyClassDeclaration = getClassDeclarationById(
+            toManyTemplate,
+            TO_MANY_MIXIN_ID
+          );
+
           controllerToManyMethodsIdsActionPairs(
-            templateMapping,
+            toManyMapping,
             entity,
             relatedEntity
-          );
-          // ).forEach(({ methodId, action, entity }) => {
-          //   setAuthPermissions(classDeclaration, methodId, action, entity.name);
-          // });
+          ).forEach(({ methodId, action, entity }) => {
+            setAuthPermissions(
+              toManyClassDeclaration,
+              methodId,
+              action,
+              entity.name
+            );
+          });
         }
       });
     }
