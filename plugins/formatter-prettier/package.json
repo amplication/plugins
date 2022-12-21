@@ -1,5 +1,5 @@
 {
-  "name": "@amplication/formatter-prettier",
+  "name": "@amplication/plugin-formatter-prettier",
   "version": "0.0.1",
   "description": "The plugin that integrates Prettier to the app",
   "main": "dist/index.js",
