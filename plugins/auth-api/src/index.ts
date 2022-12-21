@@ -162,17 +162,26 @@ class AuthCorePlugin implements AmplicationPlugin {
     eventParams: CreateEntityControllerBaseParams
   ) {
     const nestAccessControlId = builders.identifier("nestAccessControl");
-    
+
     const nestAccessControlImport = importNames(
       [nestAccessControlId],
       "nest-access-control"
     );
 
     const defaultAuthGuardId = builders.identifier("defaultAuthGuard");
+
     const defaultAuthGuardImport = importNames(
       [defaultAuthGuardId],
       "../../auth/defaultAuth.guard"
     );
+
+    const ignoreComment = builders.commentLine("// @ts-ignore", false);
+
+    if (!defaultAuthGuardImport.comments) {
+      defaultAuthGuardImport.comments = [];
+    }
+
+    defaultAuthGuardImport.comments.push(ignoreComment);
 
     addImports(
       eventParams.template,
