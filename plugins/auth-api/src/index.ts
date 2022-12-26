@@ -188,7 +188,12 @@ class AuthCorePlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateEntityControllerBaseParams
   ) {
-    const { templateMapping, entity, template, controllerBaseId } = eventParams;
+    const {
+      templateMapping,
+      entity,
+      template,
+      controllerBaseId,
+    } = eventParams;
 
     interpolate(template, templateMapping);
 
@@ -240,12 +245,9 @@ class AuthCorePlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateEntityControllerToManyRelationMethodsParams
   ) {
-    console.log("eventParams.toManyFile",eventParams.toManyFile); 
-
     const relatedEntity = eventParams.field.properties?.relatedEntity;
 
     interpolate(eventParams.toManyFile, eventParams.toManyMapping);
-    console.log("eventParams.toManyFile",eventParams.toManyFile); 
 
     const toManyClassDeclaration = getClassDeclarationById(
       eventParams.toManyFile,
