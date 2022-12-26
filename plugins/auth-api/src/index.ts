@@ -1,6 +1,7 @@
 import {
   AmplicationPlugin,
   CreateEntityControllerBaseParams,
+  CreateEntityControllerToManyRelationMethodsParams,
   CreateEntityModuleBaseParams,
   CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
@@ -29,6 +30,7 @@ import {
   controllerToManyMethodsIdsActionPairs,
 } from "./core/create-method-id-action-entity-map";
 
+const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 class AuthCorePlugin implements AmplicationPlugin {
   register(): Events {
     return {
@@ -47,6 +49,9 @@ class AuthCorePlugin implements AmplicationPlugin {
       },
       CreateEntityControllerBase: {
         before: this.beforeCreateControllerBaseModule,
+      },
+      CreateEntityControllerToManyRelationMethods: {
+        before: this.beforeCreateEntityControllerToManyRelationMethods,
       },
     };
   }
@@ -226,22 +231,34 @@ class AuthCorePlugin implements AmplicationPlugin {
           setAuthPermissions(classDeclaration, methodId, action, entity.name);
         }
       );
-      console.log({ templateMapping });
-
-      entity.fields.forEach((field) => {
-        const relatedEntity = field.properties?.relatedEntity;
-        if (relatedEntity) {
-          controllerToManyMethodsIdsActionPairs(
-            templateMapping,
-            entity,
-            relatedEntity
-          );
-          // ).forEach(({ methodId, action, entity }) => {
-          //   setAuthPermissions(classDeclaration, methodId, action, entity.name);
-          // });
-        }
-      });
     }
+
+    return eventParams;
+  }
+
+  beforeCreateEntityControllerToManyRelationMethods(
+    context: DsgContext,
+    eventParams: CreateEntityControllerToManyRelationMethodsParams
+  ) {
+    console.log("eventParams.toManyFile",eventParams.toManyFile); 
+
+    const relatedEntity = eventParams.field.properties?.relatedEntity;
+
+    interpolate(eventParams.toManyFile, eventParams.toManyMapping);
+    console.log("eventParams.toManyFile",eventParams.toManyFile); 
+
+    const toManyClassDeclaration = getClassDeclarationById(
+      eventParams.toManyFile,
+      TO_MANY_MIXIN_ID
+    );
+
+    controllerToManyMethodsIdsActionPairs(
+      eventParams.toManyMapping,
+      eventParams.entity,
+      relatedEntity
+    ).forEach(({ methodId, action, entity }) => {
+      setAuthPermissions(toManyClassDeclaration, methodId, action, entity.name);
+    });
 
     return eventParams;
   }
