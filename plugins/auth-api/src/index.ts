@@ -3,9 +3,12 @@ import {
   CreateEntityControllerBaseParams,
   CreateEntityControllerToManyRelationMethodsParams,
   CreateEntityModuleBaseParams,
+  CreateEntityResolverBaseParams,
+  CreateEntityResolverToManyRelationMethodsParams,
   CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
   DsgContext,
+  EnumEntityAction,
   Events,
 } from "@amplication/code-gen-types";
 import { envVariables } from "./constants";
@@ -28,7 +31,9 @@ import { setAuthPermissions } from "./util/set-endpoint-permissions";
 import {
   controllerMethodsIdsActionPairs,
   controllerToManyMethodsIdsActionPairs,
+  resolverMethodsIdsActionPairs,
 } from "./core/create-method-id-action-entity-map";
+import { BUILDER_KEYS } from "@babel/types";
 
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 class AuthCorePlugin implements AmplicationPlugin {
@@ -52,6 +57,12 @@ class AuthCorePlugin implements AmplicationPlugin {
       },
       CreateEntityControllerToManyRelationMethods: {
         before: this.beforeCreateEntityControllerToManyRelationMethods,
+      },
+      CreateEntityResolverBase: {
+        before: this.beforeCreateResolverBaseModule,
+      },
+      CreateEntityResolverToManyRelationMethods: {
+        before: this.beforeCreateEntityResolverToManyRelationMethods,
       },
     };
   }
@@ -188,12 +199,7 @@ class AuthCorePlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateEntityControllerBaseParams
   ) {
-    const {
-      templateMapping,
-      entity,
-      template,
-      controllerBaseId,
-    } = eventParams;
+    const { templateMapping, entity, template, controllerBaseId } = eventParams;
 
     interpolate(template, templateMapping);
 
@@ -261,6 +267,101 @@ class AuthCorePlugin implements AmplicationPlugin {
     ).forEach(({ methodId, action, entity }) => {
       setAuthPermissions(toManyClassDeclaration, methodId, action, entity.name);
     });
+
+    return eventParams;
+  }
+
+  beforeCreateEntityResolverToManyRelationMethods(
+    context: DsgContext,
+    eventParams: CreateEntityResolverToManyRelationMethodsParams
+  ) {
+    const relatedEntity = eventParams.field.properties?.relatedEntity;
+
+    interpolate(eventParams.toManyFile, eventParams.toManyMapping);
+
+    const toManyClassDeclaration = getClassDeclarationById(
+      eventParams.toManyFile,
+      TO_MANY_MIXIN_ID
+    );
+
+    setAuthPermissions(
+      toManyClassDeclaration,
+      eventParams.toManyMapping["FIND_MANY"] as namedTypes.Identifier,
+      EnumEntityAction.Search,
+      relatedEntity.name
+    );
+
+    return eventParams;
+  }
+
+  beforeCreateResolverBaseModule(
+    context: DsgContext,
+    eventParams: CreateEntityResolverBaseParams
+  ) {
+    const { templateMapping, entity, template, resolverBaseId } = eventParams;
+
+    interpolate(template, templateMapping);
+
+    const classDeclaration = getClassDeclarationById(template, resolverBaseId);
+
+    const nestAccessControlImport = builders.importDeclaration(
+      [builders.importNamespaceSpecifier(builders.identifier("nestAccessControl"))],
+      builders.stringLiteral("nest-access-control")
+    );
+    
+    const gqlACGuardImport = builders.importDeclaration(
+      [builders.importNamespaceSpecifier(builders.identifier("gqlACGuard"))],
+      builders.stringLiteral("../../auth/gqlAC.guard")
+    );
+
+    const gqlDefaultAuthGuardId = builders.identifier("GqlDefaultAuthGuard");
+    const gqlDefaultAuthGuardImport = importNames(
+      [gqlDefaultAuthGuardId],
+      "../../auth/gqlDefaultAuth.guard"
+    );
+
+    const swaggerImport = builders.importDeclaration(
+      [builders.importNamespaceSpecifier(builders.identifier("swagger"))],
+      builders.stringLiteral("@nestjs/swagger")
+    );
+
+
+    const commonImport = builders.importDeclaration(
+      [builders.importNamespaceSpecifier(builders.identifier("common"))],
+      builders.stringLiteral("@nestjs/common")
+    );
+
+
+    gqlDefaultAuthGuardImport.specifiers;
+    namedTypes.ImportNamespaceSpecifier;
+
+    const ignoreComment = builders.commentLine("// @ts-ignore", false);
+
+    if (!gqlACGuardImport.comments) {
+      gqlACGuardImport.comments = [];
+    }
+
+    gqlACGuardImport.comments.push(ignoreComment);
+
+    addImports(
+      eventParams.template,
+      [
+        nestAccessControlImport,
+        gqlACGuardImport,
+        gqlDefaultAuthGuardImport,
+        commonImport,
+        swaggerImport
+      ].filter(
+        (x) => x //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[]
+    );
+    if (classDeclaration) {
+      resolverMethodsIdsActionPairs(templateMapping, entity).forEach(
+        ({ methodId, action, entity }) => {
+          setAuthPermissions(classDeclaration, methodId, action, entity.name);
+        }
+      );
+    }
 
     return eventParams;
   }
