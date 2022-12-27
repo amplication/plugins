@@ -20,6 +20,7 @@ import {
   createAuthConstants,
   createTokenService,
   createTokenServiceTests,
+  createGrantsModule,
 } from "./core";
 import {
   addImports,
@@ -34,7 +35,6 @@ import {
   controllerToManyMethodsIdsActionPairs,
   resolverMethodsIdsActionPairs,
 } from "./core/create-method-id-action-entity-map";
-import { BUILDER_KEYS } from "@babel/types";
 
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 class AuthCorePlugin implements AmplicationPlugin {
@@ -128,14 +128,32 @@ class AuthCorePlugin implements AmplicationPlugin {
     const tokenService = await createTokenService(context);
     // 5. create token service test
     const tokenServiceTest = await createTokenServiceTests(context);
-    return [
-      userInfo,
-      tokenPayloadInterface,
-      athConstants,
-      tokenService,
-      tokenServiceTest,
-      ...staticsFiles,
-    ];
+    // 6. create grants
+    const grants = createGrantsModule(
+      context.serverDirectories.srcDirectory,
+      context.entities,
+      context.roles
+    );
+
+    const results = grants
+      ? [
+          userInfo,
+          tokenPayloadInterface,
+          athConstants,
+          tokenService,
+          tokenServiceTest,
+          ...staticsFiles,
+          grants,
+        ]
+      : [
+          userInfo,
+          tokenPayloadInterface,
+          athConstants,
+          tokenService,
+          tokenServiceTest,
+          ...staticsFiles,
+        ];
+    return results;
   }
 
   async beforeCreateEntityModuleBase(
