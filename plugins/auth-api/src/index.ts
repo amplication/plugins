@@ -5,6 +5,7 @@ import {
   CreateEntityModuleBaseParams,
   CreateEntityResolverBaseParams,
   CreateEntityResolverToManyRelationMethodsParams,
+  CreateEntityResolverToOneRelationMethodsParams,
   CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
   DsgContext,
@@ -63,6 +64,9 @@ class AuthCorePlugin implements AmplicationPlugin {
       },
       CreateEntityResolverToManyRelationMethods: {
         before: this.beforeCreateEntityResolverToManyRelationMethods,
+      },
+      CreateEntityResolverToOneRelationMethods: {
+        before: this.beforeCreateEntityResolverToOneRelationMethods,
       },
     };
   }
@@ -208,11 +212,13 @@ class AuthCorePlugin implements AmplicationPlugin {
       controllerBaseId
     );
 
-    const nestAccessControlId = builders.identifier("nestAccessControl");
-
-    const nestAccessControlImport = importNames(
-      [nestAccessControlId],
-      "nest-access-control"
+    const nestAccessControlImport = builders.importDeclaration(
+      [
+        builders.importNamespaceSpecifier(
+          builders.identifier("nestAccessControl")
+        ),
+      ],
+      builders.stringLiteral("nest-access-control")
     );
 
     const defaultAuthGuardId = builders.identifier("defaultAuthGuard");
@@ -271,6 +277,29 @@ class AuthCorePlugin implements AmplicationPlugin {
     return eventParams;
   }
 
+  beforeCreateEntityResolverToOneRelationMethods(
+    context: DsgContext,
+    eventParams: CreateEntityResolverToOneRelationMethodsParams
+  ) {
+    const relatedEntity = eventParams.field.properties?.relatedEntity;
+
+    interpolate(eventParams.toOneFile, eventParams.toOneMapping);
+
+    const classDeclaration = getClassDeclarationById(
+      eventParams.toOneFile,
+      TO_MANY_MIXIN_ID
+    );
+
+    setAuthPermissions(
+      classDeclaration,
+      eventParams.toOneMapping["FIND_ONE"] as namedTypes.Identifier,
+      EnumEntityAction.View,
+      relatedEntity.name
+    );
+
+    return eventParams;
+  }
+
   beforeCreateEntityResolverToManyRelationMethods(
     context: DsgContext,
     eventParams: CreateEntityResolverToManyRelationMethodsParams
@@ -305,10 +334,14 @@ class AuthCorePlugin implements AmplicationPlugin {
     const classDeclaration = getClassDeclarationById(template, resolverBaseId);
 
     const nestAccessControlImport = builders.importDeclaration(
-      [builders.importNamespaceSpecifier(builders.identifier("nestAccessControl"))],
+      [
+        builders.importNamespaceSpecifier(
+          builders.identifier("nestAccessControl")
+        ),
+      ],
       builders.stringLiteral("nest-access-control")
     );
-    
+
     const gqlACGuardImport = builders.importDeclaration(
       [builders.importNamespaceSpecifier(builders.identifier("gqlACGuard"))],
       builders.stringLiteral("../../auth/gqlAC.guard")
@@ -325,12 +358,10 @@ class AuthCorePlugin implements AmplicationPlugin {
       builders.stringLiteral("@nestjs/swagger")
     );
 
-
     const commonImport = builders.importDeclaration(
       [builders.importNamespaceSpecifier(builders.identifier("common"))],
       builders.stringLiteral("@nestjs/common")
     );
-
 
     gqlDefaultAuthGuardImport.specifiers;
     namedTypes.ImportNamespaceSpecifier;
@@ -350,7 +381,7 @@ class AuthCorePlugin implements AmplicationPlugin {
         gqlACGuardImport,
         gqlDefaultAuthGuardImport,
         commonImport,
-        swaggerImport
+        swaggerImport,
       ].filter(
         (x) => x //remove nulls and undefined
       ) as namedTypes.ImportDeclaration[]
