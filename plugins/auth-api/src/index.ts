@@ -11,6 +11,7 @@ import {
   DsgContext,
   EnumEntityAction,
   Events,
+  Module,
 } from "@amplication/code-gen-types";
 import { envVariables } from "./constants";
 import { resolve } from "path";
@@ -21,6 +22,7 @@ import {
   createTokenService,
   createTokenServiceTests,
   createGrantsModule,
+  createDefaultGuard,
 } from "./core";
 import {
   addImports,
@@ -135,6 +137,22 @@ class AuthCorePlugin implements AmplicationPlugin {
       context.roles
     );
 
+    // 7. create create Default Guard
+    const { resourceInfo, serverDirectories } = context;
+    const authDir = `${serverDirectories.srcDirectory}/auth`;
+    const authTestsDir = `${serverDirectories.srcDirectory}/tests/auth`;
+
+    let defaultGuardFile: Module = {
+      path: "",
+      code: ""
+    };
+    if (resourceInfo) {
+      defaultGuardFile = await createDefaultGuard(
+        resourceInfo.settings.authProvider,
+        authDir
+      );
+    }
+
     const results = grants
       ? [
           userInfo,
@@ -143,6 +161,7 @@ class AuthCorePlugin implements AmplicationPlugin {
           tokenService,
           tokenServiceTest,
           ...staticsFiles,
+          defaultGuardFile,
           grants,
         ]
       : [
@@ -152,6 +171,7 @@ class AuthCorePlugin implements AmplicationPlugin {
           tokenService,
           tokenServiceTest,
           ...staticsFiles,
+          defaultGuardFile
         ];
     return results;
   }

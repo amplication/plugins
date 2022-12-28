@@ -1,6 +1,5 @@
 import { builders } from "ast-types";
 import { print } from "recast";
-import { EnumAuthProviderType } from "../types";
 import { Module } from "@amplication/code-gen-types";
 import {
   addImports,
@@ -10,6 +9,7 @@ import {
 } from "../util/ast";
 import { readFile } from "@amplication/code-gen-utils";
 import { relativeImportPath } from "../util/module";
+import { EnumAuthProviderType } from "@amplication/code-gen-types/src/models";
 
 type AuthGuardMetaData = {
   path: string;
@@ -22,8 +22,9 @@ export async function createDefaultGuard(
   authPath: string
 ): Promise<Module> {
   const defaultAuthGuardPath = require.resolve(
-    "./default-auth-guard.template.ts"
+    "../../templates/default-auth-guard.template.ts"
   );
+
   const modulePath = `${authPath}/defaultAuth.guard.ts`;
 
   const templateGuardFile = await readFile(defaultAuthGuardPath);

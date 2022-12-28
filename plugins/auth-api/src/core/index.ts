@@ -4,5 +4,6 @@ export { createAuthConstants } from "./create-constants";
 export { createTokenService } from "./create-token-service";
 export { createTokenServiceTests } from "./create-token-service-test";
 export {createGrantsModule} from "./create-grants";
+export {createDefaultGuard} from "./create-default-guard";
 
     
