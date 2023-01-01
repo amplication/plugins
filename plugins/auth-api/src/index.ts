@@ -6,9 +6,12 @@ import {
   CreateEntityResolverBaseParams,
   CreateEntityResolverToManyRelationMethodsParams,
   CreateEntityResolverToOneRelationMethodsParams,
+  CreateEntityServiceBaseParams,
+  CreateEntityServiceParams,
   CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
   DsgContext,
+  EntityField,
   EnumEntityAction,
   Events,
   Module,
@@ -25,11 +28,17 @@ import {
   createDefaultGuard,
 } from "./core";
 import {
+  addDecoratorsToClassDeclaration,
+  addIdentifierToConstructorSuperCall,
   addImports,
+  awaitExpression,
   getClassDeclarationById,
   importNames,
   interpolate,
+  logicalExpression,
+  memberExpression,
 } from "./util/ast";
+import { isPasswordField } from "./util/field";
 import { builders, namedTypes } from "ast-types";
 import { setAuthPermissions } from "./util/set-endpoint-permissions";
 import {
@@ -37,8 +46,19 @@ import {
   controllerToManyMethodsIdsActionPairs,
   resolverMethodsIdsActionPairs,
 } from "./core/create-method-id-action-entity-map";
+import { relativeImportPath } from "./util/module";
+import { addInjectableDependency } from "./util/nestjs-code-generation";
 
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
+const ARGS_ID = builders.identifier("args");
+const PASSWORD_FIELD_ASYNC_METHODS = new Set(["create", "update"]);
+const DATA_ID = builders.identifier("data");
+const PASSWORD_SERVICE_ID = builders.identifier("PasswordService");
+const PASSWORD_SERVICE_MEMBER_ID = builders.identifier("passwordService");
+const HASH_MEMBER_EXPRESSION = memberExpression`this.${PASSWORD_SERVICE_MEMBER_ID}.hash`;
+const TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID = builders.identifier(
+  "transformStringFieldUpdateInput"
+);
 class AuthCorePlugin implements AmplicationPlugin {
   register(): Events {
     return {
@@ -69,6 +89,12 @@ class AuthCorePlugin implements AmplicationPlugin {
       },
       CreateEntityResolverToOneRelationMethods: {
         before: this.beforeCreateEntityResolverToOneRelationMethods,
+      },
+      CreateEntityService: {
+        before: this.beforeCreateEntityService,
+      },
+      CreateEntityServiceBase: {
+        before: this.beforeCreateEntityServiceBase,
       },
     };
   }
@@ -144,7 +170,7 @@ class AuthCorePlugin implements AmplicationPlugin {
 
     let defaultGuardFile: Module = {
       path: "",
-      code: ""
+      code: "",
     };
     if (resourceInfo) {
       defaultGuardFile = await createDefaultGuard(
@@ -171,7 +197,7 @@ class AuthCorePlugin implements AmplicationPlugin {
           tokenService,
           tokenServiceTest,
           ...staticsFiles,
-          defaultGuardFile
+          defaultGuardFile,
         ];
     return results;
   }
@@ -259,7 +285,7 @@ class AuthCorePlugin implements AmplicationPlugin {
       builders.stringLiteral("nest-access-control")
     );
 
-    const defaultAuthGuardId = builders.identifier("defaultAuthGuard");
+    const defaultAuthGuardId = builders.identifier("DefaultAuthGuard");
 
     const defaultAuthGuardImport = importNames(
       [defaultAuthGuardId],
@@ -280,6 +306,22 @@ class AuthCorePlugin implements AmplicationPlugin {
         (x) => x //remove nulls and undefined
       ) as namedTypes.ImportDeclaration[]
     );
+
+    // const guardDecorator = builders.decorator(
+    //   builders.callExpression(
+    //     builders.memberExpression(
+    //       builders.identifier("common"),
+    //       builders.identifier("UseGuards")
+    //     ),
+    //     [builders.identifier("DefaultAuthGuard")]
+    //   )
+    // );
+
+    // const classDeclarationWithClassDecorator = addDecoratorsToClassDeclaration(
+    //   classDeclaration,
+    //   [guardDecorator]
+    // );
+
     if (classDeclaration) {
       controllerMethodsIdsActionPairs(templateMapping, entity).forEach(
         ({ methodId, action, entity }) => {
@@ -433,6 +475,167 @@ class AuthCorePlugin implements AmplicationPlugin {
     }
 
     return eventParams;
+  }
+
+  beforeCreateEntityService(
+    context: DsgContext,
+    eventParams: CreateEntityServiceParams
+  ) {
+    const { template, serviceId, entityName, templateMapping } = eventParams;
+    const modulePath = `${context.serverDirectories.srcDirectory}/${entityName}/${entityName}.service.ts`;
+    const passwordFields = AuthCorePlugin.getPasswordFields(
+      context,
+      eventParams.entityName
+    );
+    if (!passwordFields?.length) return eventParams;
+
+    // templateMapping["CREATE_ARGS_MAPPING"] =
+    //   AuthCorePlugin.createMutationDataMapping(
+    //     passwordFields.map((field) => {
+    //       const fieldId = builders.identifier(field.name);
+    //       return builders.objectProperty(
+    //         fieldId,
+    //         awaitExpression`await ${HASH_MEMBER_EXPRESSION}(${ARGS_ID}.${DATA_ID}.${fieldId})`
+    //       );
+    //     })
+    //   );
+
+    // templateMapping["UPDATE_ARGS_MAPPING"] =
+    //   AuthCorePlugin.createMutationDataMapping(
+    //     passwordFields.map((field) => {
+    //       const fieldId = builders.identifier(field.name);
+    //       const valueMemberExpression = memberExpression`${ARGS_ID}.${DATA_ID}.${fieldId}`;
+    //       return builders.objectProperty(
+    //         fieldId,
+    //         logicalExpression`${valueMemberExpression} && await ${TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID}(
+    //         ${ARGS_ID}.${DATA_ID}.${fieldId},
+    //         (password) => ${HASH_MEMBER_EXPRESSION}(password)
+    //       )`
+    //       );
+    //     })
+    //   );
+
+    interpolate(template, templateMapping);
+
+    //if there are any password fields, add imports, injection, and pass service to super
+    if (passwordFields.length) {
+      const classDeclaration = getClassDeclarationById(template, serviceId);
+
+      addInjectableDependency(
+        classDeclaration,
+        PASSWORD_SERVICE_MEMBER_ID.name,
+        PASSWORD_SERVICE_ID,
+        "protected"
+      );
+
+      addIdentifierToConstructorSuperCall(template, PASSWORD_SERVICE_MEMBER_ID);
+
+      for (const member of classDeclaration.body.body) {
+        if (
+          namedTypes.ClassMethod.check(member) &&
+          namedTypes.Identifier.check(member.key) &&
+          PASSWORD_FIELD_ASYNC_METHODS.has(member.key.name)
+        ) {
+          member.async = true;
+        }
+      }
+      //add the password service
+      addImports(template, [
+        importNames(
+          [PASSWORD_SERVICE_ID],
+          relativeImportPath(
+            modulePath,
+            `${context.serverDirectories.srcDirectory}/auth/password.service.ts`
+          )
+        ),
+      ]);
+    }
+    return eventParams;
+  }
+
+  static createMutationDataMapping(
+    mappings: namedTypes.ObjectProperty[]
+  ): namedTypes.Identifier | namedTypes.ObjectExpression {
+    if (!mappings.length) {
+      return ARGS_ID;
+    }
+    return builders.objectExpression([
+      builders.spreadProperty(ARGS_ID),
+      builders.objectProperty(
+        DATA_ID,
+        builders.objectExpression([
+          builders.spreadProperty(memberExpression`${ARGS_ID}.${DATA_ID}`),
+          ...mappings,
+        ])
+      ),
+    ]);
+  }
+  beforeCreateEntityServiceBase(
+    context: DsgContext,
+    eventParams: CreateEntityServiceBaseParams
+  ) {
+    const { template, templateMapping, serviceBaseId, entityName, entity } =
+      eventParams;
+    const { serverDirectories } = context;
+    const passwordFields = entity.fields.filter(isPasswordField);
+
+    if (!passwordFields?.length) return eventParams;
+
+    interpolate(template, templateMapping);
+
+    const classDeclaration = getClassDeclarationById(template, serviceBaseId);
+    const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
+
+    addInjectableDependency(
+      classDeclaration,
+      PASSWORD_SERVICE_MEMBER_ID.name,
+      PASSWORD_SERVICE_ID,
+      "protected"
+    );
+
+    for (const member of classDeclaration.body.body) {
+      if (
+        namedTypes.ClassMethod.check(member) &&
+        namedTypes.Identifier.check(member.key) &&
+        PASSWORD_FIELD_ASYNC_METHODS.has(member.key.name)
+      ) {
+        member.async = true;
+      }
+    }
+    //add the password service
+    addImports(template, [
+      importNames(
+        [PASSWORD_SERVICE_ID],
+        relativeImportPath(
+          moduleBasePath,
+          `${context.serverDirectories.srcDirectory}/auth/password.service.ts`
+        )
+      ),
+    ]);
+
+    addImports(template, [
+      importNames(
+        [TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID],
+        relativeImportPath(
+          moduleBasePath,
+          `${serverDirectories.srcDirectory}/prisma.util.ts`
+        )
+      ),
+    ]);
+
+    return eventParams;
+  }
+
+  private static getPasswordFields(
+    context: DsgContext,
+    entityName: string
+  ): EntityField[] | undefined {
+    const entity = context.entities?.find(
+      (entity) =>
+        entity.name.toLocaleLowerCase() === entityName.toLocaleLowerCase()
+    );
+
+    return entity?.fields.filter(isPasswordField);
   }
 }
 
