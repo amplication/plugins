@@ -3,7 +3,7 @@ import { ASTNode, namedTypes, builders } from "ast-types";
 import * as K from "ast-types/gen/kinds";
 import { NodePath } from "ast-types/lib/node-path";
 import { groupBy, mapValues, uniqBy } from "lodash";
-import { parse, partialParse } from "@amplication/code-gen-utils";
+import { parse, partialParse,print } from "@amplication/code-gen-utils";
 import { NamedClassProperty } from "@amplication/code-gen-types";
 
 const TS_IGNORE_TEXT = "@ts-ignore";
@@ -413,8 +413,8 @@ export function classDeclaration(
     return declaration;
   }
   const code = [
-    ...decorators.map((decorator) => recast.print(decorator).code),
-    recast.print(declaration).code,
+    ...decorators.map((decorator) => print(decorator).code),
+    print(declaration).code,
   ].join("\n");
   const ast = parse(code);
   const [classDeclaration] = ast.program.body as [namedTypes.ClassDeclaration];
@@ -435,9 +435,9 @@ export function classProperty(
     );
   }
   const code = `class A {
-    ${decorators.map((decorator) => recast.print(decorator).code).join("\n")}
-    ${recast.print(key).code}${definitive ? "!" : ""}${optional ? "?" : ""}${
-    recast.print(typeAnnotation).code
+    ${decorators.map((decorator) => print(decorator).code).join("\n")}
+    ${print(key).code}${definitive ? "!" : ""}${optional ? "?" : ""}${
+    print(typeAnnotation).code
   }${defaultValue ? `= ${recast.print(defaultValue).code}` : ""}
   
   }`;
@@ -704,8 +704,8 @@ function codeTemplate(
       return [
         string,
         Array.isArray(value)
-          ? value.map((item) => recast.print(item).code).join("")
-          : recast.print(value).code,
+          ? value.map((item) => print(item).code).join("")
+          : print(value).code,
       ];
     })
     .join("");
@@ -808,4 +808,26 @@ export function findFirstDecoratorByName(
   }
 
   return decorator as any;
+}
+
+export function addDecoratorsToClassDeclaration(
+  declaration: namedTypes.ClassDeclaration,
+  decorators: namedTypes.Decorator[] = []
+): namedTypes.ClassDeclaration {
+  if (!decorators.length) {
+    return declaration;
+  }
+
+  const code = [
+    ...decorators.map((decorator) => print(decorator).code),
+
+    print(declaration).code,
+  ].join("\n");
+
+
+  const ast = parse(code);
+
+  const [classDeclaration] = ast.program.body as [namedTypes.ClassDeclaration];
+
+  return classDeclaration;
 }

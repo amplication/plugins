@@ -2,7 +2,7 @@ import { types, Module, DsgContext } from "@amplication/code-gen-types";
 import { readFile } from "@amplication/code-gen-utils";
 import { interpolate, removeTSClassDeclares } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
-import { print } from "recast";
+import { print } from "@amplication/code-gen-utils";
 import { getUserIdType } from "../util/get-user-id-type";
 
 const templatePath = require.resolve("../../templates/create-token/token-payload-interface.template.ts");

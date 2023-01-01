@@ -1,4 +1,4 @@
-import { print } from "recast";
+import { print } from "@amplication/code-gen-utils";
 import { DsgContext, Module } from "@amplication/code-gen-types";
 import { removeTSIgnoreComments } from "../../src/util/ast";
 import { readFile } from "@amplication/code-gen-utils";

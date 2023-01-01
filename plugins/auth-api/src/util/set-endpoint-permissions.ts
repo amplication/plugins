@@ -23,6 +23,7 @@ export function setAuthPermissions(
   action: EnumEntityAction,
   entityName: string
 ): void {
+  
   const classMethod = getClassMethodById(classDeclaration, methodId);
 
   if(!classMethod){
