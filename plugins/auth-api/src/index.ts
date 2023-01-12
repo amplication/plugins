@@ -1,6 +1,7 @@
 import {
   AmplicationPlugin,
   CreateEntityControllerBaseParams,
+  CreateEntityControllerParams,
   CreateEntityControllerToManyRelationMethodsParams,
   CreateEntityModuleBaseParams,
   CreateEntityResolverBaseParams,
@@ -83,6 +84,9 @@ class AuthCorePlugin implements AmplicationPlugin {
       },
       CreateEntityControllerBase: {
         before: this.beforeCreateControllerBaseModule,
+      },
+      CreateEntityController: {
+        before: this.beforeCreateEntityControllerModule,
       },
       CreateEntityControllerToManyRelationMethods: {
         before: this.beforeCreateEntityControllerToManyRelationMethods,
@@ -270,6 +274,58 @@ class AuthCorePlugin implements AmplicationPlugin {
     );
 
     return staticsFiles;
+  }
+  beforeCreateEntityControllerModule(
+    context: DsgContext,
+    eventParams: CreateEntityControllerParams
+  ) {
+    const { templateMapping, template, controllerBaseId } = eventParams;
+
+    interpolate(template, templateMapping);
+
+    const classDeclaration = getClassDeclarationById(
+      template,
+      templateMapping["CONTROLLER"]
+    );
+
+    const nestAccessControlImport = builders.importDeclaration(
+      [
+        builders.importNamespaceSpecifier(
+          builders.identifier("nestAccessControl")
+        ),
+      ],
+      builders.stringLiteral("nest-access-control")
+    );
+
+    const check = builders.decorator(
+      builders.callExpression(
+        builders.memberExpression(
+          builders.identifier("nestAccessControlImport"),
+          builders.identifier("InjectRolesBuilder")
+        ),
+        []
+      )
+    );
+
+    const rolesBuilderIdentifier = builders.identifier("rolesBuilder");
+    addInjectableDependency(
+      classDeclaration,
+      rolesBuilderIdentifier.name,
+      builders.identifier("nestAccessControl.RolesBuilder"),
+      "protected",
+      [check]
+    );
+
+    addIdentifierToConstructorSuperCall(template, rolesBuilderIdentifier);
+
+    addImports(
+      eventParams.template,
+      [nestAccessControlImport].filter(
+        (x) => x //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[]
+    );
+
+    return eventParams;
   }
 
   beforeCreateControllerBaseModule(
