@@ -5,6 +5,7 @@ import {
   CreateEntityControllerToManyRelationMethodsParams,
   CreateEntityModuleBaseParams,
   CreateEntityResolverBaseParams,
+  CreateEntityResolverParams,
   CreateEntityResolverToManyRelationMethodsParams,
   CreateEntityResolverToOneRelationMethodsParams,
   CreateEntityServiceBaseParams,
@@ -90,6 +91,9 @@ class AuthCorePlugin implements AmplicationPlugin {
       },
       CreateEntityControllerToManyRelationMethods: {
         before: this.beforeCreateEntityControllerToManyRelationMethods,
+      },
+      CreateEntityResolver: {
+        before: this.beforeCreateResolverModule,
       },
       CreateEntityResolverBase: {
         before: this.beforeCreateResolverBaseModule,
@@ -490,6 +494,87 @@ class AuthCorePlugin implements AmplicationPlugin {
       EnumEntityAction.Search,
       relatedEntity.name
     );
+
+    return eventParams;
+  }
+
+  beforeCreateResolverModule(
+    context: DsgContext,
+    eventParams: CreateEntityResolverParams
+  ) {
+    const { templateMapping, template } = eventParams;
+    interpolate(template, templateMapping);
+
+    const classDeclaration = getClassDeclarationById(
+      template,
+      templateMapping["RESOLVER"]
+    );
+
+    const commonImport = builders.importDeclaration(
+      [builders.importNamespaceSpecifier(builders.identifier("common"))],
+      builders.stringLiteral("@nestjs/common")
+    );
+
+    const nestAccessControlImport = builders.importDeclaration(
+      [
+        builders.importNamespaceSpecifier(
+          builders.identifier("nestAccessControl")
+        ),
+      ],
+      builders.stringLiteral("nest-access-control")
+    );
+
+    const gqlDefaultAuthGuardImport = importNames(
+      [builders.identifier("GqlDefaultAuthGuard")],
+      "../auth/gqlDefaultAuth.guard"
+    );
+
+    const gqlACGuardImport = builders.importDeclaration(
+      [builders.importNamespaceSpecifier(builders.identifier("gqlACGuard"))],
+      builders.stringLiteral("../auth/gqlAC.guard")
+    );
+
+    addImports(
+      eventParams.template,
+      [
+        nestAccessControlImport,
+        gqlACGuardImport,
+        gqlDefaultAuthGuardImport,
+        commonImport,
+      ].filter(
+        (x) => x //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[]
+    );
+
+    const rolesBuilderIdentifier = builders.identifier("rolesBuilder");
+
+    addInjectableDependency(
+      classDeclaration,
+      rolesBuilderIdentifier.name,
+      builders.identifier("nestAccessControl.RolesBuilder"),
+      "protected"
+    );
+
+    addIdentifierToConstructorSuperCall(template, rolesBuilderIdentifier);
+
+    const guardDecorator = builders.decorator(
+      builders.callExpression(
+        builders.memberExpression(
+          builders.identifier("common"),
+          builders.identifier("UseGuards")
+        ),
+        [
+          builders.identifier("GqlDefaultAuthGuard"),
+          builders.memberExpression(
+            builders.identifier("gqlACGuard"),
+            builders.identifier("GqlACGuard")
+          ),
+        ]
+      )
+    );
+
+    //@ts-ignore
+    classDeclaration.decorators = [guardDecorator];
 
     return eventParams;
   }
