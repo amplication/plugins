@@ -14,6 +14,9 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [{ from: "src/static", to: "static" }],
     }),
+    new CopyWebpackPlugin({
+      patterns: [{ from: "src/templates", to: "templates" }],
+    }),
   ],
   module: {
     rules: [
