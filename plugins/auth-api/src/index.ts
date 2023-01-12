@@ -29,7 +29,6 @@ import {
   createDefaultGuard,
 } from "./core";
 import {
-  addDecoratorsToClassDeclaration,
   addIdentifierToConstructorSuperCall,
   addImports,
   getClassDeclarationById,
@@ -479,9 +478,6 @@ class AuthCorePlugin implements AmplicationPlugin {
       builders.stringLiteral("@nestjs/common")
     );
 
-    gqlDefaultAuthGuardImport.specifiers;
-    namedTypes.ImportNamespaceSpecifier;
-
     const ignoreComment = builders.commentLine("// @ts-ignore", false);
 
     if (!gqlACGuardImport.comments) {
@@ -509,6 +505,32 @@ class AuthCorePlugin implements AmplicationPlugin {
         }
       );
     }
+
+    const guardDecorator = builders.decorator(
+      builders.callExpression(
+        builders.memberExpression(
+          builders.identifier("common"),
+          builders.identifier("UseGuards")
+        ),
+        [
+          builders.identifier("GqlDefaultAuthGuard"),
+          builders.memberExpression(
+            builders.identifier("gqlACGuard"),
+            builders.identifier("GqlACGuard")
+          ),
+        ]
+      )
+    );
+
+    //@ts-ignore
+    classDeclaration.decorators = [guardDecorator];
+
+    addInjectableDependency(
+      classDeclaration,
+      builders.identifier("rolesBuilder").name,
+      builders.identifier("nestAccessControl.RolesBuilder"),
+      "protected"
+    );
 
     return eventParams;
   }
