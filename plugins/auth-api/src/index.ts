@@ -286,6 +286,13 @@ class AuthCorePlugin implements AmplicationPlugin {
       controllerBaseId
     );
 
+    addInjectableDependency(
+      classDeclaration,
+      builders.identifier("rolesBuilder").name,
+      builders.identifier("nestAccessControl.RolesBuilder"),
+      "protected"
+    );
+
     const nestAccessControlImport = builders.importDeclaration(
       [
         builders.importNamespaceSpecifier(
@@ -295,11 +302,13 @@ class AuthCorePlugin implements AmplicationPlugin {
       builders.stringLiteral("nest-access-control")
     );
 
-    const defaultAuthGuardId = builders.identifier("DefaultAuthGuard");
-
-    const defaultAuthGuardImport = importNames(
-      [defaultAuthGuardId],
-      "../../auth/defaultAuth.guard"
+    const defaultAuthGuardImport = builders.importDeclaration(
+      [
+        builders.importNamespaceSpecifier(
+          builders.identifier("defaultAuthGuard")
+        ),
+      ],
+      builders.stringLiteral("../../auth/defaultAuth.guard")
     );
 
     const ignoreComment = builders.commentLine("// @ts-ignore", false);
@@ -317,20 +326,37 @@ class AuthCorePlugin implements AmplicationPlugin {
       ) as namedTypes.ImportDeclaration[]
     );
 
+    const swaggerDecorator = builders.decorator(
+      builders.callExpression(
+        builders.memberExpression(
+          builders.identifier("swagger"),
+          builders.identifier("SWAGGER_API_AUTH_FUNCTION")
+        ),
+        []
+      )
+    );
+
     const guardDecorator = builders.decorator(
       builders.callExpression(
         builders.memberExpression(
           builders.identifier("common"),
           builders.identifier("UseGuards")
         ),
-        [builders.identifier("DefaultAuthGuard")]
+        [
+          builders.memberExpression(
+            builders.identifier("defaultAuthGuard"),
+            builders.identifier("DefaultAuthGuard")
+          ),
+          builders.memberExpression(
+            builders.identifier("nestAccessControl"),
+            builders.identifier("ACGuard")
+          ),
+        ]
       )
     );
 
-    const classDeclarationWithClassDecorator = addDecoratorsToClassDeclaration(
-      classDeclaration,
-      [guardDecorator]
-    );
+    //@ts-ignore
+    classDeclaration.decorators = [swaggerDecorator, guardDecorator];
 
     if (classDeclaration) {
       controllerMethodsIdsActionPairs(templateMapping, entity).forEach(
@@ -498,32 +524,6 @@ class AuthCorePlugin implements AmplicationPlugin {
       eventParams.entityName
     );
     if (!passwordFields?.length) return eventParams;
-
-    // templateMapping["CREATE_ARGS_MAPPING"] =
-    //   AuthCorePlugin.createMutationDataMapping(
-    //     passwordFields.map((field) => {
-    //       const fieldId = builders.identifier(field.name);
-    //       return builders.objectProperty(
-    //         fieldId,
-    //         awaitExpression`await ${HASH_MEMBER_EXPRESSION}(${ARGS_ID}.${DATA_ID}.${fieldId})`
-    //       );
-    //     })
-    //   );
-
-    // templateMapping["UPDATE_ARGS_MAPPING"] =
-    //   AuthCorePlugin.createMutationDataMapping(
-    //     passwordFields.map((field) => {
-    //       const fieldId = builders.identifier(field.name);
-    //       const valueMemberExpression = memberExpression`${ARGS_ID}.${DATA_ID}.${fieldId}`;
-    //       return builders.objectProperty(
-    //         fieldId,
-    //         logicalExpression`${valueMemberExpression} && await ${TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID}(
-    //         ${ARGS_ID}.${DATA_ID}.${fieldId},
-    //         (password) => ${HASH_MEMBER_EXPRESSION}(password)
-    //       )`
-    //       );
-    //     })
-    //   );
 
     interpolate(template, templateMapping);
 
