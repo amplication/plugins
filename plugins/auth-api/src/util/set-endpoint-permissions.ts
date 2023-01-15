@@ -19,7 +19,8 @@ export function setAuthPermissions(
   classDeclaration: namedTypes.ClassDeclaration,
   methodId: namedTypes.Identifier,
   action: EnumEntityAction,
-  entityName: string
+  entityName: string,
+  createSwaggerDecorator: boolean
 ): void {
   const classMethod = getClassMethodById(classDeclaration, methodId);
 
@@ -54,6 +55,9 @@ export function setAuthPermissions(
       "any"
     )
   );
-  classMethod.decorators?.push(buildSwaggerForbiddenResponse());
+
+  createSwaggerDecorator &&
+    classMethod.decorators?.push(buildSwaggerForbiddenResponse());
+
   removeDecoratorByName(classMethod, PUBLIC_DECORATOR_NAME);
 }

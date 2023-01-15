@@ -400,7 +400,13 @@ class AuthCorePlugin implements AmplicationPlugin {
     if (classDeclaration) {
       controllerMethodsIdsActionPairs(templateMapping, entity).forEach(
         ({ methodId, action, entity }) => {
-          setAuthPermissions(classDeclaration, methodId, action, entity.name);
+          setAuthPermissions(
+            classDeclaration,
+            methodId,
+            action,
+            entity.name,
+            true
+          );
         }
       );
     }
@@ -426,7 +432,13 @@ class AuthCorePlugin implements AmplicationPlugin {
       eventParams.entity,
       relatedEntity
     ).forEach(({ methodId, action, entity }) => {
-      setAuthPermissions(toManyClassDeclaration, methodId, action, entity.name);
+      setAuthPermissions(
+        toManyClassDeclaration,
+        methodId,
+        action,
+        entity.name,
+        true
+      );
     });
 
     return eventParams;
@@ -449,7 +461,8 @@ class AuthCorePlugin implements AmplicationPlugin {
       classDeclaration,
       eventParams.toOneMapping["FIND_ONE"] as namedTypes.Identifier,
       EnumEntityAction.View,
-      relatedEntity.name
+      relatedEntity.name,
+      false
     );
 
     return eventParams;
@@ -472,7 +485,8 @@ class AuthCorePlugin implements AmplicationPlugin {
       toManyClassDeclaration,
       eventParams.toManyMapping["FIND_MANY"] as namedTypes.Identifier,
       EnumEntityAction.Search,
-      relatedEntity.name
+      relatedEntity.name,
+      false
     );
 
     return eventParams;
@@ -589,23 +603,10 @@ class AuthCorePlugin implements AmplicationPlugin {
       "../../auth/gqlDefaultAuth.guard"
     );
 
-    const swaggerImport = builders.importDeclaration(
-      [builders.importNamespaceSpecifier(builders.identifier("swagger"))],
-      builders.stringLiteral("@nestjs/swagger")
-    );
-
     const commonImport = builders.importDeclaration(
       [builders.importNamespaceSpecifier(builders.identifier("common"))],
       builders.stringLiteral("@nestjs/common")
     );
-
-    const ignoreComment = builders.commentLine("// @ts-ignore", false);
-
-    if (!gqlACGuardImport.comments) {
-      gqlACGuardImport.comments = [];
-    }
-
-    gqlACGuardImport.comments.push(ignoreComment);
 
     addImports(
       eventParams.template,
@@ -614,7 +615,6 @@ class AuthCorePlugin implements AmplicationPlugin {
         gqlACGuardImport,
         gqlDefaultAuthGuardImport,
         commonImport,
-        swaggerImport,
       ].filter(
         (x) => x //remove nulls and undefined
       ) as namedTypes.ImportDeclaration[]
@@ -622,7 +622,13 @@ class AuthCorePlugin implements AmplicationPlugin {
     if (classDeclaration) {
       resolverMethodsIdsActionPairs(templateMapping, entity).forEach(
         ({ methodId, action, entity }) => {
-          setAuthPermissions(classDeclaration, methodId, action, entity.name);
+          setAuthPermissions(
+            classDeclaration,
+            methodId,
+            action,
+            entity.name,
+            false
+          );
         }
       );
     }
