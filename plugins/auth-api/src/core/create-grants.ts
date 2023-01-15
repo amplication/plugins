@@ -48,16 +48,15 @@ export const READ_OWN: Action = "read:own";
  */
 export function createGrantsModule(
   serverSrcDirectory: string,
-  entities?: Entity[],
-  roles?: Role[]
-): Module | undefined {
+  entities: Entity[],
+  roles: Role[]
+): Module {
   const MODULE_PATH = `${serverSrcDirectory}/grants.json`;
-  if (entities && roles) {
     return {
       path: MODULE_PATH,
       code: JSON.stringify(createGrants(entities, roles), null, 2),
     };
-  }
+  
 }
 
 export function createGrants(entities: Entity[], roles: Role[]): Grant[] {

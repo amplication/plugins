@@ -141,7 +141,17 @@ class AuthCorePlugin implements AmplicationPlugin {
       staticPath
     );
 
-    return staticsFiles;
+    // create grants here, because here the DSG format this code to json file.
+    const grants =
+      context.entities && context.roles
+        ? createGrantsModule(
+            context.serverDirectories.srcDirectory,
+            context.entities,
+            context.roles
+          )
+        : null;
+
+    return grants ? [...staticsFiles, grants] : staticsFiles;
   }
 
   async afterCreateServerAuth(context: DsgContext) {
@@ -173,14 +183,7 @@ class AuthCorePlugin implements AmplicationPlugin {
     const tokenService = await createTokenService(context);
     // 5. create token service test
     const tokenServiceTest = await createTokenServiceTests(context);
-    // 6. create grants
-    const grants = createGrantsModule(
-      context.serverDirectories.srcDirectory,
-      context.entities,
-      context.roles
-    );
-
-    // 7. create create Default Guard
+    // 6. create create Default Guard
     const { resourceInfo, serverDirectories } = context;
     const authDir = `${serverDirectories.srcDirectory}/auth`;
     const authTestsDir = `${serverDirectories.srcDirectory}/tests/auth`;
@@ -196,27 +199,15 @@ class AuthCorePlugin implements AmplicationPlugin {
       );
     }
 
-    const results = grants
-      ? [
-          userInfo,
-          tokenPayloadInterface,
-          athConstants,
-          tokenService,
-          tokenServiceTest,
-          ...staticsFiles,
-          defaultGuardFile,
-          grants,
-        ]
-      : [
-          userInfo,
-          tokenPayloadInterface,
-          athConstants,
-          tokenService,
-          tokenServiceTest,
-          ...staticsFiles,
-          defaultGuardFile,
-        ];
-    return results;
+    return [
+      userInfo,
+      tokenPayloadInterface,
+      athConstants,
+      tokenService,
+      tokenServiceTest,
+      ...staticsFiles,
+      defaultGuardFile,
+    ];
   }
 
   async beforeCreateEntityModuleBase(
@@ -301,23 +292,12 @@ class AuthCorePlugin implements AmplicationPlugin {
       builders.stringLiteral("nest-access-control")
     );
 
-    const check = builders.decorator(
-      builders.callExpression(
-        builders.memberExpression(
-          builders.identifier("nestAccessControlImport"),
-          builders.identifier("InjectRolesBuilder")
-        ),
-        []
-      )
-    );
-
     const rolesBuilderIdentifier = builders.identifier("rolesBuilder");
     addInjectableDependency(
       classDeclaration,
       rolesBuilderIdentifier.name,
       builders.identifier("nestAccessControl.RolesBuilder"),
-      "protected",
-      [check]
+      "protected"
     );
 
     addIdentifierToConstructorSuperCall(template, rolesBuilderIdentifier);
