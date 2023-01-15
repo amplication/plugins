@@ -1,18 +1,18 @@
+import {
+  AmplicationPlugin,
+  CreatePrismaSchemaParams,
+  CreateServerDockerComposeDBParams,
+  CreateServerDockerComposeParams,
+  CreateServerDotEnvParams,
+  DsgContext,
+  Events,
+} from "@amplication/code-gen-types";
 import { resolve } from "path";
 import {
   dataSource,
   envVariables,
   updateDockerComposeProperties,
 } from "./constants";
-import {
-  DsgContext,
-  AmplicationPlugin,
-  CreateServerDockerComposeDBParams,
-  CreateServerDockerComposeParams,
-  CreateServerDotEnvParams,
-  CreatePrismaSchemaParams,
-  Events,
-} from "@amplication/code-gen-types";
 
 class PostgresPlugin implements AmplicationPlugin {
   register(): Events {
@@ -59,7 +59,7 @@ class PostgresPlugin implements AmplicationPlugin {
   }
 
   async afterCreateServerDockerComposeDB(context: DsgContext) {
-    const staticPath = resolve(__dirname, "../static");
+    const staticPath = resolve(__dirname, "./static");
     const staticsFiles = await context.utils.importStaticModules(
       staticPath,
       context.serverDirectories.baseDirectory
