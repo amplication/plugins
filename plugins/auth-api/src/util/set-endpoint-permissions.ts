@@ -1,8 +1,6 @@
 import assert from "assert";
 import { builders, namedTypes } from "ast-types";
-import {
-  EnumEntityAction,
-} from "@amplication/code-gen-types";
+import { EnumEntityAction } from "@amplication/code-gen-types";
 import { getClassMethodById, removeDecoratorByName } from "./ast";
 import {
   buildNessJsInterceptorDecorator,
@@ -23,14 +21,16 @@ export function setAuthPermissions(
   action: EnumEntityAction,
   entityName: string
 ): void {
-  
   const classMethod = getClassMethodById(classDeclaration, methodId);
 
-  if(!classMethod){
+  if (!classMethod) {
     return;
   }
 
-  if (action === EnumEntityAction.Search || action === EnumEntityAction.View) {
+  const isActionSearchOrView =
+    action === EnumEntityAction.Search || action === EnumEntityAction.View;
+
+  if (isActionSearchOrView) {
     const filterResponseInterceptor = buildNessJsInterceptorDecorator(
       builders.identifier(ACL_FILTER_RESPONSE_INTERCEPTOR_NAME)
     );
@@ -46,14 +46,14 @@ export function setAuthPermissions(
     );
     classMethod.decorators?.unshift(AclValidateRequestInterceptor);
   }
+
   classMethod.decorators?.push(
     buildNestAccessControlDecorator(
       entityName,
-      action.toLocaleLowerCase(),
+      isActionSearchOrView ? "read" : action.toLocaleLowerCase(),
       "any"
     )
   );
   classMethod.decorators?.push(buildSwaggerForbiddenResponse());
   removeDecoratorByName(classMethod, PUBLIC_DECORATOR_NAME);
-
 }
