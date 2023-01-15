@@ -4,6 +4,7 @@ import {
   CreateEntityControllerParams,
   CreateEntityControllerToManyRelationMethodsParams,
   CreateEntityModuleBaseParams,
+  CreateEntityModuleParams,
   CreateEntityResolverBaseParams,
   CreateEntityResolverParams,
   CreateEntityResolverToManyRelationMethodsParams,
@@ -82,6 +83,9 @@ class AuthCorePlugin implements AmplicationPlugin {
       },
       CreateEntityModuleBase: {
         before: this.beforeCreateEntityModuleBase,
+      },
+      CreateEntityModule: {
+        before: this.beforeCreateEntityModule,
       },
       CreateEntityControllerBase: {
         before: this.beforeCreateControllerBaseModule,
@@ -208,6 +212,38 @@ class AuthCorePlugin implements AmplicationPlugin {
       ...staticsFiles,
       defaultGuardFile,
     ];
+  }
+
+  async beforeCreateEntityModule(
+    context: DsgContext,
+    eventParams: CreateEntityModuleParams
+  ) {
+    const nestAccessControlImport = builders.importDeclaration(
+      [
+        builders.importNamespaceSpecifier(
+          builders.identifier("nestAccessControl")
+        ),
+      ],
+      builders.stringLiteral("nest-access-control")
+    );
+
+    addImports(
+      eventParams.template,
+      [nestAccessControlImport].filter(
+        (x) => x //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[]
+    );
+
+    const providerArray = builders.arrayExpression([
+      builders.memberExpression(
+        builders.identifier("nestAccessControl"),
+        builders.identifier("RolesBuilder")
+      ),
+      ...eventParams.templateMapping["PROVIDERS_ARRAY"].elements,
+    ]);
+
+    eventParams.templateMapping["PROVIDERS_ARRAY"] = providerArray;
+    return eventParams;
   }
 
   async beforeCreateEntityModuleBase(
