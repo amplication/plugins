@@ -35,6 +35,7 @@ import {
   addIdentifierToConstructorSuperCall,
   addImports,
   getClassDeclarationById,
+  getClassMethodById,
   importNames,
   interpolate,
   memberExpression,
@@ -602,9 +603,22 @@ class AuthCorePlugin implements AmplicationPlugin {
         ]
       )
     );
+    const pluralName =
+      eventParams.entityName.charAt(0).toUpperCase() +
+      eventParams.entityName.slice(1).toLocaleLowerCase();
+
+    const resolverDecorator = builders.decorator(
+      builders.callExpression(
+        builders.memberExpression(
+          builders.identifier("graphql"),
+          builders.identifier("Resolver")
+        ),
+        [builders.arrowFunctionExpression([], builders.identifier(pluralName))]
+      )
+    );
 
     //@ts-ignore
-    classDeclaration.decorators = [guardDecorator];
+    classDeclaration.decorators = [guardDecorator, resolverDecorator];
 
     return eventParams;
   }
@@ -656,6 +670,60 @@ class AuthCorePlugin implements AmplicationPlugin {
       ) as namedTypes.ImportDeclaration[]
     );
     if (classDeclaration) {
+      const metaClassMethod = getClassMethodById(
+        classDeclaration,
+        eventParams.templateMapping["META_QUERY"] as namedTypes.Identifier
+      );
+      const graphqlQueryDecorator = builders.decorator(
+        builders.callExpression(
+          builders.memberExpression(
+            builders.identifier("graphql"),
+            builders.identifier("Query")
+          ),
+          [
+            builders.arrowFunctionExpression(
+              [],
+              builders.identifier("MetaQueryPayload")
+            ),
+          ]
+        )
+      );
+
+      const useRolesDecorator = builders.decorator(
+        builders.callExpression(
+          builders.memberExpression(
+            builders.identifier("nestAccessControl"),
+            builders.identifier("UseRoles")
+          ),
+          [
+            builders.objectExpression([
+              builders.objectProperty(
+                builders.identifier("resource"),
+                eventParams.templateMapping[
+                  "ENTITY_NAME"
+                ] as namedTypes.StringLiteral
+              ),
+              builders.objectProperty(
+                builders.identifier("action"),
+                builders.stringLiteral("read")
+              ),
+              builders.objectProperty(
+                builders.identifier("possession"),
+                builders.stringLiteral("any")
+              ),
+            ]),
+          ]
+        )
+      );
+
+      if (metaClassMethod && !metaClassMethod.decorators) {
+        metaClassMethod.decorators = [];
+      }
+      metaClassMethod?.decorators?.unshift(
+        graphqlQueryDecorator,
+        useRolesDecorator
+      );
+
       resolverMethodsIdsActionPairs(templateMapping, entity).forEach(
         ({ methodId, action, entity }) => {
           setAuthPermissions(
@@ -685,8 +753,22 @@ class AuthCorePlugin implements AmplicationPlugin {
       )
     );
 
+    const pluralName =
+      eventParams.entityName.charAt(0).toUpperCase() +
+      eventParams.entityName.slice(1).toLocaleLowerCase();
+
+    const resolverDecorator = builders.decorator(
+      builders.callExpression(
+        builders.memberExpression(
+          builders.identifier("graphql"),
+          builders.identifier("Resolver")
+        ),
+        [builders.arrowFunctionExpression([], builders.identifier(pluralName))]
+      )
+    );
+
     //@ts-ignore
-    classDeclaration.decorators = [guardDecorator];
+    classDeclaration.decorators = [guardDecorator, resolverDecorator];
 
     addInjectableDependency(
       classDeclaration,

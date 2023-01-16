@@ -90,11 +90,6 @@ export const resolverMethodsIdsActionPairs = (
     entity: entity,
   },
   {
-    methodId: templateMapping["META_QUERY"] as namedTypes.Identifier,
-    action: EnumEntityAction.Search,
-    entity: entity,
-  },
-  {
     methodId: templateMapping["ENTITY_QUERY"] as namedTypes.Identifier,
     action: EnumEntityAction.View,
     entity: entity,
