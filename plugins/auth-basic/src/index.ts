@@ -6,7 +6,7 @@ import {
   Events,
 } from "@amplication/code-gen-types";
 import { EnumAuthProviderType } from "@amplication/code-gen-types/src/models";
-import { staticsPath } from "./constants";
+import { resolve } from "path";
 class BasicAuthPlugin implements AmplicationPlugin {
   register(): Events {
     return {
@@ -43,8 +43,9 @@ class BasicAuthPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerAuthParams
   ) {
+    const staticPath = resolve(__dirname, "./static");
     const staticsFiles = await context.utils.importStaticModules(
-      staticsPath,
+      staticPath,
       context.serverDirectories.srcDirectory
     );
 
