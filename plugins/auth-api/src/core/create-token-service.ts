@@ -1,8 +1,8 @@
 import { print } from "@amplication/code-gen-utils";
 import { DsgContext, Module } from "@amplication/code-gen-types";
-import { removeTSIgnoreComments } from "../../src/util/ast";
+import { removeTSIgnoreComments } from "../util/ast";
 import { readFile } from "@amplication/code-gen-utils";
-import { EnumAuthProviderType } from "../../src/types";
+import { EnumAuthProviderType } from "../types";
 
 export async function createTokenService(
   dsgContext: DsgContext
