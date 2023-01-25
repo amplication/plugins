@@ -120,7 +120,7 @@ class MongoPlugin implements AmplicationPlugin {
   }
 
   async afterCreateServerDockerComposeDB(context: DsgContext) {
-    const staticPath = resolve(__dirname, "../static/docker-compose");
+    const staticPath = resolve(__dirname, "./static/docker-compose");
     const staticsFiles = await context.utils.importStaticModules(
       staticPath,
       context.serverDirectories.baseDirectory
