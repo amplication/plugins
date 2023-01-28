@@ -12,6 +12,7 @@ import {
   CreateEntityServiceBaseParams,
   CreateEntityServiceParams,
   CreateSeedParams,
+  CreateServerAppModuleParams,
   CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
   DsgContext,
@@ -79,6 +80,9 @@ class AuthCorePlugin implements AmplicationPlugin {
         before: this.beforeCreateServerPackageJson,
         after: this.afterCreateServerPackageJson,
       },
+      CreateServerAppModule: {
+        before: this.beforeCreateAppModule,
+      },
       CreateServerAuth: {
         after: this.afterCreateServerAuth,
       },
@@ -135,6 +139,28 @@ class AuthCorePlugin implements AmplicationPlugin {
     eventParams: CreateServerPackageJsonParams
   ) {
     context.utils.skipDefaultBehavior = true;
+    return eventParams;
+  }
+
+  beforeCreateAppModule(
+    context: DsgContext,
+    eventParams: CreateServerAppModuleParams
+  ) {
+    const aclModuleId = builders.identifier("ACLModule");
+    const authModuleId = builders.identifier("AuthModule");
+
+    const aclModuleImport = importNames([aclModuleId], "../../auth/acl.module");
+    const authModuleImport = importNames(
+      [authModuleId],
+      "../../auth/auth.module"
+    );
+
+    addImports(
+      eventParams.template,
+      [aclModuleImport, authModuleImport].filter(
+        (x) => x //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[]
+    );
     return eventParams;
   }
 
@@ -272,7 +298,6 @@ class AuthCorePlugin implements AmplicationPlugin {
 
     const importArray = builders.arrayExpression([
       aclModuleId,
-      authModuleId,
       forwardAuthId,
       ...eventParams.templateMapping["IMPORTS_ARRAY"].elements,
     ]);
@@ -330,11 +355,23 @@ class AuthCorePlugin implements AmplicationPlugin {
     );
 
     const rolesBuilderIdentifier = builders.identifier("rolesBuilder");
+
+    const injectRolesBuilderDecorator = builders.decorator(
+      builders.callExpression(
+        builders.memberExpression(
+          builders.identifier("nestAccessControl"),
+          builders.identifier("InjectRolesBuilder")
+        ),
+        []
+      )
+    );
+
     addInjectableDependency(
       classDeclaration,
       rolesBuilderIdentifier.name,
       builders.identifier("nestAccessControl.RolesBuilder"),
-      "protected"
+      "protected",
+      [injectRolesBuilderDecorator]
     );
 
     addIdentifierToConstructorSuperCall(template, rolesBuilderIdentifier);
@@ -579,11 +616,22 @@ class AuthCorePlugin implements AmplicationPlugin {
 
     const rolesBuilderIdentifier = builders.identifier("rolesBuilder");
 
+    const injectRolesBuilderDecorator = builders.decorator(
+      builders.callExpression(
+        builders.memberExpression(
+          builders.identifier("nestAccessControl"),
+          builders.identifier("InjectRolesBuilder")
+        ),
+        []
+      )
+    );
+
     addInjectableDependency(
       classDeclaration,
       rolesBuilderIdentifier.name,
       builders.identifier("nestAccessControl.RolesBuilder"),
-      "protected"
+      "protected",
+      [injectRolesBuilderDecorator]
     );
 
     addIdentifierToConstructorSuperCall(template, rolesBuilderIdentifier);

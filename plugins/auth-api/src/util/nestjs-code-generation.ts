@@ -69,7 +69,8 @@ export function addInjectableDependency(
   classDeclaration: namedTypes.ClassDeclaration,
   name: string,
   typeId: namedTypes.Identifier,
-  accessibility: "public" | "private" | "protected"
+  accessibility: "public" | "private" | "protected",
+  decorators?: namedTypes.Decorator[]
 ): void {
   const constructor = findConstructor(classDeclaration);
 
@@ -77,16 +78,19 @@ export function addInjectableDependency(
     throw new Error("Could not find given class declaration constructor");
   }
 
-  constructor.params.push(
-    builders.tsParameterProperty.from({
-      accessibility: accessibility,
-      readonly: true,
-      parameter: builders.identifier.from({
-        name: name,
-        typeAnnotation: builders.tsTypeAnnotation(
-          builders.tsTypeReference(typeId)
-        ),
-      }),
-    })
-  );
+  const propToInject = builders.tsParameterProperty.from({
+    accessibility: accessibility,
+    readonly: true,
+    parameter: builders.identifier.from({
+      name: name,
+      typeAnnotation: builders.tsTypeAnnotation(
+        builders.tsTypeReference(typeId)
+      ),
+    }),
+  });
+
+  //@ts-ignore
+  propToInject.decorators = decorators;
+
+  constructor.params.push(propToInject);
 }
