@@ -35,10 +35,12 @@ import {
 import {
   addIdentifierToConstructorSuperCall,
   addImports,
+  awaitExpression,
   getClassDeclarationById,
   getClassMethodById,
   importNames,
   interpolate,
+  logicalExpression,
   memberExpression,
 } from "./util/ast";
 import { isPasswordField } from "./util/field";
@@ -161,6 +163,15 @@ class AuthCorePlugin implements AmplicationPlugin {
         (x) => x //remove nulls and undefined
       ) as namedTypes.ImportDeclaration[]
     );
+
+    const importArray = builders.arrayExpression([
+      aclModuleId,
+      authModuleId,
+      ...eventParams.templateMapping["MODULES"].elements,
+    ]);
+
+    eventParams.templateMapping["MODULES"] = importArray;
+
     return eventParams;
   }
 
@@ -1028,35 +1039,42 @@ class AuthCorePlugin implements AmplicationPlugin {
     return eventParams;
   }
 
-  static createMutationDataMapping(
-    mappings: namedTypes.ObjectProperty[]
-  ): namedTypes.Identifier | namedTypes.ObjectExpression {
-    if (!mappings.length) {
-      return ARGS_ID;
-    }
-    return builders.objectExpression([
-      builders.spreadProperty(ARGS_ID),
-      builders.objectProperty(
-        DATA_ID,
-        builders.objectExpression([
-          builders.spreadProperty(memberExpression`${ARGS_ID}.${DATA_ID}`),
-          ...mappings,
-        ])
-      ),
-    ]);
-  }
   beforeCreateEntityServiceBase(
     context: DsgContext,
     eventParams: CreateEntityServiceBaseParams
   ) {
-    const { template, templateMapping, serviceBaseId, entityName, entity } =
-      eventParams;
+    const { template, serviceBaseId, entityName, entity } = eventParams;
     const { serverDirectories } = context;
     const passwordFields = entity.fields.filter(isPasswordField);
 
     if (!passwordFields?.length) return eventParams;
+    // eventParams.templateMapping["CREATE_ARGS_MAPPING"] =
+    //   AuthCorePlugin.createMutationDataMapping(
+    //     passwordFields.map((field) => {
+    //       const fieldId = builders.identifier(field.name);
+    //       return builders.objectProperty(
+    //         fieldId,
+    //         awaitExpression`await ${HASH_MEMBER_EXPRESSION}(${ARGS_ID}.${DATA_ID}.${fieldId})`
+    //       );
+    //     })
+    //   );
 
-    interpolate(template, templateMapping);
+    // eventParams.templateMapping["UPDATE_ARGS_MAPPING"] =
+    //   AuthCorePlugin.createMutationDataMapping(
+    //     passwordFields.map((field) => {
+    //       const fieldId = builders.identifier(field.name);
+    //       const valueMemberExpression = memberExpression`${ARGS_ID}.${DATA_ID}.${fieldId}`;
+    //       return builders.objectProperty(
+    //         fieldId,
+    //         logicalExpression`${valueMemberExpression} && await ${TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID}(
+    //           ${ARGS_ID}.${DATA_ID}.${fieldId},
+    //           (password) => ${HASH_MEMBER_EXPRESSION}(password)
+    //         )`
+    //       );
+    //     })
+    //   );
+
+    interpolate(template, eventParams.templateMapping);
 
     const classDeclaration = getClassDeclarationById(template, serviceBaseId);
     const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
@@ -1077,6 +1095,7 @@ class AuthCorePlugin implements AmplicationPlugin {
         member.async = true;
       }
     }
+
     //add the password service
     addImports(template, [
       importNames(
@@ -1111,6 +1130,24 @@ class AuthCorePlugin implements AmplicationPlugin {
     );
 
     return entity?.fields.filter(isPasswordField);
+  }
+
+  private static createMutationDataMapping(
+    mappings: namedTypes.ObjectProperty[]
+  ): namedTypes.Identifier | namedTypes.ObjectExpression {
+    if (!mappings.length) {
+      return ARGS_ID;
+    }
+    return builders.objectExpression([
+      builders.spreadProperty(ARGS_ID),
+      builders.objectProperty(
+        DATA_ID,
+        builders.objectExpression([
+          builders.spreadProperty(memberExpression`${ARGS_ID}.${DATA_ID}`),
+          ...mappings,
+        ])
+      ),
+    ]);
   }
 }
 
