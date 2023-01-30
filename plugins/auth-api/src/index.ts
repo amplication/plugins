@@ -35,12 +35,10 @@ import {
 import {
   addIdentifierToConstructorSuperCall,
   addImports,
-  awaitExpression,
   getClassDeclarationById,
   getClassMethodById,
   importNames,
   interpolate,
-  logicalExpression,
   memberExpression,
 } from "./util/ast";
 import { isPasswordField } from "./util/field";
@@ -90,9 +88,6 @@ class AuthCorePlugin implements AmplicationPlugin {
       },
       CreateEntityModuleBase: {
         before: this.beforeCreateEntityModuleBase,
-      },
-      CreateEntityModule: {
-        before: this.beforeCreateEntityModule,
       },
       CreateEntityControllerBase: {
         before: this.beforeCreateControllerBaseModule,
@@ -199,6 +194,24 @@ class AuthCorePlugin implements AmplicationPlugin {
   async afterCreateServerAuth(context: DsgContext) {
     const staticPath = resolve(__dirname, "../static/auth");
     const interceptorsStaticPath = resolve(__dirname, "../static/interceptors");
+    const authBasicTestFilePath = resolve(
+      __dirname,
+      "../static/tests/auth/basic"
+    );
+    const authJwtTestFilePath = resolve(__dirname, "../static/tests/auth/jwt");
+
+    const staticAuthBasicTestFile = await AuthCorePlugin.getStaticFiles(
+      context,
+      `${context.serverDirectories.srcDirectory}/tests/auth/basic`,
+      authBasicTestFilePath
+    );
+
+    const staticAuthJwtTestFile = await AuthCorePlugin.getStaticFiles(
+      context,
+      `${context.serverDirectories.srcDirectory}/tests/auth/jwt`,
+      authJwtTestFilePath
+    );
+
     const staticsInterceptorsFiles = await AuthCorePlugin.getStaticFiles(
       context,
       `${context.serverDirectories.srcDirectory}/interceptors`,
@@ -214,6 +227,9 @@ class AuthCorePlugin implements AmplicationPlugin {
     staticsInterceptorsFiles.forEach((file) => {
       staticsFiles.push(file);
     });
+
+    staticsFiles.push(staticAuthBasicTestFile[0]);
+    staticsFiles.push(staticAuthJwtTestFile[0]);
 
     // 1. create user info
     const userInfo = await createUserInfo(context);
@@ -1048,31 +1064,6 @@ class AuthCorePlugin implements AmplicationPlugin {
     const passwordFields = entity.fields.filter(isPasswordField);
 
     if (!passwordFields?.length) return eventParams;
-    // eventParams.templateMapping["CREATE_ARGS_MAPPING"] =
-    //   AuthCorePlugin.createMutationDataMapping(
-    //     passwordFields.map((field) => {
-    //       const fieldId = builders.identifier(field.name);
-    //       return builders.objectProperty(
-    //         fieldId,
-    //         awaitExpression`await ${HASH_MEMBER_EXPRESSION}(${ARGS_ID}.${DATA_ID}.${fieldId})`
-    //       );
-    //     })
-    //   );
-
-    // eventParams.templateMapping["UPDATE_ARGS_MAPPING"] =
-    //   AuthCorePlugin.createMutationDataMapping(
-    //     passwordFields.map((field) => {
-    //       const fieldId = builders.identifier(field.name);
-    //       const valueMemberExpression = memberExpression`${ARGS_ID}.${DATA_ID}.${fieldId}`;
-    //       return builders.objectProperty(
-    //         fieldId,
-    //         logicalExpression`${valueMemberExpression} && await ${TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID}(
-    //           ${ARGS_ID}.${DATA_ID}.${fieldId},
-    //           (password) => ${HASH_MEMBER_EXPRESSION}(password)
-    //         )`
-    //       );
-    //     })
-    //   );
 
     interpolate(template, eventParams.templateMapping);
 
@@ -1130,24 +1121,6 @@ class AuthCorePlugin implements AmplicationPlugin {
     );
 
     return entity?.fields.filter(isPasswordField);
-  }
-
-  private static createMutationDataMapping(
-    mappings: namedTypes.ObjectProperty[]
-  ): namedTypes.Identifier | namedTypes.ObjectExpression {
-    if (!mappings.length) {
-      return ARGS_ID;
-    }
-    return builders.objectExpression([
-      builders.spreadProperty(ARGS_ID),
-      builders.objectProperty(
-        DATA_ID,
-        builders.objectExpression([
-          builders.spreadProperty(memberExpression`${ARGS_ID}.${DATA_ID}`),
-          ...mappings,
-        ])
-      ),
-    ]);
   }
 }
 
