@@ -146,10 +146,10 @@ class AuthCorePlugin implements AmplicationPlugin {
     const aclModuleId = builders.identifier("ACLModule");
     const authModuleId = builders.identifier("AuthModule");
 
-    const aclModuleImport = importNames([aclModuleId], "../../auth/acl.module");
+    const aclModuleImport = importNames([aclModuleId], "./auth/acl.module");
     const authModuleImport = importNames(
       [authModuleId],
-      "../../auth/auth.module"
+      "./auth/auth.module"
     );
 
     addImports(
