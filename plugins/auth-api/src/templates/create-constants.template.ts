@@ -1,6 +1,4 @@
-//@ts-ignore
 import { Credentials } from "../../auth/Credentials";
-//@ts-ignore
 import { UserInfo } from "../../auth/UserInfo";
 
 export const VALID_ID = "1";

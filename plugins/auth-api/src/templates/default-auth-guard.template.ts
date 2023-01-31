@@ -1,7 +1,6 @@
 import { Observable } from "rxjs";
 import { ExecutionContext, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-//@ts-ignore
 import { IS_PUBLIC_KEY } from "../decorators/public.decorator";
 
 declare class GUARD {
@@ -11,7 +10,6 @@ declare class GUARD {
 }
 
 @Injectable()
-//@ts-ignore
 export class DefaultAuthGuard extends GUARD {
   constructor(private readonly reflector: Reflector) {
     super();

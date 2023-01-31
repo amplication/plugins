@@ -15,7 +15,6 @@ import { BasicStrategy } from "./basic/basic.strategy";
 import { JwtStrategy } from "./jwt/jwt.strategy";
 import { jwtSecretFactory } from "./jwt/jwtSecretFactory";
 import { PasswordService } from "./password.service";
-//@ts-ignore
 import { TokenService } from "./token.service";
 
 @Module({
