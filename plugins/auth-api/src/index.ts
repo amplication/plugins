@@ -50,7 +50,10 @@ import {
   resolverMethodsIdsActionPairs,
 } from "./core/create-method-id-action-entity-map";
 import { relativeImportPath } from "./util/module";
-import { addInjectableDependency } from "./util/nestjs-code-generation";
+import {
+  addInjectableDependency,
+  buildSwaggerForbiddenResponse,
+} from "./util/nestjs-code-generation";
 import {
   BlockStatement,
   IfStatement,
@@ -147,10 +150,7 @@ class AuthCorePlugin implements AmplicationPlugin {
     const authModuleId = builders.identifier("AuthModule");
 
     const aclModuleImport = importNames([aclModuleId], "./auth/acl.module");
-    const authModuleImport = importNames(
-      [authModuleId],
-      "./auth/auth.module"
-    );
+    const authModuleImport = importNames([authModuleId], "./auth/auth.module");
 
     addImports(
       eventParams.template,
@@ -500,14 +500,17 @@ class AuthCorePlugin implements AmplicationPlugin {
 
     if (classDeclaration) {
       controllerMethodsIdsActionPairs(templateMapping, entity).forEach(
-        ({ methodId, action, entity }) => {
+        ({ methodId, action, entity, permissionType }) => {
           setAuthPermissions(
             classDeclaration,
             methodId,
             action,
             entity.name,
-            true
+            true,
+            permissionType
           );
+          const classMethod = getClassMethodById(classDeclaration, methodId);
+          classMethod?.decorators?.push(buildSwaggerForbiddenResponse());
         }
       );
     }
@@ -532,13 +535,14 @@ class AuthCorePlugin implements AmplicationPlugin {
       eventParams.toManyMapping,
       eventParams.entity,
       relatedEntity
-    ).forEach(({ methodId, action, entity }) => {
+    ).forEach(({ methodId, action, entity, permissionType }) => {
       setAuthPermissions(
         toManyClassDeclaration,
         methodId,
         action,
         entity.name,
-        true
+        true,
+        permissionType
       );
     });
 
@@ -563,7 +567,9 @@ class AuthCorePlugin implements AmplicationPlugin {
       eventParams.toOneMapping["FIND_ONE"] as namedTypes.Identifier,
       EnumEntityAction.View,
       relatedEntity.name,
-      false
+      false,
+      relatedEntity.permissions.find((p) => p.action === EnumEntityAction.View)
+        ?.type
     );
 
     return eventParams;
@@ -587,7 +593,10 @@ class AuthCorePlugin implements AmplicationPlugin {
       eventParams.toManyMapping["FIND_MANY"] as namedTypes.Identifier,
       EnumEntityAction.Search,
       relatedEntity.name,
-      false
+      false,
+      relatedEntity.permissions.find(
+        (p) => p.action === EnumEntityAction.Search
+      )?.type
     );
 
     return eventParams;
@@ -800,13 +809,14 @@ class AuthCorePlugin implements AmplicationPlugin {
       );
 
       resolverMethodsIdsActionPairs(templateMapping, entity).forEach(
-        ({ methodId, action, entity }) => {
+        ({ methodId, action, entity, permissionType }) => {
           setAuthPermissions(
             classDeclaration,
             methodId,
             action,
             entity.name,
-            false
+            false,
+            permissionType
           );
         }
       );

@@ -1,14 +1,19 @@
-import { Entity, EnumEntityAction } from "@amplication/code-gen-types";
+import {
+  Entity,
+  EnumEntityAction,
+  EnumEntityPermissionType,
+} from "@amplication/code-gen-types";
 import { namedTypes } from "ast-types";
 
 type MethodsIdsActionEntityTriplet = {
   methodId: namedTypes.Identifier;
   action: EnumEntityAction;
   entity: Entity;
+  permissionType?: EnumEntityPermissionType;
 };
 
 export const controllerMethodsIdsActionPairs = (
-  templateMapping: { [key: string]: any; },
+  templateMapping: { [key: string]: any },
   entity: Entity
 ): MethodsIdsActionEntityTriplet[] => [
   {
@@ -17,6 +22,9 @@ export const controllerMethodsIdsActionPairs = (
     ] as namedTypes.Identifier,
     action: EnumEntityAction.Create,
     entity: entity,
+    permissionType: entity.permissions.find(
+      (p) => p.action === EnumEntityAction.Create
+    )?.type,
   },
   {
     methodId: templateMapping[
@@ -24,6 +32,9 @@ export const controllerMethodsIdsActionPairs = (
     ] as namedTypes.Identifier,
     action: EnumEntityAction.Search,
     entity: entity,
+    permissionType: entity.permissions.find(
+      (p) => p.action === EnumEntityAction.Search
+    )?.type,
   },
   {
     methodId: templateMapping[
@@ -31,6 +42,9 @@ export const controllerMethodsIdsActionPairs = (
     ] as namedTypes.Identifier,
     action: EnumEntityAction.View,
     entity: entity,
+    permissionType: entity.permissions.find(
+      (p) => p.action === EnumEntityAction.View
+    )?.type,
   },
   {
     methodId: templateMapping[
@@ -38,6 +52,9 @@ export const controllerMethodsIdsActionPairs = (
     ] as namedTypes.Identifier,
     action: EnumEntityAction.Update,
     entity: entity,
+    permissionType: entity.permissions.find(
+      (p) => p.action === EnumEntityAction.Update
+    )?.type,
   },
   {
     methodId: templateMapping[
@@ -45,11 +62,14 @@ export const controllerMethodsIdsActionPairs = (
     ] as namedTypes.Identifier,
     action: EnumEntityAction.Delete,
     entity: entity,
+    permissionType: entity.permissions.find(
+      (p) => p.action === EnumEntityAction.Delete
+    )?.type,
   },
 ];
 
 export const controllerToManyMethodsIdsActionPairs = (
-  toManyMapping: { [key: string]: any; },
+  toManyMapping: { [key: string]: any },
   entity: Entity,
   relatedEntity: Entity
 ): MethodsIdsActionEntityTriplet[] => [
@@ -57,51 +77,78 @@ export const controllerToManyMethodsIdsActionPairs = (
     methodId: toManyMapping["FIND_MANY"],
     action: EnumEntityAction.Search,
     entity: relatedEntity,
+    permissionType: relatedEntity.permissions.find(
+      (p) => p.action === EnumEntityAction.Search
+    )?.type,
   },
   {
     methodId: toManyMapping["UPDATE"],
     action: EnumEntityAction.Update,
     entity: entity,
+    permissionType: entity.permissions.find(
+      (p) => p.action === EnumEntityAction.Update
+    )?.type,
   },
   {
     methodId: toManyMapping["CONNECT"],
     action: EnumEntityAction.Update,
     entity: entity,
+    permissionType: entity.permissions.find(
+      (p) => p.action === EnumEntityAction.Update
+    )?.type,
   },
   {
     methodId: toManyMapping["DISCONNECT"],
     action: EnumEntityAction.Delete,
     entity: entity,
+    permissionType: entity.permissions.find(
+      (p) => p.action === EnumEntityAction.Delete
+    )?.type,
   },
 ];
 
 export const resolverMethodsIdsActionPairs = (
-  templateMapping: { [key: string]: any; },
+  templateMapping: { [key: string]: any },
   entity: Entity
 ): MethodsIdsActionEntityTriplet[] => [
   {
     methodId: templateMapping["CREATE_MUTATION"] as namedTypes.Identifier,
     action: EnumEntityAction.Create,
     entity: entity,
+    permissionType: entity.permissions.find(
+      (p) => p.action === EnumEntityAction.Create
+    )?.type,
   },
   {
     methodId: templateMapping["ENTITIES_QUERY"] as namedTypes.Identifier,
     action: EnumEntityAction.Search,
     entity: entity,
+    permissionType: entity.permissions.find(
+      (p) => p.action === EnumEntityAction.Search
+    )?.type,
   },
   {
     methodId: templateMapping["ENTITY_QUERY"] as namedTypes.Identifier,
     action: EnumEntityAction.View,
     entity: entity,
+    permissionType: entity.permissions.find(
+      (p) => p.action === EnumEntityAction.View
+    )?.type,
   },
   {
     methodId: templateMapping["UPDATE_MUTATION"] as namedTypes.Identifier,
     action: EnumEntityAction.Update,
     entity: entity,
+    permissionType: entity.permissions.find(
+      (p) => p.action === EnumEntityAction.Update
+    )?.type,
   },
   {
     methodId: templateMapping["DELETE_MUTATION"] as namedTypes.Identifier,
     action: EnumEntityAction.Delete,
     entity: entity,
+    permissionType: entity.permissions.find(
+      (p) => p.action === EnumEntityAction.Delete
+    )?.type,
   },
 ];

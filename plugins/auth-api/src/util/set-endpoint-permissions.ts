@@ -1,7 +1,13 @@
 import assert from "assert";
 import { builders, namedTypes } from "ast-types";
-import { EnumEntityAction } from "@amplication/code-gen-types";
-import { getClassMethodById, removeDecoratorByName } from "./ast";
+import {
+  EnumEntityAction,
+  EnumEntityPermissionType,
+} from "@amplication/code-gen-types";
+import {
+  getClassMethodById,
+  removeDecoratorByName,
+} from "./ast";
 import {
   buildNessJsInterceptorDecorator,
   buildNestAccessControlDecorator,
@@ -20,11 +26,16 @@ export function setAuthPermissions(
   methodId: namedTypes.Identifier,
   action: EnumEntityAction,
   entityName: string,
-  createSwaggerDecorator: boolean
+  createSwaggerDecorator: boolean,
+  permissionType?: EnumEntityPermissionType
 ): void {
-  const classMethod = getClassMethodById(classDeclaration, methodId);
 
+  const classMethod = getClassMethodById(classDeclaration, methodId);
   if (!classMethod) {
+    return;
+  }
+
+  if (permissionType === EnumEntityPermissionType.Public) {
     return;
   }
 
