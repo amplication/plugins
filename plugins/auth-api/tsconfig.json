@@ -1,23 +1,22 @@
 {
   "compilerOptions": {
+    "lib": [
+      "es2021"
+    ],
     "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "target": "es2017",
-    "lib": ["es2020", "dom"],
-    "sourceMap": true,
-    "baseUrl": "./src",
-    "outDir": "dist",
-    "incremental": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
+    "target": "es2021",
     "strict": true,
-    "jsx": "react"
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "paths": {"@templates":["./src/templates"]}
   },
-  "include": ["src/index.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/index.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

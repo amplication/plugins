@@ -1,10 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { INVALID_PASSWORD_ERROR, INVALID_USERNAME_ERROR } from "../constants";
-import { ITokenService, ITokenPayload } from "../ITokenService";
+//@ts-ignore
+import { ITokenService, ITokenPayload } from "../ITokenService"; 
 /**
  * TokenServiceBase is a basic http implementation of ITokenService
  */
 @Injectable()
+ //@ts-ignore
 export class TokenServiceBase implements ITokenService {
   /**
    *

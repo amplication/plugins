@@ -171,7 +171,7 @@ class AuthCorePlugin implements AmplicationPlugin {
   }
 
   async afterCreateServerPackageJson(context: DsgContext) {
-    const staticPath = resolve(__dirname, "../static/package-json");
+    const staticPath = resolve(__dirname, "./static/package-json");
     const staticsFiles = await AuthCorePlugin.getStaticFiles(
       context,
       context.serverDirectories.baseDirectory,
@@ -192,13 +192,13 @@ class AuthCorePlugin implements AmplicationPlugin {
   }
 
   async afterCreateServerAuth(context: DsgContext) {
-    const staticPath = resolve(__dirname, "../static/auth");
-    const interceptorsStaticPath = resolve(__dirname, "../static/interceptors");
+    const staticPath = resolve(__dirname, "./static/auth");
+    const interceptorsStaticPath = resolve(__dirname, "./static/interceptors");
     const authBasicTestFilePath = resolve(
       __dirname,
-      "../static/tests/auth/basic"
+      "./static/tests/auth/basic"
     );
-    const authJwtTestFilePath = resolve(__dirname, "../static/tests/auth/jwt");
+    const authJwtTestFilePath = resolve(__dirname, "./static/tests/auth/jwt");
 
     const staticAuthBasicTestFile = await AuthCorePlugin.getStaticFiles(
       context,

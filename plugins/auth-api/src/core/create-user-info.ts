@@ -4,14 +4,17 @@ import { interpolate, removeTSClassDeclares } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
 import { print } from "@amplication/code-gen-utils";
 import { getUserIdType } from "../util/get-user-id-type";
+import {join} from "path"; 
+import { templatesPath } from "../constants";
 
-const templatePath = require.resolve("../../templates/user-info.template.ts");
+
+const userInfoPath = join(templatesPath,"user-info.template.ts"); 
 
 export async function createUserInfo(dsgContext: DsgContext): Promise<Module> {
   const { serverDirectories } = dsgContext;
   const authDir = `${serverDirectories.authDirectory}`;
   
-  const template = await readFile(templatePath);
+  const template = await readFile(userInfoPath);
   const idType = getUserIdType(dsgContext);
   const templateMapping = prepareTemplateMapping(idType);
   const filePath = `${authDir}/UserInfo.ts`;

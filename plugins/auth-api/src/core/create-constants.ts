@@ -3,8 +3,10 @@ import { readFile, print} from "@amplication/code-gen-utils";
 import { interpolate, removeTSClassDeclares } from "../util/ast";
 import { builders } from "ast-types";
 import { getUserIdType } from "../util/get-user-id-type";
+import {join} from "path"; 
+import { templatesPath } from "../constants";
 
-const templatePath = require.resolve("../../templates/create-constants.template.ts");
+const templatePath = join(templatesPath,"create-constants.template.ts"); 
 
 export async function createAuthConstants(
   dsgContext: DsgContext

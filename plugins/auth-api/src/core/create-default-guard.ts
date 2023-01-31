@@ -10,6 +10,8 @@ import {
 import { readFile } from "@amplication/code-gen-utils";
 import { relativeImportPath } from "../util/module";
 import { EnumAuthProviderType } from "@amplication/code-gen-types/src/models";
+import {join} from "path"; 
+import { templatesPath } from "../constants";
 
 type AuthGuardMetaData = {
   path: string;
@@ -21,9 +23,9 @@ export async function createDefaultGuard(
   authProvider: EnumAuthProviderType,
   authPath: string
 ): Promise<Module> {
-  const defaultAuthGuardPath = require.resolve(
-    "../../templates/default-auth-guard.template.ts"
-  );
+
+
+  const defaultAuthGuardPath = join(templatesPath,"default-auth-guard.template.ts"); 
 
   const modulePath = `${authPath}/defaultAuth.guard.ts`;
 

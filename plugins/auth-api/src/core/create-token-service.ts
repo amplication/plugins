@@ -3,6 +3,8 @@ import { DsgContext, Module } from "@amplication/code-gen-types";
 import { removeTSIgnoreComments } from "../util/ast";
 import { readFile } from "@amplication/code-gen-utils";
 import { EnumAuthProviderType } from "../types";
+import { join } from "path";
+import { templatesPath } from "../constants";
 
 export async function createTokenService(
   dsgContext: DsgContext
@@ -13,9 +15,12 @@ export async function createTokenService(
   const authDir = `${serverDirectories.srcDirectory}/auth`;
   const name =
     authProvider === EnumAuthProviderType.Http ? "Basic" : authProvider;
-  const templatePath = require.resolve(
-    `../../templates/create-token/${name.toLowerCase()}/${name.toLowerCase()}Token.service.template.ts`
+
+  const templatePath = join(
+    templatesPath,
+    `create-token/${name.toLowerCase()}/${name.toLowerCase()}Token.service.template.ts`
   );
+
   const file = await readFile(templatePath);
   const filePath = `${authDir}/base/token.service.base.ts`;
 
@@ -23,6 +28,3 @@ export async function createTokenService(
 
   return { code: print(file).code, path: filePath };
 }
-
-
-
