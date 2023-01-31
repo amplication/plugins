@@ -10,7 +10,16 @@ type MethodsIdsActionEntityTriplet = {
   action: EnumEntityAction;
   entity: Entity;
   permissionType?: EnumEntityPermissionType;
+  methodName?: string;
 };
+
+export const enum EnumTemplateType {
+  ControllerBase = "ControllerBase",
+  ResolverBase = "ResolverBase",
+  controllerToManyMethods = "ControllerToManyMethods",
+  ResolverToManyMethods = "ResolverToManyMethods",
+  ResolverFindOne = "ResolverFindOne",
+}
 
 export const controllerMethodsIdsActionPairs = (
   templateMapping: { [key: string]: any },
@@ -45,6 +54,7 @@ export const controllerMethodsIdsActionPairs = (
     permissionType: entity.permissions.find(
       (p) => p.action === EnumEntityAction.View
     )?.type,
+    methodName: "FIND_ONE_ENTITY_FUNCTION",
   },
   {
     methodId: templateMapping[
@@ -99,7 +109,7 @@ export const controllerToManyMethodsIdsActionPairs = (
   },
   {
     methodId: toManyMapping["DISCONNECT"],
-    action: EnumEntityAction.Delete,
+    action: EnumEntityAction.Update,
     entity: entity,
     permissionType: entity.permissions.find(
       (p) => p.action === EnumEntityAction.Delete

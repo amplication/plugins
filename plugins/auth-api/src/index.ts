@@ -18,6 +18,7 @@ import {
   DsgContext,
   EntityField,
   EnumEntityAction,
+  EnumEntityPermissionType,
   Events,
   Module,
 } from "@amplication/code-gen-types";
@@ -47,6 +48,7 @@ import { setAuthPermissions } from "./util/set-endpoint-permissions";
 import {
   controllerMethodsIdsActionPairs,
   controllerToManyMethodsIdsActionPairs,
+  EnumTemplateType,
   resolverMethodsIdsActionPairs,
 } from "./core/create-method-id-action-entity-map";
 import { relativeImportPath } from "./util/module";
@@ -500,17 +502,21 @@ class AuthCorePlugin implements AmplicationPlugin {
 
     if (classDeclaration) {
       controllerMethodsIdsActionPairs(templateMapping, entity).forEach(
-        ({ methodId, action, entity, permissionType }) => {
+        ({ methodId, action, entity, permissionType, methodName }) => {
           setAuthPermissions(
             classDeclaration,
             methodId,
             action,
             entity.name,
             true,
-            permissionType
+            EnumTemplateType.ControllerBase,
+            permissionType,
+            methodName
           );
-          const classMethod = getClassMethodById(classDeclaration, methodId);
-          classMethod?.decorators?.push(buildSwaggerForbiddenResponse());
+          if (permissionType === EnumEntityPermissionType.Public) {
+            const classMethod = getClassMethodById(classDeclaration, methodId);
+            classMethod?.decorators?.push(buildSwaggerForbiddenResponse());
+          }
         }
       );
     }
@@ -542,6 +548,7 @@ class AuthCorePlugin implements AmplicationPlugin {
         action,
         entity.name,
         true,
+        EnumTemplateType.controllerToManyMethods,
         permissionType
       );
     });
@@ -568,6 +575,7 @@ class AuthCorePlugin implements AmplicationPlugin {
       EnumEntityAction.View,
       relatedEntity.name,
       false,
+      EnumTemplateType.ResolverFindOne,
       relatedEntity.permissions.find((p) => p.action === EnumEntityAction.View)
         ?.type
     );
@@ -594,6 +602,7 @@ class AuthCorePlugin implements AmplicationPlugin {
       EnumEntityAction.Search,
       relatedEntity.name,
       false,
+      EnumTemplateType.ResolverToManyMethods,
       relatedEntity.permissions.find(
         (p) => p.action === EnumEntityAction.Search
       )?.type
@@ -816,6 +825,7 @@ class AuthCorePlugin implements AmplicationPlugin {
             action,
             entity.name,
             false,
+            EnumTemplateType.ResolverBase,
             permissionType
           );
         }

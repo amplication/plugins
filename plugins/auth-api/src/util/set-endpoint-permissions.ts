@@ -4,15 +4,13 @@ import {
   EnumEntityAction,
   EnumEntityPermissionType,
 } from "@amplication/code-gen-types";
-import {
-  getClassMethodById,
-  removeDecoratorByName,
-} from "./ast";
+import { getClassMethodById, removeDecoratorByName } from "./ast";
 import {
   buildNessJsInterceptorDecorator,
   buildNestAccessControlDecorator,
   buildSwaggerForbiddenResponse,
 } from "./nestjs-code-generation";
+import { EnumTemplateType } from "../core/create-method-id-action-entity-map";
 
 export const PUBLIC_DECORATOR_NAME = "Public";
 
@@ -27,9 +25,10 @@ export function setAuthPermissions(
   action: EnumEntityAction,
   entityName: string,
   createSwaggerDecorator: boolean,
-  permissionType?: EnumEntityPermissionType
+  templateType: EnumTemplateType,
+  permissionType?: EnumEntityPermissionType,
+  methodName?: string
 ): void {
-
   const classMethod = getClassMethodById(classDeclaration, methodId);
   if (!classMethod) {
     return;
@@ -50,8 +49,9 @@ export function setAuthPermissions(
   }
 
   if (
-    action === EnumEntityAction.Create ||
-    action === EnumEntityAction.Update
+    (action === EnumEntityAction.Create ||
+      action === EnumEntityAction.Update) &&
+    templateType !== EnumTemplateType.controllerToManyMethods
   ) {
     const AclValidateRequestInterceptor = buildNessJsInterceptorDecorator(
       builders.identifier(ACL_VALIDATE_REQUEST_INTERCEPTOR_NAME)
@@ -63,12 +63,16 @@ export function setAuthPermissions(
     buildNestAccessControlDecorator(
       entityName,
       isActionSearchOrView ? "read" : action.toLocaleLowerCase(),
-      "any"
+      methodName === "FIND_ONE_ENTITY_FUNCTION" ? "own" : "any"
     )
   );
 
-  createSwaggerDecorator &&
+  if (
+    createSwaggerDecorator &&
+    templateType !== EnumTemplateType.controllerToManyMethods
+  ) {
     classMethod.decorators?.push(buildSwaggerForbiddenResponse());
+  }
 
   removeDecoratorByName(classMethod, PUBLIC_DECORATOR_NAME);
 }
