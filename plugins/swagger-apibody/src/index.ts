@@ -1,7 +1,6 @@
 import type {
   AmplicationPlugin,
   CreateEntityControllerBaseParams,
-  CreateEntityModuleBaseParams,
   DsgContext,
   Events,
 } from "@amplication/code-gen-types";
@@ -19,9 +18,6 @@ const funcMethodMap = {
 }
 
 class SwaggerApiBody implements AmplicationPlugin {
-  /**
-   * This is mandatory function that returns an object with the event name. Each event can have before or/and after
-   */
   register(): Events {
     return {
       [EventNames.CreateEntityControllerBase]: {
@@ -34,7 +30,7 @@ class SwaggerApiBody implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateEntityControllerBaseParams
   ) {
-    const { templateMapping, entity, template, controllerBaseId } = eventParams;
+    const { templateMapping, template, controllerBaseId } = eventParams;
 
     interpolate(template, templateMapping);
 
