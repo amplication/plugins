@@ -144,6 +144,7 @@ export const resolverMethodsIdsActionPairs = (
     permissionType: entity.permissions.find(
       (p) => p.action === EnumEntityAction.View
     )?.type,
+    methodName: "ENTITY_QUERY",
   },
   {
     methodId: templateMapping["UPDATE_MUTATION"] as namedTypes.Identifier,

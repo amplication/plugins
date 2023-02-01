@@ -818,7 +818,7 @@ class AuthCorePlugin implements AmplicationPlugin {
       );
 
       resolverMethodsIdsActionPairs(templateMapping, entity).forEach(
-        ({ methodId, action, entity, permissionType }) => {
+        ({ methodId, action, entity, permissionType, methodName }) => {
           setAuthPermissions(
             classDeclaration,
             methodId,
@@ -826,7 +826,8 @@ class AuthCorePlugin implements AmplicationPlugin {
             entity.name,
             false,
             EnumTemplateType.ResolverBase,
-            permissionType
+            permissionType,
+            methodName
           );
         }
       );

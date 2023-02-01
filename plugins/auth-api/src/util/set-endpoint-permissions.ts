@@ -59,11 +59,18 @@ export function setAuthPermissions(
     classMethod.decorators?.unshift(AclValidateRequestInterceptor);
   }
 
+  let possessionType = "any";
+  if (
+    methodName === "FIND_ONE_ENTITY_FUNCTION" ||
+    methodName === "ENTITY_QUERY"
+  ) {
+    possessionType = "own";
+  }
   classMethod.decorators?.push(
     buildNestAccessControlDecorator(
       entityName,
       isActionSearchOrView ? "read" : action.toLocaleLowerCase(),
-      methodName === "FIND_ONE_ENTITY_FUNCTION" ? "own" : "any"
+      possessionType
     )
   );
 
