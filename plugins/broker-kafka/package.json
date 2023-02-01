@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "webpack --watch",
     "build": "webpack",
+    "prebuild": "rimraf dist",
     "format:write": "prettier --write \"**/*.{js,ts}\""
   },
   "keywords": [],
