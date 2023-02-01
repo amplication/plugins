@@ -13,10 +13,10 @@ module.exports = {
       filename: "[name].js.map",
     }),
     new CopyWebpackPlugin({
-      patterns: [{ from: "src/static", to: "static" }],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [{ from: "src/templates", to: "templates" }],
+      patterns: [
+        { from: "src/static", to: "static", noErrorOnMissing: true },
+        { from: "src/templates", to: "templates", noErrorOnMissing: true },
+      ],
     }),
   ],
   module: {

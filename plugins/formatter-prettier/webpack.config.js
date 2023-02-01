@@ -2,6 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
+/** @type {import("webpack").Configuration} */
 module.exports = {
   mode: "production",
   target: "node",
@@ -11,7 +12,10 @@ module.exports = {
       filename: "[name].js.map",
     }),
     new CopyWebpackPlugin({
-      patterns: [{ from: "src/static", to: "static" }],
+      patterns: [
+        { from: "src/static", to: "static", noErrorOnMissing: true },
+        { from: "src/templates", to: "templates", noErrorOnMissing: true },
+      ],
     }),
   ],
   module: {
