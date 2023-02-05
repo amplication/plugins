@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = require("path");
-const models_1 = require("@amplication/code-gen-types/dist/models");
+const models_1 = require("@amplication/code-gen-types/src/models");
 class JwtAuthPlugin {
     register() {
         return {
-            createAdminModules: {
+            CreateAdminUI: {
                 before: this.beforeCreateAdminModules,
             },
-            createAuthModules: {
+            CreateServerAuth: {
                 before: this.beforeCreateAuthModules,
                 after: this.afterCreateAuthModules,
             },

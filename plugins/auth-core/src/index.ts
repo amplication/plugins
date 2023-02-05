@@ -28,10 +28,7 @@ import {
   createUserInfo,
   createTokenPayloadInterface,
   createAuthConstants,
-  createTokenService,
-  createTokenServiceTests,
   createGrantsModule,
-  createDefaultGuard,
 } from "./core";
 import {
   addIdentifierToConstructorSuperCall,
@@ -64,6 +61,7 @@ import {
   Identifier,
   TSTypeAnnotation,
 } from "@babel/types";
+import { appendImports, parse, print } from "@amplication/code-gen-utils";
 
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
@@ -87,6 +85,8 @@ class AuthCorePlugin implements AmplicationPlugin {
       },
       CreateServerAppModule: {
         before: this.beforeCreateAppModule,
+        //@ts-ignore
+        after: this.afterCreateAppModule,
       },
       CreateServerAuth: {
         after: this.afterCreateServerAuth,
@@ -151,16 +151,6 @@ class AuthCorePlugin implements AmplicationPlugin {
     const aclModuleId = builders.identifier("ACLModule");
     const authModuleId = builders.identifier("AuthModule");
 
-    const aclModuleImport = importNames([aclModuleId], "./auth/acl.module");
-    const authModuleImport = importNames([authModuleId], "./auth/auth.module");
-
-    addImports(
-      eventParams.template,
-      [aclModuleImport, authModuleImport].filter(
-        (x) => x //remove nulls and undefined
-      ) as namedTypes.ImportDeclaration[]
-    );
-
     const importArray = builders.arrayExpression([
       aclModuleId,
       authModuleId,
@@ -193,26 +183,30 @@ class AuthCorePlugin implements AmplicationPlugin {
     return grants ? [...staticsFiles, grants] : staticsFiles;
   }
 
+  async afterCreateAppModule(
+    context: DsgContext,
+    eventParams: CreateServerAppModuleParams,
+    modules: Module[]
+  ) {
+    const [appModule] = modules;
+
+    if (!appModule) return modules;
+    const file = parse(appModule.code);
+    const aclModuleId = builders.identifier("ACLModule");
+    const authModuleId = builders.identifier("AuthModule");
+
+    const aclModuleImport = importNames([aclModuleId], "./auth/acl.module");
+    const authModuleImport = importNames([authModuleId], "./auth/auth.module");
+
+    appendImports(file, [aclModuleImport, authModuleImport]);
+
+    return [{ ...appModule, code: print(file).code }];
+  }
+
   async afterCreateServerAuth(context: DsgContext) {
     const staticPath = resolve(__dirname, "./static/auth");
+
     const interceptorsStaticPath = resolve(__dirname, "./static/interceptors");
-    const authBasicTestFilePath = resolve(
-      __dirname,
-      "./static/tests/auth/basic"
-    );
-    const authJwtTestFilePath = resolve(__dirname, "./static/tests/auth/jwt");
-
-    const staticAuthBasicTestFile = await AuthCorePlugin.getStaticFiles(
-      context,
-      `${context.serverDirectories.srcDirectory}/tests/auth/basic`,
-      authBasicTestFilePath
-    );
-
-    const staticAuthJwtTestFile = await AuthCorePlugin.getStaticFiles(
-      context,
-      `${context.serverDirectories.srcDirectory}/tests/auth/jwt`,
-      authJwtTestFilePath
-    );
 
     const staticsInterceptorsFiles = await AuthCorePlugin.getStaticFiles(
       context,
@@ -230,44 +224,14 @@ class AuthCorePlugin implements AmplicationPlugin {
       staticsFiles.push(file);
     });
 
-    staticsFiles.push(staticAuthBasicTestFile[0]);
-    staticsFiles.push(staticAuthJwtTestFile[0]);
-
     // 1. create user info
     const userInfo = await createUserInfo(context);
     // 2. create token payload interface
     const tokenPayloadInterface = await createTokenPayloadInterface(context);
     // 3. create constants for tests
     const athConstants = await createAuthConstants(context);
-    // 4. create token service
-    const tokenService = await createTokenService(context);
-    // 5. create token service test
-    const tokenServiceTest = await createTokenServiceTests(context);
-    // 6. create create Default Guard
-    const { resourceInfo, serverDirectories } = context;
-    const authDir = `${serverDirectories.srcDirectory}/auth`;
-    const authTestsDir = `${serverDirectories.srcDirectory}/tests/auth`;
 
-    let defaultGuardFile: Module = {
-      path: "",
-      code: "",
-    };
-    if (resourceInfo) {
-      defaultGuardFile = await createDefaultGuard(
-        resourceInfo.settings.authProvider,
-        authDir
-      );
-    }
-
-    return [
-      userInfo,
-      tokenPayloadInterface,
-      athConstants,
-      tokenService,
-      tokenServiceTest,
-      ...staticsFiles,
-      defaultGuardFile,
-    ];
+    return [userInfo, tokenPayloadInterface, athConstants, ...staticsFiles];
   }
 
   async beforeCreateEntityModule(

@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-auth",
-  "version": "1.0.4",
+  "version": "1.0.5-beta.5",
   "description": "set auth for Amplication build",
   "main": "dist/index.js",
   "scripts": {
@@ -12,7 +12,7 @@
   "license": "ISC",
   "devDependencies": {
     "@amplication/code-gen-types": "^1.1.22-beta.1",
-    "@amplication/code-gen-utils": "^0.0.3",
+    "@amplication/code-gen-utils": "^0.0.4",
     "@babel/parser": "^7.18.11",
     "@babel/types": "^7.18.10",
     "@nestjs/common": "^9.0.9",
