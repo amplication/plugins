@@ -32,7 +32,6 @@ class SwaggerApiBody implements AmplicationPlugin {
   ) {
     const { templateMapping, template, controllerBaseId } = eventParams;
 
-    interpolate(template, templateMapping);
 
     const classDeclaration = getClassDeclarationById(
       template,
