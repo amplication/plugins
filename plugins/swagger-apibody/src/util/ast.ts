@@ -1,4 +1,4 @@
-import * as recast from "recast";
+import { visit } from "recast";
 import { ASTNode, namedTypes, builders } from "ast-types";
 import * as K from "ast-types/gen/kinds";
 import { NodePath } from "ast-types/lib/node-path";
@@ -93,7 +93,7 @@ export function interpolate(
   ast: ASTNode,
   mapping: { [key: string]: ASTNode | undefined }
 ): void {
-  return recast.visit(ast, {
+  return visit(ast, {
     visitIdentifier(path) {
       const { name } = path.node;
       if (mapping.hasOwnProperty(name)) {
@@ -176,7 +176,7 @@ export function getClassDeclarationById(
   id: namedTypes.Identifier
 ): namedTypes.ClassDeclaration {
   let classDeclaration: namedTypes.ClassDeclaration | null = null;
-  recast.visit(node, {
+  visit(node, {
     visitClassDeclaration(path) {
       if (path.node.id && path.node.id.name === id.name) {
         classDeclaration = path.node;
