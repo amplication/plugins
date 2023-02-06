@@ -6,8 +6,7 @@ import type {
 } from "@amplication/code-gen-types";
 import {
   getClassDeclarationById,
-  getClassMethodById,
-  interpolate,
+  getClassMethodById
 } from "./util/ast";
 import { EventNames } from "@amplication/code-gen-types";
 import { builders, namedTypes } from "ast-types";
