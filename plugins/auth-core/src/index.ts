@@ -15,6 +15,7 @@ import {
   CreateServerAppModuleParams,
   CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
+  CreateServerParams,
   DsgContext,
   EntityField,
   EnumEntityAction,
@@ -29,6 +30,7 @@ import {
   createTokenPayloadInterface,
   createAuthConstants,
   createGrantsModule,
+  createUserEntityIfNotExist,
 } from "./core";
 import {
   addIdentifierToConstructorSuperCall,
@@ -123,8 +125,21 @@ class AuthCorePlugin implements AmplicationPlugin {
       },
       CreateSeed: {
         before: this.beforeCreateSeed,
+        after: this.afterCreateSeed,
       },
+      CreateServer: {
+        before:this.beforeCreateServer
+      }
     };
+  }
+
+  beforeCreateServer(context: DsgContext, eventParams: CreateServerParams) {
+    if (!context.entities) return eventParams;
+    const [entitiesWithUserEntity] = createUserEntityIfNotExist(
+      context.entities
+    );
+    context.entities = entitiesWithUserEntity;
+    return eventParams;
   }
 
   beforeCreateServerDotEnv(
@@ -201,6 +216,21 @@ class AuthCorePlugin implements AmplicationPlugin {
     appendImports(file, [aclModuleImport, authModuleImport]);
 
     return [{ ...appModule, code: print(file).code }];
+  }
+
+  async afterCreateSeed(
+    context: DsgContext,
+    eventParams: CreateSeedParams,
+    modules: Module[]
+  ) {
+    const staticPath = resolve(__dirname, "./static/scripts");
+    const staticsFiles = await AuthCorePlugin.getStaticFiles(
+      context,
+      context.serverDirectories.scriptsDirectory,
+      staticPath
+    );
+
+    return [...staticsFiles, ...modules];
   }
 
   async afterCreateServerAuth(context: DsgContext) {
@@ -890,7 +920,7 @@ class AuthCorePlugin implements AmplicationPlugin {
     return eventParams;
   }
 
-  beforeCreateSeed(context: DsgContext, eventParams: CreateSeedParams) {
+  async beforeCreateSeed(context: DsgContext, eventParams: CreateSeedParams) {
     interpolate(eventParams.template, eventParams.templateMapping);
 
     const passwordImport = importNames(
