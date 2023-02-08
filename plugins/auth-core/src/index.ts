@@ -128,8 +128,8 @@ class AuthCorePlugin implements AmplicationPlugin {
         after: this.afterCreateSeed,
       },
       CreateServer: {
-        before:this.beforeCreateServer
-      }
+        before: this.beforeCreateServer,
+      },
     };
   }
 
@@ -261,7 +261,12 @@ class AuthCorePlugin implements AmplicationPlugin {
     // 3. create constants for tests
     const athConstants = await createAuthConstants(context);
 
-    return [userInfo, tokenPayloadInterface, athConstants, ...staticsFiles];
+    return [
+      userInfo,
+      tokenPayloadInterface,
+      athConstants,
+      ...staticsFiles,
+    ];
   }
 
   async beforeCreateEntityModule(
