@@ -1,6 +1,7 @@
 import {
   AmplicationPlugin,
   CreateAdminUIParams,
+  Module,
   CreateServerAuthParams,
   DsgContext,
   Events,
@@ -41,7 +42,8 @@ class JwtAuthPlugin implements AmplicationPlugin {
 
   async afterCreateAuthModules(
     context: DsgContext,
-    eventParams: CreateServerAuthParams
+    eventParams: CreateServerAuthParams,
+    modules: Module[]
   ) {
     const staticPath = resolve(__dirname, "./static");
 
@@ -50,7 +52,7 @@ class JwtAuthPlugin implements AmplicationPlugin {
       context.serverDirectories.srcDirectory
     );
 
-    return staticsFiles;
+    return [...staticsFiles, ...modules];
   }
 }
 
