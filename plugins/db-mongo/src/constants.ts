@@ -11,9 +11,9 @@ import {
 export const envVariables: VariableDictionary = [
   { DB_USER: "${dbUser}" },
   { DB_PASSWORD: "${dbPassword}" },
-  { DB_PORT: "${dbPort}" },
+  { DB_PORT: "27017" },
   {
-    DB_URL: "mongodb://${dbUser}:${dbPassword}@${dbHost}:${dbPort}/dbName?authSource=admin",
+    DB_URL: "mongodb://${dbUser}:${dbPassword}@${dbHost}:27017/dbName?authSource=admin",
   },
 ];
 

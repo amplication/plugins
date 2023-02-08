@@ -25,6 +25,7 @@ import { ScalarType, ReferentialActions } from "prisma-schema-dsl-types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
+import { merge } from "lodash";
 
 class MongoPlugin implements AmplicationPlugin {
   register(): Events {
@@ -47,7 +48,6 @@ class MongoPlugin implements AmplicationPlugin {
       },
       CreateServerPackageJson: {
         before: this.beforeCreateServerPackageJson,
-        after: this.afterCreateServerPackageJson,
       },
     };
   }
@@ -80,18 +80,18 @@ class MongoPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerPackageJsonParams
   ) {
-    context.utils.skipDefaultBehavior = true;
-    return eventParams;
-  }
+    const myValues = {
+      scripts: {
+        "prisma:pull": "prisma db pull",
+        "prisma:push": " prisma db push",
+      },
+    };
 
-  async afterCreateServerPackageJson(context: DsgContext) {
-    const staticPath = resolve(__dirname, "../static/package-json");
-    const staticsFiles = await context.utils.importStaticModules(
-      staticPath,
-      context.serverDirectories.baseDirectory
+    eventParams.updateProperties.forEach((updateProperty) =>
+      merge(updateProperty, myValues)
     );
 
-    return staticsFiles;
+    return eventParams;
   }
 
   beforeCreateServerDotEnv(
@@ -120,7 +120,7 @@ class MongoPlugin implements AmplicationPlugin {
   }
 
   async afterCreateServerDockerComposeDB(context: DsgContext) {
-    const staticPath = resolve(__dirname, "../static/docker-compose");
+    const staticPath = resolve(__dirname, "./static/docker-compose");
     const staticsFiles = await context.utils.importStaticModules(
       staticPath,
       context.serverDirectories.baseDirectory
@@ -158,7 +158,9 @@ class MongoPlugin implements AmplicationPlugin {
           entityField.properties?.allowMultipleSelection
       );
 
-      if (hasManyToManyRelation) {
+      const isSelfRelation = relatedEntity.name === entity.name;
+
+      if (hasManyToManyRelation || isSelfRelation) {
         const hasAnotherRelation = entity.fields.some(
           (entityField) =>
             entityField.id !== field.id &&
@@ -166,11 +168,9 @@ class MongoPlugin implements AmplicationPlugin {
             entityField.properties.relatedEntity.name === relatedEntity.name
         );
 
-        const isSelfRelation = relatedEntity.name === entity.name;
-
         const relationName = !hasAnotherRelation
           ? null
-          : this.createRelationName(
+          : MongoPlugin.createRelationName(
               entity,
               field,
               relatedEntity,
@@ -179,29 +179,54 @@ class MongoPlugin implements AmplicationPlugin {
               fieldNamesCount ? fieldNamesCount[relatedField.name] === 1 : false
             );
 
-        const scalarRelationFieldName = `${name}Ids`;
+        if (
+          (allowMultipleSelection &&
+            isSelfRelation &&
+            !hasManyToManyRelation) ||
+          isOneToOneWithoutForeignKey
+        ) {
+          return [
+            PrismaSchemaDSL.createObjectField(
+              name,
+              relatedEntity.name,
+              !isOneToOneWithoutForeignKey,
+              allowMultipleSelection || false,
+              relationName
+            ),
+          ];
+        }
+
+        const onDelete =
+          isSelfRelation && !hasManyToManyRelation
+            ? ReferentialActions.NoAction
+            : ReferentialActions.NONE;
+
+        const onUpdate =
+          isSelfRelation && !hasManyToManyRelation
+            ? ReferentialActions.NoAction
+            : ReferentialActions.NONE;
+
+        const scalarRelationFieldName = allowMultipleSelection
+          ? `${name}Ids`
+          : `${name}Id`;
         return [
           PrismaSchemaDSL.createObjectField(
             name,
             relatedEntity.name,
-            true,
-            true || field.required,
+            allowMultipleSelection,
+            allowMultipleSelection,
             relationName,
             [scalarRelationFieldName],
             ["id"],
-            isSelfRelation
-              ? ReferentialActions.NoAction
-              : ReferentialActions.NONE,
-            isSelfRelation
-              ? ReferentialActions.NoAction
-              : ReferentialActions.NONE
+            onDelete,
+            onUpdate
           ),
           // Prisma Scalar Relation Field
           PrismaSchemaDSL.createScalarField(
             scalarRelationFieldName,
             ScalarType.String,
-            true,
-            true,
+            allowMultipleSelection,
+            allowMultipleSelection,
             !field.properties.allowMultipleSelection &&
               !relatedField?.properties.allowMultipleSelection &&
               !isOneToOneWithoutForeignKey
@@ -224,7 +249,7 @@ class MongoPlugin implements AmplicationPlugin {
     };
   }
 
-  private createRelationName(
+  private static createRelationName(
     entity: Entity,
     field: EntityField,
     relatedEntity: Entity,
