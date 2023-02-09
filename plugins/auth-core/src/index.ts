@@ -13,6 +13,7 @@ import {
   CreateEntityServiceParams,
   CreateSeedParams,
   CreateServerAppModuleParams,
+  CreateServerAuthParams,
   CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
   CreateServerParams,
@@ -233,7 +234,11 @@ class AuthCorePlugin implements AmplicationPlugin {
     return [...staticsFiles, ...modules];
   }
 
-  async afterCreateServerAuth(context: DsgContext) {
+  async afterCreateServerAuth(
+    context: DsgContext,
+    eventParams: CreateServerAuthParams,
+    modules: Module[]
+  ) {
     const staticPath = resolve(__dirname, "./static/auth");
 
     const interceptorsStaticPath = resolve(__dirname, "./static/interceptors");
@@ -266,6 +271,7 @@ class AuthCorePlugin implements AmplicationPlugin {
       tokenPayloadInterface,
       athConstants,
       ...staticsFiles,
+      ...modules,
     ];
   }
 
