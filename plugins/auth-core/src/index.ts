@@ -36,10 +36,12 @@ import {
 import {
   addIdentifierToConstructorSuperCall,
   addImports,
+  awaitExpression,
   getClassDeclarationById,
   getClassMethodById,
   importNames,
   interpolate,
+  logicalExpression,
   memberExpression,
 } from "./util/ast";
 import { isPasswordField } from "./util/field";
@@ -1085,11 +1087,38 @@ class AuthCorePlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateEntityServiceBaseParams
   ) {
-    const { template, serviceBaseId, entityName, entity } = eventParams;
+    const { template, serviceBaseId, entityName, entity, templateMapping } =
+      eventParams;
     const { serverDirectories } = context;
     const passwordFields = entity.fields.filter(isPasswordField);
 
     if (!passwordFields?.length) return eventParams;
+
+    templateMapping["CREATE_ARGS_MAPPING"] =
+      AuthCorePlugin.createMutationDataMapping(
+        passwordFields.map((field) => {
+          const fieldId = builders.identifier(field.name);
+          return builders.objectProperty(
+            fieldId,
+            awaitExpression`await ${HASH_MEMBER_EXPRESSION}(${ARGS_ID}.${DATA_ID}.${fieldId})`
+          );
+        })
+      );
+
+    templateMapping["UPDATE_ARGS_MAPPING"] =
+      AuthCorePlugin.createMutationDataMapping(
+        passwordFields.map((field) => {
+          const fieldId = builders.identifier(field.name);
+          const valueMemberExpression = memberExpression`${ARGS_ID}.${DATA_ID}.${fieldId}`;
+          return builders.objectProperty(
+            fieldId,
+            logicalExpression`${valueMemberExpression} && await ${TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID}(
+              ${ARGS_ID}.${DATA_ID}.${fieldId},
+              (password) => ${HASH_MEMBER_EXPRESSION}(password)
+            )`
+          );
+        })
+      );
 
     interpolate(template, eventParams.templateMapping);
 
@@ -1147,6 +1176,24 @@ class AuthCorePlugin implements AmplicationPlugin {
     );
 
     return entity?.fields.filter(isPasswordField);
+  }
+
+  private static createMutationDataMapping(
+    mappings: namedTypes.ObjectProperty[]
+  ): namedTypes.Identifier | namedTypes.ObjectExpression {
+    if (!mappings.length) {
+      return ARGS_ID;
+    }
+    return builders.objectExpression([
+      builders.spreadProperty(ARGS_ID),
+      builders.objectProperty(
+        DATA_ID,
+        builders.objectExpression([
+          builders.spreadProperty(memberExpression`${ARGS_ID}.${DATA_ID}`),
+          ...mappings,
+        ])
+      ),
+    ]);
   }
 }
 

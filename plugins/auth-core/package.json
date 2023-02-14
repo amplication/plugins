@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-auth-core",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "set auth for Amplication build",
   "main": "dist/index.js",
   "scripts": {
@@ -30,7 +30,7 @@
     "nest-access-control": "^2.2.0",
     "passport-jwt": "4.0.1",
     "prettier": "^2.7.1",
-    "recast": "0.20.5",
+    "recast": "^0.20.5",
     "ts-loader": "^9.4.2",
     "typescript": "4.6.2",
     "webpack": "^5.75.0",
