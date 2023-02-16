@@ -7,6 +7,10 @@ import {
   beforeCreateEntityControllerBase,
   afterCreateEntityControllerBase
 } from "./events/createController";
+import {
+  beforeCreateEntityServiceBase,
+  afterCreateEntityServiceBase
+} from "./events/createService";
 
 
 class LushaPlugin implements AmplicationPlugin {
@@ -16,6 +20,10 @@ class LushaPlugin implements AmplicationPlugin {
         before: beforeCreateEntityControllerBase,
         after: afterCreateEntityControllerBase,
       },
+      [EventNames.CreateEntityServiceBase]: {
+        before: beforeCreateEntityServiceBase,
+        after: afterCreateEntityServiceBase
+      }
     };
   }
 
