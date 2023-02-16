@@ -48,7 +48,7 @@ const createUsCaseModule = (
 ) => {
   const templateMapping = {
     USE_CASE: builders.identifier(`${entityName}UseCase`),
-    USE_CASE_DTO: builders.identifier(entityName),
+    USE_CASE_DTO: builders.identifier(`I${entityName}Repository`), //entityName
   };
 
   const useCaseId = builders.identifier(`${entityName}UseCase`);
@@ -99,7 +99,10 @@ const createClassImport = (
   addImports(template, [dtoImport, repositoryImport]);
 };
 
-const createdConstructorStatements = (classDeclaration: namedTypes.ClassDeclaration, entityName: string) => {
+const createdConstructorStatements = (
+  classDeclaration: namedTypes.ClassDeclaration,
+  entityName: string
+) => {
   const repositoryIdentifier = builders.identifier(`I${entityName}Repository`);
   addInjectableDependency(
     classDeclaration,
@@ -116,21 +119,10 @@ const createClassMethod = (entityName: string, useCase: UseCasesCrud) => {
     FindOne: `<${entityName} | null>`,
   };
   const getReturnType = (useCase: string) =>
-     returnTypeMap[useCase as keyof typeof returnTypeMap] || `<${entityName}>`;
+    returnTypeMap[useCase as keyof typeof returnTypeMap] || `<${entityName}>`;
 
-  return builders.classMethod(
-    "method",
-    builders.identifier("execute"),
-    [builders.identifier("args")],
-    builders.tsTypeAnnotation(
-      builders.tsTypeReference(
-        builders.identifier("Promise"),
-        builders.tsTypeParameterInstantiation([
-          builders.tsTypeReference(builders.identifier(getReturnType(useCase))),
-        ])
-      )
-    ),
-    builders.blockStatement([
+  return builders.classMethod.from({
+    body: builders.blockStatement([
       builders.returnStatement(
         builders.awaitExpression(
           builders.callExpression(
@@ -143,10 +135,21 @@ const createClassMethod = (entityName: string, useCase: UseCasesCrud) => {
                 `${useCase.charAt(0).toLowerCase()}${useCase.slice(1)}`
               )
             ),
-            [builders.identifier("args")]
+            [builders.identifier("args")] //todo: need to change to dynamic value
           )
         )
       ),
-    ])
-  );
+    ]),
+    async:true,
+    key: builders.identifier("execute"),
+    params: [builders.identifier("args")],
+    returnType: builders.tsTypeAnnotation(
+      builders.tsTypeReference(
+        builders.identifier("Promise"),
+        builders.tsTypeParameterInstantiation([
+          builders.tsTypeReference(builders.identifier(getReturnType(useCase))),
+        ])
+      )
+    ),
+  });
 };
