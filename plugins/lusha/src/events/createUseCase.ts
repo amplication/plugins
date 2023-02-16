@@ -5,6 +5,11 @@ import { builders, namedTypes } from "ast-types";
 import { addInjectableDependency } from "../util/nestjs-code-generation";
 import { addImports, getClassDeclarationById, interpolate } from "../util/ast";
 
+type ModuleUseCase = {
+  module: Module;
+  fileName: string;
+};
+
 type UseCasesCrud =
   | "Count"
   | "FindMany"
@@ -19,10 +24,14 @@ const useCaseTemplatePath = join(
   resolve(__dirname, "./templates"),
   "useCase.template.ts"
 );
+const useCaseIndexTemplatePath = join(
+  resolve(__dirname, "./templates"),
+  "index.template.ts"
+);
 
 export const createUseCasesCrud = async (entityName: string) => {
   const template = await readFile(useCaseTemplatePath);
-
+  const indexTemplate = await readFile(useCaseIndexTemplatePath);
   const useCasesModules = useCasesByAction.reduce<Module[]>(
     (modules, useCase) => {
       const useCaseModuleTemp = createUsCaseModule(
@@ -31,21 +40,32 @@ export const createUseCasesCrud = async (entityName: string) => {
         entityName
       );
 
-      useCaseModuleTemp && modules.push(useCaseModuleTemp);
+      useCaseModuleTemp && modules.push(useCaseModuleTemp.module);
+      const exportName = builders.exportAllDeclaration(
+        builders.stringLiteral(useCaseModuleTemp.fileName),
+        null
+      );
+
+      indexTemplate.program.body.unshift(exportName);
 
       return modules;
     },
     [] as Module[]
   );
 
-  return useCasesModules;
+  const indexFile = {
+    path: `server/src/app/${entityName}/use-cases/index.ts`,
+    code: print(indexTemplate).code,
+  };
+
+  return [...useCasesModules, indexFile];
 };
 
 const createUsCaseModule = (
   useCase: UseCasesCrud,
   template: namedTypes.File,
   entityName: string
-) => {
+): ModuleUseCase => {
   const templateMapping = {
     USE_CASE: builders.identifier(`${entityName}UseCase`),
     USE_CASE_DTO: builders.identifier(`I${entityName}Repository`), //entityName
@@ -63,8 +83,11 @@ const createUsCaseModule = (
   classDeclaration.body.body.push(classMethodExecute);
 
   return {
-    path: `server/src/app/${entityName}/use-cases/${useCase}${entityName}UseCase.ts`,
-    code: print(template).code,
+    module: {
+      path: `server/src/app/${entityName}/use-cases/${useCase}${entityName}UseCase.ts`,
+      code: print(template).code,
+    },
+    fileName: `./${useCase}${entityName}UseCase`,
   };
 };
 /**
@@ -140,7 +163,7 @@ const createClassMethod = (entityName: string, useCase: UseCasesCrud) => {
         )
       ),
     ]),
-    async:true,
+    async: true,
     key: builders.identifier("execute"),
     params: [builders.identifier("args")],
     returnType: builders.tsTypeAnnotation(
