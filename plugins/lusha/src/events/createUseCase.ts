@@ -41,12 +41,12 @@ export const createUseCasesCrud = async (entityName: string) => {
       );
 
       useCaseModuleTemp && modules.push(useCaseModuleTemp.module);
-      const exportName = builders.exportAllDeclaration(
+      const exportUseCaseName = builders.exportAllDeclaration(
         builders.stringLiteral(useCaseModuleTemp.fileName),
         null
       );
 
-      indexTemplate.program.body.unshift(exportName);
+      indexTemplate.program.body.unshift(exportUseCaseName);
 
       return modules;
     },
@@ -68,7 +68,7 @@ const createUsCaseModule = (
 ): ModuleUseCase => {
   const templateMapping = {
     USE_CASE: builders.identifier(`${entityName}UseCase`),
-    USE_CASE_DTO: builders.identifier(`I${entityName}Repository`), //entityName
+    USE_CASE_DTO: builders.identifier(`${entityName}${useCase}`), 
   };
 
   const useCaseId = builders.identifier(`${entityName}UseCase`);
@@ -119,7 +119,7 @@ const createClassImport = (
     builders.stringLiteral(`../model/dtos/${dtoArgsName}.dto`)
   );
 
-  addImports(template, [dtoImport, repositoryImport]);
+  addImports(template, [dtoImport, repositoryImport, useCaseArgsImport]);
 };
 
 const createdConstructorStatements = (
@@ -158,14 +158,19 @@ const createClassMethod = (entityName: string, useCase: UseCasesCrud) => {
                 `${useCase.charAt(0).toLowerCase()}${useCase.slice(1)}`
               )
             ),
-            [builders.identifier("args")] //todo: need to change to dynamic value
+            [
+              builders.identifier("args"),
+            ]
           )
         )
       ),
     ]),
     async: true,
     key: builders.identifier("execute"),
-    params: [builders.identifier("args")],
+    params: [builders.identifier.from({
+      name: "args",
+      typeAnnotation: builders.tsTypeAnnotation(builders.tsTypeReference(builders.identifier(`${entityName}${useCase}Args`)))
+    }),],
     returnType: builders.tsTypeAnnotation(
       builders.tsTypeReference(
         builders.identifier("Promise"),

@@ -52,7 +52,7 @@ export const beforeCreateEntityServiceBase = async (
 
   const useCaseImport = builders.importDeclaration(
     getUseCaseImports(useCaseObj),
-    builders.stringLiteral("../useCases")
+    builders.stringLiteral("../use-cases")
   );
   const entityImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(entity.name))],
@@ -73,7 +73,7 @@ export const afterCreateEntityServiceBase = async (
     const modulePath = `server/src/app/${eventParams.entityName}/services/${eventParams.entityName}.service.ts`;
     modules[0].path = modulePath;
 
-    const useCaseModules = await createUseCasesCrud(eventParams.entityName)
+    const useCaseModules = await createUseCasesCrud(eventParams.entity.name)
 
     return [...modules, ...useCaseModules];
   } catch (error) {
