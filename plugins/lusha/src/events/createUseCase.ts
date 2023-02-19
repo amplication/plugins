@@ -66,8 +66,9 @@ const createUsCaseModule = (
   template: namedTypes.File,
   entityName: string
 ): ModuleUseCase => {
+  const useCaseClass = `${useCase}${entityName}UseCase`
   const templateMapping = {
-    USE_CASE: builders.identifier(`${entityName}UseCase`),
+    USE_CASE: builders.identifier(useCaseClass),
     USE_CASE_DTO: builders.identifier(`${entityName}${useCase}`), 
   };
 
@@ -84,10 +85,10 @@ const createUsCaseModule = (
 
   return {
     module: {
-      path: `server/src/app/${entityName}/use-cases/${useCase}${entityName}UseCase.ts`,
+      path: `server/src/app/${entityName}/use-cases/${useCaseClass}.ts`,
       code: print(template).code,
     },
-    fileName: `./${useCase}${entityName}UseCase`,
+    fileName: `./${useCaseClass}`,
   };
 };
 /**
