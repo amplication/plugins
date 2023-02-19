@@ -1,13 +1,13 @@
 import { join, resolve } from "path";
-import { addImports, getClassDeclarationById, interpolate } from "../util/ast";
+import { addImports } from "../util/ast";
 import { createUseCasesCrud } from "./createUseCase";
-// import { addInjectableDependency } from "../util/nestjs-code-generation";
+import { createRepositoryModule } from "./createRepository";
 import {
   CreateEntityServiceBaseParams,
   DsgContext,
   Module,
 } from "@amplication/code-gen-types";
-import { readFile } from "@amplication/code-gen-utils";
+import { readFile, print } from "@amplication/code-gen-utils";
 import { builders } from "ast-types";
 import { IdentifierKind } from "ast-types/gen/kinds";
 
@@ -25,6 +25,11 @@ const serviceTemplatePath = join(
   "service.template.ts"
 );
 
+const serviceIndexTemplatePath = join(
+  resolve(__dirname, "./templates"),
+  "index.template.ts"
+);
+
 export const beforeCreateEntityServiceBase = async (
   context: DsgContext,
   eventParams: CreateEntityServiceBaseParams
@@ -37,17 +42,19 @@ export const beforeCreateEntityServiceBase = async (
     `../model/dtos/${entity.name}.dto`
   );
 
-  eventParams.templateMapping = {
-    ...eventParams.templateMapping,
+  Object.assign(templateMapping, {
+    CREATE_ARGS: builders.identifier(`Create${entity.name}Args`),
+    UPDATE_ARGS: builders.identifier(`Update${entity.name}Args`),
+    DELETE_ARGS: builders.identifier(`Delete${entity.name}Args`),
     ...useCaseObj,
-  };
+  });
 
   const dtosImport = setDtosImports([
     templateMapping.FIND_MANY_ARGS,
     templateMapping.FIND_ONE_ARGS,
     templateMapping.CREATE_ARGS,
     templateMapping.UPDATE_ARGS,
-    templateMapping.DELETE_ARGS
+    templateMapping.DELETE_ARGS,
   ]);
 
   const useCaseImport = builders.importDeclaration(
@@ -70,12 +77,28 @@ export const afterCreateEntityServiceBase = async (
   modules: Module[]
 ) => {
   try {
+    const indexTemplate = await readFile(serviceIndexTemplatePath);
     const modulePath = `server/src/app/${eventParams.entityName}/services/${eventParams.entityName}.service.ts`;
     modules[0].path = modulePath;
 
-    const useCaseModules = await createUseCasesCrud(eventParams.entity.name)
+    const useCaseModules = await createUseCasesCrud(eventParams.entity.name);
+    const repositoryModule = await createRepositoryModule(
+      eventParams.entity.name
+    );
 
-    return [...modules, ...useCaseModules];
+    const exportUseCaseName = builders.exportAllDeclaration(
+      builders.stringLiteral(`./${eventParams.entityName}.service`),
+      null
+    );
+
+    indexTemplate.program.body.unshift(exportUseCaseName);
+
+    const indexFile = {
+      path: `server/src/app/${eventParams.entityName}/services/index.ts`,
+      code: print(indexTemplate).code,
+    };
+
+    return [...modules, ...useCaseModules, ...repositoryModule, indexFile];
   } catch (error) {
     console.log(error);
     return modules;
@@ -89,16 +112,17 @@ const setUseCasesObj = (entityName: string) => ({
   CREATE_USE_CASE: `Create${entityName}UseCase`,
   UPDATE_USE_CASE: `Update${entityName}UseCase`,
   DELETE_USE_CASE: `Delete${entityName}UseCase`,
-})
+});
 
 const getUseCaseImports = (useCaseObj: UseCaseObj) =>
   Object.values(useCaseObj).map((useCase: string) =>
     builders.importSpecifier(builders.identifier(useCase))
   );
 
-const setDtosImports = (dtosArr: IdentifierKind[]) => dtosArr.map((dto: IdentifierKind) => builders.importDeclaration(
-  [builders.importSpecifier(dto)],
-  builders.stringLiteral(
-    `../model/dtos/${dto.name}.dto`
-  )
-))
+const setDtosImports = (dtosArr: IdentifierKind[]) =>
+  dtosArr.map((dto: IdentifierKind) =>
+    builders.importDeclaration(
+      [builders.importSpecifier(dto)],
+      builders.stringLiteral(`../model/dtos/${dto.name}.dto`)
+    )
+  );

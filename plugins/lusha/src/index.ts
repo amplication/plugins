@@ -11,6 +11,9 @@ import {
   beforeCreateEntityServiceBase,
   afterCreateEntityServiceBase
 } from "./events/createService";
+import {
+  afterCreateServerModules
+} from "./events/createDTOs";
 
 
 class LushaPlugin implements AmplicationPlugin {
@@ -23,6 +26,9 @@ class LushaPlugin implements AmplicationPlugin {
       [EventNames.CreateEntityServiceBase]: {
         before: beforeCreateEntityServiceBase,
         after: afterCreateEntityServiceBase
+      },
+      [EventNames.CreateServer]: {
+        after: afterCreateServerModules
       }
     };
   }
