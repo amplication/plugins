@@ -18,8 +18,7 @@ type UseCasesCrud =
   | "Update"
   | "Delete";
 
-// const useCasesByAction = ["Count", "FindMany", "FindOne", "Create", "Update", "Delete"];
-const useCasesByAction = ["Count"];
+const useCasesByAction = ["Count", "FindMany", "FindOne", "Create", "Update", "Delete"];
 const useCaseTemplatePath = join(
   resolve(__dirname, "./templates"),
   "useCase.template.ts"
@@ -30,28 +29,25 @@ const useCaseIndexTemplatePath = join(
 );
 
 export const createUseCasesCrud = async (entityName: string) => {
-  const template = await readFile(useCaseTemplatePath);
+  const useCasesLength = useCasesByAction.length;
+  const useCasesModules: Module[] = [];
   const indexTemplate = await readFile(useCaseIndexTemplatePath);
-  const useCasesModules = useCasesByAction.reduce<Module[]>(
-    (modules, useCase) => {
-      const useCaseModuleTemp = createUsCaseModule(
-        useCase as UseCasesCrud,
-        template,
-        entityName
-      );
+  for (let i=0; i < useCasesLength; i++) {
+    const template = await readFile(useCaseTemplatePath);
+    const useCaseModuleTemp = await createUsCaseModule(
+      useCasesByAction[i] as UseCasesCrud,
+      template,
+      entityName
+    );
 
-      useCaseModuleTemp && modules.push(useCaseModuleTemp.module);
-      const exportUseCaseName = builders.exportAllDeclaration(
-        builders.stringLiteral(useCaseModuleTemp.fileName),
-        null
-      );
+    useCaseModuleTemp && useCasesModules.push(useCaseModuleTemp.module);
+    const exportUseCaseName = builders.exportAllDeclaration(
+      builders.stringLiteral(useCaseModuleTemp.fileName),
+      null
+    );
 
-      indexTemplate.program.body.unshift(exportUseCaseName);
-
-      return modules;
-    },
-    [] as Module[]
-  );
+    indexTemplate.program.body.unshift(exportUseCaseName);
+  }
 
   const indexFile = {
     path: `server/src/app/${entityName}/use-cases/index.ts`,
@@ -61,18 +57,18 @@ export const createUseCasesCrud = async (entityName: string) => {
   return [...useCasesModules, indexFile];
 };
 
-const createUsCaseModule = (
+const createUsCaseModule = async (
   useCase: UseCasesCrud,
   template: namedTypes.File,
   entityName: string
-): ModuleUseCase => {
+): Promise<ModuleUseCase> => {
   const useCaseClass = `${useCase}${entityName}UseCase`
   const templateMapping = {
     USE_CASE: builders.identifier(useCaseClass),
     USE_CASE_DTO: builders.identifier(`${entityName}${useCase}`), 
   };
 
-  const useCaseId = builders.identifier(`${entityName}UseCase`);
+  const useCaseId = builders.identifier(useCaseClass);
 
   interpolate(template, templateMapping);
   const classDeclaration = getClassDeclarationById(template, useCaseId);
@@ -139,11 +135,11 @@ const createdConstructorStatements = (
 const createClassMethod = (entityName: string, useCase: UseCasesCrud) => {
   const returnTypeMap = {
     Count: "number",
-    FindMany: `<${entityName}[]>`,
-    FindOne: `<${entityName} | null>`,
+    FindMany: `${entityName}[]`,
+    FindOne: `${entityName} | null`,
   };
   const getReturnType = (useCase: string) =>
-    returnTypeMap[useCase as keyof typeof returnTypeMap] || `<${entityName}>`;
+    returnTypeMap[useCase as keyof typeof returnTypeMap] || `${entityName}`;
 
   return builders.classMethod.from({
     body: builders.blockStatement([
