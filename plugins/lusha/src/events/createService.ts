@@ -105,7 +105,7 @@ export const afterCreateEntityServiceBase = async (
   }
 };
 
-const setUseCasesObj = (entityName: string) => ({
+export const setUseCasesObj = (entityName: string) => ({
   COUNT_USE_CASE: `Count${entityName}UseCase`,
   FIND_MANY_USE_CASE: `FindMany${entityName}UseCase`,
   FIND_ONE_USE_CASE: `FindOne${entityName}UseCase`,
@@ -114,7 +114,7 @@ const setUseCasesObj = (entityName: string) => ({
   DELETE_USE_CASE: `Delete${entityName}UseCase`,
 });
 
-const getUseCaseImports = (useCaseObj: UseCaseObj) =>
+export const getUseCaseImports = (useCaseObj: UseCaseObj) =>
   Object.values(useCaseObj).map((useCase: string) =>
     builders.importSpecifier(builders.identifier(useCase))
   );

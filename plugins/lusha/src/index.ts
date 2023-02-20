@@ -1,20 +1,15 @@
-import {
-  AmplicationPlugin,
-  Events,
-} from "@amplication/code-gen-types";
+import { AmplicationPlugin, Events } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
 import {
   beforeCreateEntityControllerBase,
-  afterCreateEntityControllerBase
+  afterCreateEntityControllerBase,
 } from "./events/createController";
 import {
   beforeCreateEntityServiceBase,
-  afterCreateEntityServiceBase
+  afterCreateEntityServiceBase,
 } from "./events/createService";
-import {
-  afterCreateServerModules
-} from "./events/createDTOs";
-
+import { afterCreateServerModules } from "./events/createDTOs";
+import { afterCreateEntityModule } from "./events/createEntityModule";
 
 class LushaPlugin implements AmplicationPlugin {
   register(): Events {
@@ -25,14 +20,16 @@ class LushaPlugin implements AmplicationPlugin {
       },
       [EventNames.CreateEntityServiceBase]: {
         before: beforeCreateEntityServiceBase,
-        after: afterCreateEntityServiceBase
+        after: afterCreateEntityServiceBase,
       },
       [EventNames.CreateServer]: {
-        after: afterCreateServerModules
-      }
+        after: afterCreateServerModules,
+      },
+      [EventNames.CreateEntityModule]: {
+        after: afterCreateEntityModule,
+      },
     };
   }
-
 }
 
 export default LushaPlugin;
