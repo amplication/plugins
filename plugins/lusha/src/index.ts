@@ -10,6 +10,7 @@ import {
 } from "./events/createService";
 import { afterCreateServerModules } from "./events/createDTOs";
 import { afterCreateEntityModule, afterCreatePrismaSchemaModule } from "./events/createEntityModule";
+import { afterCreateAppModule } from "./events/createAppModule";
 
 class LushaPlugin implements AmplicationPlugin {
   register(): Events {
@@ -31,6 +32,9 @@ class LushaPlugin implements AmplicationPlugin {
       [EventNames.CreatePrismaSchema]: {
         after: afterCreatePrismaSchemaModule,
       },
+      [EventNames.CreateServerAppModule]: {
+        after: afterCreateAppModule
+      }
     };
   }
 }
