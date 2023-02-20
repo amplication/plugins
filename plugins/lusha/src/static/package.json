@@ -1,0 +1,85 @@
+{
+  "name": "${{ values.name }}",
+  "version": "1.0.0",
+  "description": "",
+  "author": "${{ values.owner }}",
+  "private": true,
+  "license": "ISC",
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "nest build",
+    "start": "ALLOW_CONFIG_MUTATIONS=true ts-node src/main.ts",
+    "start:dev": "ALLOW_CONFIG_MUTATIONS=true nest start --watch",
+    "start:staging": "NODE_ENV=staging ALLOW_CONFIG_MUTATIONS=true node dist/main",
+    "start:production": "NODE_ENV=production node dist/main",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "test": "jest --passWithNoTests",
+    "generate-sdk": "npx @openapitools/openapi-generator-cli generate -i backstage-api.yaml -g typescript-nestjs -o ./${{ values.name }}-sdk"
+  },
+  "dependencies": {
+    "@lusha/core-nestjs": "^1.5.1",
+    "@nestjs/core": "~9.0.1",
+    "@nestjs/common": "~9.0.1",
+    "@nestjs/mapped-types": "^1.0.1",
+    "@nestjs/schedule": "^2.1.0",
+    "@nestjs/swagger": "^6.1.2",
+    "@nestjs/typeorm": "^9.0.1",
+    "pg": "^8.8.0",
+    "typeorm": "^0.3.10"
+  },
+  "devDependencies": {
+    "@lusha/eslint-config-ts-lusha": "^1.0.24",
+    "@nestjs/cli": "^8.0.0",
+    "@nestjs/schematics": "^8.0.0",
+    "@nestjs/testing": "^9.2.1",
+    "@openapitools/openapi-generator-cli": "^2.5.2",
+    "@types/config": "^3.3.0",
+    "@types/cookie-parser": "^1.4.3",
+    "@types/express": "^4.17.13",
+    "@types/jest": "27.0.2",
+    "@types/node": "^16.11.10",
+    "@types/supertest": "^2.0.11",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "eslint": "^8.0.1",
+    "eslint-plugin-simple-import-sort": "^8.0.0",
+    "husky": "^8.0.1",
+    "jest": "^27.2.5",
+    "source-map-support": "^0.5.20",
+    "supertest": "^6.2.4",
+    "ts-jest": "^27.0.3",
+    "ts-loader": "^9.2.3",
+    "ts-node": "10.7.0",
+    "tsconfig-paths": "^3.14.1",
+    "typescript": "4.4.4"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts",
+      "mjs",
+      "cjs",
+      "node"
+    ],
+    "rootDir": "src",
+    "testRegex": ".*\\.spec|test\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "moduleNameMapper": {
+      "^@web-server(.*)$": "<rootDir>/web-server/$1",
+      "^@infra(.*)$": "<rootDir>/infra/$1",
+      "^@app(.*)$": "<rootDir>/app/$1"
+    },
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node",
+    "retainLines": true,
+    "testPathIgnorePatterns": [
+      "<rootDir>/app/wished-contact/use-case/wished-contacts-csv-export.use-case.test.ts"
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+@Library('lusha-utils@master') _
+
+deployKubernetesAppInCluster {
+    owners_email = "${{ values.owner }}@lusha.com,"
+    serviceName = "${{ values.name }}"
+    migrationType = "helm"
+    npmVersion = "18"
+    disableMigrations = true
+}

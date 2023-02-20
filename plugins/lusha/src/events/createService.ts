@@ -98,7 +98,12 @@ export const afterCreateEntityServiceBase = async (
       code: print(indexTemplate).code,
     };
 
-    return [...modules, ...useCaseModules, ...repositoryModule, indexFile];
+    return [
+      ...modules,
+      ...useCaseModules,
+      ...repositoryModule,
+      indexFile,
+    ];
   } catch (error) {
     console.log(error);
     return modules;

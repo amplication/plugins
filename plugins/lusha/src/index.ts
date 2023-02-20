@@ -9,7 +9,7 @@ import {
   afterCreateEntityServiceBase,
 } from "./events/createService";
 import { afterCreateServerModules } from "./events/createDTOs";
-import { afterCreateEntityModule } from "./events/createEntityModule";
+import { afterCreateEntityModule, afterCreatePrismaSchemaModule } from "./events/createEntityModule";
 
 class LushaPlugin implements AmplicationPlugin {
   register(): Events {
@@ -27,6 +27,9 @@ class LushaPlugin implements AmplicationPlugin {
       },
       [EventNames.CreateEntityModule]: {
         after: afterCreateEntityModule,
+      },
+      [EventNames.CreatePrismaSchema]: {
+        after: afterCreatePrismaSchemaModule,
       },
     };
   }
