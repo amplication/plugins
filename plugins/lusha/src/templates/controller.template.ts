@@ -1,9 +1,9 @@
 import * as common from "@nestjs/common";
 import { ApiTags } from '@nestjs/swagger';
 // @ts-ignore
-import { isRecordNotFoundError } from "../../prisma.util";
+import { isRecordNotFoundError } from "../prisma.util";
 // @ts-ignore
-import * as errors from "../../errors";
+import * as errors from "../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 
@@ -20,26 +20,22 @@ declare const UPDATE_PATH: string;
 declare const DELETE_PATH: string;
 
 declare class ENTITY {}
-declare interface Select {}
 
 declare interface SERVICE {
-  create(args: { data: CREATE_INPUT; select: Select }): Promise<ENTITY>;
-  findMany(args: { where: WHERE_INPUT; select: Select }): Promise<ENTITY[]>;
+  create(args: { data: CREATE_INPUT }): Promise<ENTITY>;
+  findMany(args: { where: WHERE_INPUT }): Promise<ENTITY[]>;
   findOne(args: {
-    where: WHERE_UNIQUE_INPUT;
-    select: Select;
+    where: WHERE_UNIQUE_INPUT
   }): Promise<ENTITY | null>;
   update(args: {
     where: WHERE_UNIQUE_INPUT;
     data: UPDATE_INPUT;
-    select: Select;
   }): Promise<ENTITY>;
-  delete(args: { where: WHERE_UNIQUE_INPUT; select: Select }): Promise<ENTITY>;
+  delete(args: { where: WHERE_UNIQUE_INPUT }): Promise<ENTITY>;
 }
 
 declare const CREATE_DATA_MAPPING: CREATE_INPUT;
 declare const UPDATE_DATA_MAPPING: UPDATE_INPUT;
-declare const SELECT: Select;
 
 @ApiTags('wished-contacts-v2')
 @common.Controller(ENTITY_NAME)
@@ -51,8 +47,7 @@ export class CONTROLLER_BASE {
     @common.Body() data: CREATE_INPUT
   ): Promise<ENTITY> {
     return await this.service.create({
-      data: CREATE_DATA_MAPPING,
-      select: SELECT,
+      data: CREATE_DATA_MAPPING
     });
   }
 
@@ -62,8 +57,7 @@ export class CONTROLLER_BASE {
   ): Promise<ENTITY[]> {
     const args = plainToClass(FIND_MANY_ARGS, request.query);
     return this.service.findMany({
-      ...args,
-      select: SELECT,
+      ...args
     });
   }
 
@@ -72,8 +66,7 @@ export class CONTROLLER_BASE {
     @common.Param() params: WHERE_UNIQUE_INPUT
   ): Promise<ENTITY | null> {
     const result = await this.service.findOne({
-      where: params,
-      select: SELECT,
+      where: params
     });
     if (result === null) {
       throw new errors.NotFoundException(
@@ -91,8 +84,7 @@ export class CONTROLLER_BASE {
     try {
       return await this.service.update({
         where: params,
-        data: UPDATE_DATA_MAPPING,
-        select: SELECT,
+        data: UPDATE_DATA_MAPPING
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -110,8 +102,7 @@ export class CONTROLLER_BASE {
   ): Promise<ENTITY | null> {
     try {
       return await this.service.delete({
-        where: params,
-        select: SELECT,
+        where: params
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
