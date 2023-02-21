@@ -16,7 +16,6 @@ export const beforeCreateEntityControllerBase = async (
   eventParams: CreateEntityControllerBaseParams
 ) => {
   const template = await readFile(controllerTemplatePath);
-
   return {...eventParams, template};
 }
 

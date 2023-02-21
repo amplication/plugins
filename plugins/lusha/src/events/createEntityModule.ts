@@ -21,7 +21,20 @@ export const afterCreatePrismaSchemaModule = async (
   modules: Module[]
 ) => {
   const prismaStaticPath = resolve(__dirname, "./static/prisma");
-  const staticPath = resolve(__dirname, "./static");
+  const baseStaticPath = resolve(__dirname, "./static/base");
+
+  const configStaticPath = resolve(__dirname, "./static/config");
+  const docsStaticPath = resolve(__dirname, "./static/docs");
+
+  const configStaticsFiles = await context.utils.importStaticModules(
+    configStaticPath,
+    `${context.serverDirectories.baseDirectory}/config`
+  );
+
+  const docsStaticsFiles = await context.utils.importStaticModules(
+    docsStaticPath,
+    `${context.serverDirectories.baseDirectory}/docs`
+  );
 
   const prismaStaticsFiles = await context.utils.importStaticModules(
     prismaStaticPath,
@@ -30,12 +43,18 @@ export const afterCreatePrismaSchemaModule = async (
 
   //implemented here because this modules are not formatted at all.
 
-  const staticsFiles = await context.utils.importStaticModules(
-    staticPath,
+  const baseStaticsFiles = await context.utils.importStaticModules(
+    baseStaticPath,
     context.serverDirectories.baseDirectory
   );
 
-  return [...modules, ...prismaStaticsFiles, ...staticsFiles];
+  return [
+    ...modules,
+    ...prismaStaticsFiles,
+    ...baseStaticsFiles,
+    ...docsStaticsFiles,
+    ...configStaticsFiles,
+  ];
 };
 
 export const afterCreateEntityModule = async (

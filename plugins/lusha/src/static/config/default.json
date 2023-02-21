@@ -1,0 +1,67 @@
+{
+  "port": 3030,
+  "serviceName": "${{ values.name }}",
+  "hostname": "127.0.0.1",
+  "checkHealthByConfig": true,
+  "enableVersioning": true,
+  "enableVaultClient": true,
+  "https": {
+    "enabled": true,
+    "port": 3040,
+    "isDotCom": true
+  },
+  "log": {
+    "level": "debug",
+    "enabled": true,
+    "jsonFormat": false,
+    "mask": {
+      "blacklist": []
+    }
+  },
+  "hosts": {
+    "accounts": "lusha-accounts",
+    "billing": "lusha-billing",
+    "platform": "lusha-platform",
+    "billingStatus": "lusha-billing-status",
+    "outbound": "lusha-outbound",
+    "community": "lusha-community",
+    "abTest": "lusha-ab-testing",
+    "shownContacts": "lusha-shown-contacts",
+    "crmIntegrations": "lusha-crm-integrations",
+    "prospecting": "lusha-prospecting",
+    "emails": "lusha-emails-service"
+  },
+  "swagger": {
+    "path": "swagger"
+  },
+  "authentication": {
+    "account": {
+      "cookieName": "ll_local"
+    },
+    "backOffice": {
+      "cookieName": "sall_local"
+    }
+  },
+  "httpTransport": {
+    "timeout": 3000,
+    "maxRedirects": 2
+  },
+  "typeorm": {
+    "type": "postgres",
+    "host": "localhost",
+    "port": "5436",
+    "username": "lusha_pets",
+    "password": "VPfEhJSW5U8m5u9SlS",
+    "database": "outbound",
+    "schema": "pets",
+    "entities": ["**/*.entity{.ts,.js}"],
+    "migrations": ["dist/migrations/*.js"],
+    "migrationsTableName": "migrations",
+    "logging": true,
+    "cli": {
+      "entitiesDir": "src/app/luah-pets/entities",
+      "migrationsDir": "src/migrations"
+    },
+    "extra": { "max": 10 }
+  }
+}
