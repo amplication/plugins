@@ -4,15 +4,10 @@ import {
 } from '@nestjs/common';
 import { ConfigModule, LushaConfigService } from '@lusha/config-nestjs';
 import { AuthMiddleware } from '@lusha/core-nestjs';
-import { LushaPetsModule } from './app/pets/pets.module';
 import { PrismaModule } from './app/prisma/prisma.module';
 
 @Module({
-  imports: [
-    PrismaModule,
-    LushaPetsModule,
-    ConfigModule
-  ]
+  imports: MODULES
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
@@ -21,9 +16,7 @@ export class AppModule implements NestModule {
         { path: '/swagger', method: RequestMethod.ALL },
         { path: '/health', method: RequestMethod.ALL }
       )
-      .forRoutes(
-        // { path: '/lusha-pet', method: RequestMethod.ALL }
-      );
+      .forRoutes();
   }
 
   static register(): DynamicModule {
