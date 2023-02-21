@@ -13,6 +13,12 @@
     "start:staging": "NODE_ENV=staging ALLOW_CONFIG_MUTATIONS=true node dist/main",
     "start:production": "NODE_ENV=production node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "docker:db": "docker-compose -f docker-compose.db.yml up -d",
+    "prisma:generate": "prisma generate",
+    "db:init": "run-s \"db:migrate-save -- --name 'initial version'\" db:migrate-up seed",
+    "seed": "ts-node scripts/seed.ts",
+    "db:migrate-save": "prisma migrate dev",
+    "db:migrate-up": "prisma migrate deploy",
     "test": "jest --passWithNoTests",
     "generate-sdk": "npx @openapitools/openapi-generator-cli generate -i backstage-api.yaml -g typescript-nestjs -o ./${{ values.name }}-sdk"
   },
@@ -25,7 +31,9 @@
     "@nestjs/swagger": "^6.1.2",
     "@nestjs/typeorm": "^9.0.1",
     "pg": "^8.8.0",
-    "typeorm": "^0.3.10"
+    "typeorm": "^0.3.10",
+    "@prisma/client": "^4.10.1",
+    "nestjs-prisma": "^0.20.0"
   },
   "devDependencies": {
     "@lusha/eslint-config-ts-lusha": "^1.0.24",
