@@ -163,11 +163,11 @@ class AuthCorePlugin implements AmplicationPlugin {
         "@nestjs/passport": "8.2.2",
         "passport": "0.6.0",
         "passport-http": "0.3.0",
-        "passport-jwt": "4.0.0",
+        "passport-jwt": "4.0.1",
       },
       devDependencies: {
         "@types/passport-http": "0.3.9",
-        "@types/passport-jwt": "3.0.6",
+        "@types/passport-jwt": "3.0.8",
       },
     };
 
