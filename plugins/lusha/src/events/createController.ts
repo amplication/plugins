@@ -6,9 +6,8 @@ import {
 } from "@amplication/code-gen-types";
 import { parse, print, readFile } from "@amplication/code-gen-utils";
 import { namedTypes } from "ast-types/gen/namedTypes";
-import { ImportDeclaration } from "@babel/types";
 import { builders, visit } from "ast-types";
-import { addImports, interpolate } from "../util/ast";
+import { addImports } from "../util/ast";
 
 const controllerTemplatePath = join(
   resolve(__dirname, "./templates"),
