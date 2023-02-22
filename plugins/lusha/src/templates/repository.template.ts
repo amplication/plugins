@@ -9,12 +9,6 @@ export class ENTITY_REPOSITORY implements ENTITY_REPOSITORY_INTERFACE {
     protected readonly prisma: PrismaService,
   ) { }
 
-  async count<T extends COUNT_ARGS >(
-    args: Prisma.SelectSubset<T, COUNT_ARGS>
-  ): Promise<number> {
-    return await this.prisma.ENTITY.findMany(args);
-  }
-
   async findMany<T extends FIND_MANY_ARGS >(
     args: Prisma.SelectSubset<T, FIND_MANY_ARGS>
   ): Promise<ENTITY[]> {

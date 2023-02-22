@@ -3,17 +3,12 @@ import { Injectable } from "@nestjs/common";
 @Injectable()
 export class SERVICE_BASE {
   constructor(
-    private countUseCase: COUNT_USE_CASE,
     private findManyUseCase: FIND_MANY_USE_CASE,
     private findOneUseCase: FIND_ONE_USE_CASE,
     private createUseCase: CREATE_USE_CASE,
     private updateUseCase: UPDATE_USE_CASE,
     private deleteUseCase: DELETE_USE_CASE
   ) {}
-
-  async count(args: FIND_MANY_ARGS): Promise<number> {
-    return this.countUseCase.execute(args);
-  }
 
   async findMany(args: FIND_MANY_ARGS): Promise<ENTITY[]> {
     return this.findManyUseCase.execute(args);
