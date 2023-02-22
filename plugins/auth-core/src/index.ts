@@ -65,6 +65,7 @@ import {
   TSTypeAnnotation,
 } from "@babel/types";
 import { appendImports, parse, print } from "@amplication/code-gen-utils";
+import { merge } from "lodash";
 
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
@@ -156,7 +157,24 @@ class AuthCorePlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerPackageJsonParams
   ) {
-    context.utils.skipDefaultBehavior = true;
+    const myValues = {
+      dependencies: {
+        "@nestjs/jwt": "8.0.0",
+        "@nestjs/passport": "8.2.2",
+        "passport": "0.6.0",
+        "passport-http": "0.3.0",
+        "passport-jwt": "4.0.0",
+      },
+      devDependencies: {
+        "@types/passport-http": "0.3.9",
+        "@types/passport-jwt": "3.0.6",
+      },
+    };
+
+    eventParams.updateProperties.forEach((updateProperty) =>
+      merge(updateProperty, myValues)
+    );
+
     return eventParams;
   }
 
@@ -178,13 +196,11 @@ class AuthCorePlugin implements AmplicationPlugin {
     return eventParams;
   }
 
-  async afterCreateServerPackageJson(context: DsgContext) {
-    const staticPath = resolve(__dirname, "./static/package-json");
-    const staticsFiles = await AuthCorePlugin.getStaticFiles(
-      context,
-      context.serverDirectories.baseDirectory,
-      staticPath
-    );
+  async afterCreateServerPackageJson(
+    context: DsgContext,
+    eventParams: CreateServerPackageJsonParams,
+    modules: Module[]
+  ) {
 
     // create grants here, because here the DSG format this code to json file.
     const grants =
@@ -196,7 +212,7 @@ class AuthCorePlugin implements AmplicationPlugin {
           )
         : null;
 
-    return grants ? [...staticsFiles, grants] : staticsFiles;
+    return grants ? [ ...modules, grants] : modules;
   }
 
   async afterCreateAppModule(
