@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
-export class SERVICE_BASE {
+export class SERVICE {
   constructor(
     private countUseCase: COUNT_USE_CASE,
     private findManyUseCase: FIND_MANY_USE_CASE,

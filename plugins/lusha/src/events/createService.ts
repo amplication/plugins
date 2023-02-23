@@ -4,6 +4,7 @@ import { createUseCasesCrud } from "./createUseCase";
 import { createRepositoryModule } from "./createRepository";
 import {
   CreateEntityServiceBaseParams,
+  CreateEntityServiceParams,
   DsgContext,
   Module,
 } from "@amplication/code-gen-types";
@@ -84,6 +85,87 @@ export const afterCreateEntityServiceBase = async (
     const useCaseModules = await createUseCasesCrud(eventParams.entity.name);
     const repositoryModule = await createRepositoryModule(
       eventParams.entity.name
+    );
+
+    const exportUseCaseName = builders.exportAllDeclaration(
+      builders.stringLiteral(`./${eventParams.entityName}.service`),
+      null
+    );
+
+    indexTemplate.program.body.unshift(exportUseCaseName);
+
+    const indexFile = {
+      path: `server/src/app/${eventParams.entityName}/services/index.ts`,
+      code: print(indexTemplate).code,
+    };
+
+    return [
+      ...modules,
+      ...useCaseModules,
+      ...repositoryModule,
+      indexFile,
+    ];
+  } catch (error) {
+    console.log(error);
+    return modules;
+  }
+};
+
+
+export const beforeCreateEntityService = async (
+  context: DsgContext,
+  eventParams: CreateEntityServiceParams
+) => {
+  const { entityName, templateMapping } = eventParams;
+  const template = await readFile(serviceTemplatePath);
+
+  const useCaseObj = setUseCasesObj(entityName);
+  const ENTITY_PATH = builders.stringLiteral(
+    `../model/dtos/${entityName}.dto`
+  );
+
+  Object.assign(templateMapping, {
+    CREATE_ARGS: builders.identifier(`Create${entityName}Args`),
+    UPDATE_ARGS: builders.identifier(`Update${entityName}Args`),
+    DELETE_ARGS: builders.identifier(`Delete${entityName}Args`),
+    ...useCaseObj,
+  });
+
+  const dtosImport = setDtosImports([
+    templateMapping.FIND_MANY_ARGS,
+    templateMapping.FIND_ONE_ARGS,
+    templateMapping.CREATE_ARGS,
+    templateMapping.UPDATE_ARGS,
+    templateMapping.DELETE_ARGS,
+  ]);
+
+  const useCaseImport = builders.importDeclaration(
+    getUseCaseImports(useCaseObj),
+    builders.stringLiteral("../use-cases")
+  );
+  const entityImport = builders.importDeclaration(
+    [builders.importSpecifier(builders.identifier(entityName))],
+    ENTITY_PATH
+  );
+
+  addImports(template, [useCaseImport, entityImport, ...dtosImport]);
+
+  return { ...eventParams, template };
+};
+
+export const afterCreateEntityService = async (
+  context: DsgContext,
+  eventParams: CreateEntityServiceParams,
+  modules: Module[]
+) => {
+  try {
+    const indexTemplate = await readFile(serviceIndexTemplatePath);
+    const modulePath = `server/src/app/${eventParams.entityName}/services/${eventParams.entityName}.service.ts`;
+    modules[0].path = modulePath;
+
+    const useCaseModules = await createUseCasesCrud(eventParams.entityName);
+    const repositoryModule = await createRepositoryModule(
+      eventParams.entityName
     );
 
     const exportUseCaseName = builders.exportAllDeclaration(
