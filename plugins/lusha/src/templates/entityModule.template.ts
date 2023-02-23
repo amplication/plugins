@@ -4,17 +4,6 @@ import { Module } from '@nestjs/common';
   controllers: [ENTITY_CONTROLLER],
   providers: [ENTITY_REPOSITORY, ENTITY_SERVICE,
     {
-      provide: COUNT_USE_CASE,
-      useFactory: (
-        repository: ENTITY_REPOSITORY_INTERFACE
-      ) => new COUNT_USE_CASE(
-        repository
-      ),
-      inject: [
-        ENTITY_REPOSITORY
-      ],
-    },
-    {
       provide: CREATE_USE_CASE,
       useFactory: (
         repository: ENTITY_REPOSITORY_INTERFACE

@@ -13,7 +13,6 @@ import { builders } from "ast-types";
 import { IdentifierKind } from "ast-types/gen/kinds";
 
 interface UseCaseObj {
-  COUNT_USE_CASE: string;
   FIND_MANY_USE_CASE: string;
   FIND_ONE_USE_CASE: string;
   CREATE_USE_CASE: string;
@@ -193,7 +192,6 @@ export const afterCreateEntityService = async (
 };
 
 export const setUseCasesObj = (entityName: string) => ({
-  COUNT_USE_CASE: `Count${entityName}UseCase`,
   FIND_MANY_USE_CASE: `FindMany${entityName}UseCase`,
   FIND_ONE_USE_CASE: `FindOne${entityName}UseCase`,
   CREATE_USE_CASE: `Create${entityName}UseCase`,

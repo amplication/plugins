@@ -87,7 +87,6 @@ export const afterCreateEntityModule = async (
       `I${camelCaseEntityName}Repository`
     ),
     ENTITY_SERVICE: builders.identifier(`${camelCaseEntityName}Service`),
-    COUNT_USE_CASE: builders.identifier(useCasesObj.COUNT_USE_CASE),
     CREATE_USE_CASE: builders.identifier(useCasesObj.CREATE_USE_CASE),
     DELETE_USE_CASE: builders.identifier(useCasesObj.DELETE_USE_CASE),
     FIND_ONE_USE_CASE: builders.identifier(useCasesObj.FIND_ONE_USE_CASE),
