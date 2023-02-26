@@ -1,12 +1,10 @@
 import { AmplicationPlugin, Events } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
 import {
-  beforeCreateEntityControllerBase,
-  afterCreateEntityControllerBase,
+  beforeCreateEntityController,
+  afterCreateEntityController,
 } from "./events/createController";
 import {
-  beforeCreateEntityServiceBase,
-  afterCreateEntityServiceBase,
   beforeCreateEntityService,
   afterCreateEntityService,
 } from "./events/createService";
@@ -17,14 +15,10 @@ import { beforeCreateAppModule, afterCreateAppModule } from "./events/createAppM
 class LushaPlugin implements AmplicationPlugin {
   register(): Events {
     return {
-      [EventNames.CreateEntityControllerBase]: {
-        before: beforeCreateEntityControllerBase,
-        after: afterCreateEntityControllerBase,
+      [EventNames.CreateEntityController]: {
+        before: beforeCreateEntityController,
+        after: afterCreateEntityController,
       },
-      // [EventNames.CreateEntityServiceBase]: {
-      //   before: beforeCreateEntityServiceBase,
-      //   after: afterCreateEntityServiceBase,
-      // },
       [EventNames.CreateEntityService]: {
         before: beforeCreateEntityService,
         after: afterCreateEntityService,

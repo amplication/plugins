@@ -39,7 +39,7 @@ declare const UPDATE_DATA_MAPPING: UPDATE_INPUT;
 
 @ApiTags('wished-contacts-v2')
 @common.Controller(ENTITY_NAME)
-export class CONTROLLER_BASE {
+export class CONTROLLER {
   constructor(protected readonly service: SERVICE) {}
   
   @common.Post()

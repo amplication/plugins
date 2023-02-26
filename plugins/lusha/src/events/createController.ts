@@ -1,6 +1,6 @@
 import { join, resolve } from "path";
 import {
-  CreateEntityControllerBaseParams,
+  CreateEntityControllerParams,
   DsgContext,
   Module,
 } from "@amplication/code-gen-types";
@@ -8,15 +8,16 @@ import { parse, print, readFile } from "@amplication/code-gen-utils";
 import { namedTypes } from "ast-types/gen/namedTypes";
 import { builders, visit } from "ast-types";
 import { addImports } from "../util/ast";
+import { camelCase } from "camel-case";
 
 const controllerTemplatePath = join(
   resolve(__dirname, "./templates"),
   "controller.template.ts"
 );
 
-export const beforeCreateEntityControllerBase = async (
+export const beforeCreateEntityController = async (
   context: DsgContext,
-  eventParams: CreateEntityControllerBaseParams
+  eventParams: CreateEntityControllerParams
 ) => {
   const template = await readFile(controllerTemplatePath);
   return { ...eventParams, template };
@@ -26,6 +27,9 @@ const updateControllerImports = (
   template: namedTypes.File,
   entityName: string
 ) => {
+  const entityNameCamelCase = camelCase(entityName);
+  console.log({entityNameCamelCase});
+
   const lowerCaseEntity = entityName.toLowerCase();
   // remove all default DTOs imports
   visit(template, {
@@ -39,15 +43,15 @@ const updateControllerImports = (
   });
   // create the new DTOs imports
   const serviceImport = builders.importDeclaration(
-    [builders.importSpecifier(builders.identifier(`${entityName}ServiceBase`))],
+    [builders.importSpecifier(builders.identifier(`${entityNameCamelCase}Service`))],
     builders.stringLiteral(
       `../app/${lowerCaseEntity}/services/${lowerCaseEntity}.service`
     )
   );
   const createDtoImport = builders.importDeclaration(
-    [builders.importSpecifier(builders.identifier(`${entityName}CreateInput`))],
+    [builders.importSpecifier(builders.identifier(`${entityNameCamelCase}CreateInput`))],
     builders.stringLiteral(
-      `../app/${lowerCaseEntity}/model/dtos/${entityName}CreateInput.dto`
+      `../app/${lowerCaseEntity}/model/dtos/${entityNameCamelCase}CreateInput.dto`
     )
   );
   // const whereDtoImport = builders.importDeclaration(
@@ -59,17 +63,17 @@ const updateControllerImports = (
   const whereUniqueDtoImport = builders.importDeclaration(
     [
       builders.importSpecifier(
-        builders.identifier(`${entityName}WhereUniqueInput`)
+        builders.identifier(`${entityNameCamelCase}WhereUniqueInput`)
       ),
     ],
     builders.stringLiteral(
-      `../app/${lowerCaseEntity}/model/dtos/${entityName}WhereUniqueInput.dto`
+      `../app/${lowerCaseEntity}/model/dtos/${entityNameCamelCase}WhereUniqueInput.dto`
     )
   );
   const findManyArgsDtoImport = builders.importDeclaration(
     [
       builders.importSpecifier(
-        builders.identifier(`${entityName}FindManyArgs`)
+        builders.identifier(`${entityNameCamelCase}FindManyArgs`)
       ),
     ],
     builders.stringLiteral(
@@ -77,15 +81,15 @@ const updateControllerImports = (
     )
   );
   const updateInputDtoImport = builders.importDeclaration(
-    [builders.importSpecifier(builders.identifier(`${entityName}UpdateInput`))],
+    [builders.importSpecifier(builders.identifier(`${entityNameCamelCase}UpdateInput`))],
     builders.stringLiteral(
-      `../app/${lowerCaseEntity}/model/dtos/${entityName}UpdateInput.dto`
+      `../app/${lowerCaseEntity}/model/dtos/${entityNameCamelCase}UpdateInput.dto`
     )
   );
   const entityDtoImport = builders.importDeclaration(
-    [builders.importSpecifier(builders.identifier(entityName))],
+    [builders.importSpecifier(builders.identifier(entityNameCamelCase))],
     builders.stringLiteral(
-      `../app/${lowerCaseEntity}/model/dtos/${entityName}.dto`
+      `../app/${lowerCaseEntity}/model/dtos/${entityNameCamelCase}.dto`
     )
   );
 
@@ -99,14 +103,14 @@ const updateControllerImports = (
   ]);
 };
 
-export const afterCreateEntityControllerBase = (
+export const afterCreateEntityController = (
   context: DsgContext,
-  eventParams: CreateEntityControllerBaseParams,
+  eventParams: CreateEntityControllerParams,
   modules: Module[]
 ) => {
   try {
     const file = parse(modules[0].code);
-    updateControllerImports(file, eventParams.entity.name);
+    updateControllerImports(file, eventParams.entityName);
 
     const modulePath = `server/src/web-server/${eventParams.entityName}.controller.ts`;
     modules[0] = {
