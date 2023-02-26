@@ -24,12 +24,12 @@ export const createRepositoryModule = async (entityName: string) => {
     ),
     ENTITY: builders.identifier(entityNameToUpper),
     ENTITY_PRISMA:  builders.identifier(entityName),
-    COUNT_ARGS: builders.identifier(`Prisma.${entityName}CountArgs`),
-    FIND_MANY_ARGS: builders.identifier(`Prisma.${entityName}FindManyArgs`),
-    FIND_ONE_ARGS: builders.identifier(`Prisma.${entityName}FindUniqueArgs`),
-    CREATE_ARGS: builders.identifier(`Prisma.${entityName}CreateArgs`),
-    UPDATE_ARGS: builders.identifier(`Prisma.${entityName}UpdateArgs`),
-    DELETE_ARGS: builders.identifier(`Prisma.${entityName}DeleteArgs`),
+    COUNT_ARGS: builders.identifier(`Prisma.${entityNameToUpper}CountArgs`),
+    FIND_MANY_ARGS: builders.identifier(`Prisma.${entityNameToUpper}FindManyArgs`),
+    FIND_ONE_ARGS: builders.identifier(`Prisma.${entityNameToUpper}FindUniqueArgs`),
+    CREATE_ARGS: builders.identifier(`Prisma.${entityNameToUpper}CreateArgs`),
+    UPDATE_ARGS: builders.identifier(`Prisma.${entityNameToUpper}UpdateArgs`),
+    DELETE_ARGS: builders.identifier(`Prisma.${entityNameToUpper}DeleteArgs`),
   };
 
   interpolate(repositoryTemplate, templateMapping);
