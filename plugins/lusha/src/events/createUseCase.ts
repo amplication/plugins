@@ -2,6 +2,7 @@ import { join, resolve } from "path";
 import { Module } from "@amplication/code-gen-types";
 import { readFile, print } from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
+import { capitalizeFirstLetter } from "../util/utils";
 import { addInjectableDependency } from "../util/nestjs-code-generation";
 import { addImports, getClassDeclarationById, interpolate } from "../util/ast";
 
@@ -62,11 +63,12 @@ const createUsCaseModule = async (
   template: namedTypes.File,
   entityName: string
 ): Promise<ModuleUseCase> => {
-  const useCaseClass = `${useCase}${entityName}UseCase`
+  const entityCapitalFirst = capitalizeFirstLetter(entityName);
+  const useCaseClass = `${useCase}${entityCapitalFirst}UseCase`
   const templateMapping = {
     USE_CASE: builders.identifier(useCaseClass),
-    USE_CASE_ARGS: builders.identifier(setUseCaseArgsName(entityName, useCase)),
-    ENTITY_DTO: builders.identifier(entityName), 
+    USE_CASE_ARGS: builders.identifier(setUseCaseArgsName(entityCapitalFirst, useCase)),
+    ENTITY_DTO: builders.identifier(entityCapitalFirst), 
   };
 
   const useCaseId = builders.identifier(useCaseClass);
@@ -74,9 +76,9 @@ const createUsCaseModule = async (
   interpolate(template, templateMapping);
   const classDeclaration = getClassDeclarationById(template, useCaseId);
 
-  createClassImport(template, entityName, useCase);
-  createdConstructorStatements(classDeclaration, entityName);
-  const classMethodExecute = createClassMethod(entityName, useCase);
+  createClassImport(template, entityCapitalFirst, useCase);
+  createdConstructorStatements(classDeclaration, entityCapitalFirst);
+  const classMethodExecute = createClassMethod(entityCapitalFirst, useCase);
 
   classDeclaration.body.body.push(classMethodExecute);
 
@@ -108,25 +110,25 @@ const createClassImport = (
  
   const crudDtoImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(entityName))],
-    builders.stringLiteral(`../model/dtos/${entityName}.dto`)
+    builders.stringLiteral(`../model/dtos/${entityName}`)
   );
 
   const dtoImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(entityName))],
-    builders.stringLiteral(`../model/dtos/${entityName}.dto`)
+    builders.stringLiteral(`../model/dtos/${entityName}`)
   );
 
   const repositoryImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(`I${entityName}Repository`))],
     builders.stringLiteral(
-      `../model/interfaces/repositories/${entityName}-repository.interface`
+      `../model/interfaces/repositories/${entityName.toLowerCase()}-repository.interface`
     )
   );
 
   const dtoArgsName = setUseCaseArgsName(entityName, useCase); // `${entityName}${useCase}Args`;
   const useCaseArgsImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(dtoArgsName))],
-    builders.stringLiteral(`../model/dtos/${dtoArgsName}.dto`)
+    builders.stringLiteral(`../model/dtos/${dtoArgsName}`)
   );
 
   addImports(template, [dtoImport, repositoryImport, useCaseArgsImport]);

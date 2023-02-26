@@ -11,6 +11,7 @@ import { parse, readFile, print } from "@amplication/code-gen-utils";
 import { builders, visit } from "ast-types";
 import { IdentifierKind } from "ast-types/gen/kinds";
 import { namedTypes } from "ast-types/gen/namedTypes";
+import { capitalizeFirstLetter } from "../util/utils";
 
 interface UseCaseObj {
   FIND_MANY_USE_CASE: string;
@@ -37,11 +38,10 @@ export const beforeCreateEntityService = async (
   const { entityName, templateMapping } = eventParams;
   const template = await readFile(serviceTemplatePath);
 
-  const entityNameToUpper =
-    entityName.charAt(0).toUpperCase() + entityName.slice(1);
+  const entityNameToUpper = capitalizeFirstLetter(entityName);
 
-  const useCaseObj = setUseCasesObj(entityName);
-  const ENTITY_PATH = builders.stringLiteral(`../model/dtos/${entityName}.dto`);
+  const useCaseObj = setUseCasesObj(entityNameToUpper);
+  const ENTITY_PATH = builders.stringLiteral(`../model/dtos/${entityName}`);
 
   Object.assign(templateMapping, {
     CREATE_ARGS: builders.identifier(`Create${entityNameToUpper}Args`),
@@ -142,6 +142,6 @@ const setDtosImports = (dtosArr: IdentifierKind[]) =>
   dtosArr.map((dto: IdentifierKind) =>
     builders.importDeclaration(
       [builders.importSpecifier(dto)],
-      builders.stringLiteral(`../model/dtos/${dto.name}.dto`)
+      builders.stringLiteral(`../model/dtos/${dto.name}`)
     )
   );

@@ -134,7 +134,7 @@ const createClassImport = (template: namedTypes.File, entityName: string) => {
   const repositoryInterfaceImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(`I${entityName}Repository`))],
     builders.stringLiteral(
-      `./model/interfaces/repositories/${entityName}-repository.interface`
+      `./model/interfaces/repositories/${entityName.toLowerCase()}-repository.interface`
     )
   );
 

@@ -60,13 +60,13 @@ const updateControllerImports = (
       ),
     ],
     builders.stringLiteral(
-      `../app/${lowerCaseEntity}/model/dtos/${entityNameToUpper}CreateInput.dto`
+      `../app/${lowerCaseEntity}/model/dtos/${entityNameToUpper}CreateInput`
     )
   );
   // const whereDtoImport = builders.importDeclaration(
   //   [builders.importSpecifier(builders.identifier(`${entityName}WhereInput`))],
   //   builders.stringLiteral(
-  //     `../app/${lowerCaseEntity}/model/dtos/${entityName}WhereInput.dto`
+  //     `../app/${lowerCaseEntity}/model/dtos/${entityName}WhereInput`
   //   )
   // );
   const whereUniqueDtoImport = builders.importDeclaration(
@@ -76,7 +76,7 @@ const updateControllerImports = (
       ),
     ],
     builders.stringLiteral(
-      `../app/${lowerCaseEntity}/model/dtos/${entityNameToUpper}WhereUniqueInput.dto`
+      `../app/${lowerCaseEntity}/model/dtos/${entityNameToUpper}WhereUniqueInput`
     )
   );
   const findManyArgsDtoImport = builders.importDeclaration(
@@ -86,7 +86,7 @@ const updateControllerImports = (
       ),
     ],
     builders.stringLiteral(
-      `../app/${lowerCaseEntity}/model/dtos/${entityName}FindManyArgs.dto`
+      `../app/${lowerCaseEntity}/model/dtos/${entityName}FindManyArgs`
     )
   );
   const updateInputDtoImport = builders.importDeclaration(
@@ -96,13 +96,13 @@ const updateControllerImports = (
       ),
     ],
     builders.stringLiteral(
-      `../app/${lowerCaseEntity}/model/dtos/${entityNameToUpper}UpdateInput.dto`
+      `../app/${lowerCaseEntity}/model/dtos/${entityNameToUpper}UpdateInput`
     )
   );
   const entityDtoImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(entityNameToUpper))],
     builders.stringLiteral(
-      `../app/${lowerCaseEntity}/model/dtos/${entityNameToUpper}.dto`
+      `../app/${lowerCaseEntity}/model/dtos/${entityNameToUpper}`
     )
   );
 

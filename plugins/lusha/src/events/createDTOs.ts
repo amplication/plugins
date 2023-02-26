@@ -21,6 +21,6 @@ export const afterCreateServerModules = (
 
     return {
       code: module.code,
-      path: `server/src/app/${entityName}/model/dtos/${dtoModule}.dto.ts`,
+      path: `server/src/app/${entityName}/model/dtos/${dtoModule}.ts`,
     };
   });
