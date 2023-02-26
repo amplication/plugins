@@ -28,6 +28,12 @@ export const afterCreatePrismaSchemaModule = async (
 
   const mainStaticPath = resolve(__dirname, "./static/main");
 
+  const infraStaticPath = resolve(__dirname, "./static/infraFiles");
+  const infraStaticsFile = await context.utils.importStaticModules(
+    infraStaticPath,
+    context.serverDirectories.srcDirectory
+  );
+
   const mainStaticsFile = await context.utils.importStaticModules(
     mainStaticPath,
     context.serverDirectories.srcDirectory
@@ -62,6 +68,7 @@ export const afterCreatePrismaSchemaModule = async (
     ...docsStaticsFiles,
     ...configStaticsFiles,
     ...mainStaticsFile,
+    ...infraStaticsFile
   ];
 };
 
