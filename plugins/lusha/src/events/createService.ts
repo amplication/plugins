@@ -37,13 +37,16 @@ export const beforeCreateEntityService = async (
   const { entityName, templateMapping } = eventParams;
   const template = await readFile(serviceTemplatePath);
 
+  const entityNameToUpper =
+    entityName.charAt(0).toUpperCase() + entityName.slice(1);
+
   const useCaseObj = setUseCasesObj(entityName);
   const ENTITY_PATH = builders.stringLiteral(`../model/dtos/${entityName}.dto`);
 
   Object.assign(templateMapping, {
-    CREATE_ARGS: builders.identifier(`Create${entityName}Args`),
-    UPDATE_ARGS: builders.identifier(`Update${entityName}Args`),
-    DELETE_ARGS: builders.identifier(`Delete${entityName}Args`),
+    CREATE_ARGS: builders.identifier(`Create${entityNameToUpper}Args`),
+    UPDATE_ARGS: builders.identifier(`Update${entityNameToUpper}Args`),
+    DELETE_ARGS: builders.identifier(`Delete${entityNameToUpper}Args`),
     ...useCaseObj,
   });
 
@@ -59,8 +62,9 @@ export const beforeCreateEntityService = async (
     getUseCaseImports(useCaseObj),
     builders.stringLiteral("../use-cases")
   );
+
   const entityImport = builders.importDeclaration(
-    [builders.importSpecifier(builders.identifier(entityName))],
+    [builders.importSpecifier(builders.identifier(entityNameToUpper))],
     ENTITY_PATH
   );
 
