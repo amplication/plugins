@@ -8,7 +8,6 @@ import { parse, print, readFile } from "@amplication/code-gen-utils";
 import { namedTypes } from "ast-types/gen/namedTypes";
 import { builders, visit } from "ast-types";
 import { addImports } from "../util/ast";
-import { camelCase } from "camel-case";
 
 const controllerTemplatePath = join(
   resolve(__dirname, "./templates"),
@@ -27,14 +26,16 @@ const updateControllerImports = (
   template: namedTypes.File,
   entityName: string
 ) => {
-  const entityNameCamelCase = camelCase(entityName);
-  console.log({entityNameCamelCase});
+  const entityNameToUpper =
+    entityName.charAt(0).toUpperCase() + entityName.slice(1);
 
   const lowerCaseEntity = entityName.toLowerCase();
   // remove all default DTOs imports
   visit(template, {
     visitImportDeclaration(path) {
-      if (path.value.source.value.toLowerCase().includes(entityName.toLowerCase())) {
+      if (
+        path.value.source.value.toLowerCase().includes(entityName.toLowerCase())
+      ) {
         path.prune();
       }
 
@@ -43,15 +44,23 @@ const updateControllerImports = (
   });
   // create the new DTOs imports
   const serviceImport = builders.importDeclaration(
-    [builders.importSpecifier(builders.identifier(`${entityNameCamelCase}Service`))],
+    [
+      builders.importSpecifier(
+        builders.identifier(`${entityNameToUpper}Service`)
+      ),
+    ],
     builders.stringLiteral(
       `../app/${lowerCaseEntity}/services/${lowerCaseEntity}.service`
     )
   );
   const createDtoImport = builders.importDeclaration(
-    [builders.importSpecifier(builders.identifier(`${entityNameCamelCase}CreateInput`))],
+    [
+      builders.importSpecifier(
+        builders.identifier(`${entityNameToUpper}CreateInput`)
+      ),
+    ],
     builders.stringLiteral(
-      `../app/${lowerCaseEntity}/model/dtos/${entityNameCamelCase}CreateInput.dto`
+      `../app/${lowerCaseEntity}/model/dtos/${entityNameToUpper}CreateInput.dto`
     )
   );
   // const whereDtoImport = builders.importDeclaration(
@@ -63,17 +72,17 @@ const updateControllerImports = (
   const whereUniqueDtoImport = builders.importDeclaration(
     [
       builders.importSpecifier(
-        builders.identifier(`${entityNameCamelCase}WhereUniqueInput`)
+        builders.identifier(`${entityNameToUpper}WhereUniqueInput`)
       ),
     ],
     builders.stringLiteral(
-      `../app/${lowerCaseEntity}/model/dtos/${entityNameCamelCase}WhereUniqueInput.dto`
+      `../app/${lowerCaseEntity}/model/dtos/${entityNameToUpper}WhereUniqueInput.dto`
     )
   );
   const findManyArgsDtoImport = builders.importDeclaration(
     [
       builders.importSpecifier(
-        builders.identifier(`${entityNameCamelCase}FindManyArgs`)
+        builders.identifier(`${entityNameToUpper}FindManyArgs`)
       ),
     ],
     builders.stringLiteral(
@@ -81,15 +90,19 @@ const updateControllerImports = (
     )
   );
   const updateInputDtoImport = builders.importDeclaration(
-    [builders.importSpecifier(builders.identifier(`${entityNameCamelCase}UpdateInput`))],
+    [
+      builders.importSpecifier(
+        builders.identifier(`${entityNameToUpper}UpdateInput`)
+      ),
+    ],
     builders.stringLiteral(
-      `../app/${lowerCaseEntity}/model/dtos/${entityNameCamelCase}UpdateInput.dto`
+      `../app/${lowerCaseEntity}/model/dtos/${entityNameToUpper}UpdateInput.dto`
     )
   );
   const entityDtoImport = builders.importDeclaration(
-    [builders.importSpecifier(builders.identifier(entityNameCamelCase))],
+    [builders.importSpecifier(builders.identifier(entityNameToUpper))],
     builders.stringLiteral(
-      `../app/${lowerCaseEntity}/model/dtos/${entityNameCamelCase}.dto`
+      `../app/${lowerCaseEntity}/model/dtos/${entityNameToUpper}.dto`
     )
   );
 
@@ -115,8 +128,8 @@ export const afterCreateEntityController = (
     const modulePath = `server/src/web-server/${eventParams.entityName}.controller.ts`;
     modules[0] = {
       path: modulePath,
-      code: print(file).code
-    }
+      code: print(file).code,
+    };
 
     return modules;
   } catch (error) {

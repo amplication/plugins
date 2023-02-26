@@ -15,12 +15,15 @@ const repositoryInterfaceTemplatePath = join(
 
 export const createRepositoryModule = async (entityName: string) => {
   const repositoryTemplate = await readFile(repositoryTemplatePath);
+  const entityNameToUpper =
+    entityName.charAt(0).toUpperCase() + entityName.slice(1);
   const templateMapping = {
     ENTITY_REPOSITORY: builders.identifier(`${entityName}Repository`),
     ENTITY_REPOSITORY_INTERFACE: builders.identifier(
       `I${entityName}Repository`
     ),
-    ENTITY: builders.identifier(entityName),
+    ENTITY: builders.identifier(entityNameToUpper),
+    ENTITY_PRISMA:  builders.identifier(entityName),
     COUNT_ARGS: builders.identifier(`Prisma.${entityName}CountArgs`),
     FIND_MANY_ARGS: builders.identifier(`Prisma.${entityName}FindManyArgs`),
     FIND_ONE_ARGS: builders.identifier(`Prisma.${entityName}FindUniqueArgs`),
@@ -32,22 +35,32 @@ export const createRepositoryModule = async (entityName: string) => {
   interpolate(repositoryTemplate, templateMapping);
   createClassImport(repositoryTemplate, entityName);
 
-  const repositoryInterfaceModule = await createRepositoryInterfaceModule(entityName);
+  const repositoryInterfaceModule = await createRepositoryInterfaceModule(
+    entityName
+  );
 
-  return [{
-    path: `server/src/app/${entityName}/repositories/${entityName}.repository.ts`,
-    code: print(repositoryTemplate).code,
-  }, repositoryInterfaceModule]
+  return [
+    {
+      path: `server/src/app/${entityName}/repositories/${entityName}.repository.ts`,
+      code: print(repositoryTemplate).code,
+    },
+    repositoryInterfaceModule,
+  ];
 };
 
 const createClassImport = (template: namedTypes.File, entityName: string) => {
   const repositoryInterfaceImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(`I${entityName}Repository`))],
-    builders.stringLiteral("../model/interfaces")
+    builders.stringLiteral(
+      `../model/interfaces/repositories/${entityName}-repository.interface`
+    )
   );
 
+  const entityNameToUpper =
+    entityName.charAt(0).toUpperCase() + entityName.slice(1);
+
   const entityImport = builders.importDeclaration(
-    [builders.importSpecifier(builders.identifier(entityName))],
+    [builders.importSpecifier(builders.identifier(entityNameToUpper))],
     builders.stringLiteral(`../model/dtos/${entityName}.dto`)
   );
 
@@ -55,9 +68,13 @@ const createClassImport = (template: namedTypes.File, entityName: string) => {
 };
 
 const createRepositoryInterfaceModule = async (entityName: string) => {
-  const repositoryInterfaceTemplate = await readFile(repositoryInterfaceTemplatePath);
+  const repositoryInterfaceTemplate = await readFile(
+    repositoryInterfaceTemplatePath
+  );
   const templateMapping = {
-    ENTITY_REPOSITORY_INTERFACE: builders.identifier(`I${entityName}Repository`),
+    ENTITY_REPOSITORY_INTERFACE: builders.identifier(
+      `I${entityName}Repository`
+    ),
     ENTITY: builders.identifier(entityName),
     COUNT_ARGS: builders.identifier(`Prisma.${entityName}CountArgs`),
     FIND_MANY_ARGS: builders.identifier(`Prisma.${entityName}FindManyArgs`),
@@ -74,7 +91,7 @@ const createRepositoryInterfaceModule = async (entityName: string) => {
     path: `server/src/app/${entityName}/model/interfaces/repositories/${entityName.toLowerCase()}-repository.interface.ts`,
     code: print(repositoryInterfaceTemplate).code,
   };
-}
+};
 
 const createInterfaceImport = (
   template: namedTypes.File,
@@ -86,4 +103,4 @@ const createInterfaceImport = (
   );
 
   addImports(template, [entityImport]);
-}
+};
