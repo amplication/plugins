@@ -14,12 +14,12 @@ type ModuleUseCase = {
 type UseCasesCrud =
   | "Count"
   | "FindMany"
-  | "FindOne"
+  | "FindUnique"
   | "Create"
   | "Update"
   | "Delete";
 
-const useCasesByAction = ["FindMany", "FindOne", "Create", "Update", "Delete"];
+const useCasesByAction = ["FindMany", "FindUnique", "Create", "Update", "Delete"];
 const useCaseTemplatePath = join(
   resolve(__dirname, "./templates"),
   "useCase.template.ts"
@@ -68,7 +68,7 @@ const createUsCaseModule = async (
   const templateMapping = {
     USE_CASE: builders.identifier(useCaseClass),
     USE_CASE_ARGS: builders.identifier(setUseCaseArgsName(entityCapitalFirst, useCase)),
-    ENTITY_DTO: builders.identifier(entityCapitalFirst), 
+    ENTITY_DTO: builders.identifier(useCase === "FindMany" ? `${entityCapitalFirst}[]` : entityCapitalFirst), 
   };
 
   const useCaseId = builders.identifier(useCaseClass);
