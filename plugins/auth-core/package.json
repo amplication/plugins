@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-auth-core",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "set auth for Amplication build",
   "main": "dist/index.js",
   "scripts": {
