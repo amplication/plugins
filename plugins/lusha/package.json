@@ -1,5 +1,5 @@
 {
-    "name": "lusha",
+    "name": "@amplication/lusha",
     "version": "0.0.1-beta.45",
     "description": "Description of your plugin",
     "main": "dist/index.js",
