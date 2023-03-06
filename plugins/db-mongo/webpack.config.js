@@ -36,4 +36,7 @@ module.exports = {
     libraryTarget: "commonjs2",
     clean: true,
   },
+  externals: {
+    "prisma-schema-dsl": "prisma-schema-dsl"
+  }
 };
