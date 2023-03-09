@@ -203,7 +203,6 @@ class AuthCorePlugin implements AmplicationPlugin {
     eventParams: CreateServerPackageJsonParams,
     modules: Module[]
   ) {
-
     // create grants here, because here the DSG format this code to json file.
     const grants =
       context.entities && context.roles
@@ -214,7 +213,7 @@ class AuthCorePlugin implements AmplicationPlugin {
           )
         : null;
 
-    return grants ? [ ...modules, grants] : modules;
+    return grants ? [...modules, grants] : modules;
   }
 
   async afterCreateAppModule(
@@ -719,9 +718,6 @@ class AuthCorePlugin implements AmplicationPlugin {
         ]
       )
     );
-    const pluralName =
-      eventParams.entityName.charAt(0).toUpperCase() +
-      eventParams.entityName.slice(1).toLocaleLowerCase();
 
     const resolverDecorator = builders.decorator(
       builders.callExpression(
@@ -729,7 +725,12 @@ class AuthCorePlugin implements AmplicationPlugin {
           builders.identifier("graphql"),
           builders.identifier("Resolver")
         ),
-        [builders.arrowFunctionExpression([], builders.identifier(pluralName))]
+        [
+          builders.arrowFunctionExpression(
+            [],
+            eventParams.templateMapping["ENTITY"]
+          ),
+        ]
       )
     );
 
@@ -872,17 +873,18 @@ class AuthCorePlugin implements AmplicationPlugin {
       )
     );
 
-    const pluralName =
-      eventParams.entityName.charAt(0).toUpperCase() +
-      eventParams.entityName.slice(1).toLocaleLowerCase();
-
     const resolverDecorator = builders.decorator(
       builders.callExpression(
         builders.memberExpression(
           builders.identifier("graphql"),
           builders.identifier("Resolver")
         ),
-        [builders.arrowFunctionExpression([], builders.identifier(pluralName))]
+        [
+          builders.arrowFunctionExpression(
+            [],
+            eventParams.templateMapping["ENTITY"]
+          ),
+        ]
       )
     );
 
