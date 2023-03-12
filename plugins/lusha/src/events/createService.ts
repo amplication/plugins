@@ -115,7 +115,7 @@ export const afterCreateEntityService = async (
 
 export const setUseCasesObj = (entityName: string) => ({
   FIND_MANY_USE_CASE: `FindMany${entityName}UseCase`,
-  FIND_ONE_USE_CASE: `FindOne${entityName}UseCase`,
+  FIND_ONE_USE_CASE: `FindUnique${entityName}UseCase`,
   CREATE_USE_CASE: `Create${entityName}UseCase`,
   UPDATE_USE_CASE: `Update${entityName}UseCase`,
   DELETE_USE_CASE: `Delete${entityName}UseCase`,

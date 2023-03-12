@@ -15,63 +15,6 @@ const entityModuleTemplatePath = join(
   "entityModule.template.ts"
 );
 
-export const afterCreatePrismaSchemaModule = async (
-  context: DsgContext,
-  eventParams: CreatePrismaSchemaParams,
-  modules: Module[]
-) => {
-  const prismaStaticPath = resolve(__dirname, "./static/prisma");
-  const baseStaticPath = resolve(__dirname, "./static/base");
-
-  const configStaticPath = resolve(__dirname, "./static/config");
-  const docsStaticPath = resolve(__dirname, "./static/docs");
-
-  const mainStaticPath = resolve(__dirname, "./static/main");
-
-  const infraStaticPath = resolve(__dirname, "./static/infraFiles");
-  const infraStaticsFile = await context.utils.importStaticModules(
-    infraStaticPath,
-    context.serverDirectories.srcDirectory
-  );
-
-  const mainStaticsFile = await context.utils.importStaticModules(
-    mainStaticPath,
-    context.serverDirectories.srcDirectory
-  );
-
-  const configStaticsFiles = await context.utils.importStaticModules(
-    configStaticPath,
-    `${context.serverDirectories.baseDirectory}/config`
-  );
-
-  const docsStaticsFiles = await context.utils.importStaticModules(
-    docsStaticPath,
-    `${context.serverDirectories.baseDirectory}/docs`
-  );
-
-  const prismaStaticsFiles = await context.utils.importStaticModules(
-    prismaStaticPath,
-    `${context.serverDirectories.srcDirectory}/app/prisma`
-  );
-
-  //implemented here because this modules are not formatted at all.
-
-  const baseStaticsFiles = await context.utils.importStaticModules(
-    baseStaticPath,
-    context.serverDirectories.baseDirectory
-  );
-
-  return [
-    ...modules,
-    ...prismaStaticsFiles,
-    ...baseStaticsFiles,
-    ...docsStaticsFiles,
-    ...configStaticsFiles,
-    ...mainStaticsFile,
-    ...infraStaticsFile
-  ];
-};
-
 export const afterCreateEntityModule = async (
   context: DsgContext,
   eventParams: CreateEntityModuleParams,

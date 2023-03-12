@@ -8,9 +8,11 @@ import {
   beforeCreateEntityService,
   afterCreateEntityService,
 } from "./events/createService";
-import { afterCreateServerModules } from "./events/createDTOs";
-import { afterCreateEntityModule, afterCreatePrismaSchemaModule } from "./events/createEntityModule";
+import { afterCreateServerModules } from "./events/createServerModules";
+import { afterCreateEntityModule } from "./events/createEntityModule";
 import { beforeCreateAppModule, afterCreateAppModule } from "./events/createAppModule";
+import { afterLoadStaticFiles } from "./events/loadStaticFiles";
+import { afterCreateDTOs } from "./events/createDTOs";
 
 class LushaPlugin implements AmplicationPlugin {
   register(): Events {
@@ -29,12 +31,15 @@ class LushaPlugin implements AmplicationPlugin {
       [EventNames.CreateEntityModule]: {
         after: afterCreateEntityModule,
       },
-      [EventNames.CreatePrismaSchema]: {
-        after: afterCreatePrismaSchemaModule,
-      },
       [EventNames.CreateServerAppModule]: {
         before: beforeCreateAppModule,
         after: afterCreateAppModule
+      },
+      [EventNames.LoadStaticFiles]: {
+        after: afterLoadStaticFiles
+      },
+      [EventNames.CreateDTOs]: {
+        after: afterCreateDTOs
       }
     };
   }

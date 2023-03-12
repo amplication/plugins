@@ -23,10 +23,14 @@ export const createRepositoryModule = async (entityName: string) => {
       `I${entityCapitalFirst}Repository`
     ),
     ENTITY: builders.identifier(entityCapitalFirst),
-    ENTITY_PRISMA:  builders.identifier(entityName),
+    ENTITY_PRISMA: builders.identifier(entityName),
     COUNT_ARGS: builders.identifier(`Prisma.${entityCapitalFirst}CountArgs`),
-    FIND_MANY_ARGS: builders.identifier(`Prisma.${entityCapitalFirst}FindManyArgs`),
-    FIND_ONE_ARGS: builders.identifier(`Prisma.${entityCapitalFirst}FindUniqueArgs`),
+    FIND_MANY_ARGS: builders.identifier(
+      `Prisma.${entityCapitalFirst}FindManyArgs`
+    ),
+    FIND_ONE_ARGS: builders.identifier(
+      `Prisma.${entityCapitalFirst}FindUniqueArgs`
+    ),
     CREATE_ARGS: builders.identifier(`Prisma.${entityCapitalFirst}CreateArgs`),
     UPDATE_ARGS: builders.identifier(`Prisma.${entityCapitalFirst}UpdateArgs`),
     DELETE_ARGS: builders.identifier(`Prisma.${entityCapitalFirst}DeleteArgs`),
@@ -68,7 +72,7 @@ const createClassImport = (template: namedTypes.File, entityName: string) => {
 };
 
 const createRepositoryInterfaceModule = async (entityName: string) => {
-  const entityCapitalFirst = capitalizeFirstLetter(entityName)
+  const entityCapitalFirst = capitalizeFirstLetter(entityName);
   const repositoryInterfaceTemplate = await readFile(
     repositoryInterfaceTemplatePath
   );
@@ -77,12 +81,16 @@ const createRepositoryInterfaceModule = async (entityName: string) => {
       `I${entityCapitalFirst}Repository`
     ),
     ENTITY: builders.identifier(entityCapitalFirst),
-    COUNT_ARGS: builders.identifier(`Prisma.${entityName}CountArgs`),
-    FIND_MANY_ARGS: builders.identifier(`Prisma.${entityName}FindManyArgs`),
-    FIND_ONE_ARGS: builders.identifier(`Prisma.${entityName}FindUniqueArgs`),
-    CREATE_ARGS: builders.identifier(`Prisma.${entityName}CreateArgs`),
-    UPDATE_ARGS: builders.identifier(`Prisma.${entityName}UpdateArgs`),
-    DELETE_ARGS: builders.identifier(`Prisma.${entityName}DeleteArgs`),
+    COUNT_ARGS: builders.identifier(`Prisma.${entityCapitalFirst}CountArgs`),
+    FIND_MANY_ARGS: builders.identifier(
+      `Prisma.${entityCapitalFirst}FindManyArgs`
+    ),
+    FIND_ONE_ARGS: builders.identifier(
+      `Prisma.${entityCapitalFirst}FindUniqueArgs`
+    ),
+    CREATE_ARGS: builders.identifier(`Prisma.${entityCapitalFirst}CreateArgs`),
+    UPDATE_ARGS: builders.identifier(`Prisma.${entityCapitalFirst}UpdateArgs`),
+    DELETE_ARGS: builders.identifier(`Prisma.${entityCapitalFirst}DeleteArgs`),
   };
 
   interpolate(repositoryInterfaceTemplate, templateMapping);
