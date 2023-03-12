@@ -80,16 +80,17 @@ class MongoPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerPackageJsonParams
   ) {
+
     const myValues = {
       scripts: {
         "prisma:pull": "prisma db pull",
         "prisma:push": " prisma db push",
+        "db:init" :"run-s seed"
       },
     };
 
-    eventParams.updateProperties.forEach((updateProperty) =>
-      merge(updateProperty, myValues)
-    );
+    eventParams.updateProperties.push(myValues);
+    
 
     return eventParams;
   }
