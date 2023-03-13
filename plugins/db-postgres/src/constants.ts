@@ -64,5 +64,7 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
 export const dataSource: DataSource = {
   name: "postgres",
   provider: DataSourceProvider.PostgreSQL,
-  url: new DataSourceURLEnv("DB_URL"),
+  url:{
+    name: "DB_URL"
+  },
 };
