@@ -5,7 +5,6 @@ import {
 import {
   DataSource,
   DataSourceProvider,
-  DataSourceURLEnv,
 } from "prisma-schema-dsl-types";
 
 export const envVariables: VariableDictionary = [
@@ -69,5 +68,7 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
 export const dataSource: DataSource = {
   name: "mysql",
   provider: DataSourceProvider.MySQL,
-  url: new DataSourceURLEnv("DB_URL"),
+  url: {
+    name: "DB_URL"
+  }
 };
