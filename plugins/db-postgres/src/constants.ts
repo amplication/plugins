@@ -19,12 +19,12 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
       services: {
         server: {
           environment: {
-            DB_URL: "postgres://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}",
+            DB_URL: "postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}",
           },
         },
         migrate: {
           environment: {
-            DB_URL: "postgres://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}",
+            DB_URL: "postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}",
           },
         },
         db: {
@@ -33,17 +33,13 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
           environment: {
             POSTGRES_USER: "${DB_USER}",
             POSTGRES_PASSWORD: "${DB_PASSWORD}",
+            POSTGRES_DB: "${DB_NAME}",
           },
           volumes: ["postgres:/var/lib/postgresql/data"],
           healthcheck: {
             test: [
-              "CMD",
-              "pg_isready",
-              "-q",
-              "-d",
-              "${DB_NAME}",
-              "-U",
-              "${DB_USER}",
+              "CMD-SHELL",
+              "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}",
             ],
             timeout: "45s",
             interval: "10s",
