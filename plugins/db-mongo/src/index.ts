@@ -25,7 +25,6 @@ import { ScalarType, ReferentialActions } from "prisma-schema-dsl-types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
-import { merge } from "lodash";
 
 class MongoPlugin implements AmplicationPlugin {
   register(): Events {
@@ -80,17 +79,15 @@ class MongoPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerPackageJsonParams
   ) {
-
     const myValues = {
       scripts: {
         "prisma:pull": "prisma db pull",
         "prisma:push": " prisma db push",
-        "db:init" :"run-s seed"
+        "db:init": "run-s seed",
       },
     };
 
     eventParams.updateProperties.push(myValues);
-    
 
     return eventParams;
   }
