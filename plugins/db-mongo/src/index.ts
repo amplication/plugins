@@ -20,6 +20,8 @@ import {
   CreateServerPackageJsonParams,
   CreateServerParams,
   types,
+  LoadStaticFilesParams,
+  Module,
 } from "@amplication/code-gen-types";
 import { ScalarType, ReferentialActions } from "prisma-schema-dsl-types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
@@ -47,6 +49,9 @@ class MongoPlugin implements AmplicationPlugin {
       },
       CreateServerPackageJson: {
         before: this.beforeCreateServerPackageJson,
+      },
+      LoadStaticFiles: {
+        after: this.afterCreateServerStaticFiles,
       },
     };
   }
@@ -125,6 +130,24 @@ class MongoPlugin implements AmplicationPlugin {
     );
 
     return staticsFiles;
+  }
+
+  async afterCreateServerStaticFiles(
+    context: DsgContext,
+    eventParams: LoadStaticFilesParams,
+    modules: Module[]
+  ) {
+    const staticPath = resolve(__dirname, "./static/health");
+    const staticsFiles = await context.utils.importStaticModules(
+      staticPath,
+      `${context.serverDirectories.srcDirectory}/health/base`
+    );
+
+    const updateModules = modules.filter(
+      (x) => !x.path.includes("health.service.base")
+    );
+
+    return [...staticsFiles, ...updateModules];
   }
 
   beforeCreatePrismaSchema(
