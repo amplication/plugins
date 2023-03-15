@@ -27,7 +27,6 @@ import { ScalarType, ReferentialActions } from "prisma-schema-dsl-types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
-import { merge } from "lodash";
 
 class MongoPlugin implements AmplicationPlugin {
   register(): Events {
