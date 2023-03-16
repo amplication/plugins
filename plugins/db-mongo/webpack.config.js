@@ -2,6 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
+/** @type {import("webpack").Configuration} */
 module.exports = {
   mode: "production",
   target: "node",
@@ -24,10 +25,10 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: [".ts", ".js"],
+    extensions: [".ts", ".js", ".json"],
   },
   optimization: {
-    minimize: false
+    minimize: false,
   },
   output: {
     filename: "index.js",
@@ -35,4 +36,7 @@ module.exports = {
     libraryTarget: "commonjs2",
     clean: true,
   },
+  externals: {
+    "prisma-schema-dsl": "prisma-schema-dsl"
+  }
 };

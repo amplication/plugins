@@ -17,7 +17,6 @@ import { readFile } from "fs/promises";
 import { kebabCase, merge } from "lodash";
 import { join, resolve } from "path";
 import { staticDirectory } from "./constants";
-
 class KafkaPlugin implements AmplicationPlugin {
   static moduleFile: Module | undefined;
   init?: ((name: string, version: string) => void) | undefined;

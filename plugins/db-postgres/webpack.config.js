@@ -2,6 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
+/** @type {import("webpack").Configuration} */
 module.exports = {
   mode: "production",
   target: "node",
@@ -27,7 +28,7 @@ module.exports = {
     extensions: [".ts", ".js"],
   },
   optimization: {
-    minimize: false
+    minimize: false,
   },
   output: {
     filename: "index.js",

@@ -2,18 +2,15 @@ import {
   CreateServerDockerComposeParams,
   VariableDictionary,
 } from "@amplication/code-gen-types";
-import {
-  DataSource,
-  DataSourceProvider,
-  DataSourceURLEnv,
-} from "prisma-schema-dsl-types";
+import { DataSource, DataSourceProvider } from "prisma-schema-dsl-types";
 
 export const envVariables: VariableDictionary = [
   { DB_USER: "${dbUser}" },
   { DB_PASSWORD: "${dbPassword}" },
   { DB_PORT: "27017" },
   {
-    DB_URL: "mongodb://${dbUser}:${dbPassword}@${dbHost}:27017/dbName?authSource=admin",
+    DB_URL:
+      "mongodb://${dbUser}:${dbPassword}@${dbHost}:27017/dbName?authSource=admin",
   },
 ];
 
@@ -59,6 +56,7 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
 export const dataSource: DataSource = {
   name: "mongo",
   provider: DataSourceProvider.MongoDB,
-  url: new DataSourceURLEnv("DB_URL"),
-
+  url: {
+    name: "DB_URL",
+  },
 };

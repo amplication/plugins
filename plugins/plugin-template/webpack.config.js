@@ -2,6 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
+/** @type {import("webpack").Configuration} */
 module.exports = {
   mode: "production",
   target: "node",
@@ -12,6 +13,9 @@ module.exports = {
     }),
     new CopyWebpackPlugin({
       patterns: [{ from: "src/static", to: "static" }],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [{ from: "src/templates", to: "templates" }],
     }),
   ],
   module: {
@@ -24,10 +28,10 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: [".ts", ".js"],
+    extensions: [".ts", ".js", ".json"],
   },
   optimization: {
-    minimize: false
+    minimize: false,
   },
   output: {
     filename: "index.js",

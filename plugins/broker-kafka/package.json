@@ -1,27 +1,25 @@
 {
   "name": "@amplication/plugin-broker-kafka",
-  "version": "1.0.2-alpha",
+  "version": "0.3.0",
   "description": "Use a Kafka message broker to communicate between services generated with Amplication",
   "main": "dist/index.js",
   "scripts": {
+    "dev": "webpack --watch",
     "build": "webpack"
   },
   "keywords": [],
   "author": "Ofek Gabay",
   "license": "Apache-2.0",
-  "dependencies": {
-    "@amplication/code-gen-types": "^1.1.0",
-    "lodash": "4.17.21"
-  },
   "devDependencies": {
+    "@amplication/code-gen-types": "^1.1.6",
     "@nestjs/microservices": "^8.2.3",
     "@types/lodash": "^4.14.185",
     "@types/node": "^18.7.18",
     "copy-webpack-plugin": "^11.0.0",
-    "node-polyfill-webpack-plugin": "^2.0.1",
-    "ts-loader": "^9.4.1",
+    "lodash": "4.17.21",
+    "ts-loader": "^9.4.2",
     "typescript": "^4.8.3",
     "webpack": "^5.75.0",
-    "webpack-cli": "^4.10.0"
+    "webpack-cli": "^5.0.1"
   }
 }

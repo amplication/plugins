@@ -20,12 +20,13 @@ import {
   CreateServerPackageJsonParams,
   CreateServerParams,
   types,
+  LoadStaticFilesParams,
+  Module,
 } from "@amplication/code-gen-types";
 import { ScalarType, ReferentialActions } from "prisma-schema-dsl-types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
-import { merge } from "lodash";
 
 class MongoPlugin implements AmplicationPlugin {
   register(): Events {
@@ -48,6 +49,9 @@ class MongoPlugin implements AmplicationPlugin {
       },
       CreateServerPackageJson: {
         before: this.beforeCreateServerPackageJson,
+      },
+      LoadStaticFiles: {
+        after: this.afterCreateServerStaticFiles,
       },
     };
   }
@@ -84,12 +88,11 @@ class MongoPlugin implements AmplicationPlugin {
       scripts: {
         "prisma:pull": "prisma db pull",
         "prisma:push": " prisma db push",
+        "db:init": "run-s seed",
       },
     };
 
-    eventParams.updateProperties.forEach((updateProperty) =>
-      merge(updateProperty, myValues)
-    );
+    eventParams.updateProperties.push(myValues);
 
     return eventParams;
   }
@@ -127,6 +130,24 @@ class MongoPlugin implements AmplicationPlugin {
     );
 
     return staticsFiles;
+  }
+
+  async afterCreateServerStaticFiles(
+    context: DsgContext,
+    eventParams: LoadStaticFilesParams,
+    modules: Module[]
+  ) {
+    const staticPath = resolve(__dirname, "./static/health");
+    const staticsFiles = await context.utils.importStaticModules(
+      staticPath,
+      `${context.serverDirectories.srcDirectory}/health/base`
+    );
+
+    const updateModules = modules.filter(
+      (x) => !x.path.includes("health.service.base")
+    );
+
+    return [...staticsFiles, ...updateModules];
   }
 
   beforeCreatePrismaSchema(
@@ -296,7 +317,5 @@ class MongoPlugin implements AmplicationPlugin {
     return pascalCase(parts.join(" "));
   }
 }
-
-console.log('hello 12345');
 
 export default MongoPlugin;

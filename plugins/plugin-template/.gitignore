@@ -1,6 +1,13 @@
 # Mac/OSX
 .DS_Store
 
+# Private Files
+*.csv
+*.csv.gz
+*.tsv
+*.tsv.gz
+*.xlsx
+
 # Build Files
 dist/
 

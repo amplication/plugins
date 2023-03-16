@@ -1,13 +1,13 @@
-import { resolve } from "path";
 import {
-  DsgContext,
-  CreateServerAuthParams,
   AmplicationPlugin,
-  Events,
   CreateAdminUIParams,
+  CreateServerAuthParams,
+  DsgContext,
+  Events,
+  Module,
 } from "@amplication/code-gen-types";
 import { EnumAuthProviderType } from "@amplication/code-gen-types/src/models";
-
+import { resolve } from "path";
 class BasicAuthPlugin implements AmplicationPlugin {
   register(): Events {
     return {
@@ -42,15 +42,15 @@ class BasicAuthPlugin implements AmplicationPlugin {
 
   async afterCreateAuthModules(
     context: DsgContext,
-    eventParams: CreateServerAuthParams
+    eventParams: CreateServerAuthParams,
+    modules: Module[]
   ) {
-    const staticPath = resolve(__dirname, "../static");
+    const staticPath = resolve(__dirname, "./static");
     const staticsFiles = await context.utils.importStaticModules(
       staticPath,
       context.serverDirectories.srcDirectory
     );
-
-    return staticsFiles;
+    return [...staticsFiles, ...modules];
   }
 }
 
