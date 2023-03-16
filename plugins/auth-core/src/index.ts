@@ -161,8 +161,8 @@ class AuthCorePlugin implements AmplicationPlugin {
   ) {
     const myValues = {
       dependencies: {
-        "@nestjs/jwt": "8.0.0",
-        "@nestjs/passport": "8.2.2",
+        "@nestjs/jwt": "^10.0.2",
+        "@nestjs/passport": "^9.0.0",
         "passport": "0.6.0",
         "passport-http": "0.3.0",
         "passport-jwt": "4.0.1",
