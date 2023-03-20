@@ -6,13 +6,11 @@ import {
   CreateServerDotEnvParams,
   DsgContext,
   Events,
+  PluginInstallation,
 } from "@amplication/code-gen-types";
 import { resolve } from "path";
-import {
-  dataSource,
-  envVariables,
-  updateDockerComposeProperties,
-} from "./constants";
+import { name } from "../package.json";
+import { dataSource, updateDockerComposeProperties } from "./constants";
 
 class PostgresPlugin implements AmplicationPlugin {
   register(): Events {
@@ -37,7 +35,20 @@ class PostgresPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDotEnvParams
   ) {
-    eventParams.envVariables = [...eventParams.envVariables, ...envVariables];
+    const { settings } = currentInstallation(context.pluginInstallations);
+    const { port, password, user, host, dbName } = settings;
+
+    eventParams.envVariables = [
+      ...eventParams.envVariables,
+      ...[
+        {
+          DB_URL: `postgres://${user}:${password}@${host}:${port}/${dbName}`,
+        },
+        { DB_USER: user },
+        { DB_PASSWORD: password },
+        { DB_PORT: port },
+      ],
+    ];
 
     return eventParams;
   }
@@ -80,3 +91,16 @@ class PostgresPlugin implements AmplicationPlugin {
 }
 
 export default PostgresPlugin;
+
+function currentInstallation(
+  pluginInstallations: PluginInstallation[]
+): PluginInstallation {
+  const plugin = pluginInstallations.find((plugin, i) => {
+    return plugin.npm === name;
+  });
+  if (!plugin) {
+    throw new Error("Missing plugin installation");
+  }
+
+  return plugin;
+}
