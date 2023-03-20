@@ -18,17 +18,13 @@ import {
   PluginInstallation,
   types,
 } from "@amplication/code-gen-types";
-import { resolve } from "path";
-import { name } from "../package.json";
-import {
-  dataSource,
-  envVariables,
-  updateDockerComposeProperties,
-} from "./constants";
 import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
+import { resolve } from "path";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { ReferentialActions, ScalarType } from "prisma-schema-dsl-types";
+import { name } from "../package.json";
+import { dataSource, updateDockerComposeProperties } from "./constants";
 
 class MongoPlugin implements AmplicationPlugin {
   register(): Events {
