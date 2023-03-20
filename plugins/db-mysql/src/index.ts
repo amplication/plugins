@@ -1,22 +1,18 @@
-import { resolve } from "path";
 import {
-  dataSource,
-  envVariables,
-  updateDockerComposeProperties,
-} from "./constants";
-import {
-  DsgContext,
   AmplicationPlugin,
+  CreatePrismaSchemaParams,
   CreateServerDockerComposeDBParams,
   CreateServerDockerComposeParams,
   CreateServerDotEnvParams,
-  CreatePrismaSchemaParams,
-  Events,
   CreateServerParams,
+  DsgContext,
   EnumDataType,
+  Events,
+  PluginInstallation,
 } from "@amplication/code-gen-types";
-import { kebabCase } from "lodash";
-
+import { resolve } from "path";
+import { name } from "../package.json";
+import { dataSource, updateDockerComposeProperties } from "./constants";
 class MySQLPlugin implements AmplicationPlugin {
   register(): Events {
     return {
@@ -63,14 +59,20 @@ class MySQLPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDotEnvParams
   ) {
-    if (context.resourceInfo) {
-      context.resourceInfo.settings.dbName = kebabCase(
-        context.resourceInfo.name
-      );
-      context.resourceInfo.settings.dbUser = "root";
-      context.resourceInfo.settings.dbPort = 3306;
-    }
-    eventParams.envVariables = [...eventParams.envVariables, ...envVariables];
+    const { settings } = currentInstallation(context.pluginInstallations);
+    const { port, password, user, host, dbName } = settings;
+
+    eventParams.envVariables = [
+      ...eventParams.envVariables,
+      ...[
+        { DB_USER: user },
+        { DB_PASSWORD: password },
+        { DB_PORT: port },
+        {
+          DB_URL: `mysql://${user}:${password}@${host}:${port}${dbName}`,
+        },
+      ],
+    ];
 
     return eventParams;
   }
@@ -113,3 +115,16 @@ class MySQLPlugin implements AmplicationPlugin {
 }
 
 export default MySQLPlugin;
+
+function currentInstallation(
+  pluginInstallations: PluginInstallation[]
+): PluginInstallation {
+  const plugin = pluginInstallations.find((plugin, i) => {
+    return plugin.npm === name;
+  });
+  if (!plugin) {
+    throw new Error("Missing plugin installation");
+  }
+
+  return plugin;
+}
