@@ -35,8 +35,16 @@ class PostgresPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDotEnvParams
   ) {
-    const { settings } = currentInstallation(context.pluginInstallations);
-    const { port, password, user, host, dbName } = settings;
+    const { settings } = currentInstallation(context.pluginInstallations) || {
+      settings: {},
+    };
+    const {
+      port = 5432,
+      password = "admin",
+      user = "admin",
+      host = "localhost",
+      dbName = "my-db",
+    } = settings;
 
     eventParams.envVariables = [
       ...eventParams.envVariables,
@@ -94,13 +102,10 @@ export default PostgresPlugin;
 
 function currentInstallation(
   pluginInstallations: PluginInstallation[]
-): PluginInstallation {
+): PluginInstallation | undefined {
   const plugin = pluginInstallations.find((plugin, i) => {
     return plugin.npm === name;
   });
-  if (!plugin) {
-    throw new Error("Missing plugin installation");
-  }
 
   return plugin;
 }
