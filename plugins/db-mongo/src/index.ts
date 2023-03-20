@@ -1,32 +1,34 @@
+import {
+  AmplicationPlugin,
+  CreatePrismaSchemaParams,
+  CreateSchemaFieldResult,
+  CreateServerDockerComposeDBParams,
+  CreateServerDockerComposeParams,
+  CreateServerDotEnvParams,
+  CreateServerPackageJsonParams,
+  CreateServerParams,
+  DsgContext,
+  Entity,
+  EntityField,
+  EnumDataType,
+  Events,
+  LoadStaticFilesParams,
+  LookupResolvedProperties,
+  Module,
+  PluginInstallation,
+  types,
+} from "@amplication/code-gen-types";
 import { resolve } from "path";
+import { name } from "../package.json";
 import {
   dataSource,
   envVariables,
   updateDockerComposeProperties,
 } from "./constants";
-import {
-  DsgContext,
-  AmplicationPlugin,
-  CreateServerDockerComposeDBParams,
-  CreateServerDockerComposeParams,
-  CreateServerDotEnvParams,
-  CreatePrismaSchemaParams,
-  Events,
-  EnumDataType,
-  EntityField,
-  Entity,
-  LookupResolvedProperties,
-  CreateSchemaFieldResult,
-  CreateServerPackageJsonParams,
-  CreateServerParams,
-  types,
-  LoadStaticFilesParams,
-  Module,
-} from "@amplication/code-gen-types";
-import { ScalarType, ReferentialActions } from "prisma-schema-dsl-types";
-import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
+import * as PrismaSchemaDSL from "prisma-schema-dsl";
+import { ReferentialActions, ScalarType } from "prisma-schema-dsl-types";
 
 class MongoPlugin implements AmplicationPlugin {
   register(): Events {
@@ -101,7 +103,20 @@ class MongoPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDotEnvParams
   ) {
-    eventParams.envVariables = [...eventParams.envVariables, ...envVariables];
+    const { settings } = currentInstallation(context.pluginInstallations);
+    const { port, password, user, host, dbName } = settings;
+
+    eventParams.envVariables = [
+      ...eventParams.envVariables,
+      ...[
+        { DB_USER: user },
+        { DB_PASSWORD: password },
+        { DB_PORT: port },
+        {
+          DB_URL: `mongodb://${user}:${password}@${host}:${port}/${dbName}?authSource=admin`,
+        },
+      ],
+    ];
 
     return eventParams;
   }
@@ -319,3 +334,16 @@ class MongoPlugin implements AmplicationPlugin {
 }
 
 export default MongoPlugin;
+
+function currentInstallation(
+  pluginInstallations: PluginInstallation[]
+): PluginInstallation {
+  const plugin = pluginInstallations.find((plugin, i) => {
+    return plugin.npm === name;
+  });
+  if (!plugin) {
+    throw new Error("Missing plugin installation");
+  }
+
+  return plugin;
+}
