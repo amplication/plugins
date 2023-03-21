@@ -69,7 +69,7 @@ class MySQLPlugin implements AmplicationPlugin {
         { DB_PASSWORD: password },
         { DB_PORT: port },
         {
-          DB_URL: `mysql://${user}:${password}@${host}:${port}${dbName}`,
+          DB_URL: `mysql://${user}:${password}@${host}:${port}/${dbName}`,
         },
       ],
     ];
