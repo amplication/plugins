@@ -8,7 +8,9 @@ import {
   Events,
   PluginInstallation,
 } from "@amplication/code-gen-types";
+import { merge } from "lodash";
 import { resolve } from "path";
+import defaultSettings from "../.amplicationrc.json";
 import { name } from "../package.json";
 import { dataSource, updateDockerComposeProperties } from "./constants";
 
@@ -38,13 +40,10 @@ class PostgresPlugin implements AmplicationPlugin {
     const { settings } = currentInstallation(context.pluginInstallations) || {
       settings: {},
     };
-    const {
-      port = 5432,
-      password = "admin",
-      user = "admin",
-      host = "localhost",
-      dbName = "my-db",
-    } = settings;
+
+    const fullSettings = merge(defaultSettings, settings);
+
+    const { port, password, user, host, dbName } = fullSettings;
 
     eventParams.envVariables = [
       ...eventParams.envVariables,
