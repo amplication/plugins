@@ -101,7 +101,9 @@ class MongoPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDotEnvParams
   ) {
-    const { settings } = currentInstallation(context.pluginInstallations);
+    const { settings } = currentInstallation(context.pluginInstallations) || {
+      settings: {},
+    };
 
     const fullSettings = merge(defaultSettings, settings);
 
@@ -338,13 +340,10 @@ export default MongoPlugin;
 
 function currentInstallation(
   pluginInstallations: PluginInstallation[]
-): PluginInstallation {
+): PluginInstallation | undefined {
   const plugin = pluginInstallations.find((plugin, i) => {
     return plugin.npm === name;
   });
-  if (!plugin) {
-    throw new Error("Missing plugin installation");
-  }
 
   return plugin;
 }
