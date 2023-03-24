@@ -19,10 +19,12 @@ import {
   types,
 } from "@amplication/code-gen-types";
 import { camelCase } from "camel-case";
+import { merge } from "lodash";
 import { pascalCase } from "pascal-case";
 import { resolve } from "path";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { ReferentialActions, ScalarType } from "prisma-schema-dsl-types";
+import defaultSettings from "../.amplicationrc.json";
 import { name } from "../package.json";
 import { dataSource, updateDockerComposeProperties } from "./constants";
 
@@ -99,8 +101,13 @@ class MongoPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDotEnvParams
   ) {
-    const { settings } = currentInstallation(context.pluginInstallations);
-    const { port, password, user, host, dbName } = settings;
+    const { settings } = currentInstallation(context.pluginInstallations) || {
+      settings: {},
+    };
+
+    const fullSettings = merge(defaultSettings, settings);
+
+    const { port, password, user, host, dbName } = fullSettings;
 
     eventParams.envVariables = [
       ...eventParams.envVariables,
@@ -333,13 +340,10 @@ export default MongoPlugin;
 
 function currentInstallation(
   pluginInstallations: PluginInstallation[]
-): PluginInstallation {
+): PluginInstallation | undefined {
   const plugin = pluginInstallations.find((plugin, i) => {
     return plugin.npm === name;
   });
-  if (!plugin) {
-    throw new Error("Missing plugin installation");
-  }
 
   return plugin;
 }
