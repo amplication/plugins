@@ -12,17 +12,20 @@ import { resolve } from "path";
 /**
  * psuedo code to work-out:
  * 1. create directory on root of the repository:
- *      /<sub-directory_setting_value>/<service_name>
+ *      /<directory_setting_value>/<service_name>
+ * 
  * 2. copy over the content of the 'chart' directory within the 
  *    static directory while replacing the content with a speciic
  *    keyword with the name of the service - i.e. example > server
- * 3. additonal kubernetes object next to default helm create
- *    admin-ui:
- *    - config-map
  * 
- *    server:
- *    - configmap
- *    - secret
+ * 3. additonal kubernetes object next to default helm create objects:
+ * 
+ *      admin-ui:
+ *      - config-map
+ * 
+ *      server:
+ *      - configmap
+ *      - secret
  */
 
 class HelmChartPlugin implements AmplicationPlugin {
