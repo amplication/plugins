@@ -128,7 +128,10 @@ class MongoPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDockerComposeParams
   ) {
-    eventParams.updateProperties.push(...updateDockerComposeProperties);
+    eventParams.updateProperties.push(updateDockerComposeProperties);
+    eventParams.updateProperties.forEach((element) => {
+      delete element?.services?.migrate?.depends_on;
+    });
     return eventParams;
   }
 
