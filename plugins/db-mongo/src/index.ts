@@ -27,6 +27,7 @@ import { ReferentialActions, ScalarType } from "prisma-schema-dsl-types";
 import defaultSettings from "../.amplicationrc.json";
 import { name } from "../package.json";
 import { dataSource, updateDockerComposeProperties } from "./constants";
+import YAML from "yaml";
 
 class MongoPlugin implements AmplicationPlugin {
   register(): Events {
@@ -39,6 +40,7 @@ class MongoPlugin implements AmplicationPlugin {
       },
       CreateServerDockerCompose: {
         before: this.beforeCreateServerDockerCompose,
+        after: this.afterCreateServerDockerCompose,
       },
       CreateServerDockerComposeDB: {
         before: this.beforeCreateServerDockerComposeDB,
@@ -124,14 +126,28 @@ class MongoPlugin implements AmplicationPlugin {
     return eventParams;
   }
 
+  afterCreateServerDockerCompose(
+    dsgContext: DsgContext,
+    eventParams: CreateServerDockerComposeParams,
+    modules: Module[]
+  ): Module[] {
+    const dockerCompose = modules[0];
+    const dockerComposeObject: { services: { migrate: { depends_on: any } } } =
+      YAML.parse(dockerCompose.code);
+    try {
+      dockerComposeObject.services.migrate.depends_on = undefined;
+    } catch (error) {}
+    const updatedDockerCompose = YAML.stringify(dockerComposeObject, {
+      nullStr: "~",
+    });
+    modules[0] = { ...dockerCompose, code: updatedDockerCompose };
+    return modules;
+  }
   beforeCreateServerDockerCompose(
     context: DsgContext,
     eventParams: CreateServerDockerComposeParams
   ) {
-    eventParams.updateProperties.push(updateDockerComposeProperties);
-    eventParams.updateProperties.forEach((element) => {
-      delete element?.services?.migrate?.depends_on;
-    });
+    eventParams.updateProperties.push(...updateDockerComposeProperties);
     return eventParams;
   }
 
