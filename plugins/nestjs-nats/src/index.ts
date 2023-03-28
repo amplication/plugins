@@ -57,57 +57,6 @@ class NatsPlugin implements AmplicationPlugin {
       },
     };
   }
-  // async afterCreateServer(
-  //   dsgContext: DsgContext,
-  //   eventParams: CreateServerParams,
-  //   modules: Module[]
-  // ): Promise<Module[]> {
-  //   const nestjsMainTsFile = modules.find(({ path }) =>
-  //     path.endsWith("main.ts")
-  //   );
-  //   if (!nestjsMainTsFile) {
-  //     throw new MissingMainTsFileError();
-  //   }
-  //   const astMainFile = parse(nestjsMainTsFile.code);
-  //   const bootstrapFunction = this.getBootstrapFunction(astMainFile);
-  //   const haveConnectFunctionPromise = new Promise<{
-  //     haveConnectFunction: boolean;
-  //   }>((resolve) => {
-  //     visit(bootstrapFunction.body, {
-  //       visitIdentifier(path) {
-  //         if (path.value.name === "connectMicroservice") {
-  //           resolve({ haveConnectFunction: true });
-  //         }
-  //       },
-  //     });
-  //   });
-
-  //   const haveStartFunctionPromise = new Promise<{
-  //     haveStartFunction: boolean;
-  //   }>((resolve) => {
-  //     visit(bootstrapFunction.body, {
-  //       visitIdentifier(path) {
-  //         if (path.value.name === "startAllMicroservices") {
-  //           resolve({ haveStartFunction: true });
-  //         }
-  //       },
-  //     });
-  //   });
-
-  //   const [{ haveConnectFunction }, { haveStartFunction }] = await Promise.all([
-  //     haveConnectFunctionPromise,
-  //     haveStartFunctionPromise,
-  //   ]);
-  // }
-
-  // getBootstrapFunction(
-  //   astMainFile: namedTypes.File
-  // ): namedTypes.FunctionDeclaration {
-  //   const mainFileFunctionDeclarations = astMainFile.program.body.filter(
-  //     (node) => node.type === "FunctionDeclaration"
-  //   );
-  //   throw new Error("TODO: implement getBootstrapFunction");
-  // }
 
   beforeCrateServerDockerCompose(
     context: DsgContext,
