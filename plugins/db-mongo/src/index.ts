@@ -174,17 +174,35 @@ class MongoPlugin implements AmplicationPlugin {
     eventParams: LoadStaticFilesParams,
     modules: Module[]
   ) {
-    const staticPath = resolve(__dirname, "./static/health");
-    const staticsFiles = await context.utils.importStaticModules(
-      staticPath,
+    const staticPathToHealthBaseService = resolve(__dirname, "./static/health");
+    const staticsHealthBaseService = await context.utils.importStaticModules(
+      staticPathToHealthBaseService,
       `${context.serverDirectories.srcDirectory}/health/base`
     );
-
-    const updateModules = modules.filter(
-      (x) => !x.path.includes("health.service.base")
+    const staticPathToHealthServiceTest = resolve(
+      __dirname,
+      "./static/tests/health"
+    );
+    const staticsHealthServiceTest = await context.utils.importStaticModules(
+      staticPathToHealthServiceTest,
+      `${context.serverDirectories.srcDirectory}/tests/health`
     );
 
-    return [...staticsFiles, ...updateModules];
+    const modulesWithoutOverridesFiles = modules.filter((x) => {
+      const fileToRemove = ["health.service.base", "health.service.spec"];
+      fileToRemove.forEach((fileName) => {
+        if (x.path.includes(fileName)) {
+          return false;
+        }
+      });
+      return true;
+    });
+
+    return [
+      ...staticsHealthBaseService,
+      ...staticsHealthServiceTest,
+      ...modulesWithoutOverridesFiles,
+    ];
   }
 
   beforeCreatePrismaSchema(
