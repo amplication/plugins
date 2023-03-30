@@ -37,6 +37,6 @@ module.exports = {
     clean: true,
   },
   externals: {
-    "prisma-schema-dsl": "prisma-schema-dsl"
-  }
+    "prisma-schema-dsl": "prisma-schema-dsl",
+  },
 };

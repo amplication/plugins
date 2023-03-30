@@ -7,7 +7,7 @@ export class HealthServiceBase {
   async isDbReady(): Promise<boolean> {
     try {
       await this.prisma.$runCommandRaw({
-        select: 1 
+        select: 1,
       });
       return true;
     } catch (error) {

@@ -2,13 +2,13 @@ import { DsgContext } from "@amplication/code-gen-types";
 import { deepEqual } from "assert";
 import { mock } from "jest-mock-extended";
 import { name } from "../../package.json";
-import PostgresPlugin from "../index";
+import MongoPlugin from "../index";
 
 describe("Testing beforeCreateServerDotEnv hook", () => {
-  let plugin: PostgresPlugin;
+  let plugin: MongoPlugin;
   let context: DsgContext;
   beforeEach(() => {
-    plugin = new PostgresPlugin();
+    plugin = new MongoPlugin();
     context = mock<DsgContext>({
       pluginInstallations: [{ npm: name }],
     });
