@@ -16,8 +16,8 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
           image: "mongo",
           ports: ["${DB_PORT}:27017"],
           environment: {
-            MONGO_USER: "${DB_USER}",
-            MONGO_PASSWORD: "${DB_PASSWORD}",
+            MONGO_INITDB_ROOT_USERNAME: "${DB_USER}",
+            MONGO_INITDB_ROOT_PASSWORD: "${DB_PASSWORD}",
           },
           volumes: [`${mongodbVolumeName}:/var/lib/mongosql/data`],
         },
