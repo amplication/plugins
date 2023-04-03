@@ -1,7 +1,7 @@
 import { CreateServerDockerComposeParams } from "@amplication/code-gen-types";
 import { DataSource, DataSourceProvider } from "prisma-schema-dsl-types";
 
-const mongodbVolumeName = "mongodb";
+const mongodbVolumeName = "mongo";
 
 export const updateDockerComposeProperties: CreateServerDockerComposeParams["updateProperties"] =
   [

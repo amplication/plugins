@@ -7,5 +7,9 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
       INIT_WAIT_SEC: 3
+    volumes:
+      - mongo:/var/lib/mongosql/data
     ports:
       - 27017:${DB_PORT}
+volumes:
+  mongo: ~
