@@ -27,6 +27,7 @@ import { ReferentialActions, ScalarType } from "prisma-schema-dsl-types";
 import defaultSettings from "../.amplicationrc.json";
 import { name } from "../package.json";
 import { dataSource, updateDockerComposeProperties } from "./constants";
+import YAML from "yaml";
 
 class MongoPlugin implements AmplicationPlugin {
   register(): Events {
@@ -39,6 +40,7 @@ class MongoPlugin implements AmplicationPlugin {
       },
       CreateServerDockerCompose: {
         before: this.beforeCreateServerDockerCompose,
+        after: this.afterCreateServerDockerCompose,
       },
       CreateServerDockerComposeDB: {
         before: this.beforeCreateServerDockerComposeDB,
@@ -124,6 +126,23 @@ class MongoPlugin implements AmplicationPlugin {
     return eventParams;
   }
 
+  afterCreateServerDockerCompose(
+    dsgContext: DsgContext,
+    eventParams: CreateServerDockerComposeParams,
+    modules: Module[]
+  ): Module[] {
+    const dockerCompose = modules[0];
+    const dockerComposeObject: { services: { migrate: { depends_on: any } } } =
+      YAML.parse(dockerCompose.code);
+    try {
+      dockerComposeObject.services.migrate.depends_on = undefined;
+    } catch (error) {}
+    const updatedDockerCompose = YAML.stringify(dockerComposeObject, {
+      nullStr: "~",
+    });
+    modules[0] = { ...dockerCompose, code: updatedDockerCompose };
+    return modules;
+  }
   beforeCreateServerDockerCompose(
     context: DsgContext,
     eventParams: CreateServerDockerComposeParams
@@ -155,17 +174,35 @@ class MongoPlugin implements AmplicationPlugin {
     eventParams: LoadStaticFilesParams,
     modules: Module[]
   ) {
-    const staticPath = resolve(__dirname, "./static/health");
-    const staticsFiles = await context.utils.importStaticModules(
-      staticPath,
+    const staticPathToHealthBaseService = resolve(__dirname, "./static/health");
+    const staticsHealthBaseService = await context.utils.importStaticModules(
+      staticPathToHealthBaseService,
       `${context.serverDirectories.srcDirectory}/health/base`
     );
-
-    const updateModules = modules.filter(
-      (x) => !x.path.includes("health.service.base")
+    const staticPathToHealthServiceTest = resolve(
+      __dirname,
+      "./static/tests/health"
+    );
+    const staticsHealthServiceTest = await context.utils.importStaticModules(
+      staticPathToHealthServiceTest,
+      `${context.serverDirectories.srcDirectory}/tests/health`
     );
 
-    return [...staticsFiles, ...updateModules];
+    const modulesWithoutOverridesFiles = modules.filter((x) => {
+      const fileToRemove = ["health.service.base", "health.service.spec"];
+      fileToRemove.forEach((fileName) => {
+        if (x.path.includes(fileName)) {
+          return false;
+        }
+      });
+      return true;
+    });
+
+    return [
+      ...staticsHealthBaseService,
+      ...staticsHealthServiceTest,
+      ...modulesWithoutOverridesFiles,
+    ];
   }
 
   beforeCreatePrismaSchema(

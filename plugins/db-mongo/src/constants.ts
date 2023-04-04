@@ -1,6 +1,8 @@
 import { CreateServerDockerComposeParams } from "@amplication/code-gen-types";
 import { DataSource, DataSourceProvider } from "prisma-schema-dsl-types";
 
+const mongodbVolumeName = "mongo";
+
 export const updateDockerComposeProperties: CreateServerDockerComposeParams["updateProperties"] =
   [
     {
@@ -14,28 +16,14 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
           image: "mongo",
           ports: ["${DB_PORT}:27017"],
           environment: {
-            MONGO_USER: "${DB_USER}",
-            MONGO_PASSWORD: "${DB_PASSWORD}",
+            MONGO_INITDB_ROOT_USERNAME: "${DB_USER}",
+            MONGO_INITDB_ROOT_PASSWORD: "${DB_PASSWORD}",
           },
-          volumes: ["mongodb:/var/lib/mongosql/data"],
-          healthcheck: {
-            test: [
-              "CMD",
-              "pg_isready",
-              "-q",
-              "-d",
-              "${DB_DB_NAME}",
-              "-U",
-              "${DB_USER}",
-            ],
-            timeout: "45s",
-            interval: "10s",
-            retries: 10,
-          },
+          volumes: [`${mongodbVolumeName}:/var/lib/mongosql/data`],
         },
       },
       volumes: {
-        mongo: null,
+        [mongodbVolumeName]: null,
       },
     },
   ];
