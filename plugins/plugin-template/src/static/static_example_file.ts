@@ -6,6 +6,6 @@
  */
 const exampleFunction = () => {
   console.log("I'm an example static function");
-}
+};
 
-export default exampleFunction
+export default exampleFunction;

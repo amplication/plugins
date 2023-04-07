@@ -12,7 +12,6 @@ import {
 import { merge } from "lodash";
 
 class ExamplePlugin implements AmplicationPlugin {
-
   register(): Events {
     return {
       [EventNames.CreateServer]: {
@@ -23,7 +22,7 @@ class ExamplePlugin implements AmplicationPlugin {
       },
       [EventNames.CreateAdminUIPackageJson]: {
         before: this.beforeCreateClientPackageJson,
-      }
+      },
     };
   }
 
@@ -48,11 +47,11 @@ class ExamplePlugin implements AmplicationPlugin {
   ): CreateServerPackageJsonParams {
     const myValues = {
       devDependencies: {
-        "prettier": "^2.8.0",
+        prettier: "^2.8.0",
       },
       scripts: {
-        "format": "prettier --write .",
-      }
+        format: "prettier --write .",
+      },
     };
 
     eventParams.updateProperties.forEach((updateProperty) =>
@@ -68,11 +67,11 @@ class ExamplePlugin implements AmplicationPlugin {
   ): CreateAdminUIPackageJsonParams {
     const myValues = {
       devDependencies: {
-        "prettier": "^2.8.0",
+        prettier: "^2.8.0",
       },
       scripts: {
-        "format": "prettier --write .",
-      }
+        format: "prettier --write .",
+      },
     };
 
     eventParams.updateProperties.forEach((updateProperty) =>
