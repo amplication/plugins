@@ -6,9 +6,9 @@ declare const SERVICE_NAME: string;
 export const natsClientModuleFactory = (
   configService: ConfigService
 ): ClientProvider => {
-  const natsServersString = configService.get<string>("NASTS_SERVERS");
+  const natsServersString = configService.get<string>("NATS_SERVERS");
   if (!natsServersString) {
-    throw new Error("NASTS_SERVERS environment variable must be defined");
+    throw new Error("NATS_SERVERS environment variable must be defined");
   }
 
   return {

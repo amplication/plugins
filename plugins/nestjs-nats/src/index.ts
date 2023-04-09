@@ -88,7 +88,7 @@ class NatsPlugin implements AmplicationPlugin {
     eventParams: CreateServerDotEnvParams
   ): CreateServerDotEnvParams {
     const vars = {
-      NASTS_SERVERS: `localhost:${NATS_PORT}`,
+      NATS_SERVERS: `localhost:${NATS_PORT}`,
     };
     const newEnvParams = [
       ...eventParams.envVariables,
