@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ClientsModule } from "@nestjs/microservices";
 import { NatsController } from "./nats.controller";
-import { natsClientModuleFactory } from "../templates/nats.module.factory";
+import { natsClientModuleFactory } from "./nats.module.factory";
 import { NatsService } from "./nats.service";
 
 @Module({
