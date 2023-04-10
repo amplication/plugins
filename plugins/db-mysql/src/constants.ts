@@ -26,7 +26,7 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
           restart: "always",
           ports: ["${DB_PORT}:3306"],
           environment: {
-            DB_ROOT_PASSWORD: "${DB_PASSWORD}",
+            MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}",
           },
           healthcheck: {
             test: [
