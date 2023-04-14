@@ -14,6 +14,9 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [{ from: "src/static", to: "static" }],
     }),
+    new CopyWebpackPlugin({
+      patterns: [{ from: "src/templates", to: "templates" }],
+    }),
   ],
   module: {
     rules: [
@@ -35,8 +38,5 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
     libraryTarget: "commonjs2",
     clean: true,
-  },
-  externals: {
-    "prisma-schema-dsl": "prisma-schema-dsl",
   },
 };

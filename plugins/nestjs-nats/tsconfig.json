@@ -16,8 +16,9 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "strict": true,
-    "jsx": "react"
+    "jsx": "react",
+    "strictNullChecks": true
   },
   "include": ["src/index.ts"],
-  "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
+  "exclude": ["node_modules"]
 }
