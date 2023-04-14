@@ -13,12 +13,12 @@ import {
   configurationKey,
   repositoryKey,
   serviceNameKey,
-  tagKey
+  tagKey,
 } from "./constants";
-import { getPluginSettings } from "./utils"
+import { getPluginSettings } from "./utils";
 import { resolve } from "path";
 import { EventNames } from "@amplication/code-gen-types";
-import { parse, stringify } from 'yaml'
+import { parse, stringify } from "yaml";
 
 class HelmChartPlugin implements AmplicationPlugin {
   register(): Events {
@@ -57,7 +57,7 @@ class HelmChartPlugin implements AmplicationPlugin {
       throw new Error("Service name is undefined");
     }
 
-    // fetch the variables from the .env file and create a variable for it which can be 
+    // fetch the variables from the .env file and create a variable for it which can be
     // used to fill the configmap secrets should be moved by the users themself
     const variables = eventParams.envVariables;
 
@@ -66,43 +66,41 @@ class HelmChartPlugin implements AmplicationPlugin {
     }
 
     const configmapIndentation = "    ";
-    let configmap: string= "";
+    let configmap: string = "";
 
     Object.entries(variables).forEach(([name, value]) => {
-      if(configmap === ""){
+      if (configmap === "") {
         configmap = `${name}: ${value}`;
-      }
-      else {
+      } else {
         configmap = `${configmap}\n${configmapIndentation}${name}: ${value}`;
       }
-    })
+    });
 
     // render the helm chart from the static files in combination with the values provided through
     // the settings
-    const renderdOutput = staticsFiles
-      .map(
-        (file): Module => ({
-          path: file.path,
-          code: file.code
-            .replaceAll(serviceNameKey, serviceName)
-            .replace(chartVersionKey, settings.server.chart_version)
-            .replace(applicationVersionKey, settings.server.application_version)
-            .replace(repositoryKey, settings.server.repository)
-            .replace(tagKey, settings.server.tag)
-            .replace(configurationKey, configmap),
-        })
-      );
+    const renderdOutput = staticsFiles.map(
+      (file): Module => ({
+        path: file.path,
+        code: file.code
+          .replaceAll(serviceNameKey, serviceName)
+          .replace(chartVersionKey, settings.server.chart_version)
+          .replace(applicationVersionKey, settings.server.application_version)
+          .replace(repositoryKey, settings.server.repository)
+          .replace(tagKey, settings.server.tag)
+          .replace(configurationKey, configmap),
+      })
+    );
 
-    // save the renderedOutput to the desired directory the options are on the root of the repository 
+    // save the renderedOutput to the desired directory the options are on the root of the repository
     // and within the directory of the services itself setting "root_directory"
-      // option 1 (value: true):  /<directory_name_value>/<service_name>
-        // create directory on the root of the repository (../) with the name provided
-        // through the settings.directory_name, subsequently place all of the files that
-        // from the static directory via the renderdOutput variable
-      // option 2 (value: false): /<service_name>/<directory_name_value>/<service_name>
-        // create directory within the directory of the service with the name provided
-        // through the settings.directory_name, subsequently place all of the files that
-        // from the static directory via the renderdOutput variable
+    // option 1 (value: true):  /<directory_name_value>/<service_name>
+    // create directory on the root of the repository (../) with the name provided
+    // through the settings.directory_name, subsequently place all of the files that
+    // from the static directory via the renderdOutput variable
+    // option 2 (value: false): /<service_name>/<directory_name_value>/<service_name>
+    // create directory within the directory of the service with the name provided
+    // through the settings.directory_name, subsequently place all of the files that
+    // from the static directory via the renderdOutput variable
     if (settings.root_level == true) {
       // TODO: option true
     } else if (settings.root_level == false) {
@@ -139,7 +137,7 @@ class HelmChartPlugin implements AmplicationPlugin {
   //   if (settings.admin_ui.enabled == false) {
   //     // throw info message "Not generating helm chart for admin-ui as admin_ui.enabled is false"
   //   } else if (settings.admin_ui.enabled == true) {
-  //     // fetch the variables from the .env file and create a variable for it which can be 
+  //     // fetch the variables from the .env file and create a variable for it which can be
   //     // used to fill the configmap secrets should be moved by the users themself
   //     // const variables = eventParams.envVariables;
 
@@ -169,6 +167,6 @@ class HelmChartPlugin implements AmplicationPlugin {
   //     throw new Error("The setting admin_ui needs to be either 'true' or 'false' ");
   //   }
   // }
-};
+}
 
 export default HelmChartPlugin;
