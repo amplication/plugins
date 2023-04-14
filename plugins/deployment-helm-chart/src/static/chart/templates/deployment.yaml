@@ -50,13 +50,13 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if or (eq .Values.variables.configmap true) (eq .Values.variables.secret true) }}
+          {{- if or .Values.variables.configmap .Values.variables.secret }}
           envFrom:
           {{- if .Values.variables.configmap }}
           - configMapRef:
               name: {{ include "${{ SERVICE_NAME }}.fullname" . }}
           {{- end }}
-          {{- if hasKey .Values.variables.secret }}
+          {{- if .Values.variables.secret }}
           - secretRef:
               name: {{ include "${{ SERVICE_NAME }}.fullname" . }}''
           {{- end }}
