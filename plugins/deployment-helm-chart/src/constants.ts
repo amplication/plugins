@@ -10,4 +10,4 @@ export const serviceNameKey = "${{ SERVICE_NAME }}";
 export const repositoryKey = "${{ REPOSITORY }}";
 export const tagKey = "${{ TAG }}";
 export const configurationKey = "${{ CONFIGURATION }}";
-export const hostName = "${{ HOSTNAME }}";
+export const hostKey = "${{ HOST }}";

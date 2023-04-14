@@ -6,7 +6,7 @@
         "application_version" : "0.0.1",
         "repository" : "ghcr.io/NAMESPACE/IMAGE_NAME",
         "tag" : "latest",
-        "hostname" : "server.example.com"
+        "host" : "server.example.com"
     },
     "admin_ui" : {
         "enabled" : false,
@@ -14,6 +14,6 @@
         "application_version" : "0.0.1",
         "repository" : "ghcr.io/NAMESPACE/IMAGE_NAME",
         "tag" : "latest",
-        "hostname" : "admin.example.com"
+        "host" : "admin.example.com"
     }
 }

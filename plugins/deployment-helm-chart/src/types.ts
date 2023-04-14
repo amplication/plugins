@@ -1,8 +1,3 @@
-/**
- * @Amplication example types file.
- * Add here all your typescript types/enum/interfaces
- */
-
 export interface Settings {
   root_level: boolean;
   directory_name: string;
@@ -11,13 +6,13 @@ export interface Settings {
     application_version: string;
     repository: string;
     tag: string;
-    hostname: string;
+    host: string;
   };
   admin_ui?: {
     chart_version: string;
     application_version: string;
     repository: string;
     tag: string;
-    hostname: string;
+    host: string;
   };
 } //TODO: create a json schema for this settings interface
