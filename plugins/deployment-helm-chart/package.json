@@ -7,7 +7,13 @@
         "dev": "webpack --watch",
         "build": "webpack"
     },
-    "author": "Levi van Noort",
+    "author": "Levi van Noort <levi@amplication.com>",
+    "contributors": [
+        {
+            "name": "Daniele Iasella",
+            "email": "daniele@amplication.com"
+        }
+    ],
     "license": "Apache-2.0",
     "devDependencies": {
         "@amplication/code-gen-types": "^1.3.2",
