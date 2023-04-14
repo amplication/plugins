@@ -1,0 +1,19 @@
+{
+    "root_level" : true,
+    "directory_name" : "helm",
+    "server" : {
+        "chart_version" : "0.0.1",
+        "application_version" : "0.0.1",
+        "repository" : "ghcr.io/NAMESPACE/IMAGE_NAME",
+        "tag" : "latest",
+        "hostname" : "server.example.com"
+    },
+    "admin_ui" : {
+        "enabled" : false,
+        "chart_version" : "0.0.1",
+        "application_version" : "0.0.1",
+        "repository" : "ghcr.io/NAMESPACE/IMAGE_NAME",
+        "tag" : "latest",
+        "hostname" : "admin.example.com"
+    }
+}

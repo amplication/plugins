@@ -1,30 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "example.fullname" . }}
+  name: {{ include "${{ SERVICE_NAME }}.fullname" . }}
   labels:
-    {{- include "example.labels" . | nindent 4 }}
+    {{- include "${{ SERVICE_NAME }}.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "example.selectorLabels" . | nindent 6 }}
+      {{- include "${{ SERVICE_NAME }}.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if .Values.variables.configMap }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      {{- end }}
       labels:
-        {{- include "example.selectorLabels" . | nindent 8 }}
+        {{- include "${{ SERVICE_NAME }}.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "example.serviceAccountName" . }}
+      serviceAccountName: {{ include "${{ SERVICE_NAME }}.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -47,6 +50,17 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- if or (eq .Values.variables.configmap true) (eq .Values.variables.secret true) }}
+          envFrom:
+          {{- if .Values.variables.configmap }}
+          - configMapRef:
+              name: {{ include "${{ SERVICE_NAME }}.fullname" . }}
+          {{- end }}
+          {{- if hasKey .Values.variables.secret }}
+          - secretRef:
+              name: {{ include "${{ SERVICE_NAME }}.fullname" . }}''
+          {{- end }}
+          {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
