@@ -10,55 +10,38 @@ Adds a helm chart for the generated service which can be used for deployment of 
 
 ## Configuration
 
+The `root_level` setting determines whether the directory for the helm charts is placed at the root of the repository or in the base directory of the service.
+
+The `directory_name` setting determines what the sub-directory for the de helm chart in the root level or service base directory is called.
+
+For both the `server` and the `admin_ui` additional configuration can be provided to further customize the helm charts to be able to deploy them quicker. As these are the options that are specific to each deployment other than additional Kubernetes objects.
+
+> Note: If no configuration is provided the .amplicationrc.json file will use be used as the default values for the code generation as the helm chart would otherwise break - making templating/rendering impossible.
+
 ```json
 {
-    "root_level" : "true",
-    "directory_name" : "helm",
-    "server" : {
-        "chart_version" : "0.0.1",
-        "application_version" : "0.0.1",
-        "repository" : "ghcr.io/NAMESPACE/IMAGE_NAME",
-        "tag" : "latest",
-        "hostname" : "server.example.com",
-        "configuration" : {
-            "PORT" : "3000",
-            "COMPOSE_PROJECT_NAME" : "amp_00000000000000",
-            "JWT_EXPIRATION" : "2d",
-            "BCRYPT_SALT" : "10"
-        },
-        "secrets" : {
-            "DB_URL" : "postgres://username:password@localhost:5432/db-name",
-            "DB_PORT" : "5432",
-            "DB_USER" : "username",
-            "DB_PASSWORD" : "password",
-            "JWT_SECRET" : "change_me"
-        }
-    },
-    "admin_ui" : {
-        "chart_version" : "0.0.1",
-        "application_version" : "0.0.1",
-        "repository" : "ghcr.io/NAMESPACE/IMAGE_NAME",
-        "tag" : "latest",
-        "hostname" : "admin.example.com",
-        "configuration" : {
-            "PORT" : "3001",
-            "REACT_APP_SERVER_URL" : "http://localhost:3000"
-        },
-    }
+  "root_level": true,
+  "directory_name": "helm",
+  "server": {
+    "chart_version": "0.0.1",
+    "application_version": "0.0.1",
+    "repository": "ghcr.io/NAMESPACE/IMAGE_NAME",
+    "tag": "latest",
+    "host": "server.example.com"
+  },
+  "admin_ui": {
+    "enabled": false,
+    "chart_version": "0.0.1",
+    "application_version": "0.0.1",
+    "repository": "ghcr.io/NAMESPACE/IMAGE_NAME",
+    "tag": "latest",
+    "host": "admin.example.com"
+  }
 }
 ```
 
-
 ## Usage
 
-Explain the usage of this plugin and its effect on the final build.
+As this is an addition to the code base, where non of the other code is touched, using the plugin wont impact the final build.
 
-## Scripts
-
-### `build`
-
-Running `npm run build` will bundle your plugin with Webpack for production.
-
-### `dev`
-
-Running `npm run dev` will watch your plugin's source code and automatically bundle it with every change.
+> Note: everything that is in the environments variable file for the service is moved to the configmap part of the helm chart, it would be adviced to move secret related configuration to the secrets object and preferably not have the secrets stored in the generated code at all (as this is implementation specific the decision was made to add everything to the configmap).
