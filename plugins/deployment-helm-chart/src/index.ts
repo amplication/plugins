@@ -15,6 +15,7 @@ import {
   serviceNameKey,
   tagKey,
 } from "./constants";
+import { join } from "node:path";
 import { getPluginSettings } from "./utils";
 import { resolve } from "path";
 import { EventNames } from "@amplication/code-gen-types";
@@ -37,15 +38,7 @@ class HelmChartPlugin implements AmplicationPlugin {
     eventParams: CreateServerDotEnvParams,
     modules: Module[]
   ) {
-    const staticPath = resolve(__dirname, "./static");
-    const staticsFiles = await context.utils.importStaticModules(
-      staticPath,
-      context.serverDirectories.srcDirectory
-    );
-
-    // fetch user settings + merge with default settings
-    const settings = getPluginSettings(context.pluginInstallations);
-
+    context.logger.info(`Generating Helm Chart...`);
     // determine the name of the service which will be used as the name for the helm chart
     const serviceName = context.resourceInfo?.name
       .toLocaleLowerCase()
@@ -56,6 +49,9 @@ class HelmChartPlugin implements AmplicationPlugin {
     if (!serviceName) {
       throw new Error("Service name is undefined");
     }
+
+    // fetch user settings + merge with default settings
+    const settings = getPluginSettings(context.pluginInstallations);
 
     // fetch the variables from the .env file and create a variable for it which can be
     // used to fill the configmap secrets should be moved by the users themself
@@ -68,28 +64,14 @@ class HelmChartPlugin implements AmplicationPlugin {
     const configmapIndentation = "    ";
     let configmap: string = "";
 
-    Object.entries(variables).forEach(([name, value]) => {
+    variables.forEach((variable) => {
+      const [name, value] = Object.entries(variable)[0];
       if (configmap === "") {
         configmap = `${name}: ${value}`;
       } else {
         configmap = `${configmap}\n${configmapIndentation}${name}: ${value}`;
       }
     });
-
-    // render the helm chart from the static files in combination with the values provided through
-    // the settings
-    const renderdOutput = staticsFiles.map(
-      (file): Module => ({
-        path: file.path,
-        code: file.code
-          .replaceAll(serviceNameKey, serviceName)
-          .replace(chartVersionKey, settings.server.chart_version)
-          .replace(applicationVersionKey, settings.server.application_version)
-          .replace(repositoryKey, settings.server.repository)
-          .replace(tagKey, settings.server.tag)
-          .replace(configurationKey, configmap),
-      })
-    );
 
     // save the renderedOutput to the desired directory the options are on the root of the repository
     // and within the directory of the services itself setting "root_directory"
@@ -101,14 +83,46 @@ class HelmChartPlugin implements AmplicationPlugin {
     // create directory within the directory of the service with the name provided
     // through the settings.directory_name, subsequently place all of the files that
     // from the static directory via the renderdOutput variable
+    let helmDirectoryPath = "";
     if (settings.root_level == true) {
-      // TODO: option true
+      helmDirectoryPath = join(
+        context.serverDirectories.baseDirectory,
+        "../",
+        settings.directory_name
+      );
     } else if (settings.root_level == false) {
-      // TODO: option false
+      helmDirectoryPath = join(
+        context.serverDirectories.baseDirectory,
+        settings.directory_name
+      );
     } else {
-      throw new Error("Specify true or false for the root_level setting");
+      throw new Error(
+        "HelmChartPlugin: Specify true or false for the root_level setting"
+      );
     }
 
+    const staticPath = resolve(__dirname, "./static");
+    const staticsFiles = await context.utils.importStaticModules(
+      staticPath,
+      helmDirectoryPath
+    );
+
+    // render the helm chart from the static files in combination with the values provided through
+    // the settings
+    const renderdOutput = staticsFiles.map(
+      (file): Module => ({
+        path: file.path.replace("chart", serviceName),
+        code: file.code
+          .replaceAll(serviceNameKey, serviceName)
+          .replace(chartVersionKey, settings.server.chart_version)
+          .replace(applicationVersionKey, settings.server.application_version)
+          .replace(repositoryKey, settings.server.repository)
+          .replace(tagKey, settings.server.tag)
+          .replace(configurationKey, configmap),
+      })
+    );
+
+    context.logger.info("Configuring Helm chart template");
     return [...modules, ...renderdOutput];
   }
 
