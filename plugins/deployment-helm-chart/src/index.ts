@@ -10,6 +10,7 @@ import {
   chartVersionKey,
   configurationKey,
   hostKey,
+  portKey,
   repositoryKey,
   serviceNameKey,
   tagKey,
@@ -39,12 +40,11 @@ class HelmChartPlugin implements AmplicationPlugin {
     context.logger.info(`Generating Helm Chart...`);
 
     // determine the name of the service which will be used as the name for the helm chart
+    // chart names must be lower case letters and numbers. words may be separated with dashes (-):
     const serviceName = context.resourceInfo?.name
       .toLocaleLowerCase()
-      .replaceAll(/[^a-zA-Z0-9-]/, "-");
+      .replaceAll(/[^a-zA-Z0-9-]/g, "-");
 
-    // chart names must be lower case letters and numbers. words may be separated with dashes (-):
-    // to-do: write logic that removes anything that isnt a letters, number or dash
     if (!serviceName) {
       throw new Error("Service name is undefined");
     }
@@ -65,11 +65,7 @@ class HelmChartPlugin implements AmplicationPlugin {
 
     variables.forEach((variable) => {
       const [name, value] = Object.entries(variable)[0];
-      if (configmap === "") {
-        configmap = `${name}: ${value}`;
-      } else {
-        configmap = `${configmap}\n${configmapIndentation}${name}: ${value}`;
-      }
+      configmap = `${configmap}\n${configmapIndentation}${name}: ${value}`;
     });
 
     /**
@@ -115,12 +111,16 @@ class HelmChartPlugin implements AmplicationPlugin {
         path: file.path.replace("chart", serviceName),
         code: file.code
           .replaceAll(serviceNameKey, serviceName)
-          .replace(chartVersionKey, settings.server.chart_version)
-          .replace(applicationVersionKey, settings.server.application_version)
-          .replace(repositoryKey, settings.server.repository)
-          .replace(tagKey, settings.server.tag)
-          .replace(hostKey, settings.server.host)
-          .replace(configurationKey, configmap),
+          .replaceAll(chartVersionKey, settings.server.chart_version)
+          .replaceAll(
+            applicationVersionKey,
+            settings.server.application_version
+          )
+          .replaceAll(repositoryKey, settings.server.repository)
+          .replaceAll(tagKey, settings.server.tag)
+          .replaceAll(portKey, settings.server.port)
+          .replaceAll(hostKey, settings.server.host)
+          .replaceAll(configurationKey, configmap),
       })
     );
 

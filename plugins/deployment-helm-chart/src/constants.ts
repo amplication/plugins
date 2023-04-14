@@ -11,3 +11,4 @@ export const repositoryKey = "${{ REPOSITORY }}";
 export const tagKey = "${{ TAG }}";
 export const configurationKey = "${{ CONFIGURATION }}";
 export const hostKey = "${{ HOST }}";
+export const portKey = "${{ PORT }}";

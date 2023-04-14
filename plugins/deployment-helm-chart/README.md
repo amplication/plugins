@@ -27,7 +27,8 @@ For both the `server` and the `admin_ui` additional configuration can be provide
     "application_version": "0.0.1",
     "repository": "ghcr.io/NAMESPACE/IMAGE_NAME",
     "tag": "latest",
-    "host": "server.example.com"
+    "host": "server.example.com",
+    "port": "3000"
   },
   "admin_ui": {
     "enabled": false,
@@ -35,7 +36,8 @@ For both the `server` and the `admin_ui` additional configuration can be provide
     "application_version": "0.0.1",
     "repository": "ghcr.io/NAMESPACE/IMAGE_NAME",
     "tag": "latest",
-    "host": "admin.example.com"
+    "host": "admin.example.com",
+    "port": "8080"
   }
 }
 ```

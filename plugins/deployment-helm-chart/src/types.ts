@@ -7,6 +7,7 @@ export interface Settings {
     repository: string;
     tag: string;
     host: string;
+    port: string;
   };
   admin_ui?: {
     chart_version: string;
@@ -14,5 +15,6 @@ export interface Settings {
     repository: string;
     tag: string;
     host: string;
+    port: string;
   };
 } //TODO: create a json schema for this settings interface
