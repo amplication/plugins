@@ -5,7 +5,13 @@ import type {
   Events,
   Module,
 } from "@amplication/code-gen-types";
-import { imageNameKey, registryKey, registryPathKey, serviceNameKey } from "./constants";
+import {
+  imageNameKey,
+  registryKey,
+  serverWorkingDirectoryKey,
+  serviceNameKey,
+} from "./constants";
+import { getPluginSettings } from "./utils";
 import { EventNames } from "@amplication/code-gen-types";
 import { resolve } from "path";
 
@@ -35,61 +41,79 @@ class GithubActionsPlugin implements AmplicationPlugin {
       throw new Error("Service name is undefined");
     }
 
-    const staticPath = resolve(__dirname, "./static");
-    const staticsFiles = await context.utils.importStaticModules(
-      staticPath,
-      "./"
-    );
+    // getPluginSettings: fetch user settings + merge with default settings
+    const settings = getPluginSettings(context.pluginInstallations);
 
-    let dockerMetaDataStep = `
-    - name: docker metadata
-      id: meta
-      uses: docker/metadata-action@v4
-      with:
-        images: ${{ REGISTRY }}/${{ PATH }}/${{ IMAGE_NAME }}
-        flavor: latest=true
-        tags: |
-          type=ref,event=branch
-          type=semver,pattern={{version}}
-    `;
+    /**
+     * option 1 (settings.include_containerization_steps == true)
+     *    when the include_publish_step is set to true, the steps
+     *    for setting up the metadata, logging in to the container
+     *    repostiory and build an publishing the image are included
+     *
+     * option 2 (settings.include_containerization_steps == false):
+     *    when the include_publish_step is set to false, the steps
+     *    for setting up the metadata, logging in to the container
+     *    repostiory and build an publishing the image arent included
+     */
 
-    dockerMetaDataStep
-      .replace(registryKey, "")
-      .replace(registryPathKey, "")
-      .replace(imageNameKey, "");
+    let renderdOutput;
+    let staticPath;
+    let staticFiles;
 
-    let dockerContainerRepositoryLoginStep =`
-    - name: login to image repostiory
-      uses: docker/login-action@v2
-      with:
-        registry: ""
-        username: ${{ github.actor }}
-        password: ${{ secrets.REGISTRY_TOKEN }}
-    `;
+    if (settings.include_containerization_steps == true) {
+      staticPath = resolve(__dirname, "./static/publish/");
+      staticFiles = await context.utils.importStaticModules(
+        staticPath,
+        "./.github/workflows/"
+      );
 
-    dockerContainerRepositoryLoginStep
-      .replace(registryKey, "");
+      const imageName = settings.registry_configuration?.registry_path
+        ? settings.registry_configuration?.registry +
+          "/" +
+          settings.registry_configuration?.registry_path +
+          "/" +
+          settings.registry_configuration?.image_name
+        : settings.registry_configuration?.registry +
+          "/" +
+          settings.registry_configuration?.image_name;
 
-    let dockerBuildAndPushStep = `
-    - name: Build and push
-      uses: docker/build-push-action@v3
-      with:
-        context: .
-        file: ${{ SERVER_WORKING_DIRECTORY }}/Dockerfile
-        push: ${{ github.ref_type == 'tag' }}
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-    `;
+      renderdOutput = staticFiles.map(
+        (file): Module => ({
+          path: file.path.replace(
+            "workflow.yaml",
+            "ci-" + serviceName + ".yaml"
+          ),
+          code: file.code
+            .replaceAll(serviceNameKey, serviceName)
+            .replaceAll(imageNameKey, imageName)
+            .replaceAll(registryKey, settings.registry_configuration?.registry!)
+            .replaceAll(
+              serverWorkingDirectoryKey,
+              context.serverDirectories.baseDirectory
+            ),
+        })
+      );
 
-    const renderdOutput = staticsFiles.map(
-      (file): Module => ({
-        path: file.path.replace("workflow.yaml", serviceName + ".yaml"),
-        code: file.code
-        .replaceAll(serviceNameKey, serviceName),
-      })
-    );
+      return [...modules, ...renderdOutput];
+    } else {
+      staticPath = resolve(__dirname, "./static/default/");
+      staticFiles = await context.utils.importStaticModules(
+        staticPath,
+        "./.github/workflows/"
+      );
 
-    return [...modules, ...renderdOutput];
+      renderdOutput = staticFiles.map(
+        (file): Module => ({
+          path: file.path.replace(
+            "workflow.yaml",
+            "ci-" + serviceName + ".yaml"
+          ),
+          code: file.code.replaceAll(serviceNameKey, serviceName),
+        })
+      );
+
+      return [...modules, ...renderdOutput];
+    }
   }
 }
 

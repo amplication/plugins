@@ -1,0 +1,8 @@
+{
+    "include_containerization_steps" : true,
+    "registry_configuration" : {
+        "registry" : "ghcr.io",
+        "registry_path" : "namespace",
+        "image_name" : "hello-world"
+    }
+}

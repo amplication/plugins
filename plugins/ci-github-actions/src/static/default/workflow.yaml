@@ -2,7 +2,7 @@ name: continuous integration - ${{ SERVICE_NAME }}
 
 concurrency:
   group: ${{ github.ref }}
-  cancel-in-progess: true
+  cancel-in-progress: true
 
 on:
   workflow_dispatch:
@@ -20,7 +20,7 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@
         with:
-          node-version: ${{ matrix}}
+          node-version: 18.x
 
       - name: install dependencies
         run: npm install

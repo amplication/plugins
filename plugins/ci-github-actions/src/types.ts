@@ -1,15 +1,8 @@
-/**
- * @Amplication example types file.
- * Add here all your typescript types/enum/interfaces
- */
-
-export type Example = "Example";
-
-export interface ExampleInterface {
-  [key: string]: any;
-}
-
-export enum ExampleEnum {
-  FOO = "foo",
-  BOO = "boo",
-}
+export interface Settings {
+  include_containerization_steps: boolean;
+  registry_configuration?: {
+    registry?: string;
+    registry_path?: string;
+    image_name?: string;
+  };
+} //TODO: create a json schema for this settings interface
