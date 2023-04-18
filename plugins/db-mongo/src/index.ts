@@ -351,7 +351,7 @@ class MongoPlugin implements AmplicationPlugin {
       return names.join("On");
     }
     if (fieldHasUniqueName || relatedFieldHasUniqueName) {
-      const names = [];
+      const names: string[] = [];
       if (fieldHasUniqueName) {
         names.push(field.name);
       }
