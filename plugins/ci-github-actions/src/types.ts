@@ -1,8 +1,11 @@
+export enum RegistryProviders {
+  GitHub = "github",
+}
+
 export interface Settings {
-  include_containerization_steps: boolean;
-  registry_configuration?: {
-    registry?: string;
-    registry_path?: string;
-    image_name?: string;
+  registry?: RegistryProviders;
+  configuration?: {
+    registry_path: string;
+    authentication_method?: string;
   };
 } //TODO: create a json schema for this settings interface
