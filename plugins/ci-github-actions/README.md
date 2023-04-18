@@ -1,6 +1,6 @@
-# @amplication/plugin-<name>
+# @amplication/plugin-ci-github-actions
 
-[![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-auth-basic)](https://www.npmjs.com/package/@amplication/plugin-auth-basic)
+[![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-ci-github-actions)](https://www.npmjs.com/package/@amplication/plugin-ci-github-actions)
 
 Adds a github actions workflow to for the service used for building and testing the service.
 
