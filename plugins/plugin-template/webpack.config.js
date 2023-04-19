@@ -1,6 +1,7 @@
 const path = require("path");
 const webpack = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const nodeExternals = require('webpack-node-externals');
 
 /** @type {import("webpack").Configuration} */
 module.exports = {
@@ -12,10 +13,10 @@ module.exports = {
       filename: "[name].js.map",
     }),
     new CopyWebpackPlugin({
-      patterns: [{ from: "src/static", to: "static" }],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [{ from: "src/templates", to: "templates" }],
+      patterns: [
+        { from: "src/static", to: "static", noErrorOnMissing: true },
+        { from: "src/templates", to: "templates", noErrorOnMissing: true },
+      ],
     }),
   ],
   module: {
@@ -39,4 +40,5 @@ module.exports = {
     libraryTarget: "commonjs2",
     clean: true,
   },
+  externals: [nodeExternals()]
 };

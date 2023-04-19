@@ -51,11 +51,10 @@ export function createGrantsModule(
   roles: Role[]
 ): Module {
   const MODULE_PATH = `${serverSrcDirectory}/grants.json`;
-    return {
-      path: MODULE_PATH,
-      code: JSON.stringify(createGrants(entities, roles), null, 2),
-    };
-  
+  return {
+    path: MODULE_PATH,
+    code: JSON.stringify(createGrants(entities, roles), null, 2),
+  };
 }
 
 export function createGrants(entities: Entity[], roles: Role[]): Grant[] {
