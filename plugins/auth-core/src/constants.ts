@@ -6,4 +6,4 @@ export const envVariables: VariableDictionary = [
   { JWT_EXPIRATION: "2d" },
 ];
 
-export const templatesPath = resolve(__dirname, "./templates"); 
+export const templatesPath = resolve(__dirname, "./templates");

@@ -150,7 +150,11 @@ export function interpolate(
           const identifier = expression as namedTypes.Identifier;
           return mapping[identifier.name] as namedTypes.StringLiteral;
         });
-        path.replace(transformTemplateLiteralToStringLiteral(path.node as namedTypes.TemplateLiteral));
+        path.replace(
+          transformTemplateLiteralToStringLiteral(
+            path.node as namedTypes.TemplateLiteral
+          )
+        );
       }
       this.traverse(path);
     },

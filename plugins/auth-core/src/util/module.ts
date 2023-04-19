@@ -1,4 +1,4 @@
-import path from 'path';
+import path from "path";
 import normalize from "normalize-path";
 
 const JSON_EXT = ".json";
