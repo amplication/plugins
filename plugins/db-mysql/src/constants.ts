@@ -7,12 +7,12 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
       services: {
         server: {
           environment: {
-            DB_URL: "mysql://${DB_USER}:${DB_PASSWORD}@db:3306",
+            DB_URL: "mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}",
           },
         },
         migrate: {
           environment: {
-            DB_URL: "mysql://${DB_USER}:${DB_PASSWORD}@db:3306",
+            DB_URL: "mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}",
           },
         },
         adminer: {
