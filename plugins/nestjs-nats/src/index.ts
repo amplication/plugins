@@ -18,7 +18,7 @@ import { readFile } from "fs/promises";
 import { merge } from "lodash";
 import { join, resolve } from "path";
 import { print } from "recast";
-import { NATS_PORT, staticsPath } from "./constants";
+import { NATS_PORT, staticsPath, templatesPath } from "./constants";
 
 class NatsPlugin implements AmplicationPlugin {
   static moduleFile: Module | undefined;
@@ -126,7 +126,7 @@ class NatsPlugin implements AmplicationPlugin {
 
     const { name } = resourceInfo;
     const fileName = "nats.module.factory.ts";
-    const filePath = resolve(staticsPath, fileName);
+    const filePath = resolve(templatesPath, fileName);
     const file = await readFile(filePath, "utf8");
 
     const astFile = parse(file.replaceAll("SERVICE_NAME", name));
