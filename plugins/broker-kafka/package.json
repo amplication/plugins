@@ -13,7 +13,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@amplication/code-gen-types": "^1.1.6",
-    "@nestjs/microservices": "^8.2.3",
+    "@nestjs/microservices": "^9.4.0",
     "@types/lodash": "^4.14.185",
     "@types/node": "^18.7.18",
     "copy-webpack-plugin": "^11.0.0",
