@@ -14,4 +14,4 @@ None
 
 ## Usage
 
-This plugin is integrarted with the default behaviour of the service by changing the `defaultAuth.guard.ts` file in the `auth` folder, so all guards on REST API controllers and GraphQL API resolvers will use this authentication by default. 
+This plugin is integrated with the default behavior of the service by changing the `defaultAuth.guard.ts` file in the `auth` folder, so all guards on REST API controllers and GraphQL API resolvers will use this authentication by default. 
