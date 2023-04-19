@@ -15,19 +15,15 @@ import {
   LoadStaticFilesParams,
   LookupResolvedProperties,
   Module,
-  PluginInstallation,
   types,
 } from "@amplication/code-gen-types";
 import { camelCase } from "camel-case";
-import { merge } from "lodash";
 import { pascalCase } from "pascal-case";
 import { resolve } from "path";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { ReferentialActions, ScalarType } from "prisma-schema-dsl-types";
-import defaultSettings from "../.amplicationrc.json";
-import { name } from "../package.json";
 import { dataSource, updateDockerComposeProperties } from "./constants";
-import YAML from "yaml";
+import { getPluginSettings } from "./utils";
 
 class MongoPlugin implements AmplicationPlugin {
   register(): Events {
@@ -40,7 +36,6 @@ class MongoPlugin implements AmplicationPlugin {
       },
       CreateServerDockerCompose: {
         before: this.beforeCreateServerDockerCompose,
-        after: this.afterCreateServerDockerCompose,
       },
       CreateServerDockerComposeDB: {
         before: this.beforeCreateServerDockerComposeDB,
@@ -103,20 +98,17 @@ class MongoPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDotEnvParams
   ) {
-    const { settings } = currentInstallation(context.pluginInstallations) || {
-      settings: {},
-    };
-
-    const fullSettings = merge(defaultSettings, settings);
-
-    const { port, password, user, host, dbName } = fullSettings;
+    const { port, password, user, host, dbName } = getPluginSettings(
+      context.pluginInstallations
+    );
 
     eventParams.envVariables = [
       ...eventParams.envVariables,
       ...[
         { DB_USER: user },
         { DB_PASSWORD: password },
-        { DB_PORT: port },
+        { DB_PORT: port.toString() },
+        { DB_NAME: dbName },
         {
           DB_URL: `mongodb://${user}:${password}@${host}:${port}/${dbName}?authSource=admin`,
         },
@@ -126,23 +118,6 @@ class MongoPlugin implements AmplicationPlugin {
     return eventParams;
   }
 
-  afterCreateServerDockerCompose(
-    dsgContext: DsgContext,
-    eventParams: CreateServerDockerComposeParams,
-    modules: Module[]
-  ): Module[] {
-    const dockerCompose = modules[0];
-    const dockerComposeObject: { services: { migrate: { depends_on: any } } } =
-      YAML.parse(dockerCompose.code);
-    try {
-      dockerComposeObject.services.migrate.depends_on = undefined;
-    } catch (error) {}
-    const updatedDockerCompose = YAML.stringify(dockerComposeObject, {
-      nullStr: "~",
-    });
-    modules[0] = { ...dockerCompose, code: updatedDockerCompose };
-    return modules;
-  }
   beforeCreateServerDockerCompose(
     context: DsgContext,
     eventParams: CreateServerDockerComposeParams
@@ -351,7 +326,7 @@ class MongoPlugin implements AmplicationPlugin {
       return names.join("On");
     }
     if (fieldHasUniqueName || relatedFieldHasUniqueName) {
-      const names = [];
+      const names: string[] = [];
       if (fieldHasUniqueName) {
         names.push(field.name);
       }
@@ -374,13 +349,3 @@ class MongoPlugin implements AmplicationPlugin {
 }
 
 export default MongoPlugin;
-
-function currentInstallation(
-  pluginInstallations: PluginInstallation[]
-): PluginInstallation | undefined {
-  const plugin = pluginInstallations.find((plugin, i) => {
-    return plugin.npm === name;
-  });
-
-  return plugin;
-}
