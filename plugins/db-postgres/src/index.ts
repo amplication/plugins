@@ -54,6 +54,7 @@ class PostgresPlugin implements AmplicationPlugin {
         { DB_USER: user },
         { DB_PASSWORD: password },
         { DB_PORT: port },
+        { DB_NAME: dbName },
       ],
     ];
 
