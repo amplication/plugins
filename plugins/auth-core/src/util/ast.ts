@@ -3,7 +3,7 @@ import { ASTNode, namedTypes, builders } from "ast-types";
 import * as K from "ast-types/gen/kinds";
 import { NodePath } from "ast-types/lib/node-path";
 import { groupBy, mapValues, uniqBy } from "lodash";
-import { parse, partialParse,print } from "@amplication/code-gen-utils";
+import { parse, partialParse, print } from "@amplication/code-gen-utils";
 import { NamedClassProperty } from "@amplication/code-gen-types";
 
 const TS_IGNORE_TEXT = "@ts-ignore";
@@ -823,7 +823,6 @@ export function addDecoratorsToClassDeclaration(
 
     print(declaration).code,
   ].join("\n");
-
 
   const ast = parse(code);
 

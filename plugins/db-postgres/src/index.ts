@@ -13,6 +13,7 @@ import { resolve } from "path";
 import defaultSettings from "../.amplicationrc.json";
 import { name } from "../package.json";
 import { dataSource, updateDockerComposeProperties } from "./constants";
+import { getPluginSettings } from "./utils";
 
 class PostgresPlugin implements AmplicationPlugin {
   register(): Events {
@@ -37,13 +38,9 @@ class PostgresPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDotEnvParams
   ) {
-    const { settings } = currentInstallation(context.pluginInstallations) || {
-      settings: {},
-    };
-
-    const fullSettings = merge(defaultSettings, settings);
-
-    const { port, password, user, host, dbName } = fullSettings;
+    const { port, password, user, host, dbName } = getPluginSettings(
+      context.pluginInstallations
+    );
 
     eventParams.envVariables = [
       ...eventParams.envVariables,
@@ -53,7 +50,8 @@ class PostgresPlugin implements AmplicationPlugin {
         },
         { DB_USER: user },
         { DB_PASSWORD: password },
-        { DB_PORT: port },
+        { DB_PORT: port.toString() },
+        { DB_NAME: dbName },
       ],
     ];
 

@@ -13,7 +13,7 @@ import {
 import { merge } from "lodash";
 import { resolve } from "path";
 import defaultSettings from "../.amplicationrc.json";
-import { name } from "../package.json";
+import { getPluginSettings } from "./utils";
 import { dataSource, updateDockerComposeProperties } from "./constants";
 class MySQLPlugin implements AmplicationPlugin {
   register(): Events {
@@ -61,20 +61,16 @@ class MySQLPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDotEnvParams
   ) {
-    const { settings } = currentInstallation(context.pluginInstallations) || {
-      settings: {},
-    };
 
-    const fullSettings = merge(defaultSettings, settings);
-
-    const { port, password, user, host, dbName } = fullSettings;
+    const { port, password, user, host, dbName } = getPluginSettings(context.pluginInstallations);
 
     eventParams.envVariables = [
       ...eventParams.envVariables,
       ...[
         { DB_USER: user },
         { DB_PASSWORD: password },
-        { DB_PORT: port },
+        { DB_PORT: port.toString() },
+        { DB_NAME: dbName },
         {
           DB_URL: `mysql://${user}:${password}@${host}:${port}/${dbName}`,
         },
@@ -122,13 +118,3 @@ class MySQLPlugin implements AmplicationPlugin {
 }
 
 export default MySQLPlugin;
-
-function currentInstallation(
-  pluginInstallations: PluginInstallation[]
-): PluginInstallation | undefined {
-  const plugin = pluginInstallations.find((plugin, i) => {
-    return plugin.npm === name;
-  });
-
-  return plugin;
-}

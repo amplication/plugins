@@ -5,13 +5,17 @@ import { builders, namedTypes } from "ast-types";
 import { print } from "@amplication/code-gen-utils";
 import { getUserIdType } from "../util/get-user-id-type";
 import { resolve } from "path";
-import {join} from "path"; 
+import { join } from "path";
 import { templatesPath } from "../constants";
 
+const templatePath = join(
+  templatesPath,
+  "create-token/token-payload-interface.template.ts"
+);
 
-const templatePath = join(templatesPath,"create-token/token-payload-interface.template.ts"); 
-
-export async function createTokenPayloadInterface(dsgContext: DsgContext): Promise<Module> {
+export async function createTokenPayloadInterface(
+  dsgContext: DsgContext
+): Promise<Module> {
   const { serverDirectories } = dsgContext;
   const authDir = `${serverDirectories.authDirectory}`;
   const template = await readFile(templatePath);

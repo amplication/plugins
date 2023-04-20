@@ -1,6 +1,8 @@
 {
-    "editor.formatOnSave": true,
-    "prettier.enable": true
-    "cSpell.words": ["NATS"]
+  "editor.formatOnSave": true,
+  "prettier.enable": true
+  "cSpell.words": [
+    "NATS"
+  ],
+  "prettier.requireConfig": false
 }
-
