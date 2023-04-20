@@ -1,5 +1,5 @@
 {
-    "root_level" : true,
+    "root_level" : false,
     "directory_name" : "helm",
     "server" : {
         "chart_version" : "0.0.1",
