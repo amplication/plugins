@@ -1,5 +1,5 @@
 name: npm publish
-run-name: publish ${{ inputs.plugin }} by @${{ github.actor }}
+run-name: publish '${{ inputs.plugin }}' plugin by @${{ github.actor }}
 
 on:
   workflow_dispatch:
