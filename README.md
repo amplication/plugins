@@ -18,4 +18,4 @@ An github actions worflow has been added to publish a plugin the npm registry. I
 
 - `latest` tag: when using the default branch for this repository when triggering the workflow, the package will be tagged with latest.
 
-- `beta` tag: when using a non-default branch, e.g., a branch for development when triggering the workflow, the package will be tagged with beta.
+- `beta` tag: when using a non-default branch, e.g., a branch for development, when triggering the workflow the package will be tagged with beta.
