@@ -19,6 +19,7 @@ import { join } from "node:path";
 import { getPluginSettings } from "./utils";
 import { resolve } from "path";
 import { EventNames } from "@amplication/code-gen-types";
+import { kebabCase } from "lodash";
 
 class HelmChartPlugin implements AmplicationPlugin {
   register(): Events {
@@ -41,9 +42,7 @@ class HelmChartPlugin implements AmplicationPlugin {
 
     // determine the name of the service which will be used as the name for the helm chart
     // chart names must be lower case letters and numbers. words may be separated with dashes (-):
-    const serviceName = context.resourceInfo?.name
-      .toLocaleLowerCase()
-      .replaceAll(/[^a-zA-Z0-9-]/g, "-");
+    const serviceName = kebabCase(context.resourceInfo?.name);
 
     if (!serviceName) {
       throw new Error("Service name is undefined");
@@ -71,23 +70,27 @@ class HelmChartPlugin implements AmplicationPlugin {
     /**
      * save the renderedOutput to the desired directory the options are on the root of the repository
      * and within the directory of the services itself setting "root_directory":
+     *
      *    option 1 (value: true):  /<directory_name_value>/<service_name>
      *         create directory on the root of the repository (../) with the name provided
      *         through the settings.directory_name, subsequently place all of the files that
      *         from the static directory via the renderdOutput variable
+     *
      *    option 2 (value: false): /<service_name>/<directory_name_value>/<service_name>
      *         create directory within the directory of the service with the name provided
      *         through the settings.directory_name, subsequently place all of the files that
      *         from the static directory via the renderdOutput variable
      */
-    let helmDirectoryPath = "";
-    if (settings.root_level == true) {
+
+    let helmDirectoryPath: string = "";
+
+    if (settings.root_level === true) {
       helmDirectoryPath = join(
         context.serverDirectories.baseDirectory,
         "../",
         settings.directory_name
       );
-    } else if (settings.root_level == false) {
+    } else if (settings.root_level === false) {
       helmDirectoryPath = join(
         context.serverDirectories.baseDirectory,
         settings.directory_name
@@ -97,8 +100,9 @@ class HelmChartPlugin implements AmplicationPlugin {
         "HelmChartPlugin: Specify true or false for the root_level setting"
       );
     }
+    const defaultStaticFiles: string = "./static/";
 
-    const staticPath = resolve(__dirname, "./static");
+    const staticPath = resolve(__dirname, defaultStaticFiles);
     const staticsFiles = await context.utils.importStaticModules(
       staticPath,
       helmDirectoryPath
@@ -130,7 +134,9 @@ class HelmChartPlugin implements AmplicationPlugin {
 
   /**
    * Implementation of the AdminUI part of generation of a helm Chart requires the
-   * 'afterCreateAdminUIDotEnv' event to be implemented.
+   * 'afterCreateAdminUIDotEnv' event to be implemented:
+   *
+   * link:
    */
 }
 

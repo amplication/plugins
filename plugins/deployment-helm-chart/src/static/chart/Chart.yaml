@@ -1,8 +1,8 @@
 apiVersion: v2
 name: ${{ SERVICE_NAME }}
-description: A Helm chart for ${{ SERVICE_NAME }}
+description: A Helm chart for the ${{ SERVICE_NAME }} service generated with Amplication
 
-# A chart can be either an 'application' or a 'library' chart. Application charts are a collection 
+# A chart can be either an 'application' or a 'library' chart. Application charts are a collection
 # of templates that can be packaged into versioned archives to be deployed.
 # Library charts provide useful utilities or functions for the chart developer. They're included as
 # a dependency of application charts to inject those utilities and functions into the rendering
