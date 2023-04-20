@@ -136,7 +136,7 @@ class HelmChartPlugin implements AmplicationPlugin {
    * Implementation of the AdminUI part of generation of a helm Chart requires the
    * 'afterCreateAdminUIDotEnv' event to be implemented:
    *
-   * link:
+   * link: https://github.com/amplication/amplication/issues/5836
    */
 }
 
