@@ -15,6 +15,8 @@ import {
 import { getPluginSettings } from "./utils";
 import { EventNames } from "@amplication/code-gen-types";
 import { resolve } from "path";
+import { kebabCase } from "lodash";
+import { GitHubAuthenticationMethods, RegistryProviders } from "./types";
 
 class GithubActionsPlugin implements AmplicationPlugin {
   register(): Events {
@@ -34,9 +36,7 @@ class GithubActionsPlugin implements AmplicationPlugin {
 
     // determine the name of the service which will be used as the name for the workflow
     // workflow names must be lower case letters and numbers. words may be separated with dashes (-):
-    const serviceName = context.resourceInfo?.name
-      .toLocaleLowerCase()
-      .replaceAll(/[^a-zA-Z0-9-]/g, "-");
+    const serviceName = kebabCase(context.resourceInfo?.name);
 
     if (!serviceName) {
       throw new Error("Service name is undefined");
@@ -47,9 +47,10 @@ class GithubActionsPlugin implements AmplicationPlugin {
 
     /**
      * option 1 '} else {' (settings.registry == "")
-     *    when the registry setting is left empty, the steps
-     *    for setting up the metadata, logging in to the container
-     *    repostiory and build an publishing the image arent included
+     *    when the registry setting is left empty - or doesnt equat to
+     *    on of the RegistryProviders.<...>, the steps for setting up
+     *    the metadata, logging in to the container repostiory and build
+     *    and publishing the image arent included
      *
      * option 2 'specific provider' (settings.registry == registryProvider.Github || registryProvider.<...>):
      *    when the registry setting is provided with a supported provider, the steps
@@ -61,24 +62,31 @@ class GithubActionsPlugin implements AmplicationPlugin {
     let staticPath;
     let staticFiles;
 
-    let registry: string;
-    let image: string;
+    const templateFileName: string = "workflow.yaml";
+    const workflowFileNamePrefix: string = "ci-";
+    const workflowFileNameSuffix: string = ".yaml";
+    const outputDirectory: string = "./.github/workflows/";
 
-    if (settings.registry == "github") {
-      staticPath = resolve(__dirname, "./static/github/");
+    const succesfullPluginCodeGeneration: string =
+      "Generated Github Actions workflow...";
+
+    if (settings.registry == RegistryProviders.GitHub) {
+      const githubStaticFiles: string = "./static/github/";
+
+      staticPath = resolve(__dirname, githubStaticFiles);
       staticFiles = await context.utils.importStaticModules(
         staticPath,
-        "./.github/workflows/"
+        outputDirectory
       );
 
       // set the registry to the github packages registry url and
       // define the image name so that the image can be pushed to the
       // github packages of the users profile or organization if specfied
       // in the registry_path instead.
-      registry = "ghcr.io";
-      image = settings.configuration?.registry_path
-        ? `${registry}/${settings.configuration?.registry_path}/${serviceName}`
-        : `${registry}/\${{ github.actor }}/${serviceName}`;
+      const registryUrl = "ghcr.io";
+      const image = settings.configuration?.registry_path
+        ? `${registryUrl}/${settings.configuration?.registry_path}/${serviceName}`
+        : `${registryUrl}/\${{ github.actor }}/${serviceName}`;
 
       // split the registry path so that the first part can be used to determine
       // to what registry the push the container images to - i.e., personal profile
@@ -92,15 +100,16 @@ class GithubActionsPlugin implements AmplicationPlugin {
       // default github token is used for authentication to the github packages container
       // registry.
       const authenticationPassword =
-        settings.configuration?.authentication_method == "pat"
+        settings.configuration?.authentication_method ==
+        GitHubAuthenticationMethods.PersonalAccessToken
           ? "${{ secrets.GITHUB_PACKAGES_PAT }}"
           : "${{ secrets.GITHUB_TOKEN }}";
 
       renderdOutput = staticFiles.map(
         (file): Module => ({
           path: file.path.replace(
-            "workflow.yaml",
-            "ci-" + serviceName + ".yaml"
+            templateFileName,
+            workflowFileNamePrefix + serviceName + workflowFileNameSuffix
           ),
           code: file.code
             .replaceAll(serviceNameKey, serviceName)
@@ -114,20 +123,22 @@ class GithubActionsPlugin implements AmplicationPlugin {
         })
       );
 
-      context.logger.info(`Generated Github Actions workflow...`);
+      context.logger.info(succesfullPluginCodeGeneration);
       return [...modules, ...renderdOutput];
     } else {
-      staticPath = resolve(__dirname, "./static/default/");
+      const defaultStaticFiles: string = "./static/default/";
+
+      staticPath = resolve(__dirname, defaultStaticFiles);
       staticFiles = await context.utils.importStaticModules(
         staticPath,
-        "./.github/workflows/"
+        outputDirectory
       );
 
       renderdOutput = staticFiles.map(
         (file): Module => ({
           path: file.path.replace(
-            "workflow.yaml",
-            "ci-" + serviceName + ".yaml"
+            templateFileName,
+            workflowFileNamePrefix + serviceName + workflowFileNameSuffix
           ),
           code: file.code
             .replaceAll(serviceNameKey, serviceName)
@@ -138,7 +149,7 @@ class GithubActionsPlugin implements AmplicationPlugin {
         })
       );
 
-      context.logger.info(`Generated Github Actions workflow...`);
+      context.logger.info(succesfullPluginCodeGeneration);
       return [...modules, ...renderdOutput];
     }
   }

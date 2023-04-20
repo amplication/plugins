@@ -2,6 +2,10 @@ export enum RegistryProviders {
   GitHub = "github",
 }
 
+export enum GitHubAuthenticationMethods {
+  PersonalAccessToken = "pat",
+}
+
 export interface Settings {
   registry?: RegistryProviders;
   configuration?: {

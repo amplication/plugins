@@ -1,7 +1,7 @@
 {
     "name": "@amplication/plugin-ci-github-actions",
     "version": "0.0.1",
-    "description": "Description of your plugin",
+    "description": "Adds a github actions workflow to for the service used for building and testing the service.",
     "main": "dist/index.js",
     "scripts": {
         "dev": "webpack --watch",
