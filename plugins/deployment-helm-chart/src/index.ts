@@ -83,11 +83,12 @@ class HelmChartPlugin implements AmplicationPlugin {
      */
 
     let helmDirectoryPath: string = "";
+    const rootDirectoryPath: string = "./";
 
     if (settings.root_level === true) {
       helmDirectoryPath = join(
         context.serverDirectories.baseDirectory,
-        "../",
+        rootDirectoryPath,
         settings.directory_name
       );
     } else if (settings.root_level === false) {
