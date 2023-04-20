@@ -11,3 +11,11 @@ For more information, read [Using Plugins](https://docs.amplication.com/docs/get
 ## Developing Plugins
 
 You will soon be able to develop your plugins to implement standards, best practices, and custom integrations, and to do almost anything you want with the generated code.
+
+## Publishing Plugins
+
+An github actions worflow has been added to publish a plugin the npm registry. It lets you specify a pre-determined list of plugin names (additional plugins will have to be added to this list).
+
+- `latest` tag: when using the default branch for this repository when triggering the workflow, the package will be tagged with latest.
+
+- `beta` tag: when using a non-default branch, e.g., a branch for development, when triggering the workflow the package will be tagged with beta.
