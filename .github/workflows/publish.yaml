@@ -1,4 +1,5 @@
-name: Publish a package to NPM registry
+name: npm publish
+run-name: publish ${{ inputs.plugin }} by @${{ github.actor }}
 
 on:
   workflow_dispatch:
@@ -27,8 +28,8 @@ on:
         default: false
 
 jobs:
-  build-and-publish:
-    if: ${{ github.event.inputs.publish }} == true
+  publish:
+    if: ${{ github.event.inputs.publish }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -44,8 +45,18 @@ jobs:
         run: npm ci && npm run build
         working-directory: plugins/${{ github.event.inputs.plugin }}
 
-      - name: Publish package on NPM 📦
+      # if the branch is the default branch, the latest tag is applied
+      - name: Publish package on NPM [latest] 📦
+        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
         run: npm publish
+        working-directory: plugins/${{ github.event.inputs.plugin }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # if the branch is not the default branch, the beta tag is applied
+      - name: Publish package on NPM [beta] 📦
+        if: github.ref != format('refs/heads/{0}', github.event.repository.default_branch)
+        run: npm publish --tag beta
         working-directory: plugins/${{ github.event.inputs.plugin }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
