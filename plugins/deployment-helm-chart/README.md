@@ -44,7 +44,7 @@ For both the `server` and the `admin_ui` additional configuration can be provide
 
 ## Usage
 
-As this is an addition to the code base, where non of the other code is touched, using the plugin wont impact the final build.
+As this is an addition to the code base, where non of the other code is touched, using the plugin won't impact the final build.
 
 > Note: everything that is in the environments variable file for the service is moved to the configmap part of the helm chart, it would be adviced to move secret related configuration to the secrets object and preferably not have the secrets stored in the generated code at all (as this is implementation specific the decision was made to add everything to the configmap).
 
