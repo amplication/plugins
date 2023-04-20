@@ -12,9 +12,11 @@ on:
           - "auth-core"
           - "auth-jwt"
           - "broker-kafka"
+          - "ci-github-actions"
           - "db-mongo"
           - "db-mysql"
           - "db-postgres"
+          - "deployment-helm-chart"
           - "formatter-prettier"
           - "nestjs-nats"
           - "swagger-apibody"
@@ -26,6 +28,7 @@ on:
 
 jobs:
   build-and-publish:
+    if: ${{ github.event.inputs.publish }} == true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -39,8 +42,10 @@ jobs:
 
       - name: Install dependencies and build 🔧
         run: npm ci && npm run build
+        working-directory: plugins/${{ github.event.inputs.plugin }}
 
       - name: Publish package on NPM 📦
         run: npm publish
+        working-directory: plugins/${{ github.event.inputs.plugin }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
