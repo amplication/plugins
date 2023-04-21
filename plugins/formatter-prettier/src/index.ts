@@ -8,6 +8,7 @@ import {
   CreateServerParams,
   CreateServerPackageJsonParams,
   CreateAdminUIPackageJsonParams,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { merge } from "lodash";
 
@@ -29,16 +30,16 @@ class ExamplePlugin implements AmplicationPlugin {
   async afterCreateServer(
     context: DsgContext,
     eventParams: CreateServerParams,
-    modules: Module[]
-  ) {
+    modules: ModuleMap
+  ): Promise<ModuleMap> {
     const staticPath = resolve(__dirname, "./static");
     const staticsFiles = await context.utils.importStaticModules(
       staticPath,
       context.serverDirectories.baseDirectory
     );
 
-    console.log("staticsFiles", staticsFiles);
-    return [...modules, ...staticsFiles];
+    modules.merge(staticsFiles, context.logger);
+    return modules;
   }
 
   beforeCreateServerPackageJson(
