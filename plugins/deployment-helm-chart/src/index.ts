@@ -72,11 +72,11 @@ class HelmChartPlugin implements AmplicationPlugin {
      * and within the directory of the services itself setting "root_directory":
      *
      *    option 1 (value: true):  /<directory_name_value>/<service_name>
-     *         create directory on the root of the repository (../) with the name provided
+     *         create directory on the root of the repository (./) with the name provided
      *         through the settings.directory_name, subsequently place all of the files that
      *         from the static directory via the renderdOutput variable
      *
-     *    option 2 (value: false): /<service_name>/<directory_name_value>/<service_name>
+     *    option 2 (value: false): /[optional: mono_prefix]/<service_name>/<directory_name_value>/<service_name>
      *         create directory within the directory of the service with the name provided
      *         through the settings.directory_name, subsequently place all of the files that
      *         from the static directory via the renderdOutput variable
@@ -87,33 +87,36 @@ class HelmChartPlugin implements AmplicationPlugin {
 
     if (settings.root_level === true) {
       helmDirectoryPath = join(
-        context.serverDirectories.baseDirectory,
         rootDirectoryPath,
-        settings.directory_name
+        settings.directory_name,
+        serviceName
       );
     } else if (settings.root_level === false) {
       helmDirectoryPath = join(
         context.serverDirectories.baseDirectory,
-        settings.directory_name
+        settings.directory_name,
+        serviceName
       );
     } else {
       throw new Error(
         "HelmChartPlugin: Specify true or false for the root_level setting"
       );
     }
-    const defaultStaticFiles: string = "./static/";
 
-    const staticPath = resolve(__dirname, defaultStaticFiles);
-    const staticsFiles = await context.utils.importStaticModules(
-      staticPath,
+    const chartTemplateDirectory: string = "./static/chart";
+
+    const chartTemplatePath = resolve(__dirname, chartTemplateDirectory);
+    const chartTemplateFiles = await context.utils.importStaticModules(
+      chartTemplatePath,
       helmDirectoryPath
     );
 
     // render the helm chart from the static files in combination with the values provided through
-    // the settings
-    const renderdOutput = staticsFiles.map(
+    // the settings, the chartTemplateName is set to a random unqiue string to make sure the name
+    // doesnt collide with a possible string set by a user in the directory_name
+    const renderdOutput = chartTemplateFiles.map(
       (file): Module => ({
-        path: file.path.replace("chart", serviceName),
+        path: file.path,
         code: file.code
           .replaceAll(serviceNameKey, serviceName)
           .replaceAll(chartVersionKey, settings.server.chart_version)
