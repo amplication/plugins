@@ -6,12 +6,10 @@ import {
   CreateServerDotEnvParams,
   DsgContext,
   Events,
+  ModuleMap,
   PluginInstallation,
 } from "@amplication/code-gen-types";
-import { merge } from "lodash";
 import { resolve } from "path";
-import defaultSettings from "../.amplicationrc.json";
-import { name } from "../package.json";
 import { dataSource, updateDockerComposeProperties } from "./constants";
 import { getPluginSettings } from "./utils";
 
@@ -74,14 +72,14 @@ class PostgresPlugin implements AmplicationPlugin {
     return eventParams;
   }
 
-  async afterCreateServerDockerComposeDB(context: DsgContext) {
+  async afterCreateServerDockerComposeDB(
+    context: DsgContext
+  ): Promise<ModuleMap> {
     const staticPath = resolve(__dirname, "./static");
-    const staticsFiles = await context.utils.importStaticModules(
+    return await context.utils.importStaticModules(
       staticPath,
       context.serverDirectories.baseDirectory
     );
-
-    return staticsFiles;
   }
 
   beforeCreatePrismaSchema(
@@ -96,13 +94,3 @@ class PostgresPlugin implements AmplicationPlugin {
 }
 
 export default PostgresPlugin;
-
-function currentInstallation(
-  pluginInstallations: PluginInstallation[]
-): PluginInstallation | undefined {
-  const plugin = pluginInstallations.find((plugin, i) => {
-    return plugin.npm === name;
-  });
-
-  return plugin;
-}
