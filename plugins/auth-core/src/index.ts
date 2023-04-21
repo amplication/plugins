@@ -23,6 +23,7 @@ import {
   EnumEntityPermissionType,
   Events,
   Module,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { envVariables } from "./constants";
 import { resolve } from "path";
@@ -91,7 +92,6 @@ class AuthCorePlugin implements AmplicationPlugin {
       },
       CreateServerAppModule: {
         before: this.beforeCreateAppModule,
-        //@ts-ignore
         after: this.afterCreateAppModule,
       },
       CreateServerAuth: {
@@ -201,8 +201,8 @@ class AuthCorePlugin implements AmplicationPlugin {
   async afterCreateServerPackageJson(
     context: DsgContext,
     eventParams: CreateServerPackageJsonParams,
-    modules: Module[]
-  ) {
+    modules: ModuleMap
+  ): Promise<ModuleMap> {
     // create grants here, because here the DSG format this code to json file.
     const grants =
       context.entities && context.roles
@@ -213,15 +213,19 @@ class AuthCorePlugin implements AmplicationPlugin {
           )
         : null;
 
-    return grants ? [...modules, grants] : modules;
+    if (grants) {
+      modules.set(grants.path, grants);
+      return modules;
+    }
+    return modules;
   }
 
   async afterCreateAppModule(
     context: DsgContext,
     eventParams: CreateServerAppModuleParams,
-    modules: Module[]
-  ) {
-    const [appModule] = modules;
+    modules: ModuleMap
+  ): Promise<ModuleMap> {
+    const [appModule] = modules.values();
 
     if (!appModule) return modules;
     const file = parse(appModule.code);
@@ -233,29 +237,32 @@ class AuthCorePlugin implements AmplicationPlugin {
 
     appendImports(file, [aclModuleImport, authModuleImport]);
 
-    return [{ ...appModule, code: print(file).code }];
+    const updatedModules = new ModuleMap();
+    appModule.code = print(file).code;
+    updatedModules.set(appModule.path, appModule);
+    return updatedModules;
   }
 
   async afterCreateSeed(
     context: DsgContext,
     eventParams: CreateSeedParams,
-    modules: Module[]
-  ) {
+    modules: ModuleMap
+  ): Promise<ModuleMap> {
     const staticPath = resolve(__dirname, "./static/scripts");
     const staticsFiles = await AuthCorePlugin.getStaticFiles(
       context,
       context.serverDirectories.scriptsDirectory,
       staticPath
     );
-
-    return [...staticsFiles, ...modules];
+    modules.merge(staticsFiles, context.logger);
+    return modules;
   }
 
   async afterCreateServerAuth(
     context: DsgContext,
     eventParams: CreateServerAuthParams,
-    modules: Module[]
-  ) {
+    modules: ModuleMap
+  ): Promise<ModuleMap> {
     const staticPath = resolve(__dirname, "./static/auth");
 
     const interceptorsStaticPath = resolve(__dirname, "./static/interceptors");
@@ -273,7 +280,12 @@ class AuthCorePlugin implements AmplicationPlugin {
     );
 
     staticsInterceptorsFiles.forEach((file) => {
-      staticsFiles.push(file);
+      if (staticsFiles.has(file.path)) {
+        context.logger.warn(
+          `Module ${file.path} already exists. Overriding...`
+        );
+      }
+      staticsFiles.set(file.path, file);
     });
 
     // 1. create user info
@@ -281,15 +293,14 @@ class AuthCorePlugin implements AmplicationPlugin {
     // 2. create token payload interface
     const tokenPayloadInterface = await createTokenPayloadInterface(context);
     // 3. create constants for tests
-    const athConstants = await createAuthConstants(context);
+    const authConstants = await createAuthConstants(context);
 
-    return [
-      userInfo,
-      tokenPayloadInterface,
-      athConstants,
-      ...staticsFiles,
-      ...modules,
-    ];
+    modules.set(userInfo.path, userInfo);
+    modules.set(tokenPayloadInterface.path, tokenPayloadInterface);
+    modules.set(authConstants.path, authConstants);
+    modules.merge(staticsFiles, context.logger);
+
+    return modules;
   }
 
   async beforeCreateEntityModule(
@@ -375,7 +386,7 @@ class AuthCorePlugin implements AmplicationPlugin {
     context: DsgContext,
     basePath: string,
     staticPath: string
-  ) {
+  ): Promise<ModuleMap> {
     const staticsFiles = await context.utils.importStaticModules(
       staticPath,
       basePath
