@@ -8,13 +8,12 @@ import {
   DsgContext,
   EnumDataType,
   Events,
-  PluginInstallation,
+  ModuleMap,
 } from "@amplication/code-gen-types";
-import { merge } from "lodash";
 import { resolve } from "path";
-import defaultSettings from "../.amplicationrc.json";
 import { getPluginSettings } from "./utils";
 import { dataSource, updateDockerComposeProperties } from "./constants";
+
 class MySQLPlugin implements AmplicationPlugin {
   register(): Events {
     return {
@@ -61,8 +60,9 @@ class MySQLPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDotEnvParams
   ) {
-
-    const { port, password, user, host, dbName } = getPluginSettings(context.pluginInstallations);
+    const { port, password, user, host, dbName } = getPluginSettings(
+      context.pluginInstallations
+    );
 
     eventParams.envVariables = [
       ...eventParams.envVariables,
@@ -96,14 +96,14 @@ class MySQLPlugin implements AmplicationPlugin {
     return eventParams;
   }
 
-  async afterCreateServerDockerComposeDB(context: DsgContext) {
+  async afterCreateServerDockerComposeDB(
+    context: DsgContext
+  ): Promise<ModuleMap> {
     const staticPath = resolve(__dirname, "./static");
-    const staticsFiles = await context.utils.importStaticModules(
+    return await context.utils.importStaticModules(
       staticPath,
       context.serverDirectories.baseDirectory
     );
-
-    return staticsFiles;
   }
 
   beforeCreatePrismaSchema(
