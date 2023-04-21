@@ -1,4 +1,4 @@
-import type {
+import {
   AmplicationPlugin,
   CreateMessageBrokerClientOptionsFactoryParams,
   CreateMessageBrokerNestJSModuleParams,
@@ -12,6 +12,7 @@ import type {
   DsgContext,
   Events,
   Module,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { parse, removeTSVariableDeclares } from "@amplication/code-gen-utils";
 import { readFile } from "fs/promises";
@@ -117,7 +118,7 @@ class NatsPlugin implements AmplicationPlugin {
   async afterCreateMessageBrokerClientOptionsFactory(
     context: DsgContext,
     eventParams: CreateMessageBrokerClientOptionsFactoryParams
-  ): Promise<Module[]> {
+  ): Promise<ModuleMap> {
     const { serverDirectories, resourceInfo } = context;
 
     if (!resourceInfo) {
@@ -134,12 +135,7 @@ class NatsPlugin implements AmplicationPlugin {
 
     const path = join(serverDirectories.messageBrokerDirectory, fileName);
 
-    return [
-      {
-        code: print(astFile).code,
-        path,
-      },
-    ];
+    return new ModuleMap().set(path, { code: print(astFile).code, path });
   }
   beforeCreateServerAppModule(
     dsgContext: DsgContext,
@@ -156,7 +152,7 @@ class NatsPlugin implements AmplicationPlugin {
   async afterCreateMessageBrokerServiceBase(
     context: DsgContext,
     eventParams: CreateMessageBrokerServiceBaseParams
-  ): Promise<Module[]> {
+  ): Promise<ModuleMap> {
     const { serverDirectories } = context;
     const { messageBrokerDirectory } = serverDirectories;
     const fileName = "nats.service.base.ts";
@@ -165,13 +161,13 @@ class NatsPlugin implements AmplicationPlugin {
     const file = await readFile(filePath, "utf8");
 
     const path = join(messageBrokerDirectory, "base", fileName);
-    return [{ code: file, path }];
+    return new ModuleMap().set(path, { code: file, path });
   }
 
   async afterCreateMessageBrokerService(
     context: DsgContext,
     eventParams: CreateMessageBrokerServiceParams
-  ): Promise<Module[]> {
+  ): Promise<ModuleMap> {
     const { serverDirectories } = context;
     const { messageBrokerDirectory } = serverDirectories;
     const fileName = "nats.service.ts";
@@ -184,10 +180,11 @@ class NatsPlugin implements AmplicationPlugin {
 
     const controllerFile = await readFile(controllerFilePath, "utf8");
     const controllerPath = join(messageBrokerDirectory, fileName);
-    return [
-      { code: file, path },
-      { code: controllerFile, path: controllerPath },
-    ];
+
+    const modules = new ModuleMap();
+    modules.set(path, { code: file, path });
+    modules.set(controllerPath, { code: controllerFile, path: controllerPath });
+    return modules;
   }
 
   beforeCreateBroker(
@@ -204,7 +201,7 @@ class NatsPlugin implements AmplicationPlugin {
   async afterCreateMessageBrokerNestJSModule(
     context: DsgContext,
     eventParams: CreateMessageBrokerNestJSModuleParams
-  ) {
+  ): Promise<ModuleMap> {
     const fileName = "nats.module.ts";
     const filePath = resolve(staticsPath, fileName);
 
@@ -216,7 +213,9 @@ class NatsPlugin implements AmplicationPlugin {
       code: file,
       path: join(messageBrokerDirectory, fileName),
     };
-    return [NatsPlugin.moduleFile];
+    const modules = new ModuleMap();
+    modules.set(NatsPlugin.moduleFile.path, NatsPlugin.moduleFile);
+    return modules;
   }
 }
 
