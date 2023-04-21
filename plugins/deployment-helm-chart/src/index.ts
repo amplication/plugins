@@ -112,8 +112,7 @@ class HelmChartPlugin implements AmplicationPlugin {
     );
 
     // render the helm chart from the static files in combination with the values provided through
-    // the settings, the chartTemplateName is set to a random unqiue string to make sure the name
-    // doesnt collide with a possible string set by a user in the directory_name
+    // the settings
     const renderdOutput = chartTemplateFiles.map(
       (file): Module => ({
         path: file.path,
