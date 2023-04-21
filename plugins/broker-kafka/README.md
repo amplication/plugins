@@ -1,4 +1,4 @@
-# @amplication/plugin-kafka
+# @amplication/plugin-broker-kafka
 
 [![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-db-postgres)](https://www.npmjs.com/package/@amplication/plugin-kafka)
 

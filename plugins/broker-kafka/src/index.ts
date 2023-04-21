@@ -12,6 +12,7 @@ import {
   DsgContext,
   Events,
   Module,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { readFile } from "fs/promises";
 import { kebabCase, merge } from "lodash";
@@ -55,7 +56,7 @@ class KafkaPlugin implements AmplicationPlugin {
   async afterCreateMessageBrokerClientOptionsFactory(
     context: DsgContext,
     eventParams: CreateMessageBrokerClientOptionsFactoryParams
-  ): Promise<Module[]> {
+  ): Promise<ModuleMap> {
     const { serverDirectories } = context;
     const filePath = resolve(staticDirectory, "generateKafkaClientOptions.ts");
     const file = await readFile(filePath, "utf8");
@@ -65,13 +66,9 @@ class KafkaPlugin implements AmplicationPlugin {
       serverDirectories.messageBrokerDirectory,
       generateFileName
     );
-
-    return [
-      {
-        code: file,
-        path,
-      },
-    ];
+    const modules = new ModuleMap();
+    modules.set(path, { code: file, path });
+    return modules;
   }
 
   beforeCreateBroker(
@@ -88,7 +85,7 @@ class KafkaPlugin implements AmplicationPlugin {
   async afterCreateMessageBrokerNestJSModule(
     context: DsgContext,
     eventParams: CreateMessageBrokerNestJSModuleParams
-  ) {
+  ): Promise<ModuleMap> {
     const filePath = resolve(staticDirectory, "kafka.module.ts");
 
     const { serverDirectories } = context;
@@ -100,7 +97,9 @@ class KafkaPlugin implements AmplicationPlugin {
       code: file,
       path: join(messageBrokerDirectory, generateFileName),
     };
-    return [KafkaPlugin.moduleFile];
+    const modules = new ModuleMap();
+    modules.set(KafkaPlugin.moduleFile.path, KafkaPlugin.moduleFile);
+    return modules;
   }
 
   beforeCreateServerDotEnv(
@@ -143,7 +142,7 @@ class KafkaPlugin implements AmplicationPlugin {
   async afterCreateMessageBrokerService(
     context: DsgContext,
     eventParams: CreateMessageBrokerServiceParams
-  ): Promise<Module[]> {
+  ): Promise<ModuleMap> {
     const { serverDirectories } = context;
     const { messageBrokerDirectory } = serverDirectories;
     const filePath = resolve(staticDirectory, `kafka.service.ts`);
@@ -152,12 +151,14 @@ class KafkaPlugin implements AmplicationPlugin {
     const generateFileName = `kafka.service.ts`;
 
     const path = join(messageBrokerDirectory, generateFileName);
-    return [{ code: file, path }];
+    const modules = new ModuleMap();
+    modules.set(path, { code: file, path });
+    return modules;
   }
   async afterCreateMessageBrokerServiceBase(
     context: DsgContext,
     eventParams: CreateMessageBrokerServiceBaseParams
-  ): Promise<Module[]> {
+  ): Promise<ModuleMap> {
     const { serverDirectories } = context;
     const { messageBrokerDirectory } = serverDirectories;
     const filePath = resolve(staticDirectory, `kafka.service.base.ts`);
@@ -166,7 +167,9 @@ class KafkaPlugin implements AmplicationPlugin {
     const generateFileName = `kafka.service.base.ts`;
 
     const path = join(messageBrokerDirectory, "base", generateFileName);
-    return [{ code: file, path }];
+    const modules = new ModuleMap();
+    modules.set(path, { code: file, path });
+    return modules;
   }
 
   beforeCreateDockerCompose(
