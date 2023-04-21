@@ -15,6 +15,7 @@ import {
   LoadStaticFilesParams,
   LookupResolvedProperties,
   Module,
+  ModuleMap,
   types,
 } from "@amplication/code-gen-types";
 import { camelCase } from "camel-case";
@@ -134,21 +135,21 @@ class MongoPlugin implements AmplicationPlugin {
     return eventParams;
   }
 
-  async afterCreateServerDockerComposeDB(context: DsgContext) {
+  async afterCreateServerDockerComposeDB(
+    context: DsgContext
+  ): Promise<ModuleMap> {
     const staticPath = resolve(__dirname, "./static/docker-compose");
-    const staticsFiles = await context.utils.importStaticModules(
+    return await context.utils.importStaticModules(
       staticPath,
       context.serverDirectories.baseDirectory
     );
-
-    return staticsFiles;
   }
 
   async afterCreateServerStaticFiles(
     context: DsgContext,
     eventParams: LoadStaticFilesParams,
-    modules: Module[]
-  ) {
+    modules: ModuleMap
+  ): Promise<ModuleMap> {
     const staticPathToHealthBaseService = resolve(__dirname, "./static/health");
     const staticsHealthBaseService = await context.utils.importStaticModules(
       staticPathToHealthBaseService,
@@ -163,21 +164,10 @@ class MongoPlugin implements AmplicationPlugin {
       `${context.serverDirectories.srcDirectory}/tests/health`
     );
 
-    const modulesWithoutOverridesFiles = modules.filter((x) => {
-      const fileToRemove = ["health.service.base", "health.service.spec"];
-      fileToRemove.forEach((fileName) => {
-        if (x.path.includes(fileName)) {
-          return false;
-        }
-      });
-      return true;
-    });
+    modules.merge(staticsHealthBaseService, context.logger);
+    modules.merge(staticsHealthServiceTest, context.logger);
 
-    return [
-      ...staticsHealthBaseService,
-      ...staticsHealthServiceTest,
-      ...modulesWithoutOverridesFiles,
-    ];
+    return modules;
   }
 
   beforeCreatePrismaSchema(
