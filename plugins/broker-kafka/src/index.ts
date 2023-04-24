@@ -66,8 +66,8 @@ class KafkaPlugin implements AmplicationPlugin {
       serverDirectories.messageBrokerDirectory,
       generateFileName
     );
-    const modules = new ModuleMap();
-    modules.set(path, { code: file, path });
+    const modules = new ModuleMap(context.logger);
+    await modules.set(path, { code: file, path });
     return modules;
   }
 
@@ -97,8 +97,9 @@ class KafkaPlugin implements AmplicationPlugin {
       code: file,
       path: join(messageBrokerDirectory, generateFileName),
     };
-    const modules = new ModuleMap();
-    modules.set(KafkaPlugin.moduleFile.path, KafkaPlugin.moduleFile);
+
+    const modules = new ModuleMap(context.logger);
+    await modules.set(KafkaPlugin.moduleFile.path, KafkaPlugin.moduleFile);
     return modules;
   }
 
@@ -151,8 +152,8 @@ class KafkaPlugin implements AmplicationPlugin {
     const generateFileName = `kafka.service.ts`;
 
     const path = join(messageBrokerDirectory, generateFileName);
-    const modules = new ModuleMap();
-    modules.set(path, { code: file, path });
+    const modules = new ModuleMap(context.logger);
+    await modules.set(path, { code: file, path });
     return modules;
   }
   async afterCreateMessageBrokerServiceBase(
@@ -167,8 +168,8 @@ class KafkaPlugin implements AmplicationPlugin {
     const generateFileName = `kafka.service.base.ts`;
 
     const path = join(messageBrokerDirectory, "base", generateFileName);
-    const modules = new ModuleMap();
-    modules.set(path, { code: file, path });
+    const modules = new ModuleMap(context.logger);
+    await modules.set(path, { code: file, path });
     return modules;
   }
 

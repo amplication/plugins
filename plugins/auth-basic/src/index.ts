@@ -52,7 +52,7 @@ class BasicAuthPlugin implements AmplicationPlugin {
       context.serverDirectories.srcDirectory
     );
 
-    modules.merge(staticsFiles, context.logger);
+    await modules.merge(staticsFiles);
     return modules;
   }
 }

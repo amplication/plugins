@@ -1,7 +1,6 @@
 import {
   AmplicationPlugin,
   CreateAdminUIParams,
-  Module,
   CreateServerAuthParams,
   DsgContext,
   Events,
@@ -53,7 +52,7 @@ class JwtAuthPlugin implements AmplicationPlugin {
       context.serverDirectories.srcDirectory
     );
 
-    modules.merge(staticsFiles, context.logger);
+    await modules.merge(staticsFiles);
     return modules;
   }
 }

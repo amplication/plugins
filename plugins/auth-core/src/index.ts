@@ -214,9 +214,9 @@ class AuthCorePlugin implements AmplicationPlugin {
         : null;
 
     if (grants) {
-      modules.set(grants.path, grants);
-      return modules;
+      await modules.set(grants.path, grants);
     }
+
     return modules;
   }
 
@@ -225,7 +225,7 @@ class AuthCorePlugin implements AmplicationPlugin {
     eventParams: CreateServerAppModuleParams,
     modules: ModuleMap
   ): Promise<ModuleMap> {
-    const [appModule] = modules.values();
+    const [appModule] = modules.modules();
 
     if (!appModule) return modules;
     const file = parse(appModule.code);
@@ -237,9 +237,9 @@ class AuthCorePlugin implements AmplicationPlugin {
 
     appendImports(file, [aclModuleImport, authModuleImport]);
 
-    const updatedModules = new ModuleMap();
+    const updatedModules = new ModuleMap(context.logger);
     appModule.code = print(file).code;
-    updatedModules.set(appModule.path, appModule);
+    await updatedModules.set(appModule.path, appModule);
     return updatedModules;
   }
 
@@ -254,7 +254,7 @@ class AuthCorePlugin implements AmplicationPlugin {
       context.serverDirectories.scriptsDirectory,
       staticPath
     );
-    modules.merge(staticsFiles, context.logger);
+    await modules.merge(staticsFiles);
     return modules;
   }
 
@@ -279,14 +279,7 @@ class AuthCorePlugin implements AmplicationPlugin {
       staticPath
     );
 
-    staticsInterceptorsFiles.forEach((file) => {
-      if (staticsFiles.has(file.path)) {
-        context.logger.warn(
-          `Module ${file.path} already exists. Overriding...`
-        );
-      }
-      staticsFiles.set(file.path, file);
-    });
+    await staticsFiles.merge(staticsInterceptorsFiles);
 
     // 1. create user info
     const userInfo = await createUserInfo(context);
@@ -295,10 +288,10 @@ class AuthCorePlugin implements AmplicationPlugin {
     // 3. create constants for tests
     const authConstants = await createAuthConstants(context);
 
-    modules.set(userInfo.path, userInfo);
-    modules.set(tokenPayloadInterface.path, tokenPayloadInterface);
-    modules.set(authConstants.path, authConstants);
-    modules.merge(staticsFiles, context.logger);
+    await modules.set(userInfo.path, userInfo);
+    await modules.set(tokenPayloadInterface.path, tokenPayloadInterface);
+    await modules.set(authConstants.path, authConstants);
+    await modules.merge(staticsFiles);
 
     return modules;
   }

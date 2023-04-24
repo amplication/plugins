@@ -38,7 +38,7 @@ class ExamplePlugin implements AmplicationPlugin {
       context.serverDirectories.baseDirectory
     );
 
-    modules.merge(staticsFiles, context.logger);
+    await modules.merge(staticsFiles);
     return modules;
   }
 

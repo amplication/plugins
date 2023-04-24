@@ -114,8 +114,8 @@ class HelmChartPlugin implements AmplicationPlugin {
 
     // render the helm chart from the static files in combination with the values provided through
     // the settings
-    chartTemplateFiles.forEach((module) => {
-      module.code = module.code
+    chartTemplateFiles.replaceModulesCode((code) => {
+      return code
         .replaceAll(serviceNameKey, serviceName)
         .replaceAll(chartVersionKey, settings.server.chart_version)
         .replaceAll(applicationVersionKey, settings.server.application_version)
@@ -126,8 +126,8 @@ class HelmChartPlugin implements AmplicationPlugin {
         .replaceAll(configurationKey, configmap);
     });
 
-    context.logger.info("Configuring Helm chart template...");
-    modules.merge(chartTemplateFiles, context.logger);
+    await context.logger.info("Configuring Helm chart template...");
+    await modules.merge(chartTemplateFiles);
     return modules;
   }
 

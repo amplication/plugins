@@ -135,9 +135,11 @@ class NatsPlugin implements AmplicationPlugin {
 
     const path = join(serverDirectories.messageBrokerDirectory, fileName);
 
-    return new ModuleMap().set(path, { code: print(astFile).code, path });
+    const modules = new ModuleMap(context.logger);
+    await modules.set(path, { code: print(astFile).code, path });
+    return modules;
   }
-  beforeCreateServerAppModule(
+  async beforeCreateServerAppModule(
     dsgContext: DsgContext,
     eventParams: CreateServerAppModuleParams
   ) {
@@ -145,7 +147,7 @@ class NatsPlugin implements AmplicationPlugin {
     if (!file) {
       throw new Error("Nats module file not found");
     }
-    eventParams.modulesFiles.push(file);
+    await eventParams.modulesFiles.set(file.path, file);
     return eventParams;
   }
 
@@ -161,7 +163,9 @@ class NatsPlugin implements AmplicationPlugin {
     const file = await readFile(filePath, "utf8");
 
     const path = join(messageBrokerDirectory, "base", fileName);
-    return new ModuleMap().set(path, { code: file, path });
+    const modules = new ModuleMap(context.logger);
+    await modules.set(path, { code: file, path });
+    return modules;
   }
 
   async afterCreateMessageBrokerService(
@@ -181,9 +185,12 @@ class NatsPlugin implements AmplicationPlugin {
     const controllerFile = await readFile(controllerFilePath, "utf8");
     const controllerPath = join(messageBrokerDirectory, fileName);
 
-    const modules = new ModuleMap();
-    modules.set(path, { code: file, path });
-    modules.set(controllerPath, { code: controllerFile, path: controllerPath });
+    const modules = new ModuleMap(context.logger);
+    await modules.set(path, { code: file, path });
+    await modules.set(controllerPath, {
+      code: controllerFile,
+      path: controllerPath,
+    });
     return modules;
   }
 
@@ -213,8 +220,8 @@ class NatsPlugin implements AmplicationPlugin {
       code: file,
       path: join(messageBrokerDirectory, fileName),
     };
-    const modules = new ModuleMap();
-    modules.set(NatsPlugin.moduleFile.path, NatsPlugin.moduleFile);
+    const modules = new ModuleMap(context.logger);
+    await modules.set(NatsPlugin.moduleFile.path, NatsPlugin.moduleFile);
     return modules;
   }
 }

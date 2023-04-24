@@ -46,7 +46,7 @@ class ExamplePlugin implements AmplicationPlugin {
       staticPath,
       context.serverDirectories.srcDirectory
     );
-    modules.merge(staticsFiles, context.logger);
+    await modules.merge(staticsFiles);
     return modules; // You must return the generated modules you want to generate at this part of the build.
   }
 

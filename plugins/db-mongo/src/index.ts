@@ -164,8 +164,8 @@ class MongoPlugin implements AmplicationPlugin {
       `${context.serverDirectories.srcDirectory}/tests/health`
     );
 
-    modules.merge(staticsHealthBaseService, context.logger);
-    modules.merge(staticsHealthServiceTest, context.logger);
+    await modules.merge(staticsHealthBaseService);
+    await modules.merge(staticsHealthServiceTest);
 
     return modules;
   }
