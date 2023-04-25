@@ -1,0 +1,6 @@
+{
+    "general settings": {},
+    "system settings": {
+        "require authentication entity": true
+    }
+}

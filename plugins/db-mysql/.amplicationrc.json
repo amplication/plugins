@@ -1,7 +1,9 @@
 {
-    "host": "localhost",
-    "port": 3306,
-    "user": "root",
-    "password": "admin",
-    "dbName": "my-db"
+    "general settings": {
+        "host": "localhost",
+        "port": 3306,
+        "user": "root",
+        "password": "admin",
+        "dbName": "my-db"
+    }
 }
