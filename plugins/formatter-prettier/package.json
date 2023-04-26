@@ -13,7 +13,7 @@
   "author": "Eugene Tseitlin",
   "license": "Apache-2.0",
   "dependencies": {
-    "@amplication/code-gen-types": "^2.0.0-beta.1",
+    "@amplication/code-gen-types": "^2.0.0",
     "@babel/parser": "^7.18.11",
     "@babel/types": "^7.18.10",
     "copy-webpack-plugin": "^11.0.0",
