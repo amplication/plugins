@@ -15,7 +15,7 @@ export const natsClientModuleFactory = (
     transport: Transport.NATS,
     options: {
       servers: [...natsServersString.split(",")],
-      name: SERVICE_NAME,
+      name: "SERVICE_NAME",
     },
   };
 };
