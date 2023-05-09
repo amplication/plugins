@@ -1,8 +1,6 @@
 import { ConfigService } from "@nestjs/config";
 import { ClientProvider, Transport } from "@nestjs/microservices";
 
-declare const SERVICE_NAME: string;
-
 export const natsClientModuleFactory = (
   configService: ConfigService
 ): ClientProvider => {
