@@ -1,8 +1,6 @@
 import { ConfigService } from "@nestjs/config";
 import { ClientProvider, Transport } from "@nestjs/microservices";
 
-declare const SERVICE_NAME: string;
-
 export const natsClientModuleFactory = (
   configService: ConfigService
 ): ClientProvider => {
@@ -15,7 +13,7 @@ export const natsClientModuleFactory = (
     transport: Transport.NATS,
     options: {
       servers: [...natsServersString.split(",")],
-      name: SERVICE_NAME,
+      name: "SERVICE_NAME",
     },
   };
 };

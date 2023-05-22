@@ -1,6 +1,6 @@
 version: "3.7"
 services:
-  mongodb_container:
+  db:
     image: mongo
     ports:
       - ${DB_PORT}:27017
@@ -19,7 +19,7 @@ services:
     healthcheck:
       test: 'test $$(mongosh --quiet -u  $${MONGO_INITDB_ROOT_USERNAME} -p
         $${MONGO_INITDB_ROOT_PASSWORD} --eval "try { rs.initiate({ _id: ''rs0'',
-        members: [{ _id: 0, host: ''db'' }] }).ok } catch (_) { rs.status().ok
+        members: [{ _id: 0, host: ''localhost'' }] }).ok } catch (_) { rs.status().ok
         }") -eq 1'
       start_period: 5s
       interval: 10s
