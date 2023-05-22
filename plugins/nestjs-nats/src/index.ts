@@ -136,7 +136,7 @@ class NatsPlugin implements AmplicationPlugin {
     const path = join(serverDirectories.messageBrokerDirectory, fileName);
 
     const modules = new ModuleMap(context.logger);
-    await modules.set(path, { code: print(astFile).code, path });
+    await modules.set({ code: print(astFile).code, path });
     return modules;
   }
   async beforeCreateServerAppModule(
@@ -147,7 +147,7 @@ class NatsPlugin implements AmplicationPlugin {
     if (!file) {
       throw new Error("Nats module file not found");
     }
-    await eventParams.modulesFiles.set(file.path, file);
+    await eventParams.modulesFiles.set(file);
     return eventParams;
   }
 
@@ -164,7 +164,7 @@ class NatsPlugin implements AmplicationPlugin {
 
     const path = join(messageBrokerDirectory, "base", fileName);
     const modules = new ModuleMap(context.logger);
-    await modules.set(path, { code: file, path });
+    await modules.set({ code: file, path });
     return modules;
   }
 
@@ -186,8 +186,8 @@ class NatsPlugin implements AmplicationPlugin {
     const controllerPath = join(messageBrokerDirectory, fileName);
 
     const modules = new ModuleMap(context.logger);
-    await modules.set(path, { code: file, path });
-    await modules.set(controllerPath, {
+    await modules.set({ code: file, path });
+    await modules.set({
       code: controllerFile,
       path: controllerPath,
     });
@@ -221,7 +221,7 @@ class NatsPlugin implements AmplicationPlugin {
       path: join(messageBrokerDirectory, fileName),
     };
     const modules = new ModuleMap(context.logger);
-    await modules.set(NatsPlugin.moduleFile.path, NatsPlugin.moduleFile);
+    await modules.set(NatsPlugin.moduleFile);
     return modules;
   }
 }

@@ -67,7 +67,7 @@ class KafkaPlugin implements AmplicationPlugin {
       generateFileName
     );
     const modules = new ModuleMap(context.logger);
-    await modules.set(path, { code: file, path });
+    await modules.set({ code: file, path });
     return modules;
   }
 
@@ -99,7 +99,7 @@ class KafkaPlugin implements AmplicationPlugin {
     };
 
     const modules = new ModuleMap(context.logger);
-    await modules.set(KafkaPlugin.moduleFile.path, KafkaPlugin.moduleFile);
+    await modules.set(KafkaPlugin.moduleFile);
     return modules;
   }
 
@@ -153,7 +153,7 @@ class KafkaPlugin implements AmplicationPlugin {
 
     const path = join(messageBrokerDirectory, generateFileName);
     const modules = new ModuleMap(context.logger);
-    await modules.set(path, { code: file, path });
+    await modules.set({ code: file, path });
     return modules;
   }
   async afterCreateMessageBrokerServiceBase(
@@ -169,7 +169,7 @@ class KafkaPlugin implements AmplicationPlugin {
 
     const path = join(messageBrokerDirectory, "base", generateFileName);
     const modules = new ModuleMap(context.logger);
-    await modules.set(path, { code: file, path });
+    await modules.set({ code: file, path });
     return modules;
   }
 
@@ -229,7 +229,7 @@ class KafkaPlugin implements AmplicationPlugin {
     if (!file) {
       throw new Error("Kafka module file not found");
     }
-    eventParams.modulesFiles.push(file);
+    eventParams.modulesFiles.set(file);
     return eventParams;
   }
 }

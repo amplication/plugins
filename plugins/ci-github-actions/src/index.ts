@@ -4,6 +4,7 @@ import type {
   DsgContext,
   Events,
   Module,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import {
   authenticationPasswordKey,
@@ -30,8 +31,8 @@ class GithubActionsPlugin implements AmplicationPlugin {
   async afterCreateServer(
     context: DsgContext,
     eventParams: CreateServerParams,
-    modules: Module[]
-  ) {
+    modules: ModuleMap
+  ): Promise<ModuleMap> {
     context.logger.info(`Generating Github Actions workflow...`);
 
     // determine the name of the service which will be used as the name for the workflow
@@ -105,26 +106,23 @@ class GithubActionsPlugin implements AmplicationPlugin {
           ? "${{ secrets.GITHUB_PACKAGES_PAT }}"
           : "${{ secrets.GITHUB_TOKEN }}";
 
-      renderdOutput = staticFiles.map(
-        (file): Module => ({
-          path: file.path.replace(
-            templateFileName,
-            workflowFileNamePrefix + serviceName + workflowFileNameSuffix
-          ),
-          code: file.code
-            .replaceAll(serviceNameKey, serviceName)
-            .replaceAll(imageKey, image)
-            .replaceAll(authenticationUsernameKey, authenticationUsername)
-            .replaceAll(authenticationPasswordKey, authenticationPassword)
-            .replaceAll(
-              serviceWorkingDirectoryKey,
-              context.serverDirectories.baseDirectory
-            ),
-        })
+      staticFiles.replaceModulesPath((path) =>
+        path.replace(
+          templateFileName,
+          workflowFileNamePrefix + serviceName + workflowFileNameSuffix
+        )
       );
-
-      context.logger.info(succesfullPluginCodeGeneration);
-      return [...modules, ...renderdOutput];
+      staticFiles.replaceModulesCode((code) =>
+        code
+          .replaceAll(serviceNameKey, serviceName)
+          .replaceAll(imageKey, image)
+          .replaceAll(authenticationUsernameKey, authenticationUsername)
+          .replaceAll(authenticationPasswordKey, authenticationPassword)
+          .replaceAll(
+            serviceWorkingDirectoryKey,
+            context.serverDirectories.baseDirectory
+          )
+      );
     } else {
       const defaultStaticFiles: string = "./static/default/";
 
@@ -133,25 +131,24 @@ class GithubActionsPlugin implements AmplicationPlugin {
         staticPath,
         outputDirectory
       );
-
-      renderdOutput = staticFiles.map(
-        (file): Module => ({
-          path: file.path.replace(
-            templateFileName,
-            workflowFileNamePrefix + serviceName + workflowFileNameSuffix
-          ),
-          code: file.code
-            .replaceAll(serviceNameKey, serviceName)
-            .replaceAll(
-              serviceWorkingDirectoryKey,
-              context.serverDirectories.baseDirectory
-            ),
-        })
+      staticFiles.replaceModulesPath((path) =>
+        path.replace(
+          templateFileName,
+          workflowFileNamePrefix + serviceName + workflowFileNameSuffix
+        )
       );
-
-      context.logger.info(succesfullPluginCodeGeneration);
-      return [...modules, ...renderdOutput];
+      staticFiles.replaceModulesCode((code) =>
+        code
+          .replaceAll(serviceNameKey, serviceName)
+          .replaceAll(
+            serviceWorkingDirectoryKey,
+            context.serverDirectories.baseDirectory
+          )
+      );
     }
+    context.logger.info(succesfullPluginCodeGeneration);
+    await modules.merge(staticFiles);
+    return modules;
   }
 }
 

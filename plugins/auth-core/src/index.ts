@@ -214,7 +214,7 @@ class AuthCorePlugin implements AmplicationPlugin {
         : null;
 
     if (grants) {
-      await modules.set(grants.path, grants);
+      await modules.set(grants);
     }
 
     return modules;
@@ -239,7 +239,7 @@ class AuthCorePlugin implements AmplicationPlugin {
 
     const updatedModules = new ModuleMap(context.logger);
     appModule.code = print(file).code;
-    await updatedModules.set(appModule.path, appModule);
+    await updatedModules.set(appModule);
     return updatedModules;
   }
 
@@ -288,9 +288,9 @@ class AuthCorePlugin implements AmplicationPlugin {
     // 3. create constants for tests
     const authConstants = await createAuthConstants(context);
 
-    await modules.set(userInfo.path, userInfo);
-    await modules.set(tokenPayloadInterface.path, tokenPayloadInterface);
-    await modules.set(authConstants.path, authConstants);
+    await modules.set(userInfo);
+    await modules.set(tokenPayloadInterface);
+    await modules.set(authConstants);
     await modules.merge(staticsFiles);
 
     return modules;
