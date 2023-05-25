@@ -10,7 +10,7 @@
   "author": "tupe12334",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@amplication/code-gen-types": "^2.0.0",
+    "@amplication/code-gen-types": "^2.0.1",
     "@amplication/code-gen-utils": "^0.0.5",
     "@babel/parser": "^7.21.3",
     "@babel/types": "^7.20.7",
