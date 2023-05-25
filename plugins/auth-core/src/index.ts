@@ -283,14 +283,16 @@ class AuthCorePlugin implements AmplicationPlugin {
 
     // 1. create user info
     const userInfo = await createUserInfo(context);
+    await modules.set(userInfo);
+
     // 2. create token payload interface
     const tokenPayloadInterface = await createTokenPayloadInterface(context);
+    await modules.set(tokenPayloadInterface);
+
     // 3. create constants for tests
     const authConstants = await createAuthConstants(context);
-
-    await modules.set(userInfo);
-    await modules.set(tokenPayloadInterface);
     await modules.set(authConstants);
+
     await modules.merge(staticsFiles);
 
     return modules;
