@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-nestjs-nats",
-  "version": "0.0.1-beta.3",
+  "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
     "dev": "webpack --watch",
