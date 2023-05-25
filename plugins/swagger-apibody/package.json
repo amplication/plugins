@@ -4,7 +4,7 @@
   "description": "Add Description of Routes and Entity properties to the REST-API Documentation",
   "main": "dist/index.js",
   "scripts": {
-    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
     "dev": "webpack --watch",
     "build": "webpack --mode production",
     "prebuild": "rimraf dist",
