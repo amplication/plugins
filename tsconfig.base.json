@@ -6,16 +6,15 @@
         "module": "commonjs",
         "target": "es2021",
         "strict": true,
+        "allowJs": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
+        "noImplicitAny": true,
         "forceConsistentCasingInFileNames": true,
         "moduleResolution": "node",
         "resolveJsonModule": true,
         "strictNullChecks": true
     },
-    "include": [
-        "src/index.ts"
-    ],
     "exclude": [
         "node_modules"
     ]

@@ -1,32 +1,32 @@
 {
-    "name": "@amplication/plugin-ci-github-actions",
-    "version": "0.0.1",
-    "description": "Adds a github actions workflow to for the service used for building and testing the service.",
-    "main": "dist/index.js",
-    "scripts": {
-        "dev": "webpack --watch",
-        "build": "webpack",
-        "format:write": "prettier --write \"**/*.{js,ts}\""
-    },
-    "author": "Levi van Noort <levi@amplication.com>",
-    "license": "Apache-2.0",
-    "devDependencies": {
-        "@amplication/code-gen-types": "^1.1.19",
-        "@babel/parser": "^7.20.7",
-        "@babel/types": "^7.20.7",
-        "@types/lodash": "^4.14.182",
-        "@types/normalize-path": "^3.0.0",
-        "@typescript-eslint/eslint-plugin": "^5.33.0",
-        "@typescript-eslint/parser": "^5.33.0",
-        "copy-webpack-plugin": "^11.0.0",
-        "eslint": "^8.21.0",
-        "jest-mock-extended": "^3.0.1",
-        "lodash": "^4.17.21",
-        "prettier": "^2.8.7",
-        "rimraf": "^4.0.7",
-        "ts-loader": "^9.4.2",
-        "typescript": "4.6.2",
-        "webpack": "^5.76.0",
-        "webpack-cli": "^5.0.1"
-    }
+  "name": "@amplication/plugin-ci-github-actions",
+  "version": "1.0.0",
+  "description": "Adds a github actions workflow to for the service used for building and testing the service.",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "webpack --watch",
+    "build": "webpack",
+    "format:write": "prettier --write \"**/*.{js,ts}\""
+  },
+  "author": "Levi van Noort <levi@amplication.com>",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@amplication/code-gen-types": "^2.0.1",
+    "@babel/parser": "^7.20.7",
+    "@babel/types": "^7.20.7",
+    "@types/lodash": "^4.14.182",
+    "@types/normalize-path": "^3.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.33.0",
+    "@typescript-eslint/parser": "^5.33.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "eslint": "^8.21.0",
+    "jest-mock-extended": "^3.0.1",
+    "lodash": "^4.17.21",
+    "prettier": "^2.8.7",
+    "rimraf": "^4.4.1",
+    "ts-loader": "^9.4.2",
+    "typescript": "^4.9.3",
+    "webpack": "^5.76.0",
+    "webpack-cli": "^5.0.1"
+  }
 }

@@ -1,10 +1,10 @@
 import {
   AmplicationPlugin,
   CreateAdminUIParams,
-  Module,
   CreateServerAuthParams,
   DsgContext,
   Events,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { EnumAuthProviderType } from "@amplication/code-gen-types/src/models";
 import { resolve } from "path";
@@ -43,8 +43,8 @@ class JwtAuthPlugin implements AmplicationPlugin {
   async afterCreateAuthModules(
     context: DsgContext,
     eventParams: CreateServerAuthParams,
-    modules: Module[]
-  ) {
+    modules: ModuleMap
+  ): Promise<ModuleMap> {
     const staticPath = resolve(__dirname, "./static");
 
     const staticsFiles = await context.utils.importStaticModules(
@@ -52,7 +52,8 @@ class JwtAuthPlugin implements AmplicationPlugin {
       context.serverDirectories.srcDirectory
     );
 
-    return [...staticsFiles, ...modules];
+    await modules.merge(staticsFiles);
+    return modules;
   }
 }
 

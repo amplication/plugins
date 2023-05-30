@@ -1,23 +1,9 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "target": "es2017",
-    "lib": ["es2020", "dom"],
-    "sourceMap": true,
-    "baseUrl": "./src",
-    "outDir": "dist",
-    "incremental": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "strict": true,
-    "jsx": "react"
-  },
-  "include": ["src/index.ts"],
-  "exclude": ["node_modules", "dist"]
+  "extends": "../../tsconfig.base.json",
+  "include": [
+    "src/index.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
 }

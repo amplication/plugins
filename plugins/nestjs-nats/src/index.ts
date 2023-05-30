@@ -1,4 +1,4 @@
-import type {
+import {
   AmplicationPlugin,
   CreateMessageBrokerClientOptionsFactoryParams,
   CreateMessageBrokerNestJSModuleParams,
@@ -12,6 +12,7 @@ import type {
   DsgContext,
   Events,
   Module,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { parse, removeTSVariableDeclares } from "@amplication/code-gen-utils";
 import { readFile } from "fs/promises";
@@ -117,7 +118,7 @@ class NatsPlugin implements AmplicationPlugin {
   async afterCreateMessageBrokerClientOptionsFactory(
     context: DsgContext,
     eventParams: CreateMessageBrokerClientOptionsFactoryParams
-  ): Promise<Module[]> {
+  ): Promise<ModuleMap> {
     const { serverDirectories, resourceInfo } = context;
 
     if (!resourceInfo) {
@@ -134,14 +135,11 @@ class NatsPlugin implements AmplicationPlugin {
 
     const path = join(serverDirectories.messageBrokerDirectory, fileName);
 
-    return [
-      {
-        code: print(astFile).code,
-        path,
-      },
-    ];
+    const modules = new ModuleMap(context.logger);
+    await modules.set({ code: print(astFile).code, path });
+    return modules;
   }
-  beforeCreateServerAppModule(
+  async beforeCreateServerAppModule(
     dsgContext: DsgContext,
     eventParams: CreateServerAppModuleParams
   ) {
@@ -149,14 +147,14 @@ class NatsPlugin implements AmplicationPlugin {
     if (!file) {
       throw new Error("Nats module file not found");
     }
-    eventParams.modulesFiles.push(file);
+    await eventParams.modulesFiles.set(file);
     return eventParams;
   }
 
   async afterCreateMessageBrokerServiceBase(
     context: DsgContext,
     eventParams: CreateMessageBrokerServiceBaseParams
-  ): Promise<Module[]> {
+  ): Promise<ModuleMap> {
     const { serverDirectories } = context;
     const { messageBrokerDirectory } = serverDirectories;
     const fileName = "nats.service.base.ts";
@@ -165,13 +163,15 @@ class NatsPlugin implements AmplicationPlugin {
     const file = await readFile(filePath, "utf8");
 
     const path = join(messageBrokerDirectory, "base", fileName);
-    return [{ code: file, path }];
+    const modules = new ModuleMap(context.logger);
+    await modules.set({ code: file, path });
+    return modules;
   }
 
   async afterCreateMessageBrokerService(
     context: DsgContext,
     eventParams: CreateMessageBrokerServiceParams
-  ): Promise<Module[]> {
+  ): Promise<ModuleMap> {
     const { serverDirectories } = context;
     const { messageBrokerDirectory } = serverDirectories;
     const fileName = "nats.service.ts";
@@ -184,10 +184,14 @@ class NatsPlugin implements AmplicationPlugin {
 
     const controllerFile = await readFile(controllerFilePath, "utf8");
     const controllerPath = join(messageBrokerDirectory, fileName);
-    return [
-      { code: file, path },
-      { code: controllerFile, path: controllerPath },
-    ];
+
+    const modules = new ModuleMap(context.logger);
+    await modules.set({ code: file, path });
+    await modules.set({
+      code: controllerFile,
+      path: controllerPath,
+    });
+    return modules;
   }
 
   beforeCreateBroker(
@@ -204,7 +208,7 @@ class NatsPlugin implements AmplicationPlugin {
   async afterCreateMessageBrokerNestJSModule(
     context: DsgContext,
     eventParams: CreateMessageBrokerNestJSModuleParams
-  ) {
+  ): Promise<ModuleMap> {
     const fileName = "nats.module.ts";
     const filePath = resolve(staticsPath, fileName);
 
@@ -216,7 +220,9 @@ class NatsPlugin implements AmplicationPlugin {
       code: file,
       path: join(messageBrokerDirectory, fileName),
     };
-    return [NatsPlugin.moduleFile];
+    const modules = new ModuleMap(context.logger);
+    await modules.set(NatsPlugin.moduleFile);
+    return modules;
   }
 }
 

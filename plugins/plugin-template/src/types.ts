@@ -6,7 +6,6 @@ export interface Settings {
   [key: string]: any;
 }
 
-
 export type Example = "Example";
 
 export interface ExampleInterface {

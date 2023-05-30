@@ -4,7 +4,7 @@ import type {
   CreateServerParams,
   DsgContext,
   Events,
-  Module,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
 import { resolve } from "path";
@@ -37,8 +37,8 @@ class ExamplePlugin implements AmplicationPlugin {
   async afterCreateServer(
     context: DsgContext,
     eventParams: CreateServerParams,
-    modules: Module[]
-  ) {
+    modules: ModuleMap
+  ): Promise<ModuleMap> {
     // Here you can get the context, eventParams and the modules that Amplication created.
     // Then you can manipulate the modules, add new ones, or create your own.
     const staticPath = resolve(__dirname, "./static");
@@ -46,8 +46,8 @@ class ExamplePlugin implements AmplicationPlugin {
       staticPath,
       context.serverDirectories.srcDirectory
     );
-
-    return [...modules, ...staticsFiles]; // You must return the generated modules you want to generate at this part of the build.
+    await modules.merge(staticsFiles);
+    return modules; // You must return the generated modules you want to generate at this part of the build.
   }
 
   beforeCreateAdminUI(context: DsgContext, eventParams: CreateAdminUIParams) {

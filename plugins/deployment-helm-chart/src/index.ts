@@ -4,6 +4,7 @@ import type {
   DsgContext,
   Events,
   Module,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import {
   applicationVersionKey,
@@ -36,8 +37,8 @@ class HelmChartPlugin implements AmplicationPlugin {
   async afterCreateServerDotEnv(
     context: DsgContext,
     eventParams: CreateServerDotEnvParams,
-    modules: Module[]
-  ) {
+    modules: ModuleMap
+  ): Promise<ModuleMap> {
     context.logger.info(`Generating Helm Chart...`);
 
     // determine the name of the service which will be used as the name for the helm chart
@@ -113,26 +114,21 @@ class HelmChartPlugin implements AmplicationPlugin {
 
     // render the helm chart from the static files in combination with the values provided through
     // the settings
-    const renderdOutput = chartTemplateFiles.map(
-      (file): Module => ({
-        path: file.path,
-        code: file.code
-          .replaceAll(serviceNameKey, serviceName)
-          .replaceAll(chartVersionKey, settings.server.chart_version)
-          .replaceAll(
-            applicationVersionKey,
-            settings.server.application_version
-          )
-          .replaceAll(repositoryKey, settings.server.repository)
-          .replaceAll(tagKey, settings.server.tag)
-          .replaceAll(portKey, settings.server.port)
-          .replaceAll(hostKey, settings.server.host)
-          .replaceAll(configurationKey, configmap),
-      })
-    );
+    chartTemplateFiles.replaceModulesCode((code) => {
+      return code
+        .replaceAll(serviceNameKey, serviceName)
+        .replaceAll(chartVersionKey, settings.server.chart_version)
+        .replaceAll(applicationVersionKey, settings.server.application_version)
+        .replaceAll(repositoryKey, settings.server.repository)
+        .replaceAll(tagKey, settings.server.tag)
+        .replaceAll(portKey, settings.server.port)
+        .replaceAll(hostKey, settings.server.host)
+        .replaceAll(configurationKey, configmap);
+    });
 
-    context.logger.info("Configuring Helm chart template...");
-    return [...modules, ...renderdOutput];
+    await context.logger.info("Configuring Helm chart template...");
+    await modules.merge(chartTemplateFiles);
+    return modules;
   }
 
   /**
