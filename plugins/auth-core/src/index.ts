@@ -22,7 +22,6 @@ import {
   EnumEntityAction,
   EnumEntityPermissionType,
   Events,
-  Module,
   ModuleMap,
 } from "@amplication/code-gen-types";
 import { envVariables } from "./constants";
@@ -138,11 +137,10 @@ class AuthCorePlugin implements AmplicationPlugin {
   }
 
   beforeCreateServer(context: DsgContext, eventParams: CreateServerParams) {
-    if (!context.entities) return eventParams;
-    const [entitiesWithUserEntity] = createUserEntityIfNotExist(
-      context.entities
-    );
-    context.entities = entitiesWithUserEntity;
+    const defaultAuthEntity = createUserEntityIfNotExist(context);
+
+    context.entities?.push(defaultAuthEntity);
+
     return eventParams;
   }
 

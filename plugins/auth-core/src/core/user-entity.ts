@@ -4,6 +4,7 @@ import {
   EntityField,
   EnumEntityPermissionType,
   EnumEntityAction,
+  DsgContext,
 } from "@amplication/code-gen-types";
 
 export const USER_ENTITY_NAME = "User";
@@ -113,30 +114,55 @@ export class InvalidDataTypeError extends Error {
   }
 }
 
-export function createUserEntityIfNotExist(
-  entities: Entity[]
-): [Entity[], Entity] {
-  let userEntity;
-  const nextEntities = entities.map((entity) => {
-    if (entity.name === USER_ENTITY_NAME) {
-      userEntity = entity;
-      const missingAuthFields = getMissingAuthFields(entity.fields);
-      //Add any missing auth field for backward compatibility with previously created resources
-      return {
-        ...entity,
-        fields: [...missingAuthFields, ...entity.fields],
-      };
-    }
+// export function createUserEntityIfNotExist(
+//   entities: Entity
+// ): [Entity[], Entity] {
+//   let userEntity;
+//   const nextEntities = entities.map((entity) => {
+//     if (entity.name === USER_ENTITY_NAME) {
+//       userEntity = entity;
+//       const missingAuthFields = getMissingAuthFields(entity.fields);
+//       //Add any missing auth field for backward compatibility with previously created resources
+//       return {
+//         ...entity,
+//         fields: [...missingAuthFields, ...entity.fields],
+//       };
+//     }
+//     return entity;
+//   });
+//   if (!userEntity) {
+//     userEntity = DEFAULT_USER_ENTITY;
+//     nextEntities.unshift(userEntity);
+//   }
+//   return [nextEntities, userEntity];
+// }
+
+export function createUserEntityIfNotExist(context: DsgContext): Entity {
+  const authEntity = context.resourceInfo?.settings.authEntity;
+  if (!authEntity) {
+    return DEFAULT_USER_ENTITY;
+  } else {
+    const entity: Entity = {
+      id: authEntity.id,
+      name: authEntity.name,
+      displayName: authEntity.displayName,
+      pluralDisplayName: authEntity.pluralDisplayName,
+      pluralName: authEntity.pluralDisplayName,
+      fields: authEntity.fields ? authEntity.fields : undefined,
+      permissions: DEFAULT_USER_ENTITY.permissions,
+    };
+
+    const missingAuthFields =
+      authEntity.fields && getMissingAuthFields(entity.fields);
+
+    missingAuthFields && entity.fields?.push(...missingAuthFields);
+
     return entity;
-  });
-  if (!userEntity) {
-    userEntity = DEFAULT_USER_ENTITY;
-    nextEntities.unshift(userEntity);
   }
-  return [nextEntities, userEntity];
 }
 
-export function getMissingAuthFields(fields: EntityField[]): EntityField[] {
+export function getMissingAuthFields(fields?: EntityField[]): EntityField[] {
+  if (!fields) return [];
   const fieldsByName = Object.fromEntries(
     fields.map((field) => [field.name, field])
   );

@@ -6,24 +6,34 @@ import { print } from "@amplication/code-gen-utils";
 import { getUserIdType } from "../util/get-user-id-type";
 import { join } from "path";
 import { templatesPath } from "../constants";
+import { OperationCanceledException } from "typescript";
+import { Entity } from "@amplication/code-gen-types/src/models";
 
 const userInfoPath = join(templatesPath, "user-info.template.ts");
 
 export async function createUserInfo(dsgContext: DsgContext): Promise<Module> {
-  const { serverDirectories } = dsgContext;
-  const authDir = `${serverDirectories.authDirectory}`;
+  const { serverDirectories, resourceInfo } = dsgContext;
 
+  const authEntity = resourceInfo?.settings.authEntity;
+  if (!authEntity) {
+    throw new OperationCanceledException(); //todo: replace with right exception
+  }
+
+  const authDir = `${serverDirectories.authDirectory}`;
   const template = await readFile(userInfoPath);
   const idType = getUserIdType(dsgContext);
-  const templateMapping = prepareTemplateMapping(idType);
-  const filePath = `${authDir}/UserInfo.ts`;
+  const templateMapping = prepareTemplateMapping(idType, authEntity);
+  const filePath = `${authDir}/${authEntity.name}Info.ts`;
   interpolate(template, templateMapping);
   removeTSClassDeclares(template);
 
   return { code: print(template).code, path: filePath };
 }
 
-function prepareTemplateMapping(idType: types.Id["idType"]) {
+function prepareTemplateMapping(
+  idType: types.Id["idType"],
+  authEntity: Entity
+) {
   const number = {
     class: "Number",
     type: "number",
@@ -54,5 +64,6 @@ function prepareTemplateMapping(idType: types.Id["idType"]) {
   return {
     USER_ID_TYPE_ANNOTATION: idTypeTSOptions[idType],
     USER_ID_CLASS: idTypClassOptions[idType],
+    ENTITY_NAME: builders.identifier(authEntity.name),
   };
 }
