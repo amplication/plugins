@@ -1,7 +1,9 @@
 {
+  "settings": {
     "host": "localhost",
     "port": 27017,
     "user": "admin",
     "password": "admin",
     "dbName": "my-db"
+  }
 }

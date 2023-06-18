@@ -1,4 +1,5 @@
-{
+{ 
+    "settings":{ 
     "root_level" : false,
     "directory_name" : "helm",
     "server" : {
@@ -18,4 +19,5 @@
         "host" : "admin.example.com",
         "port" : "8080"
     }
+}
 }
