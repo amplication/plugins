@@ -137,32 +137,20 @@ export class InvalidDataTypeError extends Error {
 //   return [nextEntities, userEntity];
 // }
 
-export function createUserEntityIfNotExist(context: DsgContext): Entity {
-  const authEntity = context.resourceInfo?.settings.authEntity;
+export function createUserEntityIfNotExist(authEntity?: Entity): Entity {
   if (!authEntity) {
     return DEFAULT_USER_ENTITY;
   } else {
-    const entity: Entity = {
-      id: authEntity.id,
-      name: authEntity.name,
-      displayName: authEntity.displayName,
-      pluralDisplayName: authEntity.pluralDisplayName,
-      pluralName: authEntity.pluralDisplayName,
-      fields: authEntity.fields ? authEntity.fields : undefined,
-      permissions: DEFAULT_USER_ENTITY.permissions,
-    };
-
     const missingAuthFields =
-      authEntity.fields && getMissingAuthFields(entity.fields);
+      authEntity.fields && getMissingAuthFields(authEntity.fields);
 
-    missingAuthFields && entity.fields?.push(...missingAuthFields);
+    missingAuthFields && authEntity.fields?.push(...missingAuthFields);
 
-    return entity;
+    return authEntity;
   }
 }
 
-export function getMissingAuthFields(fields?: EntityField[]): EntityField[] {
-  if (!fields) return [];
+export function getMissingAuthFields(fields: EntityField[]): EntityField[] {
   const fieldsByName = Object.fromEntries(
     fields.map((field) => [field.name, field])
   );

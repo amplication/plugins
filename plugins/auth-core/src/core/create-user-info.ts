@@ -1,4 +1,4 @@
-import { types, Module, DsgContext } from "@amplication/code-gen-types";
+import { types, Module, DsgContext, Entity } from "@amplication/code-gen-types";
 import { readFile } from "@amplication/code-gen-utils";
 import { interpolate, removeTSClassDeclares } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
@@ -7,14 +7,15 @@ import { getUserIdType } from "../util/get-user-id-type";
 import { join } from "path";
 import { templatesPath } from "../constants";
 import { OperationCanceledException } from "typescript";
-import { Entity } from "@amplication/code-gen-types/src/models";
 
 const userInfoPath = join(templatesPath, "user-info.template.ts");
 
 export async function createUserInfo(dsgContext: DsgContext): Promise<Module> {
-  const { serverDirectories, resourceInfo } = dsgContext;
+  const { serverDirectories, resourceInfo, entities } = dsgContext;
 
-  const authEntity = resourceInfo?.settings.authEntity;
+  const authEntity = entities?.find(
+    (x) => x.name === resourceInfo?.settings.authEntityName
+  );
   if (!authEntity) {
     throw new OperationCanceledException(); //todo: replace with right exception
   }

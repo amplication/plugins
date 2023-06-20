@@ -137,7 +137,10 @@ class AuthCorePlugin implements AmplicationPlugin {
   }
 
   beforeCreateServer(context: DsgContext, eventParams: CreateServerParams) {
-    const defaultAuthEntity = createUserEntityIfNotExist(context);
+    const authEntity = context.entities?.find(
+      (x) => x.name === context.resourceInfo?.settings.authEntityName
+    );
+    const defaultAuthEntity = createUserEntityIfNotExist(authEntity);
 
     context.entities?.push(defaultAuthEntity);
 
