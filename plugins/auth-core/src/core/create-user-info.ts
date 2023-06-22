@@ -44,7 +44,7 @@ export async function createUserInfo(dsgContext: DsgContext): Promise<Module> {
     ) as namedTypes.ImportDeclaration[]
   );
 
-  const filePath = `${authDir}/${authEntity.name}Info.ts`;
+  const filePath = `${authDir}/${name}Info.ts`;
   interpolate(template, templateMapping);
   removeTSClassDeclares(template);
 

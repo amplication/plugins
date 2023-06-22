@@ -32,6 +32,7 @@ import {
   createAuthConstants,
   createGrantsModule,
   createUserEntityIfNotExist,
+  createAuthController,
 } from "./core";
 import {
   addIdentifierToConstructorSuperCall,
@@ -293,6 +294,10 @@ class AuthCorePlugin implements AmplicationPlugin {
     // 3. create constants for tests
     const authConstants = await createAuthConstants(context);
     await modules.set(authConstants);
+
+    // 4. create auth controller
+    const authController = await createAuthController(context);
+    await modules.set(authController);
 
     await modules.merge(staticsFiles);
 
