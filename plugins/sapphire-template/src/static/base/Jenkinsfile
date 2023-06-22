@@ -1,7 +1,7 @@
-@Library('lusha-utils@master') _
+@Library('sapphire-utils@master') _
 
 deployKubernetesAppInCluster {
-    owners_email = "${{ values.owner }}@lusha.com,"
+    owners_email = "${{ values.owner }}@sapphire.com,"
     serviceName = "${{ values.name }}"
     migrationType = "helm"
     npmVersion = "18"

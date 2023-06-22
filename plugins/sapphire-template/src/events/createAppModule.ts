@@ -37,7 +37,7 @@ export const afterCreateAppModule = async (
   interpolate(template, {
     MODULES: builders.arrayExpression([
       builders.identifier("PrismaModule"),
-      ...entitiesDtos.map((entity) => builders.identifier(`Lusha${entity}Module`)),
+      ...entitiesDtos.map((entity) => builders.identifier(`Sapphire${entity}Module`)),
       builders.identifier("ConfigModule"),
     ])
   });
@@ -59,7 +59,7 @@ const createClassImport = (
     builders.importDeclaration(
       [
         builders.importSpecifier(
-          builders.identifier(`Lusha${entityName}Module`)
+          builders.identifier(`Sapphire${entityName}Module`)
         ),
       ],
       builders.stringLiteral(`./app/${entityName}/${entityName}.module`)
@@ -73,7 +73,7 @@ const createObjectExpression = (entityName: string) =>
   builders.objectExpression([
     builders.objectProperty(
       builders.identifier("path"),
-      builders.stringLiteral(`/lusha-${entityName}`)
+      builders.stringLiteral(`/Sapphire-${entityName}`)
     ),
     builders.objectProperty(
       builders.identifier("method"),

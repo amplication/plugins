@@ -1,15 +1,15 @@
 import {
   bootstrapV2,
-  LushaAppModule,
+  SapphireAppModule,
   OptionsServiceBootstrap,
   ServiceType,
-} from "@lusha/core-nestjs";
+} from "@sapphire/core-nestjs";
 import config from "config";
 
 import { AppModule } from "./app.module";
 
 bootstrapV2(
-  LushaAppModule.register({
+  SapphireAppModule.register({
     clientModules: { appModule: AppModule.register() },
   }),
   {

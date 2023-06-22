@@ -23,7 +23,7 @@
     "generate-sdk": "npx @openapitools/openapi-generator-cli generate -i backstage-api.yaml -g typescript-nestjs -o ./${{ values.name }}-sdk"
   },
   "dependencies": {
-    "@lusha/core-nestjs": "^1.5.1",
+    "@sapphire/core-nestjs": "^1.5.1",
     "@nestjs/core": "~9.0.1",
     "@nestjs/common": "~9.0.1",
     "@nestjs/mapped-types": "^1.0.1",
@@ -36,7 +36,7 @@
     "nestjs-prisma": "^0.20.0"
   },
   "devDependencies": {
-    "@lusha/eslint-config-ts-lusha": "^1.0.24",
+    "@sapphire/eslint-config-ts-sapphire": "^1.0.24",
     "@nestjs/cli": "^8.0.0",
     "@nestjs/schematics": "^8.0.0",
     "@nestjs/testing": "^9.2.1",

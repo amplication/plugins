@@ -29,7 +29,7 @@ export const afterCreateEntityModule = async (
 
   Object.assign(templateMapping, {
     ENTITY_MODULE_CLASS: builders.identifier(
-      `Lusha${camelCaseEntityName}Module`
+      `Sapphire${camelCaseEntityName}Module`
     ),
     ENTITY_CONTROLLER: builders.identifier(`${camelCaseEntityName}Controller`),
     ENTITY_REPOSITORY: builders.identifier(`${camelCaseEntityName}Repository`),

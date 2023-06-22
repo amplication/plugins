@@ -1,6 +1,6 @@
 site_name: ${{values.name | dump}}
 site_description: Main documentation for ${{values.name | dump}}
-repo_url: https://bitbucket.org/lusha_team/${{ values.name }}/src/main/
+repo_url: https://bitbucket.org/sapphire_team/${{ values.name }}/src/main/
 edit_uri: edit/master/docs
 
 plugins:

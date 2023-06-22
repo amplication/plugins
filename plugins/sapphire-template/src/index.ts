@@ -14,7 +14,7 @@ import { beforeCreateAppModule, afterCreateAppModule } from "./events/createAppM
 import { afterLoadStaticFiles } from "./events/loadStaticFiles";
 import { afterCreateDTOs } from "./events/createDTOs";
 
-class LushaPlugin implements AmplicationPlugin {
+class SapphireTemplatePlugin implements AmplicationPlugin {
   register(): Events {
     return {
       [EventNames.CreateEntityController]: {
@@ -45,4 +45,4 @@ class LushaPlugin implements AmplicationPlugin {
   }
 }
 
-export default LushaPlugin;
+export default SapphireTemplatePlugin;

@@ -1,4 +1,4 @@
-# Default values for lusha-email-consent-api
+# Default values for sapphire-email-consent-api
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 owner: "plugin"
@@ -6,7 +6,7 @@ owner: "plugin"
 replicaCount: 1
 
 image:
-  repository: hub.lusha.co/lusha/
+  repository: hub.sapphire.co/sapphire/
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""

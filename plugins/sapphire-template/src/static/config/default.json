@@ -19,17 +19,17 @@
     }
   },
   "hosts": {
-    "accounts": "lusha-accounts",
-    "billing": "lusha-billing",
-    "platform": "lusha-platform",
-    "billingStatus": "lusha-billing-status",
-    "outbound": "lusha-outbound",
-    "community": "lusha-community",
-    "abTest": "lusha-ab-testing",
-    "shownContacts": "lusha-shown-contacts",
-    "crmIntegrations": "lusha-crm-integrations",
-    "prospecting": "lusha-prospecting",
-    "emails": "lusha-emails-service"
+    "accounts": "sapphire-accounts",
+    "billing": "sapphire-billing",
+    "platform": "sapphire-platform",
+    "billingStatus": "sapphire-billing-status",
+    "outbound": "sapphire-outbound",
+    "community": "sapphire-community",
+    "abTest": "sapphire-ab-testing",
+    "shownContacts": "sapphire-shown-contacts",
+    "crmIntegrations": "sapphire-crm-integrations",
+    "prospecting": "sapphire-prospecting",
+    "emails": "sapphire-emails-service"
   },
   "swagger": {
     "path": "swagger"
@@ -50,7 +50,7 @@
     "type": "postgres",
     "host": "localhost",
     "port": "5436",
-    "username": "lusha_pets",
+    "username": "sapphire",
     "password": "VPfEhJSW5U8m5u9SlS",
     "database": "outbound",
     "schema": "pets",
@@ -59,7 +59,7 @@
     "migrationsTableName": "migrations",
     "logging": true,
     "cli": {
-      "entitiesDir": "src/app/luah-pets/entities",
+      "entitiesDir": "src/app/sapphire-pets/entities",
       "migrationsDir": "src/migrations"
     },
     "extra": { "max": 10 }

@@ -217,15 +217,15 @@ spec:
                               type: "string"
                           additionalProperties:
                             type: "string"
-      /lusha-pets/pet:
+      /sapphire-pets/pet:
         get:
-          operationId: "LushaPetsController_getPets"
+          operationId: "SapphirePetsController_getPets"
           parameters: []
           responses:
             200:
               description: ""
     info:
-      title: "lusha-nestjs-boilerplate"
+      title: "sapphire-nestjs-boilerplate"
       description: ""
       version: "1.0.0"
       contact: {}

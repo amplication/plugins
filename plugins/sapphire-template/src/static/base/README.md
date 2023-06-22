@@ -1,6 +1,6 @@
 # ${{ values.name }}
 
-This is the basic boilerplate of NestJs App - with lusha bootstrap, Good Luck!
+This is the basic boilerplate of NestJs App - with sapphire bootstrap, Good Luck!
 
 To start the app, run:
 
