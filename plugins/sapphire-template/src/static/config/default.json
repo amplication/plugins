@@ -1,0 +1,67 @@
+{
+  "port": 3030,
+  "serviceName": "${{ values.name }}",
+  "hostname": "127.0.0.1",
+  "checkHealthByConfig": true,
+  "enableVersioning": true,
+  "enableVaultClient": true,
+  "https": {
+    "enabled": true,
+    "port": 3040,
+    "isDotCom": true
+  },
+  "log": {
+    "level": "debug",
+    "enabled": true,
+    "jsonFormat": false,
+    "mask": {
+      "blacklist": []
+    }
+  },
+  "hosts": {
+    "accounts": "sapphire-accounts",
+    "billing": "sapphire-billing",
+    "platform": "sapphire-platform",
+    "billingStatus": "sapphire-billing-status",
+    "outbound": "sapphire-outbound",
+    "community": "sapphire-community",
+    "abTest": "sapphire-ab-testing",
+    "shownContacts": "sapphire-shown-contacts",
+    "crmIntegrations": "sapphire-crm-integrations",
+    "prospecting": "sapphire-prospecting",
+    "emails": "sapphire-emails-service"
+  },
+  "swagger": {
+    "path": "swagger"
+  },
+  "authentication": {
+    "account": {
+      "cookieName": "ll_local"
+    },
+    "backOffice": {
+      "cookieName": "sall_local"
+    }
+  },
+  "httpTransport": {
+    "timeout": 3000,
+    "maxRedirects": 2
+  },
+  "typeorm": {
+    "type": "postgres",
+    "host": "localhost",
+    "port": "5436",
+    "username": "sapphire",
+    "password": "VPfEhJSW5U8m5u9SlS",
+    "database": "outbound",
+    "schema": "pets",
+    "entities": ["**/*.entity{.ts,.js}"],
+    "migrations": ["dist/migrations/*.js"],
+    "migrationsTableName": "migrations",
+    "logging": true,
+    "cli": {
+      "entitiesDir": "src/app/sapphire-pets/entities",
+      "migrationsDir": "src/migrations"
+    },
+    "extra": { "max": 10 }
+  }
+}
