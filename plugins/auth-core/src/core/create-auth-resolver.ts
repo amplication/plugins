@@ -1,16 +1,16 @@
 import { Module, DsgContext } from "@amplication/code-gen-types";
-import { mapAuthTemplate } from "../util/createAuthTemplate";
 import { join } from "path";
 import { templatesPath } from "../constants";
+import { mapAuthTemplate } from "../util/createAuthTemplate";
 
-const authControllerPath = join(templatesPath, "auth.controller.template.ts");
+const authResolverPath = join(templatesPath, "auth.resolver.template.ts");
 
-export async function createAuthController(
+export async function createAuthResolver(
   dsgContext: DsgContext
 ): Promise<Module> {
   return await mapAuthTemplate(
     dsgContext,
-    authControllerPath,
-    "auth.controller.ts"
+    authResolverPath,
+    "auth.resolver.ts"
   );
 }

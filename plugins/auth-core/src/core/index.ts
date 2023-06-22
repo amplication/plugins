@@ -1,5 +1,6 @@
 export { createUserInfo } from "./create-user-info";
 export { createAuthController } from "./create-auth-controller";
+export { createAuthResolver} from "./create-auth-resolver";
 export { createTokenPayloadInterface } from "./create-token-payload-interface";
 export { createAuthConstants } from "./create-constants";
 export { createTokenService } from "./create-token-service";
