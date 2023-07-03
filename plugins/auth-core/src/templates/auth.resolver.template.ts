@@ -7,6 +7,8 @@ import { UserData } from "./userData.decorator";
 import { LoginArgs } from "./LoginArgs";
 
 declare class ENTITY_NAME_INFO {}
+declare type ENTITY_NAME
+
 
 @Resolver(ENTITY_NAME_INFO)
 export class AuthResolver {
@@ -19,8 +21,8 @@ export class AuthResolver {
   @Query(() => ENTITY_NAME_INFO)
   @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
   async userInfo(
-    @UserData() userInfo: ENTITY_NAME_INFO
+    @UserData() ENTITY_NAME: ENTITY_NAME_INFO
   ): Promise<ENTITY_NAME_INFO> {
-    return ENTITY_NAME_INFO;
+    return ENTITY_NAME;
   }
 }

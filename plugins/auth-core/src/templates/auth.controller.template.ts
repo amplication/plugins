@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
-import { Credentials } from "./auth/Credentials";
+import { Credentials } from "../auth/Credentials";
 
 declare class ENTITY_NAME_INFO {}
 
