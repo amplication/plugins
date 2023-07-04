@@ -4,7 +4,11 @@ import type {
   DsgContext,
   Events,
 } from "@amplication/code-gen-types";
-import { getClassDeclarationById, getClassMethodById } from "./util/ast";
+import {
+  getClassDeclarationById,
+  getClassMethodById,
+  interpolate,
+} from "./util/ast";
 import { EventNames } from "@amplication/code-gen-types";
 import { builders, namedTypes } from "ast-types";
 
@@ -27,39 +31,45 @@ class SwaggerApiBody implements AmplicationPlugin {
     eventParams: CreateEntityControllerBaseParams
   ) {
     const { templateMapping, template, controllerBaseId } = eventParams;
-
-    const classDeclaration = getClassDeclarationById(
-      template,
-      controllerBaseId
-    );
-
-    Object.keys(funcMethodMap).forEach((funcName) => {
-      const methodId = templateMapping[funcName] as namedTypes.Identifier;
-      const classMethod = getClassMethodById(classDeclaration, methodId);
-
-      const currDecorator = builders.decorator(
-        builders.callExpression(
-          builders.memberExpression(
-            builders.identifier("swagger"),
-            builders.identifier("ApiBody")
-          ),
-          [
-            builders.objectExpression([
-              builders.objectProperty(
-                builders.identifier("type"),
-                builders.identifier(
-                  funcMethodMap[funcName as keyof typeof funcMethodMap]
-                )
-              ),
-            ]),
-          ]
-        )
+    try {
+      interpolate(template, templateMapping);
+      const classDeclaration = getClassDeclarationById(
+        template,
+        controllerBaseId
       );
 
-      classMethod?.decorators?.push(currDecorator);
-    });
+      Object.keys(funcMethodMap).forEach((funcName) => {
+        const methodId = templateMapping[funcName] as namedTypes.Identifier;
+        const classMethod = getClassMethodById(classDeclaration, methodId);
 
-    return eventParams;
+        const currDecorator = builders.decorator(
+          builders.callExpression(
+            builders.memberExpression(
+              builders.identifier("swagger"),
+              builders.identifier("ApiBody")
+            ),
+            [
+              builders.objectExpression([
+                builders.objectProperty(
+                  builders.identifier("type"),
+                  builders.identifier(
+                    funcMethodMap[funcName as keyof typeof funcMethodMap]
+                  )
+                ),
+              ]),
+            ]
+          )
+        );
+
+        classMethod?.decorators?.push(currDecorator);
+      });
+
+      return eventParams;
+    } catch (error) {
+      console.error("Failed to invoke beforeCreateControllerBase event under swagger-api-body plugin");
+
+      return eventParams;
+    }
   }
 }
 
