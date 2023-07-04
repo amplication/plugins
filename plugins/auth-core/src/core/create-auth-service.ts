@@ -5,12 +5,14 @@ import { templatesPath } from "../constants";
 import { readFile } from "@amplication/code-gen-utils";
 import {
   addImports,
+  getClassDeclarationById,
   importNames,
   interpolate,
   removeTSClassDeclares,
 } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
 import { print } from "@amplication/code-gen-utils";
+import { addInjectableDependency } from "../util/nestjs-code-generation";
 
 const authServicePath = join(templatesPath, "auth.service.template.ts");
 
@@ -70,6 +72,23 @@ async function mapAuthServiceTemplate(
   const filePath = `${serverDirectories.authDirectory}/${fileName}`;
 
   interpolate(template, templateMapping);
+
+  const classDeclaration = getClassDeclarationById(
+    template,
+    builders.identifier("AuthService")
+  );
+
+  const entityServiceIdentifier = builders.identifier(
+    `${entityNameToLower}Service`
+  );
+
+  addInjectableDependency(
+    classDeclaration,
+    entityServiceIdentifier.name,
+    builders.identifier(`${authEntity?.name}Service`),
+    "private"
+  );
+
   removeTSClassDeclares(template);
 
   return {

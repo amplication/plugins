@@ -6,13 +6,11 @@ import { PasswordService } from "./password.service";
 import { TokenService } from "./token.service";
 
 declare class ENTITY_NAME_INFO {}
-declare class ENTITY_SERVICE_UPPER {}
 declare class ENTITY_SERVICE {}
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly ENTITY_SERVICE: ENTITY_SERVICE_UPPER,
     private readonly passwordService: PasswordService,
     private readonly tokenService: TokenService
   ) {}
