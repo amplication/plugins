@@ -66,7 +66,7 @@ class SwaggerApiBody implements AmplicationPlugin {
 
       return eventParams;
     } catch (error) {
-      console.error("Failed to invoke beforeCreateControllerBase event under swagger-api-body plugin");
+      context.logger.error("Failed to invoke beforeCreateControllerBase event under swagger-api-body plugin");
 
       return eventParams;
     }
