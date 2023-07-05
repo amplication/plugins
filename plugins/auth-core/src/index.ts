@@ -35,6 +35,8 @@ import {
   createAuthController,
   createAuthResolver,
   createAuthService,
+  createIAuthStrategy,
+  createAuthServiceSpec,
 } from "./core";
 import {
   addIdentifierToConstructorSuperCall,
@@ -309,6 +311,14 @@ class AuthCorePlugin implements AmplicationPlugin {
     const authService = await createAuthService(context);
     await modules.set(authService);
 
+    // 7. create IAuthStrategy interface
+    const iAuthStrategy = await createIAuthStrategy(context);
+    await modules.set(iAuthStrategy);
+
+    // 8. create auth-service-spec
+    const authServiceSpec = await createAuthServiceSpec(context);
+    await modules.set(authServiceSpec);
+    //
     await modules.merge(staticsFiles);
 
     return modules;

@@ -5,6 +5,7 @@ import {
   importNames,
   interpolate,
   removeTSClassDeclares,
+  removeTSInterfaceDeclares,
 } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
 import { print } from "@amplication/code-gen-utils";
@@ -42,12 +43,16 @@ export async function mapAuthTemplate(
     ENTITY_NAME: builders.identifier(
       `${authEntity.name.toLocaleLowerCase()}Info`
     ),
+    ENTITY_TYPE: builders.tsTypeAnnotation(
+      builders.tsTypeReference(builders.identifier(`${authEntity.name}Info`))
+    ),
   };
 
   const filePath = `${serverDirectories.authDirectory}/${fileName}`;
 
   interpolate(template, templateMapping);
   removeTSClassDeclares(template);
+  removeTSInterfaceDeclares(template);
 
   return {
     code: print(template).code,
