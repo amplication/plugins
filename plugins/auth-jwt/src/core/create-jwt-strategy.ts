@@ -16,7 +16,7 @@ import { print } from "@amplication/code-gen-utils";
 
 const jwtStrategyPath = join(templatesPath, "jwt.strategy.template.base.ts");
 
-export async function createJwtStrategyBase(
+export async function createJwtStrategy(
   dsgContext: DsgContext
 ): Promise<Module> {
   return await mapJwtStrategyTemplate(
@@ -37,38 +37,30 @@ async function mapJwtStrategyTemplate(
   );
   if (!authEntity) throw OperationCanceledException; //todo: handle the exception
 
-  const entityInfoName = `${authEntity?.name}Info`;
   const entityServiceName = `${authEntity?.name}Service`;
 
   const template = await readFile(templatePath);
-  const authEntityNameId = builders.identifier(entityInfoName);
   const authServiceNameId = builders.identifier(entityServiceName);
-
-  const entityNameImport = importNames(
-    [authEntityNameId],
-    `../../${entityInfoName}`
-  );
 
   const entityNameToLower = authEntity?.name.toLowerCase();
 
   const entityServiceImport = importNames(
     [authServiceNameId],
-    `../../../${entityNameToLower}/${entityNameToLower}.service`
+    `../../${entityNameToLower}/${entityNameToLower}.service`
   );
 
   addImports(
     template,
-    [entityNameImport, entityServiceImport].filter(
+    [entityServiceImport].filter(
       (x) => x //remove nulls and undefined
     ) as namedTypes.ImportDeclaration[]
   );
 
   const templateMapping = {
-    ENTITY_NAME_INFO: builders.identifier(`${authEntity.name}Info`),
     ENTITY_SERVICE: builders.identifier(`${entityNameToLower}Service`),
   };
 
-  const filePath = `${serverDirectories.authDirectory}/jwt/base/${fileName}`;
+  const filePath = `${serverDirectories.authDirectory}/jwt/${fileName}`;
 
   interpolate(template, templateMapping);
 
@@ -87,6 +79,8 @@ async function mapJwtStrategyTemplate(
     builders.identifier(`${authEntity?.name}Service`),
     "protected"
   );
+
+  //addIdentifierToConstructorSuperCall(template, PASSWORD_SERVICE_MEMBER_ID);
 
   removeTSClassDeclares(template);
 
