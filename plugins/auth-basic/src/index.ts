@@ -4,12 +4,11 @@ import {
   CreateServerAuthParams,
   DsgContext,
   Events,
-  Module,
   ModuleMap,
 } from "@amplication/code-gen-types";
 import { EnumAuthProviderType } from "@amplication/code-gen-types/src/models";
 import { resolve } from "path";
-import { createBasicStrategyBase } from "./core";
+import { createAuthModule, createBasicStrategyBase } from "./core";
 class BasicAuthPlugin implements AmplicationPlugin {
   register(): Events {
     return {
@@ -56,7 +55,11 @@ class BasicAuthPlugin implements AmplicationPlugin {
     // 1. create basic strategy base file.
     const basicStrategyBase = await createBasicStrategyBase(context);
     await modules.set(basicStrategyBase);
-    //
+
+    // 2. create auth module file.
+    const authModule = await createAuthModule(context);
+    await modules.set(authModule);
+
     await modules.merge(staticsFiles);
     return modules;
   }
