@@ -37,6 +37,7 @@ import {
   createAuthService,
   createIAuthStrategy,
   createAuthServiceSpec,
+  createUserDataDecorator,
 } from "./core";
 import {
   addIdentifierToConstructorSuperCall,
@@ -318,7 +319,11 @@ class AuthCorePlugin implements AmplicationPlugin {
     // 8. create auth-service-spec
     const authServiceSpec = await createAuthServiceSpec(context);
     await modules.set(authServiceSpec);
-    //
+
+    // 9. create userData decorator
+    const userDataDecorator = await createUserDataDecorator(context);
+    await modules.set(userDataDecorator);
+
     await modules.merge(staticsFiles);
 
     return modules;
