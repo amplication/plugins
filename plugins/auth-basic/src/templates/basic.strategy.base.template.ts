@@ -3,7 +3,8 @@ import { PassportStrategy } from "@nestjs/passport";
 import { BasicStrategy as Strategy } from "passport-http";
 import { AuthService } from "../../auth.service";
 import { IAuthStrategy } from "../../IAuthStrategy";
-import { UserInfo } from "../../UserInfo";
+
+declare class ENTITY_NAME_INFO {}
 
 export class BasicStrategyBase
   extends PassportStrategy(Strategy)
@@ -13,7 +14,10 @@ export class BasicStrategyBase
     super();
   }
 
-  async validate(username: string, password: string): Promise<UserInfo> {
+  async validate(
+    username: string,
+    password: string
+  ): Promise<ENTITY_NAME_INFO> {
     const user = await this.authService.validateUser(username, password);
     if (!user) {
       throw new UnauthorizedException();

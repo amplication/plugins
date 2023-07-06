@@ -9,6 +9,7 @@ import {
 } from "@amplication/code-gen-types";
 import { EnumAuthProviderType } from "@amplication/code-gen-types/src/models";
 import { resolve } from "path";
+import { createBasicStrategyBase } from "./core";
 class BasicAuthPlugin implements AmplicationPlugin {
   register(): Events {
     return {
@@ -52,6 +53,10 @@ class BasicAuthPlugin implements AmplicationPlugin {
       context.serverDirectories.srcDirectory
     );
 
+    // 1. create basic strategy base file.
+    const basicStrategyBase = await createBasicStrategyBase(context);
+    await modules.set(basicStrategyBase);
+    //
     await modules.merge(staticsFiles);
     return modules;
   }
