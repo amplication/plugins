@@ -5,28 +5,26 @@ import { templatesPath } from "../constants";
 import { readFile } from "@amplication/code-gen-utils";
 import {
   addImports,
-  getClassDeclarationById,
   importNames,
   interpolate,
   removeTSClassDeclares,
-  addInjectableDependency,
 } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
 import { print } from "@amplication/code-gen-utils";
 
-const jwtStrategyPath = join(templatesPath, "jwt.strategy.template.ts");
+const authModulePath = join(templatesPath, "auth.module.template.ts");
 
-export async function createJwtStrategy(
+export async function createAuthModule(
   dsgContext: DsgContext
 ): Promise<Module> {
-  return await mapJwtStrategyTemplate(
+  return await mapAuthModuleTemplate(
     dsgContext,
-    jwtStrategyPath,
-    "jwt.strategy.ts"
+    authModulePath,
+    "auth.module.ts"
   );
 }
 
-async function mapJwtStrategyTemplate(
+async function mapAuthModuleTemplate(
   context: DsgContext,
   templatePath: string,
   fileName: string
@@ -37,50 +35,32 @@ async function mapJwtStrategyTemplate(
   );
   if (!authEntity) throw OperationCanceledException; //todo: handle the exception
 
-  const entityServiceName = `${authEntity?.name}Service`;
+  const entityModuleName = `${authEntity?.name}Module`;
 
   const template = await readFile(templatePath);
-  const authServiceNameId = builders.identifier(entityServiceName);
+  const authModuleNameId = builders.identifier(entityModuleName);
 
   const entityNameToLower = authEntity?.name.toLowerCase();
 
-  const entityServiceImport = importNames(
-    [authServiceNameId],
-    `../../${entityNameToLower}/${entityNameToLower}.service`
+  const authModuleImport = importNames(
+    [authModuleNameId],
+    `../${entityNameToLower}/${entityNameToLower}.module`
   );
 
   addImports(
     template,
-    [entityServiceImport].filter(
+    [authModuleImport].filter(
       (x) => x //remove nulls and undefined
     ) as namedTypes.ImportDeclaration[]
   );
 
   const templateMapping = {
-    ENTITY_SERVICE: builders.identifier(`${entityNameToLower}Service`),
+    ENTITY_MODULE: builders.identifier(entityModuleName),
   };
 
-  const filePath = `${serverDirectories.authDirectory}/jwt/${fileName}`;
+  const filePath = `${serverDirectories.authDirectory}/${fileName}`;
 
   interpolate(template, templateMapping);
-
-  const classDeclaration = getClassDeclarationById(
-    template,
-    builders.identifier("JwtStrategy")
-  );
-
-  const entityServiceIdentifier = builders.identifier(
-    `${entityNameToLower}Service`
-  );
-
-  addInjectableDependency(
-    classDeclaration,
-    entityServiceIdentifier.name,
-    builders.identifier(`${authEntity?.name}Service`),
-    "protected"
-  );
-
-  //addIdentifierToConstructorSuperCall(template, PASSWORD_SERVICE_MEMBER_ID);
 
   removeTSClassDeclares(template);
 

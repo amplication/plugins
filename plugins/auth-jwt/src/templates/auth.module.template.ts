@@ -7,7 +7,6 @@ import { SecretsManagerModule } from "../providers/secrets/secretsManager.module
 import { SecretsManagerService } from "../providers/secrets/secretsManager.service";
 // @ts-ignore
 // eslint-disable-next-line
-import { UserModule } from "../user/user.module";
 import { AuthController } from "./auth.controller";
 import { AuthResolver } from "./auth.resolver";
 import { AuthService } from "./auth.service";
@@ -16,9 +15,10 @@ import { jwtSecretFactory } from "./jwt/jwtSecretFactory";
 import { PasswordService } from "./password.service";
 import { TokenService } from "./token.service";
 
+declare class ENTITY_MODULE {}
 @Module({
   imports: [
-    forwardRef(() => UserModule),
+    forwardRef(() => ENTITY_MODULE),
     PassportModule,
     SecretsManagerModule,
     JwtModule.registerAsync({
