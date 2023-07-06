@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{values.name}}
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    jenkins.io/job-full-name: ${{values.owner}}/${{values.name}}
+  tags:
+    - nestjs
+spec:
+  type: service
+  lifecycle: production
+  owner: ${{values.owner}}
+  providesApis: 
+    - ${{values.name}}-api

@@ -1,0 +1,11 @@
+{
+  "port": 6060,
+  "https": {
+    "enabled": true,
+    "port": 6070
+  },
+  "log": {
+    "level": "debug",
+    "jsonFormat": false
+  }
+}

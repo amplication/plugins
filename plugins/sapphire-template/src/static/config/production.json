@@ -1,0 +1,19 @@
+{
+  "port": 6060,
+  "hostname": "0.0.0.0",
+  "https": {
+    "port": 6070
+  },
+  "log": {
+    "level": "info",
+    "jsonFormat": true
+  },
+  "authentication": {
+    "account": {
+      "cookieName": "ll"
+    },
+    "backOffice": {
+      "cookieName": "sall"
+    }
+  }
+}
