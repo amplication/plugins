@@ -43,9 +43,6 @@ export async function mapAuthTemplate(
     ENTITY_NAME: builders.identifier(
       `${authEntity.name.toLocaleLowerCase()}Info`
     ),
-    ENTITY_TYPE: builders.tsTypeAnnotation(
-      builders.tsTypeReference(builders.identifier(`${authEntity.name}Info`))
-    ),
   };
 
   const filePath = `${serverDirectories.authDirectory}/${fileName}`;

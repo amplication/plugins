@@ -7,8 +7,6 @@ import { UserData } from "./userData.decorator";
 import { LoginArgs } from "./LoginArgs";
 
 declare class ENTITY_NAME_INFO {}
-declare const ENTITY_NAME;
-declare interface ENTITY_TYPE {}
 
 @Resolver(ENTITY_NAME_INFO)
 export class AuthResolver {
