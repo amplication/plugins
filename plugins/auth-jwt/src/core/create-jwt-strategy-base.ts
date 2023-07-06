@@ -14,14 +14,17 @@ import {
 import { builders, namedTypes } from "ast-types";
 import { print } from "@amplication/code-gen-utils";
 
-const jwtStrategyPath = join(templatesPath, "jwt.strategy.template.base.ts");
+const jwtStrategyBasePath = join(
+  templatesPath,
+  "jwt.strategy.template.base.ts"
+);
 
 export async function createJwtStrategyBase(
   dsgContext: DsgContext
 ): Promise<Module> {
   return await mapJwtStrategyTemplate(
     dsgContext,
-    jwtStrategyPath,
+    jwtStrategyBasePath,
     "jwt.strategy.base.ts"
   );
 }

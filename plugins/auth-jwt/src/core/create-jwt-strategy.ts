@@ -14,7 +14,7 @@ import {
 import { builders, namedTypes } from "ast-types";
 import { print } from "@amplication/code-gen-utils";
 
-const jwtStrategyPath = join(templatesPath, "jwt.strategy.template.base.ts");
+const jwtStrategyPath = join(templatesPath, "jwt.strategy.template.ts");
 
 export async function createJwtStrategy(
   dsgContext: DsgContext
@@ -22,7 +22,7 @@ export async function createJwtStrategy(
   return await mapJwtStrategyTemplate(
     dsgContext,
     jwtStrategyPath,
-    "jwt.strategy.base.ts"
+    "jwt.strategy.ts"
   );
 }
 
