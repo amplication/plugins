@@ -7,6 +7,6 @@ declare class ENTITY_SERVICE {}
 @Injectable()
 export class JwtStrategy extends JwtStrategyBase {
   constructor(@Inject(JWT_SECRET_KEY) secretOrKey: string) {
-    super(ENTITY_SERVICE, secretOrKey);
+    super(secretOrKey, ENTITY_SERVICE);
   }
 }
