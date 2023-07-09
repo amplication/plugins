@@ -146,9 +146,7 @@ class AuthCorePlugin implements AmplicationPlugin {
     const authEntity = context.entities?.find(
       (x) => x.name === context.resourceInfo?.settings.authEntityName
     );
-    const defaultAuthEntity = createUserEntityIfNotExist(authEntity);
-
-    context.entities?.push(defaultAuthEntity);
+    createUserEntityIfNotExist(authEntity, context.entities);
 
     return eventParams;
   }
