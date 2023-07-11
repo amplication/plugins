@@ -38,6 +38,7 @@ import {
   createIAuthStrategy,
   createAuthServiceSpec,
   createUserDataDecorator,
+  createCustomSeed,
 } from "./core";
 import {
   addIdentifierToConstructorSuperCall,
@@ -74,6 +75,7 @@ import {
 } from "@babel/types";
 import { appendImports, parse, print } from "@amplication/code-gen-utils";
 import { merge } from "lodash";
+import { OperationCanceledException } from "typescript";
 
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
@@ -321,6 +323,10 @@ class AuthCorePlugin implements AmplicationPlugin {
     // 9. create userData decorator
     const userDataDecorator = await createUserDataDecorator(context);
     await modules.set(userDataDecorator);
+
+    // 10. create custom seed script
+    const customSeedScript = await createCustomSeed(context);
+    await modules.set(customSeedScript);
 
     await modules.merge(staticsFiles);
 
@@ -1073,13 +1079,19 @@ class AuthCorePlugin implements AmplicationPlugin {
       builders.tsTypeReference(builders.identifier("Salt"))
     ) as TSTypeAnnotation;
 
+    const authEntity = context.entities?.find(
+      (x) => x.name === context.resourceInfo?.settings.authEntityName
+    );
+
+    if (!authEntity) throw new OperationCanceledException();
+
     const functionExp = builders.expressionStatement(
       builders.awaitExpression(
         builders.callExpression(
           builders.memberExpression(
             builders.memberExpression(
               builders.identifier("client"),
-              builders.identifier("user")
+              builders.identifier(authEntity.name.toLocaleLowerCase())
             ),
             builders.identifier("upsert")
           ),
