@@ -12,6 +12,7 @@ import {
   createAuthModule,
   createJwtStrategy,
   createJwtStrategyBase,
+  createJwtStrategySpec,
 } from "./core";
 class JwtAuthPlugin implements AmplicationPlugin {
   register(): Events {
@@ -68,6 +69,10 @@ class JwtAuthPlugin implements AmplicationPlugin {
     // 3. create auth module  file.
     const authModule = await createAuthModule(context);
     await modules.set(authModule);
+
+    // 4. create jwtStrategy spec file.
+    const jwyStrategySpec = await createJwtStrategySpec(context);
+    await modules.set(jwyStrategySpec);
 
     await modules.merge(staticsFiles);
     return modules;
