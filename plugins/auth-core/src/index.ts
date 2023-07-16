@@ -41,6 +41,7 @@ import {
   createCustomSeed,
 } from "./core";
 import {
+  AddIdentifierFromModuleDecorator,
   addIdentifierToConstructorSuperCall,
   addImports,
   awaitExpression,
@@ -106,6 +107,9 @@ class AuthCorePlugin implements AmplicationPlugin {
       },
       CreateEntityModuleBase: {
         before: this.beforeCreateEntityModuleBase,
+      },
+      CreateEntityModule: {
+        before: this.beforeCreateEntityModule,
       },
       CreateEntityControllerBase: {
         before: this.beforeCreateControllerBaseModule,
@@ -337,39 +341,7 @@ class AuthCorePlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateEntityModuleParams
   ) {
-    const nestAccessControlImport = builders.importDeclaration(
-      [
-        builders.importNamespaceSpecifier(
-          builders.identifier("nestAccessControl")
-        ),
-      ],
-      builders.stringLiteral("nest-access-control")
-    );
-
-    addImports(
-      eventParams.template,
-      [nestAccessControlImport].filter(
-        (x) => x //remove nulls and undefined
-      ) as namedTypes.ImportDeclaration[]
-    );
-
-    const providerArray = builders.arrayExpression([
-      builders.memberExpression(
-        builders.identifier("nestAccessControl"),
-        builders.identifier("RolesBuilder")
-      ),
-      ...eventParams.templateMapping["PROVIDERS_ARRAY"].elements,
-    ]);
-
-    eventParams.templateMapping["PROVIDERS_ARRAY"] = providerArray;
-    return eventParams;
-  }
-
-  async beforeCreateEntityModuleBase(
-    context: DsgContext,
-    eventParams: CreateEntityModuleBaseParams
-  ) {
-    const aclModuleId = builders.identifier("ACLModule");
+    const { template, templateMapping } = eventParams;
     const authModuleId = builders.identifier("AuthModule");
     const forwardRefId = builders.identifier("forwardRef");
     const forwardRefArrowFunction = builders.arrowFunctionExpression(
@@ -381,22 +353,42 @@ class AuthCorePlugin implements AmplicationPlugin {
       forwardRefArrowFunction,
     ]);
 
-    const aclModuleImport = importNames([aclModuleId], "../../auth/acl.module");
-    const authModuleImport = importNames(
-      [authModuleId],
-      "../../auth/auth.module"
-    );
+    const authModuleImport = importNames([authModuleId], "../auth/auth.module");
     const forwardRefImport = importNames([forwardRefId], "@nestjs/common");
+
+    interpolate(template, templateMapping);
+
+    AddIdentifierFromModuleDecorator(
+      template,
+      templateMapping["MODULE_BASE"],
+      forwardAuthId
+    );
+
+    addImports(
+      template,
+      [authModuleImport, forwardRefImport].filter(
+        (x) => x //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[]
+    );
+
+    return eventParams;
+  }
+
+  async beforeCreateEntityModuleBase(
+    context: DsgContext,
+    eventParams: CreateEntityModuleBaseParams
+  ) {
+    const aclModuleId = builders.identifier("ACLModule");
+
+    const aclModuleImport = importNames([aclModuleId], "../../auth/acl.module");
 
     const importArray = builders.arrayExpression([
       aclModuleId,
-      forwardAuthId,
       ...eventParams.templateMapping["IMPORTS_ARRAY"].elements,
     ]);
 
     const exportArray = builders.arrayExpression([
       aclModuleId,
-      authModuleId,
       ...eventParams.templateMapping["EXPORT_ARRAY"].elements,
     ]);
 
@@ -405,7 +397,7 @@ class AuthCorePlugin implements AmplicationPlugin {
 
     addImports(
       eventParams.template,
-      [aclModuleImport, authModuleImport, forwardRefImport].filter(
+      [aclModuleImport].filter(
         (x) => x //remove nulls and undefined
       ) as namedTypes.ImportDeclaration[]
     );
