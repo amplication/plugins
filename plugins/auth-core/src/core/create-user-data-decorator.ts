@@ -1,18 +1,15 @@
 import { Module, DsgContext } from "@amplication/code-gen-types";
 import { join } from "path";
-import { OperationCanceledException } from "typescript";
 import { templatesPath } from "../constants";
 import { readFile } from "@amplication/code-gen-utils";
 import {
   addImports,
-  getClassDeclarationById,
   importNames,
   interpolate,
   removeTSClassDeclares,
 } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
 import { print } from "@amplication/code-gen-utils";
-import { addInjectableDependency } from "../util/nestjs-code-generation";
 
 const userDataDecoratorPath = join(
   templatesPath,
@@ -38,7 +35,10 @@ async function mapUserDataDecoratorTemplate(
   const authEntity = entities?.find(
     (x) => x.name === resourceInfo?.settings.authEntityName
   );
-  if (!authEntity) throw OperationCanceledException; //todo: handle the exception
+  if (!authEntity) {
+    context.logger.error("Authentication entity does not exist");
+    return { code: "", path: "" };
+  }
 
   const template = await readFile(templatePath);
   const authEntityNameId = builders.identifier(authEntity?.name);

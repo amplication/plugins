@@ -76,7 +76,6 @@ import {
 } from "@babel/types";
 import { appendImports, parse, print } from "@amplication/code-gen-utils";
 import { merge } from "lodash";
-import { OperationCanceledException } from "typescript";
 
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
@@ -1075,7 +1074,10 @@ class AuthCorePlugin implements AmplicationPlugin {
       (x) => x.name === context.resourceInfo?.settings.authEntityName
     );
 
-    if (!authEntity) throw new OperationCanceledException();
+    if (!authEntity) {
+      context.logger.error(`Authentication entity does not exist`);
+      return eventParams;
+    }
 
     const functionExp = builders.expressionStatement(
       builders.awaitExpression(
