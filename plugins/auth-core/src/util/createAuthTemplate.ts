@@ -9,7 +9,6 @@ import {
 } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
 import { print } from "@amplication/code-gen-utils";
-import { OperationCanceledException } from "typescript";
 
 export async function mapAuthTemplate(
   context: DsgContext,
@@ -20,7 +19,10 @@ export async function mapAuthTemplate(
   const authEntity = entities?.find(
     (x) => x.name === resourceInfo?.settings.authEntityName
   );
-  if (!authEntity) throw OperationCanceledException; //todo: handle the exception
+  if (!authEntity) {
+    context.logger.error("Authentication entity does not exist");
+    return { code: "", path: "" };
+  }
 
   const entityInfoName = `${authEntity?.name}Info`;
   const template = await readFile(templatePath);

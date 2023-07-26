@@ -11,7 +11,6 @@ import { print } from "@amplication/code-gen-utils";
 import { getUserIdType } from "../util/get-user-id-type";
 import { join } from "path";
 import { templatesPath } from "../constants";
-import { OperationCanceledException } from "typescript";
 
 const userInfoPath = join(templatesPath, "user-info.template.ts");
 
@@ -22,7 +21,8 @@ export async function createUserInfo(dsgContext: DsgContext): Promise<Module> {
     (x) => x.name === resourceInfo?.settings.authEntityName
   );
   if (!authEntity) {
-    throw new OperationCanceledException(); //todo: replace with right exception
+    dsgContext.logger.error("Authentication entity does not exist");
+    return { code: "", path: "" };
   }
 
   const authDir = `${serverDirectories.authDirectory}`;

@@ -1,6 +1,5 @@
 import { Module, DsgContext } from "@amplication/code-gen-types";
 import { join } from "path";
-import { OperationCanceledException } from "typescript";
 import { templatesPath } from "../constants";
 import { readFile } from "@amplication/code-gen-utils";
 import {
@@ -36,7 +35,10 @@ async function mapJwtStrategySpecTemplate(
   const authEntity = entities?.find(
     (x) => x.name === resourceInfo?.settings.authEntityName
   );
-  if (!authEntity) throw OperationCanceledException; //todo: handle the exception
+  if (!authEntity) {
+    context.logger.error("Authentication entity does not exist");
+    return { code: "", path: "" };
+  }
 
   const entityServiceName = `${authEntity?.name}Service`;
   const entityNameToLower = authEntity.name.toLowerCase();

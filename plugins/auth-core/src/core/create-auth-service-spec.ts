@@ -1,7 +1,6 @@
 import { Module, DsgContext } from "@amplication/code-gen-types";
 import { join } from "path";
 import { templatesPath } from "../constants";
-import { OperationCanceledException } from "typescript";
 import { readFile, print } from "@amplication/code-gen-utils";
 import {
   addImports,
@@ -23,7 +22,10 @@ export async function createAuthServiceSpec(
   const authEntity = entities?.find(
     (x) => x.name === resourceInfo?.settings.authEntityName
   );
-  if (!authEntity) throw OperationCanceledException; //todo: handle the exception
+  if (!authEntity) {
+    dsgContext.logger.error("Authentication entity does not exist");
+    return { code: "", path: "" };
+  }
 
   const entityServiceName = `${authEntity?.name}Service`;
 
