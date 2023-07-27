@@ -1,7 +1,6 @@
 import { Module, DsgContext } from "@amplication/code-gen-types";
 import { join } from "path";
-import { OperationCanceledException } from "typescript";
-import { templatesPath } from "../constants";
+import { AUTH_ENTITY_ERROR, templatesPath } from "../constants";
 import { readFile } from "@amplication/code-gen-utils";
 import {
   addImports,
@@ -33,7 +32,10 @@ async function mapAuthModuleTemplate(
   const authEntity = entities?.find(
     (x) => x.name === resourceInfo?.settings.authEntityName
   );
-  if (!authEntity) throw OperationCanceledException; //todo: handle the exception
+  if (!authEntity) {
+    context.logger.error(AUTH_ENTITY_ERROR);
+    throw new Error(AUTH_ENTITY_ERROR);
+  }
 
   const entityModuleName = `${authEntity?.name}Module`;
 
