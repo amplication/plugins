@@ -11,3 +11,5 @@ export { createTokenServiceTests } from "./create-token-service-test";
 export { createGrantsModule } from "./create-grants";
 export { createDefaultGuard } from "./create-default-guard";
 export { createUserEntityIfNotExist } from "./user-entity";
+export { createUserDataDecorator } from "./create-user-data-decorator";
+export { createCustomSeed } from "./create-custom-seed";
