@@ -1,6 +1,6 @@
 import { Module, DsgContext } from "@amplication/code-gen-types";
 import { join } from "path";
-import { templatesPath } from "../constants";
+import { AUTH_ENTITY_ERROR, templatesPath } from "../constants";
 import { readFile } from "@amplication/code-gen-utils";
 import {
   addImports,
@@ -36,40 +36,45 @@ async function mapJwtStrategySpecTemplate(
     (x) => x.name === resourceInfo?.settings.authEntityName
   );
   if (!authEntity) {
-    context.logger.error("Authentication entity does not exist");
-    return { code: "", path: "" };
+    context.logger.error(AUTH_ENTITY_ERROR);
+    throw new Error(AUTH_ENTITY_ERROR);
   }
 
-  const entityServiceName = `${authEntity?.name}Service`;
-  const entityNameToLower = authEntity.name.toLowerCase();
+  try {
+    const entityServiceName = `${authEntity?.name}Service`;
+    const entityNameToLower = authEntity.name.toLowerCase();
 
-  const template = await readFile(templatePath);
-  const authServiceNameId = builders.identifier(entityServiceName);
+    const template = await readFile(templatePath);
+    const authServiceNameId = builders.identifier(entityServiceName);
 
-  const entityServiceImport = importNames(
-    [authServiceNameId],
-    `../../../${entityNameToLower}/${entityNameToLower}.service`
-  );
+    const entityServiceImport = importNames(
+      [authServiceNameId],
+      `../../../${entityNameToLower}/${entityNameToLower}.service`
+    );
 
-  addImports(
-    template,
-    [entityServiceImport].filter(
-      (x) => x //remove nulls and undefined
-    ) as namedTypes.ImportDeclaration[]
-  );
+    addImports(
+      template,
+      [entityServiceImport].filter(
+        (x) => x //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[]
+    );
 
-  const templateMapping = {
-    ENTITY_SERVICE: builders.identifier(`${entityServiceName}`),
-  };
+    const templateMapping = {
+      ENTITY_SERVICE: builders.identifier(`${entityServiceName}`),
+    };
 
-  const filePath = `${serverDirectories.srcDirectory}/tests/auth/jwt/${fileName}`;
+    const filePath = `${serverDirectories.srcDirectory}/tests/auth/jwt/${fileName}`;
 
-  interpolate(template, templateMapping);
+    interpolate(template, templateMapping);
 
-  removeTSClassDeclares(template);
+    removeTSClassDeclares(template);
 
-  return {
-    code: print(template).code,
-    path: filePath,
-  };
+    return {
+      code: print(template).code,
+      path: filePath,
+    };
+  } catch (error) {
+    console.error(error);
+    return { code: "", path: "" };
+  }
 }

@@ -1,6 +1,6 @@
 import { Module, DsgContext } from "@amplication/code-gen-types";
 import { join } from "path";
-import { templatesPath } from "../constants";
+import { AUTH_ENTITY_ERROR, templatesPath } from "../constants";
 import { readFile } from "@amplication/code-gen-utils";
 import {
   addImports,
@@ -35,59 +35,62 @@ async function mapJwtStrategyTemplate(
     (x) => x.name === resourceInfo?.settings.authEntityName
   );
   if (!authEntity) {
-    context.logger.error("Authentication entity does not exist");
-    return { code: "", path: "" };
+    context.logger.error(AUTH_ENTITY_ERROR);
+    throw new Error(AUTH_ENTITY_ERROR);
   }
 
-  const entityServiceName = `${authEntity?.name}Service`;
+  try {
+    const entityServiceName = `${authEntity?.name}Service`;
 
-  const template = await readFile(templatePath);
-  const authServiceNameId = builders.identifier(entityServiceName);
+    const template = await readFile(templatePath);
+    const authServiceNameId = builders.identifier(entityServiceName);
 
-  const entityNameToLower = authEntity?.name.toLowerCase();
+    const entityNameToLower = authEntity?.name.toLowerCase();
 
-  const entityServiceImport = importNames(
-    [authServiceNameId],
-    `../../${entityNameToLower}/${entityNameToLower}.service`
-  );
+    const entityServiceImport = importNames(
+      [authServiceNameId],
+      `../../${entityNameToLower}/${entityNameToLower}.service`
+    );
 
-  addImports(
-    template,
-    [entityServiceImport].filter(
-      (x) => x //remove nulls and undefined
-    ) as namedTypes.ImportDeclaration[]
-  );
+    addImports(
+      template,
+      [entityServiceImport].filter(
+        (x) => x //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[]
+    );
 
-  const templateMapping = {
-    ENTITY_SERVICE: builders.identifier(`${entityNameToLower}Service`),
-  };
+    const templateMapping = {
+      ENTITY_SERVICE: builders.identifier(`${entityNameToLower}Service`),
+    };
 
-  const filePath = `${serverDirectories.authDirectory}/jwt/${fileName}`;
+    const filePath = `${serverDirectories.authDirectory}/jwt/${fileName}`;
 
-  interpolate(template, templateMapping);
+    interpolate(template, templateMapping);
 
-  const classDeclaration = getClassDeclarationById(
-    template,
-    builders.identifier("JwtStrategy")
-  );
+    const classDeclaration = getClassDeclarationById(
+      template,
+      builders.identifier("JwtStrategy")
+    );
 
-  const entityServiceIdentifier = builders.identifier(
-    `${entityNameToLower}Service`
-  );
+    const entityServiceIdentifier = builders.identifier(
+      `${entityNameToLower}Service`
+    );
 
-  addInjectableDependency(
-    classDeclaration,
-    entityServiceIdentifier.name,
-    builders.identifier(`${authEntity?.name}Service`),
-    "protected"
-  );
+    addInjectableDependency(
+      classDeclaration,
+      entityServiceIdentifier.name,
+      builders.identifier(`${authEntity?.name}Service`),
+      "protected"
+    );
 
-  //addIdentifierToConstructorSuperCall(template, PASSWORD_SERVICE_MEMBER_ID);
+    removeTSClassDeclares(template);
 
-  removeTSClassDeclares(template);
-
-  return {
-    code: print(template).code,
-    path: filePath,
-  };
+    return {
+      code: print(template).code,
+      path: filePath,
+    };
+  } catch (error) {
+    console.error(error);
+    return { code: "", path: "" };
+  }
 }
