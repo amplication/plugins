@@ -28,46 +28,51 @@ async function mapAuthModuleTemplate(
   templatePath: string,
   fileName: string
 ): Promise<Module> {
-  const { entities, resourceInfo, serverDirectories } = context;
-  const authEntity = entities?.find(
-    (x) => x.name === resourceInfo?.settings.authEntityName
-  );
-  if (!authEntity) {
-    context.logger.error(AUTH_ENTITY_ERROR);
-    throw new Error(AUTH_ENTITY_ERROR);
+  try {
+    const { entities, resourceInfo, serverDirectories } = context;
+    const authEntity = entities?.find(
+      (x) => x.name === resourceInfo?.settings.authEntityName
+    );
+    if (!authEntity) {
+      context.logger.error(AUTH_ENTITY_ERROR);
+      throw new Error(AUTH_ENTITY_ERROR);
+    }
+
+    const entityModuleName = `${authEntity?.name}Module`;
+
+    const template = await readFile(templatePath);
+    const authModuleNameId = builders.identifier(entityModuleName);
+
+    const entityNameToLower = authEntity?.name.toLowerCase();
+
+    const authModuleImport = importNames(
+      [authModuleNameId],
+      `../${entityNameToLower}/${entityNameToLower}.module`
+    );
+
+    addImports(
+      template,
+      [authModuleImport].filter(
+        (x) => x //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[]
+    );
+
+    const templateMapping = {
+      ENTITY_MODULE: builders.identifier(entityModuleName),
+    };
+
+    const filePath = `${serverDirectories.authDirectory}/${fileName}`;
+
+    interpolate(template, templateMapping);
+
+    removeTSClassDeclares(template);
+
+    return {
+      code: print(template).code,
+      path: filePath,
+    };
+  } catch (error) {
+    console.error(error);
+    return { code: "", path: "" };
   }
-
-  const entityModuleName = `${authEntity?.name}Module`;
-
-  const template = await readFile(templatePath);
-  const authModuleNameId = builders.identifier(entityModuleName);
-
-  const entityNameToLower = authEntity?.name.toLowerCase();
-
-  const authModuleImport = importNames(
-    [authModuleNameId],
-    `../${entityNameToLower}/${entityNameToLower}.module`
-  );
-
-  addImports(
-    template,
-    [authModuleImport].filter(
-      (x) => x //remove nulls and undefined
-    ) as namedTypes.ImportDeclaration[]
-  );
-
-  const templateMapping = {
-    ENTITY_MODULE: builders.identifier(entityModuleName),
-  };
-
-  const filePath = `${serverDirectories.authDirectory}/${fileName}`;
-
-  interpolate(template, templateMapping);
-
-  removeTSClassDeclares(template);
-
-  return {
-    code: print(template).code,
-    path: filePath,
-  };
 }

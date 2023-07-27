@@ -31,43 +31,48 @@ async function mapBasicStrategyTemplate(
   templatePath: string,
   fileName: string
 ): Promise<Module> {
-  const { entities, resourceInfo, serverDirectories } = context;
-  const authEntity = entities?.find(
-    (x) => x.name === resourceInfo?.settings.authEntityName
-  );
-  if (!authEntity) {
-    context.logger.error(AUTH_ENTITY_ERROR);
-    throw new Error(AUTH_ENTITY_ERROR);
+  try {
+    const { entities, resourceInfo, serverDirectories } = context;
+    const authEntity = entities?.find(
+      (x) => x.name === resourceInfo?.settings.authEntityName
+    );
+    if (!authEntity) {
+      context.logger.error(AUTH_ENTITY_ERROR);
+      throw new Error(AUTH_ENTITY_ERROR);
+    }
+    const entityInfoName = `${authEntity?.name}Info`;
+
+    const template = await readFile(templatePath);
+    const authEntityNameId = builders.identifier(entityInfoName);
+
+    const entityNameImport = importNames(
+      [authEntityNameId],
+      `../../${entityInfoName}`
+    );
+
+    addImports(
+      template,
+      [entityNameImport].filter(
+        (x) => x //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[]
+    );
+
+    const templateMapping = {
+      ENTITY_NAME_INFO: builders.identifier(`${authEntity.name}Info`),
+    };
+
+    const filePath = `${serverDirectories.authDirectory}/basic/base/${fileName}`;
+
+    interpolate(template, templateMapping);
+
+    removeTSClassDeclares(template);
+
+    return {
+      code: print(template).code,
+      path: filePath,
+    };
+  } catch (error) {
+    console.log(error);
+    return { code: "", path: "" };
   }
-  const entityInfoName = `${authEntity?.name}Info`;
-
-  const template = await readFile(templatePath);
-  const authEntityNameId = builders.identifier(entityInfoName);
-
-  const entityNameImport = importNames(
-    [authEntityNameId],
-    `../../${entityInfoName}`
-  );
-
-  addImports(
-    template,
-    [entityNameImport].filter(
-      (x) => x //remove nulls and undefined
-    ) as namedTypes.ImportDeclaration[]
-  );
-
-  const templateMapping = {
-    ENTITY_NAME_INFO: builders.identifier(`${authEntity.name}Info`),
-  };
-
-  const filePath = `${serverDirectories.authDirectory}/basic/base/${fileName}`;
-
-  interpolate(template, templateMapping);
-
-  removeTSClassDeclares(template);
-
-  return {
-    code: print(template).code,
-    path: filePath,
-  };
 }
