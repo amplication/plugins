@@ -1,6 +1,6 @@
 import { Module, DsgContext } from "@amplication/code-gen-types";
 import { join } from "path";
-import { templatesPath } from "../constants";
+import { AUTH_ENTITY_ERROR, templatesPath } from "../constants";
 import { readFile, print } from "@amplication/code-gen-utils";
 import {
   addImports,
@@ -23,8 +23,8 @@ export async function createAuthServiceSpec(
     (x) => x.name === resourceInfo?.settings.authEntityName
   );
   if (!authEntity) {
-    dsgContext.logger.error("Authentication entity does not exist");
-    return { code: "", path: "" };
+    dsgContext.logger.error(AUTH_ENTITY_ERROR);
+    throw new Error(AUTH_ENTITY_ERROR);
   }
 
   const entityServiceName = `${authEntity?.name}Service`;

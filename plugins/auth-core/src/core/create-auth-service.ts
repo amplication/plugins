@@ -1,6 +1,6 @@
 import { Module, DsgContext } from "@amplication/code-gen-types";
 import { join } from "path";
-import { templatesPath } from "../constants";
+import { AUTH_ENTITY_ERROR, templatesPath } from "../constants";
 import { readFile } from "@amplication/code-gen-utils";
 import {
   addImports,
@@ -35,66 +35,71 @@ async function mapAuthServiceTemplate(
     (x) => x.name === resourceInfo?.settings.authEntityName
   );
   if (!authEntity) {
-    context.logger.error("Authentication entity does not exist");
-    return { code: "", path: "" };
+    context.logger.error(AUTH_ENTITY_ERROR);
+    throw new Error(AUTH_ENTITY_ERROR);
   }
 
-  const entityInfoName = `${authEntity?.name}Info`;
-  const entityServiceName = `${authEntity?.name}Service`;
+  try {
+    const entityInfoName = `${authEntity?.name}Info`;
+    const entityServiceName = `${authEntity?.name}Service`;
 
-  const template = await readFile(templatePath);
-  const authEntityNameId = builders.identifier(entityInfoName);
-  const authServiceNameId = builders.identifier(entityServiceName);
+    const template = await readFile(templatePath);
+    const authEntityNameId = builders.identifier(entityInfoName);
+    const authServiceNameId = builders.identifier(entityServiceName);
 
-  const entityNameImport = importNames(
-    [authEntityNameId],
-    `./${entityInfoName}`
-  );
+    const entityNameImport = importNames(
+      [authEntityNameId],
+      `./${entityInfoName}`
+    );
 
-  const entityNameToLower = authEntity?.name.toLowerCase();
+    const entityNameToLower = authEntity?.name.toLowerCase();
 
-  const entityServiceImport = importNames(
-    [authServiceNameId],
-    `../${entityNameToLower}/${entityNameToLower}.service`
-  );
+    const entityServiceImport = importNames(
+      [authServiceNameId],
+      `../${entityNameToLower}/${entityNameToLower}.service`
+    );
 
-  addImports(
-    template,
-    [entityNameImport, entityServiceImport].filter(
-      (x) => x //remove nulls and undefined
-    ) as namedTypes.ImportDeclaration[]
-  );
+    addImports(
+      template,
+      [entityNameImport, entityServiceImport].filter(
+        (x) => x //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[]
+    );
 
-  const templateMapping = {
-    ENTITY_NAME_INFO: builders.identifier(`${authEntity.name}Info`),
-    ENTITY_SERVICE: builders.identifier(`${entityNameToLower}Service`),
-    ENTITY_SERVICE_UPPER: builders.identifier(`${authEntity?.name}Service`),
-  };
+    const templateMapping = {
+      ENTITY_NAME_INFO: builders.identifier(`${authEntity.name}Info`),
+      ENTITY_SERVICE: builders.identifier(`${entityNameToLower}Service`),
+      ENTITY_SERVICE_UPPER: builders.identifier(`${authEntity?.name}Service`),
+    };
 
-  const filePath = `${serverDirectories.authDirectory}/${fileName}`;
+    const filePath = `${serverDirectories.authDirectory}/${fileName}`;
 
-  interpolate(template, templateMapping);
+    interpolate(template, templateMapping);
 
-  const classDeclaration = getClassDeclarationById(
-    template,
-    builders.identifier("AuthService")
-  );
+    const classDeclaration = getClassDeclarationById(
+      template,
+      builders.identifier("AuthService")
+    );
 
-  const entityServiceIdentifier = builders.identifier(
-    `${entityNameToLower}Service`
-  );
+    const entityServiceIdentifier = builders.identifier(
+      `${entityNameToLower}Service`
+    );
 
-  addInjectableDependency(
-    classDeclaration,
-    entityServiceIdentifier.name,
-    builders.identifier(`${authEntity?.name}Service`),
-    "private"
-  );
+    addInjectableDependency(
+      classDeclaration,
+      entityServiceIdentifier.name,
+      builders.identifier(`${authEntity?.name}Service`),
+      "private"
+    );
 
-  removeTSClassDeclares(template);
+    removeTSClassDeclares(template);
 
-  return {
-    code: print(template).code,
-    path: filePath,
-  };
+    return {
+      code: print(template).code,
+      path: filePath,
+    };
+  } catch (error) {
+    console.log(error);
+    return { code: "", path: "" };
+  }
 }

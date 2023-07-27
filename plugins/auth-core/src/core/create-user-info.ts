@@ -10,7 +10,7 @@ import { builders, namedTypes } from "ast-types";
 import { print } from "@amplication/code-gen-utils";
 import { getUserIdType } from "../util/get-user-id-type";
 import { join } from "path";
-import { templatesPath } from "../constants";
+import { AUTH_ENTITY_ERROR, templatesPath } from "../constants";
 
 const userInfoPath = join(templatesPath, "user-info.template.ts");
 
@@ -21,8 +21,8 @@ export async function createUserInfo(dsgContext: DsgContext): Promise<Module> {
     (x) => x.name === resourceInfo?.settings.authEntityName
   );
   if (!authEntity) {
-    dsgContext.logger.error("Authentication entity does not exist");
-    return { code: "", path: "" };
+    dsgContext.logger.error(AUTH_ENTITY_ERROR);
+    throw new Error(AUTH_ENTITY_ERROR);
   }
 
   const authDir = `${serverDirectories.authDirectory}`;

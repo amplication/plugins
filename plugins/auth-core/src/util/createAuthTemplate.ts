@@ -9,6 +9,7 @@ import {
 } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
 import { print } from "@amplication/code-gen-utils";
+import { AUTH_ENTITY_ERROR } from "../constants";
 
 export async function mapAuthTemplate(
   context: DsgContext,
@@ -20,41 +21,46 @@ export async function mapAuthTemplate(
     (x) => x.name === resourceInfo?.settings.authEntityName
   );
   if (!authEntity) {
-    context.logger.error("Authentication entity does not exist");
-    return { code: "", path: "" };
+    context.logger.error(AUTH_ENTITY_ERROR);
+    throw new Error(AUTH_ENTITY_ERROR);
   }
 
-  const entityInfoName = `${authEntity?.name}Info`;
-  const template = await readFile(templatePath);
-  const authEntityNameId = builders.identifier(entityInfoName);
+  try {
+    const entityInfoName = `${authEntity?.name}Info`;
+    const template = await readFile(templatePath);
+    const authEntityNameId = builders.identifier(entityInfoName);
 
-  const entityNamImport = importNames(
-    [authEntityNameId],
-    `./${entityInfoName}`
-  );
+    const entityNamImport = importNames(
+      [authEntityNameId],
+      `./${entityInfoName}`
+    );
 
-  addImports(
-    template,
-    [entityNamImport].filter(
-      (x) => x //remove nulls and undefined
-    ) as namedTypes.ImportDeclaration[]
-  );
+    addImports(
+      template,
+      [entityNamImport].filter(
+        (x) => x //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[]
+    );
 
-  const templateMapping = {
-    ENTITY_NAME_INFO: builders.identifier(`${authEntity.name}Info`),
-    ENTITY_NAME: builders.identifier(
-      `${authEntity.name.toLocaleLowerCase()}Info`
-    ),
-  };
+    const templateMapping = {
+      ENTITY_NAME_INFO: builders.identifier(`${authEntity.name}Info`),
+      ENTITY_NAME: builders.identifier(
+        `${authEntity.name.toLocaleLowerCase()}Info`
+      ),
+    };
 
-  const filePath = `${serverDirectories.authDirectory}/${fileName}`;
+    const filePath = `${serverDirectories.authDirectory}/${fileName}`;
 
-  interpolate(template, templateMapping);
-  removeTSClassDeclares(template);
-  removeTSInterfaceDeclares(template);
+    interpolate(template, templateMapping);
+    removeTSClassDeclares(template);
+    removeTSInterfaceDeclares(template);
 
-  return {
-    code: print(template).code,
-    path: filePath,
-  };
+    return {
+      code: print(template).code,
+      path: filePath,
+    };
+  } catch (error) {
+    console.log(error);
+    return { code: "", path: "" };
+  }
 }
