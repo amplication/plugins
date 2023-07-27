@@ -1,17 +1,32 @@
 import { Module, DsgContext } from "@amplication/code-gen-types";
+import { join } from "path";
+import { AUTH_ENTITY_ERROR, templatesPath } from "../constants";
 import { readFile } from "@amplication/code-gen-utils";
 import {
   addImports,
   importNames,
   interpolate,
   removeTSClassDeclares,
-  removeTSInterfaceDeclares,
 } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
 import { print } from "@amplication/code-gen-utils";
-import { AUTH_ENTITY_ERROR } from "../constants";
 
-export async function mapAuthTemplate(
+const jwtStrategySpecPath = join(
+  templatesPath,
+  "jwt.strategy.template.spec.ts"
+);
+
+export async function createJwtStrategySpec(
+  dsgContext: DsgContext
+): Promise<Module> {
+  return await mapJwtStrategySpecTemplate(
+    dsgContext,
+    jwtStrategySpecPath,
+    "jwt.strategy.spec.ts"
+  );
+}
+
+async function mapJwtStrategySpecTemplate(
   context: DsgContext,
   templatePath: string,
   fileName: string
@@ -26,41 +41,40 @@ export async function mapAuthTemplate(
   }
 
   try {
-    const entityInfoName = `${authEntity?.name}Info`;
-    const template = await readFile(templatePath);
-    const authEntityNameId = builders.identifier(entityInfoName);
+    const entityServiceName = `${authEntity?.name}Service`;
+    const entityNameToLower = authEntity.name.toLowerCase();
 
-    const entityNamImport = importNames(
-      [authEntityNameId],
-      `./${entityInfoName}`
+    const template = await readFile(templatePath);
+    const authServiceNameId = builders.identifier(entityServiceName);
+
+    const entityServiceImport = importNames(
+      [authServiceNameId],
+      `../../../${entityNameToLower}/${entityNameToLower}.service`
     );
 
     addImports(
       template,
-      [entityNamImport].filter(
+      [entityServiceImport].filter(
         (x) => x //remove nulls and undefined
       ) as namedTypes.ImportDeclaration[]
     );
 
     const templateMapping = {
-      ENTITY_NAME_INFO: builders.identifier(`${authEntity.name}Info`),
-      ENTITY_NAME: builders.identifier(
-        `${authEntity.name.toLocaleLowerCase()}Info`
-      ),
+      ENTITY_SERVICE: builders.identifier(`${entityServiceName}`),
     };
 
-    const filePath = `${serverDirectories.authDirectory}/${fileName}`;
+    const filePath = `${serverDirectories.srcDirectory}/tests/auth/jwt/${fileName}`;
 
     interpolate(template, templateMapping);
+
     removeTSClassDeclares(template);
-    removeTSInterfaceDeclares(template);
 
     return {
       code: print(template).code,
       path: filePath,
     };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return { code: "", path: "" };
   }
 }

@@ -1,17 +1,29 @@
 import { Module, DsgContext } from "@amplication/code-gen-types";
+import { join } from "path";
+import { AUTH_ENTITY_ERROR, templatesPath } from "../constants";
 import { readFile } from "@amplication/code-gen-utils";
 import {
   addImports,
   importNames,
   interpolate,
   removeTSClassDeclares,
-  removeTSInterfaceDeclares,
 } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
 import { print } from "@amplication/code-gen-utils";
-import { AUTH_ENTITY_ERROR } from "../constants";
 
-export async function mapAuthTemplate(
+const authModulePath = join(templatesPath, "auth.module.template.ts");
+
+export async function createAuthModule(
+  dsgContext: DsgContext
+): Promise<Module> {
+  return await mapAuthModuleTemplate(
+    dsgContext,
+    authModulePath,
+    "auth.module.ts"
+  );
+}
+
+async function mapAuthModuleTemplate(
   context: DsgContext,
   templatePath: string,
   fileName: string
@@ -24,43 +36,42 @@ export async function mapAuthTemplate(
     context.logger.error(AUTH_ENTITY_ERROR);
     throw new Error(AUTH_ENTITY_ERROR);
   }
-
   try {
-    const entityInfoName = `${authEntity?.name}Info`;
-    const template = await readFile(templatePath);
-    const authEntityNameId = builders.identifier(entityInfoName);
+    const entityModuleName = `${authEntity?.name}Module`;
 
-    const entityNamImport = importNames(
-      [authEntityNameId],
-      `./${entityInfoName}`
+    const template = await readFile(templatePath);
+    const authModuleNameId = builders.identifier(entityModuleName);
+
+    const entityNameToLower = authEntity?.name.toLowerCase();
+
+    const authModuleImport = importNames(
+      [authModuleNameId],
+      `../${entityNameToLower}/${entityNameToLower}.module`
     );
 
     addImports(
       template,
-      [entityNamImport].filter(
+      [authModuleImport].filter(
         (x) => x //remove nulls and undefined
       ) as namedTypes.ImportDeclaration[]
     );
 
     const templateMapping = {
-      ENTITY_NAME_INFO: builders.identifier(`${authEntity.name}Info`),
-      ENTITY_NAME: builders.identifier(
-        `${authEntity.name.toLocaleLowerCase()}Info`
-      ),
+      ENTITY_MODULE: builders.identifier(entityModuleName),
     };
 
     const filePath = `${serverDirectories.authDirectory}/${fileName}`;
 
     interpolate(template, templateMapping);
+
     removeTSClassDeclares(template);
-    removeTSInterfaceDeclares(template);
 
     return {
       code: print(template).code,
       path: filePath,
     };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return { code: "", path: "" };
   }
 }

@@ -114,29 +114,6 @@ export class InvalidDataTypeError extends Error {
   }
 }
 
-// export function createUserEntityIfNotExist(
-//   entities: Entity
-// ): [Entity[], Entity] {
-//   let userEntity;
-//   const nextEntities = entities.map((entity) => {
-//     if (entity.name === USER_ENTITY_NAME) {
-//       userEntity = entity;
-//       const missingAuthFields = getMissingAuthFields(entity.fields);
-//       //Add any missing auth field for backward compatibility with previously created resources
-//       return {
-//         ...entity,
-//         fields: [...missingAuthFields, ...entity.fields],
-//       };
-//     }
-//     return entity;
-//   });
-//   if (!userEntity) {
-//     userEntity = DEFAULT_USER_ENTITY;
-//     nextEntities.unshift(userEntity);
-//   }
-//   return [nextEntities, userEntity];
-// }
-
 export function createUserEntityIfNotExist(
   authEntity?: Entity,
   entities?: Entity[]

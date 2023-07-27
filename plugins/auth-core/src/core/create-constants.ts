@@ -17,35 +17,39 @@ export async function createAuthConstants(
   dsgContext: DsgContext
 ): Promise<Module> {
   const { serverDirectories, entities, resourceInfo } = dsgContext;
+  try {
+    const authEntity = entities?.find(
+      (x) => x.name === resourceInfo?.settings.authEntityName
+    );
+    const serverAuthTestDir = `${serverDirectories.srcDirectory}/tests/auth`;
+    const template = await readFile(templatePath);
 
-  const authEntity = entities?.find(
-    (x) => x.name === resourceInfo?.settings.authEntityName
-  );
-  const serverAuthTestDir = `${serverDirectories.srcDirectory}/tests/auth`;
-  const template = await readFile(templatePath);
+    const entityNameInfo = `${authEntity?.name}Info`;
+    const entityNameInfoId = builders.identifier(entityNameInfo);
 
-  const entityNameInfo = `${authEntity?.name}Info`;
-  const entityNameInfoId = builders.identifier(entityNameInfo);
+    const entityNameInfoImport = importNames(
+      [entityNameInfoId],
+      `../../auth/${authEntity?.name}Info`
+    );
 
-  const entityNameInfoImport = importNames(
-    [entityNameInfoId],
-    `../../auth/${authEntity?.name}Info`
-  );
+    addImports(
+      template,
+      [entityNameInfoImport].filter(
+        (x) => x //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[]
+    );
 
-  addImports(
-    template,
-    [entityNameInfoImport].filter(
-      (x) => x //remove nulls and undefined
-    ) as namedTypes.ImportDeclaration[]
-  );
+    const idType = getUserIdType(dsgContext);
+    const templateMapping = prepareTemplateMapping(idType, entityNameInfo);
+    const filePath = `${serverAuthTestDir}/constants.ts`;
+    interpolate(template, templateMapping);
+    removeTSClassDeclares(template);
 
-  const idType = getUserIdType(dsgContext);
-  const templateMapping = prepareTemplateMapping(idType, entityNameInfo);
-  const filePath = `${serverAuthTestDir}/constants.ts`;
-  interpolate(template, templateMapping);
-  removeTSClassDeclares(template);
-
-  return { code: print(template).code, path: filePath };
+    return { code: print(template).code, path: filePath };
+  } catch (error) {
+    console.log(error);
+    return { code: "", path: "" };
+  }
 }
 
 function prepareTemplateMapping(

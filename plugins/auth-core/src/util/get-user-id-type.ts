@@ -1,9 +1,5 @@
-import {
-  DsgContext,
-  Entity,
-  EntityField,
-  types,
-} from "@amplication/code-gen-types";
+import { DsgContext, EntityField, types } from "@amplication/code-gen-types";
+import { AUTH_ENTITY_ERROR } from "../constants";
 
 export const getUserIdType = (dsgContext: DsgContext) => {
   const { entities, resourceInfo } = dsgContext;
@@ -12,7 +8,8 @@ export const getUserIdType = (dsgContext: DsgContext) => {
   );
 
   if (!authEntity) {
-    throw new Error("User entity not found");
+    dsgContext.logger.error(AUTH_ENTITY_ERROR);
+    throw new Error(AUTH_ENTITY_ERROR);
   }
 
   const idField = authEntity.fields.find(

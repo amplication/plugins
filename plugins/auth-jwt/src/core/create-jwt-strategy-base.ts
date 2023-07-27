@@ -8,24 +8,27 @@ import {
   importNames,
   interpolate,
   removeTSClassDeclares,
+  addInjectableDependency,
 } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
 import { print } from "@amplication/code-gen-utils";
-import { addInjectableDependency } from "../util/nestjs-code-generation";
 
-const authServicePath = join(templatesPath, "auth.service.template.ts");
+const jwtStrategyBasePath = join(
+  templatesPath,
+  "jwt.strategy.template.base.ts"
+);
 
-export async function createAuthService(
+export async function createJwtStrategyBase(
   dsgContext: DsgContext
 ): Promise<Module> {
-  return await mapAuthServiceTemplate(
+  return await mapJwtStrategyTemplate(
     dsgContext,
-    authServicePath,
-    "auth.service.ts"
+    jwtStrategyBasePath,
+    "jwt.strategy.base.ts"
   );
 }
 
-async function mapAuthServiceTemplate(
+async function mapJwtStrategyTemplate(
   context: DsgContext,
   templatePath: string,
   fileName: string
@@ -49,14 +52,14 @@ async function mapAuthServiceTemplate(
 
     const entityNameImport = importNames(
       [authEntityNameId],
-      `./${entityInfoName}`
+      `../../${entityInfoName}`
     );
 
     const entityNameToLower = authEntity?.name.toLowerCase();
 
     const entityServiceImport = importNames(
       [authServiceNameId],
-      `../${entityNameToLower}/${entityNameToLower}.service`
+      `../../../${entityNameToLower}/${entityNameToLower}.service`
     );
 
     addImports(
@@ -69,16 +72,15 @@ async function mapAuthServiceTemplate(
     const templateMapping = {
       ENTITY_NAME_INFO: builders.identifier(`${authEntity.name}Info`),
       ENTITY_SERVICE: builders.identifier(`${entityNameToLower}Service`),
-      ENTITY_SERVICE_UPPER: builders.identifier(`${authEntity?.name}Service`),
     };
 
-    const filePath = `${serverDirectories.authDirectory}/${fileName}`;
+    const filePath = `${serverDirectories.authDirectory}/jwt/base/${fileName}`;
 
     interpolate(template, templateMapping);
 
     const classDeclaration = getClassDeclarationById(
       template,
-      builders.identifier("AuthService")
+      builders.identifier("JwtStrategyBase")
     );
 
     const entityServiceIdentifier = builders.identifier(
@@ -89,7 +91,7 @@ async function mapAuthServiceTemplate(
       classDeclaration,
       entityServiceIdentifier.name,
       builders.identifier(`${authEntity?.name}Service`),
-      "private"
+      "protected"
     );
 
     removeTSClassDeclares(template);
@@ -99,7 +101,7 @@ async function mapAuthServiceTemplate(
       path: filePath,
     };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return { code: "", path: "" };
   }
 }
