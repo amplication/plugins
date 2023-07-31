@@ -36,3 +36,7 @@ const result = await this.openaiService.createChatCompletion(
 
 This plugin requires the following environment variables:
 OPENAI_API_KEY=[open-ai-key]
+
+Note:
+For development purposes, the plugin adds the variable to the .env file, but you should never use .env to hold secrets in production, and you should never check in a secrets file to source control.
+You should use a secrets manager like [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/) or [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/) to store secrets.
