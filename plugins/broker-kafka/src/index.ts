@@ -6,7 +6,7 @@ import {
   CreateMessageBrokerServiceBaseParams,
   CreateMessageBrokerServiceParams,
   CreateServerAppModuleParams,
-  CreateServerDockerComposeParams,
+  CreateServerDockerComposeDevParams,
   CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
   DsgContext,
@@ -18,6 +18,7 @@ import { readFile } from "fs/promises";
 import { kebabCase, merge } from "lodash";
 import { join, resolve } from "path";
 import { staticDirectory } from "./constants";
+import { builders } from "ast-types";
 class KafkaPlugin implements AmplicationPlugin {
   static moduleFile: Module | undefined;
   init?: ((name: string, version: string) => void) | undefined;
@@ -29,8 +30,8 @@ class KafkaPlugin implements AmplicationPlugin {
       CreateServerPackageJson: {
         before: this.beforeCreateServerPackageJson,
       },
-      CreateServerDockerCompose: {
-        before: this.beforeCreateDockerCompose,
+      CreateServerDockerComposeDev: {
+        before: this.beforeCreateDockerComposeDev,
       },
       CreateMessageBroker: {
         before: this.beforeCreateBroker,
@@ -173,12 +174,13 @@ class KafkaPlugin implements AmplicationPlugin {
     return modules;
   }
 
-  beforeCreateDockerCompose(
+  beforeCreateDockerComposeDev(
     dsgContext: DsgContext,
-    eventParams: CreateServerDockerComposeParams
-  ): CreateServerDockerComposeParams {
+    eventParams: CreateServerDockerComposeDevParams
+  ): CreateServerDockerComposeDevParams {
     const KAFKA_NAME = "kafka";
     const ZOOKEEPER_NAME = "zookeeper";
+    const KAFKA_UI = "kafka-ui";
     const NETWORK = "internal";
     const ZOOKEEPER_PORT = "2181";
     const KAFKA_PORT = "9092";
@@ -194,7 +196,7 @@ class KafkaPlugin implements AmplicationPlugin {
           ports: [`${ZOOKEEPER_PORT}:${ZOOKEEPER_PORT}`],
         },
         [KAFKA_NAME]: {
-          image: "confluentinc/cp-kafka:5.3.1",
+          image: "confluentinc/cp-kafka:7.3.1",
           networks: [NETWORK],
           depends_on: [ZOOKEEPER_NAME],
           ports: ["9092:9092", "9997:9997"],
@@ -209,11 +211,23 @@ class KafkaPlugin implements AmplicationPlugin {
             KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1,
           },
         },
-      },
-      networks: {
-        internal: {
-          name: NETWORK,
-          driver: "bridge",
+        [KAFKA_UI]: {
+          container_name: KAFKA_UI,
+          image: "provectuslabs/kafka-ui:latest",
+          ports: ["8080:8080"],
+          depends_on: [ZOOKEEPER_NAME, KAFKA_NAME],
+          environment: {
+            KAFKA_CLUSTERS_0_NAME: "local",
+            KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:29092",
+            KAFKA_CLUSTERS_0_ZOOKEEPER: "zookeeper:2181",
+            KAFKA_CLUSTERS_0_JMXPORT: 9997,
+          },
+        },
+        networks: {
+          internal: {
+            name: NETWORK,
+            driver: "bridge",
+          },
         },
       },
     };
@@ -229,6 +243,15 @@ class KafkaPlugin implements AmplicationPlugin {
     if (!file) {
       throw new Error("Kafka module file not found");
     }
+    const kafkaModuleId = builders.identifier("KafkaModule");
+
+    const importArray = builders.arrayExpression([
+      kafkaModuleId,
+      ...eventParams.templateMapping["MODULES"].elements,
+    ]);
+
+    eventParams.templateMapping["MODULES"] = importArray;
+
     eventParams.modulesFiles.set(file);
     return eventParams;
   }
