@@ -51,10 +51,18 @@ describe("Testing beforeCreateServerAppModule hook", () => {
         const { templateMapping } = plugin.beforeCreateServerAppModule(context, params)
         let expectedModules = prettyCode(`
         [CacheModule.register({
-            isGlobal: true
+            isGlobal: true,
+            store: redisStore,
+            host: process.env.REDIS_HOST,
+            port: process.env.REDIS_PORT,
+            username: process.env.REDIS_USERNAME,
+            password: process.env.REDIS_PASSWORD,
+            ttl: parseInt(process.env.REDIS_TTL ? process.env.REDIS_TTL : "5"),
+            max: parseInt(process.env.REDIS_MAX_REQUESTS_CACHED ? process.env.REDIS_MAX_REQUESTS_CACHED : "100")
         })]`);
-        // Remove the trailing semi-colon
-        expectedModules = expectedModules.slice(0, -1)
+        // Remove the trailing semi-colon from the end which is inserted
+        // by the prettyCode invocation
+        expectedModules = utils.removeSemicolon(expectedModules)
         const modulesCode = recast.prettyPrint(templateMapping.MODULES).code;
         expect(modulesCode).toBe(expectedModules);
     });

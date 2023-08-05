@@ -10,6 +10,8 @@ import { EventNames } from "@amplication/code-gen-types";
 import { merge } from "lodash"
 import * as utils from "./utils"
 import { builders, namedTypes } from "ast-types"
+import * as constants from "./constants"
+
 
 
 class RedisCachePlugin implements AmplicationPlugin {
@@ -31,14 +33,7 @@ class RedisCachePlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerPackageJsonParams
   ): CreateServerPackageJsonParams {
-    const redisDeps = {
-      dependencies: {
-        "cache-manager": "3.6.3",
-        "cache-manager-redis-store": "2.0.0",
-        "@types/cache-manager": "3.4.3",
-        "@types/cache-manager-redis-store": "2.0.1"
-      }
-    }
+    const redisDeps = constants.dependencies
 
     eventParams.updateProperties.forEach((updateProperty) => {
       merge(updateProperty, redisDeps);
@@ -62,6 +57,7 @@ class RedisCachePlugin implements AmplicationPlugin {
 
     const modules = templateMapping.MODULES as namedTypes.ArrayExpression;
     const cacheModule = cacheModuleInstantiation()
+
     modules.elements.push(cacheModule)
 
     return eventParams
@@ -89,13 +85,49 @@ const cacheModuleInstantiation = () => {
       builders.identifier("CacheModule"),
       builders.identifier("register")
     ),
-    [builders.objectExpression([
-      builders.objectProperty(
-        builders.identifier("isGlobal"),
-        builders.booleanLiteral(true)
-      )
-    ])]
+    [
+      builders.objectExpression([
+        objProp("isGlobal", builders.booleanLiteral(true)),
+        objProp("store", builders.identifier("redisStore")),
+        objProp("host", envVar("REDIS_HOST")),
+        objProp("port", envVar("REDIS_PORT")),
+        objProp("username", envVar("REDIS_USERNAME")),
+        objProp("password", envVar("REDIS_PASSWORD")),
+        objProp("ttl", parseIntOr(envVar("REDIS_TTL"), "5")),
+        objProp("max", parseIntOr(envVar("REDIS_MAX_REQUESTS_CACHED"), "100"))
+      ]),
+    ]
   );
+}
+
+const parseIntOr = (val: namedTypes.MemberExpression, defaultVal: string) => {
+  return builders.callExpression(
+    builders.identifier("parseInt"),
+    [
+      builders.conditionalExpression(
+        val,
+        val,
+        builders.stringLiteral(defaultVal)
+      )
+    ]
+  )
+}
+
+const objProp = (key: string, val: any): namedTypes.ObjectProperty => {
+  return builders.objectProperty(
+    builders.identifier(key),
+    val
+  )
+}
+
+const envVar = (variable: string): namedTypes.MemberExpression => {
+  return builders.memberExpression(
+    builders.memberExpression(
+      builders.identifier("process"),
+      builders.identifier("env")
+    ),
+    builders.identifier(variable)
+  )
 }
 
 export default RedisCachePlugin;
