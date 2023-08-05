@@ -1,6 +1,7 @@
 import type {
   AmplicationPlugin,
   CreateServerAppModuleParams,
+  CreateServerDockerComposeParams,
   CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
   DsgContext,
@@ -25,6 +26,9 @@ class RedisCachePlugin implements AmplicationPlugin {
       },
       [EventNames.CreateServerDotEnv]: {
         before: this.beforeCreateServerDotEnv
+      },
+      [EventNames.CreateServerDockerCompose]: {
+        before: this.beforeCreateServerDockerCompose
       }
     };
   }
@@ -72,6 +76,13 @@ class RedisCachePlugin implements AmplicationPlugin {
     eventParams.envVariables = utils.settingsToVarDict(settings)
 
     return eventParams
+  }
+
+  beforeCreateServerDockerCompose(
+    context: DsgContext,
+    eventParams: CreateServerDockerComposeParams
+  ): CreateServerDockerComposeParams {
+    return eventParams;
   }
 }
 
