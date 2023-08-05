@@ -52,8 +52,8 @@ class RedisCachePlugin implements AmplicationPlugin {
   ): CreateServerAppModuleParams {
     const { template, templateMapping } = eventParams;
 
-    utils.addImport(template, stmt('import { CacheModule } from "@nestjs/common";'))
-    utils.addImport(template, stmt('import * as redisStore from "cache-manager-redis-store"'))
+    utils.addImport(template, cacheModuleImport())
+    utils.addImport(template, redisStoreImport())
 
     if(!templateMapping["MODULES"]) {
       throw new Error("Failed to find the app module's imported modules")
@@ -89,8 +89,18 @@ class RedisCachePlugin implements AmplicationPlugin {
   }
 }
 
-const stmt = (stmt: string): any => {
-  return utils.parse(stmt).program.body[0]
+const cacheModuleImport = (): namedTypes.ImportDeclaration => {
+  return builders.importDeclaration(
+    [builders.importSpecifier(builders.identifier("CacheModule"))],
+    builders.stringLiteral("@nestjs/common")
+  )
+}
+
+const redisStoreImport = (): namedTypes.ImportDeclaration => {
+  return builders.importDeclaration(
+    [builders.importNamespaceSpecifier(builders.identifier("redisStore"))],
+    builders.stringLiteral("cache-manager-redis-store")
+  )
 }
 
 const cacheModuleInstantiation = () => {
