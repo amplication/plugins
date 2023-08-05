@@ -1,5 +1,5 @@
 {
-  "name": "my-plugin",
+  "name": "redis-cache",
   "version": "0.0.1",
   "description": "Description of your plugin",
   "main": "dist/index.js",
@@ -11,7 +11,7 @@
     "prebuild": "rimraf dist",
     "format:write": "prettier --write \"**/*.{js,ts}\""
   },
-  "author": "Amplication Contributor",
+  "author": "Demilade Sonuga",
   "license": "Apache-2.0",
   "devDependencies": {
     "@amplication/code-gen-types": "^2.0.1",
@@ -50,5 +50,8 @@
       "**/*.(t|j)s"
     ],
     "testEnvironment": "node"
+  },
+  "dependencies": {
+    "recast": "^0.23.3"
   }
 }
