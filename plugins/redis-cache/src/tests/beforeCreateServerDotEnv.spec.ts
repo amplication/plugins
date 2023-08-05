@@ -18,11 +18,12 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
         context = mock<DsgContext>({
             pluginInstallations: [{ npm: name }]
         });
-        params = mock<CreateServerDotEnvParams>({envVariables: []})
+        params = { envVariables: [] }
     });
     it("should use the default settings when no user settings are specified", () => {
+        context.pluginInstallations[0].settings = {}
         const { envVariables } = plugin.beforeCreateServerDotEnv(context, params);
-        const expectedEnvVars: VariableDictionary = settingsToVarDict(defaultSettings)
+        const expectedEnvVars: VariableDictionary = utils.settingsToVarDict(defaultSettings)
         deepEqual(envVariables, expectedEnvVars)
     });
     it("should use the user specified settings when the user specifies them", () => {
@@ -34,16 +35,7 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
         }
         context.pluginInstallations[0].settings = userSpecifiedSettings;
         const { envVariables } = plugin.beforeCreateServerDotEnv(context, params);
-        deepEqual(envVariables, settingsToVarDict(userSpecifiedSettings));
+        deepEqual(envVariables, utils.settingsToVarDict(userSpecifiedSettings));
     });
 });
 
-const settingsToVarDict = (settings: Settings) => {
-    return Object.keys(settings)
-        .map((settingKey) => (
-            {
-                [utils.settingToEnvVar(settingKey as keyof Settings)]: 
-                    defaultSettings[settingKey as keyof Settings].toString()
-            }
-        ))
-}

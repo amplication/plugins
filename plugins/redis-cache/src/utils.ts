@@ -1,7 +1,7 @@
 import { PluginInstallation } from "@amplication/code-gen-types";
 import { name as PackageName } from "../package.json";
 import { Settings } from "./types";
-import defaultSettings from "../.amplicationrc.json";
+import { settings as defaultSettings } from "../.amplicationrc.json";
 import { File } from "@babel/types";
 import { namedTypes, } from "ast-types";
 import * as recast from "recast";
@@ -18,7 +18,7 @@ export const getPluginSettings = (
   const userSettings = plugin?.settings ?? {};
 
   const settings: Settings = {
-    ...defaultSettings.settings,
+    ...defaultSettings,
     ...userSettings,
   };
 
@@ -33,6 +33,14 @@ export const settingToEnvVar = (settingKey: keyof Settings): string => {
     max: "REDIS_MAX_REQUESTS_CACHED"
   }
   return mapping[settingKey]
+}
+
+export const settingsToVarDict = (settings: Settings) => {
+  return Object.keys(settings)
+      .map((settingKey) => ({
+          [settingToEnvVar(settingKey as keyof Settings)]: 
+            defaultSettings[settingKey as keyof Settings]?.toString()
+      }))
 }
 
 export function addImport(
