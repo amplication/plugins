@@ -5,7 +5,7 @@ export const beforeCreateClientPackageJson = async (
   context: DsgContext,
   eventParams: CreateAdminUIPackageJsonParams,
 ): Promise<CreateAdminUIPackageJsonParams> => {
-  eventParams.updateProperties.push(adminUIPackageJsonValues)  
+  eventParams.updateProperties.push(adminUIPackageJsonValues);  
 
   return eventParams;
 };

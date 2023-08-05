@@ -12,4 +12,4 @@ export const afterCreateClient = async (
   );
   await modules.merge(staticsFiles);
   return modules;
-}
+};

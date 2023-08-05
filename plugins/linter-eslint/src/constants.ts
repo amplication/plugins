@@ -14,7 +14,7 @@ export const serverPackageJsonValues = {
     "@typescript-eslint/parser": "^6.2.1",
     "eslint": "^8.46.0",
   }
-}
+};
 
 export const adminUIPackageJsonValues = {
   scripts: {
@@ -27,4 +27,4 @@ export const adminUIPackageJsonValues = {
     "eslint": "^8.46.0",
     "eslint-plugin-react": "^7.33.1"
   }
-}
+};
