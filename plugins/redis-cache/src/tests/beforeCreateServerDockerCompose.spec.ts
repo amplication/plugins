@@ -1,11 +1,8 @@
-import { CreateServerDockerComposeParams, CreateServerDotEnvParams, DsgContext, VariableDictionary } from "@amplication/code-gen-types";
+import { CreateServerDockerComposeParams, DsgContext } from "@amplication/code-gen-types";
 import { deepEqual } from "assert";
 import { mock } from "jest-mock-extended";
 import { name } from "../../package.json";
 import RedisCachePlugin from "../index";
-import * as utils from "../utils"
-import { settings as defaultSettings } from "../../.amplicationrc.json"
-import { Settings } from "../types";
 
 
 describe("Testing beforeCreateServerDockerCompose hook", () => {
@@ -24,6 +21,9 @@ describe("Testing beforeCreateServerDockerCompose hook", () => {
         const { updateProperties } = plugin.beforeCreateServerDockerCompose(context, params)
         deepEqual(updateProperties, [{
             services: {
+                server: {
+                    depends_on: "redis"
+                },
                 redis: {
                     container_name: "${REDIS_HOST}",
                     image: "redis:6",

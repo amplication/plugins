@@ -1,5 +1,4 @@
 import { CreateServerAppModuleParams, DsgContext } from "@amplication/code-gen-types";
-import { deepEqual } from "assert";
 import { mock } from "jest-mock-extended";
 import { name } from "../../package.json";
 import RedisCachePlugin from "../index";

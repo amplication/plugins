@@ -82,6 +82,9 @@ class RedisCachePlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDockerComposeParams
   ): CreateServerDockerComposeParams {
+
+    eventParams.updateProperties.push(...constants.updateDockerComposeProperties)
+
     return eventParams;
   }
 }

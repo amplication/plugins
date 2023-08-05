@@ -5,7 +5,6 @@ import { name } from "../../package.json";
 import RedisCachePlugin from "../index";
 import * as utils from "../utils"
 import { settings as defaultSettings } from "../../.amplicationrc.json"
-import { Settings } from "../types";
 
 
 describe("Testing beforeCreateServerDotEnv hook", () => {
