@@ -17,7 +17,7 @@ describe("Testing beforeServerPackageJson hook", () => {
     it("should add the dependencies required to use Redis to the package.json file", () => {
         const { updateProperties } = plugin.beforeCreateServerPackageJson(context, {
             fileContent: "",
-            updateProperties: []
+            updateProperties: [{}]
         })
         deepEqual(updateProperties, [{
             dependencies: {
