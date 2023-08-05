@@ -1,1 +1,8 @@
-{}
+{
+    "settings": {
+        "host": "localhost",
+        "port": 6379,
+        "ttl": 5,
+        "max": 100
+    }
+}
