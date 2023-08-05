@@ -9,8 +9,8 @@
     "build": "webpack",
     "prebuild": "rimraf dist",
     "format:write": "prettier --write \"**/*.{js,ts}\"",
-    "lint:fix": "eslint './src/**/*.{ts, tsx}' --fix",
-    "lint": "eslint './src/**/*.{ts, tsx}'"
+    "lint:fix": "eslint './src/**/*.{ts, tsx}' --fix --c .eslintrc",
+    "lint": "eslint './src/**/*.{ts, tsx}' --c .eslintrc"
   },
   "author": "Ashish Padhy",
   "license": "Apache-2.0",
