@@ -3,13 +3,16 @@ import type {
   Events,
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
-import { afterCreateServer, beforeCreateClientPackageJson, beforeCreateServerPackageJson } from "./events";
+import { afterCreateClient, afterCreateServer, beforeCreateClientPackageJson, beforeCreateServerPackageJson } from "./events";
 
 class ESLintPlugin implements AmplicationPlugin {
   register(): Events {
     return {
       [EventNames.CreateServer]: {
         after: afterCreateServer,
+      },
+      [EventNames.CreateAdminUI]: {
+        after: afterCreateClient,
       },
       [EventNames.CreateServerPackageJson]: {
         before: beforeCreateServerPackageJson,

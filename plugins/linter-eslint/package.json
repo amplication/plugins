@@ -8,7 +8,9 @@
     "dev": "webpack --watch",
     "build": "webpack",
     "prebuild": "rimraf dist",
-    "format:write": "prettier --write \"**/*.{js,ts}\""
+    "format:write": "prettier --write \"**/*.{js,ts}\"",
+    "lint:fix": "eslint './src/**/*.{ts, tsx}' --fix",
+    "lint": "eslint './src/**/*.{ts, tsx}'"
   },
   "author": "Ashish Padhy",
   "license": "Apache-2.0",
@@ -16,9 +18,10 @@
     "@amplication/code-gen-types": "^2.0.1",
     "@babel/parser": "^7.20.7",
     "@babel/types": "^7.20.7",
-    "@typescript-eslint/eslint-plugin": "^5.33.0",
-    "@typescript-eslint/parser": "^5.33.0",
+    "@typescript-eslint/eslint-plugin": "^6.2.1",
+    "@typescript-eslint/parser": "^6.2.1",
     "copy-webpack-plugin": "^11.0.0",
+    "eslint": "^8.46.0",
     "jest-mock-extended": "^3.0.1",
     "lodash": "^4.17.21",
     "prettier": "^2.8.7",
