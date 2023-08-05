@@ -1,7 +1,7 @@
 {
-  "name": "redis-cache",
+  "name": "@amplication/redis-cache",
   "version": "0.0.1",
-  "description": "Description of your plugin",
+  "description": "Use Redis as a Cache in services generated with Amplication",
   "main": "dist/index.js",
   "scripts": {
     "prepublishOnly": "npm run build",

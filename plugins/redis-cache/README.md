@@ -12,10 +12,34 @@ It updates the following parts:
 - Adds the required dependencies to `package.json`.
 - Adds the required environment variables to `.env`.
 - Adds the `CacheModule` configured to use Redis to the `app.module.ts` module imports list.
+- Adds the required service to the `docker-compose.yml` file.
 
 ## Configuration
 
-If a configuration is required, add it here.
+The `host` setting is the host of the Redis server. 
+
+The `port` setting is the port on which the Redis server is accepting connections.
+
+The `ttl` setting is the Time To Live for cached values.
+
+The `max` setting is the maximum amount of requests that can be cached at once.
+
+The `username` setting is the username used to connect to the server.
+
+The `password` setting is the password used to connect to the server.
+
+If no configuration is provided the .amplicationrc.json file will use be used as the default values.
+
+```json
+{
+    "host": "localhost",
+    "port": 6379,
+    "ttl": 5,
+    "max": 100,
+    "username": null,
+    "password": null
+}
+```
 
 ## Scripts
 
@@ -27,6 +51,11 @@ Running `npm run build` will bundle your plugin with Webpack for production.
 
 Running `npm run dev` will watch your plugin's source code and automatically bundle it with every change.
 
+### `test`
+
+Running `npm run test` will run the plugin's test suite.
+
 ## Usage
 
-Explain the usage of this plugin and its effect on the final build.
+This plugin provides you with a Redis cache module that you can use in your service.
+To configure, modify the settings using values in the Configuration section.
