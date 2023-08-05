@@ -1,15 +1,28 @@
 import { CreateServerParams, DsgContext, ModuleMap } from "@amplication/code-gen-types";
-import { serverStaticPath } from "../constants";
+import { rulesPlaceholder, serverStaticPath } from "../constants";
+import { getPluginSettings } from "../utils";
+import { format } from "prettier";
 
 export const afterCreateServer = async (
   context: DsgContext,
   eventParams: CreateServerParams,
   modules: ModuleMap
 ): Promise<ModuleMap> => {
-  const staticsFiles = await context.utils.importStaticModules(
+  const { rules } = getPluginSettings(
+    context.pluginInstallations
+  );
+
+  const staticFiles = await context.utils.importStaticModules(
     serverStaticPath,
     context.serverDirectories.baseDirectory
   );
-  await modules.merge(staticsFiles);
+
+  staticFiles.replaceModulesCode(( code ) => 
+    code.replaceAll(
+      rulesPlaceholder, 
+      format(JSON.stringify(rules, null, 2), { parser: "json" })
+    ));
+
+  await modules.merge(staticFiles);
   return modules;
 };

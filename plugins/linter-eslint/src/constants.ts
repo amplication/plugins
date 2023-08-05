@@ -4,6 +4,8 @@ export const clientStaticPath = join(__dirname, "static/client");
 export const serverStaticPath = join(__dirname, "static/server");
 export const eventsPath = join(__dirname, "events");
 
+export const rulesPlaceholder = "\"${{ RULES }}\"";
+
 export const serverPackageJsonValues = {
   scripts: {
     "lint": "eslint './src/**/*.{ts, tsx}'",

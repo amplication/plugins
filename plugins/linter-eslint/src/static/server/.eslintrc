@@ -15,12 +15,7 @@
 	"plugins": [
 		"@typescript-eslint"
 	],
-	"rules": {
-		"indent": [ "error", 4 ],
-		"linebreak-style": [ "error", "unix" ],
-		"quotes": [ "error", "single" ],
-		"semi": [ "error", "always" ]
-	},
+	"rules": "${{ RULES }}",
 	"overrides": [
 		{
       "files": ["*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx"],
