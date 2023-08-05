@@ -73,7 +73,7 @@ class RedisCachePlugin implements AmplicationPlugin {
   ): CreateServerDotEnvParams {
 
     const settings = utils.getPluginSettings(context.pluginInstallations)
-    eventParams.envVariables = utils.settingsToVarDict(settings)
+    eventParams.envVariables.push(...utils.settingsToVarDict(settings))
 
     return eventParams
   }
