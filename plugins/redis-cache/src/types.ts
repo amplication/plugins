@@ -1,6 +1,6 @@
 export interface Settings {
   host: string,
-  port: string,
-  ttl: string,
+  port: number,
+  ttl: number,
   max: number
 }

@@ -1,13 +1,13 @@
 import type {
   AmplicationPlugin,
   CreateServerAppModuleParams,
+  CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
   DsgContext,
   Events
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
-import { merge, update } from "lodash"
-import { addImport } from "./utils";
+import { merge } from "lodash"
 import * as utils from "./utils"
 import { builders, namedTypes } from "ast-types"
 
@@ -20,6 +20,9 @@ class RedisCachePlugin implements AmplicationPlugin {
       },
       [EventNames.CreateServerAppModule]: {
         before: this.beforeCreateServerAppModule
+      },
+      [EventNames.CreateServerDotEnv]: {
+        before: this.beforeCreateServerDotEnv
       }
     };
   }
@@ -61,6 +64,13 @@ class RedisCachePlugin implements AmplicationPlugin {
     const cacheModule = cacheModuleInstantiation()
     modules.elements.push(cacheModule)
 
+    return eventParams
+  }
+
+  beforeCreateServerDotEnv(
+    context: DsgContext,
+    eventParams: CreateServerDotEnvParams
+  ): CreateServerDotEnvParams {
     return eventParams
   }
 }

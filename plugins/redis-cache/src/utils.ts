@@ -2,14 +2,38 @@ import { PluginInstallation } from "@amplication/code-gen-types";
 import { name as PackageName } from "../package.json";
 import { Settings } from "./types";
 import defaultSettings from "../.amplicationrc.json";
-
-
 import { File } from "@babel/types";
-import { namedTypes, ASTNode } from "ast-types";
+import { namedTypes, } from "ast-types";
 import * as recast from "recast";
 import * as recastBabelParser from "recast/parsers/babel";
 import getBabelOptions, { Overrides } from "recast/parsers/_babel_options";
 
+export const getPluginSettings = (
+  pluginInstallations: PluginInstallation[]
+): Settings => {
+  const plugin = pluginInstallations.find(
+    (plugin) => plugin.npm === PackageName
+  );
+
+  const userSettings = plugin?.settings ?? {};
+
+  const settings: Settings = {
+    ...defaultSettings.settings,
+    ...userSettings,
+  };
+
+  return settings;
+};
+
+export const settingToEnvVar = (settingKey: keyof Settings): string => {
+  const mapping = {
+    host: "REDIS_HOST",
+    port: "REDIS_PORT",
+    ttl: "REDIS_TTL",
+    max: "REDIS_MAX_REQUESTS_CACHED"
+  }
+  return mapping[settingKey]
+}
 
 export function addImport(
   file: namedTypes.File,
