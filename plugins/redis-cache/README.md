@@ -58,4 +58,16 @@ Running `npm run test` will run the plugin's test suite.
 ## Usage
 
 This plugin provides you with a Redis cache module that you can use in your service.
-To configure, modify the settings using values in the Configuration section.
+To configure, set the following environment variables:
+
+REDIS_HOST - The host on which the Redis server is running.
+
+REDIS_PORT - The port on which the Redis server is listening.
+
+REDIS_TTL - The Time To Live for cached requests on the Redis server.
+
+REDIS_MAX_REQUESTS_CACHED - The largest amount of requests that can be cached at once.
+
+REDIS_USERNAME - The username to be used to connect to the Redis server.
+
+REDIS_PASSWORD - The password to be used to connect to the Redis server.
