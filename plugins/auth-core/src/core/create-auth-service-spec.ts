@@ -1,6 +1,10 @@
 import { Module, DsgContext } from "@amplication/code-gen-types";
 import { join } from "path";
-import { AUTH_ENTITY_ERROR, templatesPath } from "../constants";
+import {
+  AUTH_ENTITY_ERROR,
+  AUTH_ENTITY_LOG_ERROR,
+  templatesPath,
+} from "../constants";
 import { readFile, print } from "@amplication/code-gen-utils";
 import {
   addImports,
@@ -23,7 +27,7 @@ export async function createAuthServiceSpec(
     (x) => x.name === resourceInfo?.settings.authEntityName
   );
   if (!authEntity) {
-    dsgContext.logger.error(AUTH_ENTITY_ERROR);
+    dsgContext.logger.error(AUTH_ENTITY_LOG_ERROR);
     throw new Error(AUTH_ENTITY_ERROR);
   }
 
