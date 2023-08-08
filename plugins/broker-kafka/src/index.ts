@@ -3,22 +3,23 @@ import {
   CreateMessageBrokerClientOptionsFactoryParams,
   CreateMessageBrokerNestJSModuleParams,
   CreateMessageBrokerParams,
-  CreateMessageBrokerServiceBaseParams,
   CreateMessageBrokerServiceParams,
   CreateServerAppModuleParams,
   CreateServerDockerComposeDevParams,
   CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
   DsgContext,
+  EnumMessagePatternConnectionOptions,
   Events,
   Module,
   ModuleMap,
 } from "@amplication/code-gen-types";
-import { readFile } from "fs/promises";
+import { readFile, print } from "@amplication/code-gen-utils";
 import { kebabCase, merge } from "lodash";
 import { join, resolve } from "path";
-import { staticDirectory } from "./constants";
+import { staticDirectory, templatesPath } from "./constants";
 import { builders } from "ast-types";
+import { getClassDeclarationById, interpolate } from "./util/ast";
 class KafkaPlugin implements AmplicationPlugin {
   static moduleFile: Module | undefined;
   init?: ((name: string, version: string) => void) | undefined;
@@ -48,8 +49,8 @@ class KafkaPlugin implements AmplicationPlugin {
       CreateMessageBrokerService: {
         after: this.afterCreateMessageBrokerService,
       },
-      CreateMessageBrokerServiceBase: {
-        after: this.afterCreateMessageBrokerServiceBase,
+      CreateMessageBrokerTopicsEnum: {
+        before: this.beforeCreateMessageBroker,
       },
     };
   }
@@ -60,7 +61,7 @@ class KafkaPlugin implements AmplicationPlugin {
   ): Promise<ModuleMap> {
     const { serverDirectories } = context;
     const filePath = resolve(staticDirectory, "generateKafkaClientOptions.ts");
-    const file = await readFile(filePath, "utf8");
+    const file = await readFile(filePath);
     const generateFileName = "generateKafkaClientOptions.ts";
 
     const path = join(
@@ -68,8 +69,85 @@ class KafkaPlugin implements AmplicationPlugin {
       generateFileName
     );
     const modules = new ModuleMap(context.logger);
-    await modules.set({ code: file, path });
+    await modules.set({ code: print(file).code, path });
     return modules;
+  }
+
+  async beforeCreateMessageBroker(
+    context: DsgContext,
+    eventParams: CreateMessageBrokerParams
+  ) {
+    const templatePath = join(templatesPath, "controller.template.ts");
+    const template = await readFile(templatePath);
+    const controllerId = builders.identifier(`KafkaController`);
+    const templateMapping = {
+      CONTROLLER: controllerId,
+    };
+
+    interpolate(template, templateMapping);
+    const classDeclaration = getClassDeclarationById(template, controllerId);
+
+    const serviceReceivedTopics = context.serviceTopics?.map((serviceTopic) => {
+      serviceTopic.patterns.forEach((topic) => {
+        if (!topic.topicName) {
+          throw new Error(`Topic name not found for topic id ${topic.topicId}`);
+        }
+
+        if (topic.type !== EnumMessagePatternConnectionOptions.Receive) return;
+
+        const eventPatternDecorator = builders.decorator(
+          builders.callExpression(builders.identifier("EventPattern"), [
+            builders.stringLiteral(topic.topicName),
+          ])
+        );
+
+        const payloadDecorator = builders.decorator(
+          builders.callExpression(builders.identifier("Payload"), [])
+        );
+
+        const messageIdentifier = builders.identifier.from({
+          name: "message",
+          typeAnnotation: builders.tsTypeAnnotation(
+            builders.tsTypeReference(builders.identifier("Any"))
+          ),
+          //@ts-ignore
+          decorators: [payloadDecorator],
+        });
+
+        const currentClassMethod = builders.classMethod(
+          "method",
+          builders.identifier(`on${topic.topicName}`),
+
+          [messageIdentifier],
+          builders.blockStatement([])
+        );
+
+        currentClassMethod.async = true;
+        currentClassMethod.returnType = builders.tsTypeAnnotation(
+          builders.tsTypeReference(
+            builders.identifier("Promise"),
+            builders.tsTypeParameterInstantiation([builders.tsVoidKeyword()])
+          )
+        );
+
+        if (!currentClassMethod.decorators) {
+          currentClassMethod.decorators = [];
+        }
+        currentClassMethod.decorators.push(eventPatternDecorator);
+
+        classDeclaration.body.body.push(currentClassMethod);
+      });
+    });
+    const filePath = join(
+      context.serverDirectories.messageBrokerDirectory,
+      "kafka.controller.ts"
+    );
+
+    await context.logger.info(`controller file: ${print(template).code}`);
+    const controllerFile = { code: print(template).code, path: filePath };
+    await context.modules.set(controllerFile);
+
+    return eventParams;
   }
 
   beforeCreateBroker(
@@ -91,11 +169,11 @@ class KafkaPlugin implements AmplicationPlugin {
 
     const { serverDirectories } = context;
     const { messageBrokerDirectory } = serverDirectories;
-    const file = await readFile(filePath, "utf8");
+    const file = await readFile(filePath);
     const generateFileName = "kafka.module.ts";
 
     KafkaPlugin.moduleFile = {
-      code: file,
+      code: print(file).code,
       path: join(messageBrokerDirectory, generateFileName),
     };
 
@@ -149,28 +227,12 @@ class KafkaPlugin implements AmplicationPlugin {
     const { messageBrokerDirectory } = serverDirectories;
     const filePath = resolve(staticDirectory, `kafka.service.ts`);
 
-    const file = await readFile(filePath, "utf8");
+    const file = await readFile(filePath);
     const generateFileName = `kafka.service.ts`;
 
     const path = join(messageBrokerDirectory, generateFileName);
     const modules = new ModuleMap(context.logger);
-    await modules.set({ code: file, path });
-    return modules;
-  }
-  async afterCreateMessageBrokerServiceBase(
-    context: DsgContext,
-    eventParams: CreateMessageBrokerServiceBaseParams
-  ): Promise<ModuleMap> {
-    const { serverDirectories } = context;
-    const { messageBrokerDirectory } = serverDirectories;
-    const filePath = resolve(staticDirectory, `kafka.service.base.ts`);
-
-    const file = await readFile(filePath, "utf8");
-    const generateFileName = `kafka.service.base.ts`;
-
-    const path = join(messageBrokerDirectory, "base", generateFileName);
-    const modules = new ModuleMap(context.logger);
-    await modules.set({ code: file, path });
+    await modules.set({ code: print(file).code, path });
     return modules;
   }
 
