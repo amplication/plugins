@@ -26,7 +26,6 @@ export class ParseError extends SyntaxError {
     super(`${message}\nSource:\n${source}`);
   }
 }
-const MODULE_DECORATOR_NAME = "Module";
 
 /**
  * Consolidate import declarations to a valid minimal representation
@@ -655,31 +654,6 @@ export function typedExpression<T>(type: { check(v: any): v is T }) {
   };
 }
 
-export function AddIdentifierFromModuleDecorator(
-  file: ASTNode,
-  searchIdentifier: namedTypes.Identifier,
-  addIdentifier: namedTypes.CallExpression
-): void {
-  const moduleDecorator = findFirstDecoratorByName(file, MODULE_DECORATOR_NAME);
-
-  recast.visit(moduleDecorator, {
-    visitIdentifier(path) {
-      //find the identifier inside and ArrayExpression
-      if (
-        path.value.name === searchIdentifier.name &&
-        path.parent.value.type === "ArrayExpression"
-      ) {
-        path.parent.value.elements.push(addIdentifier);
-        //If the parent array is left empty, remove the entire ObjectProperty that contained the array
-        // if (parentPath.value.elements.length === 0) {
-        //   parentPath.parent.prune();
-        // }
-      }
-      this.traverse(path);
-    },
-  });
-}
-
 export function typedStatement<T>(type: { check(v: any): v is T }) {
   return (
     strings: TemplateStringsArray,
@@ -855,4 +829,34 @@ export function addDecoratorsToClassDeclaration(
   const [classDeclaration] = ast.program.body as [namedTypes.ClassDeclaration];
 
   return classDeclaration;
+}
+
+export function addInjectableDependency(
+  classDeclaration: namedTypes.ClassDeclaration,
+  name: string,
+  typeId: namedTypes.Identifier,
+  accessibility: "public" | "private" | "protected",
+  decorators?: namedTypes.Decorator[]
+): void {
+  const constructor = findConstructor(classDeclaration);
+
+  if (!constructor) {
+    throw new Error("Could not find given class declaration constructor");
+  }
+
+  const propToInject = builders.tsParameterProperty.from({
+    accessibility: accessibility,
+    readonly: true,
+    parameter: builders.identifier.from({
+      name: name,
+      typeAnnotation: builders.tsTypeAnnotation(
+        builders.tsTypeReference(typeId)
+      ),
+    }),
+  });
+
+  //@ts-ignore
+  propToInject.decorators = decorators;
+
+  constructor.params.push(propToInject);
 }

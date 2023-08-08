@@ -1,16 +1,16 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 // @ts-ignore
 // eslint-disable-next-line
-import { UserService } from "../user/user.service";
 import { Credentials } from "./Credentials";
 import { PasswordService } from "./password.service";
 import { TokenService } from "./token.service";
-import { UserInfo } from "./UserInfo";
+
+declare class ENTITY_NAME_INFO {}
+declare class ENTITY_SERVICE {}
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userService: UserService,
     private readonly passwordService: PasswordService,
     private readonly tokenService: TokenService
   ) {}
@@ -18,8 +18,8 @@ export class AuthService {
   async validateUser(
     username: string,
     password: string
-  ): Promise<UserInfo | null> {
-    const user = await this.userService.findOne({
+  ): Promise<ENTITY_NAME_INFO | null> {
+    const user = await this.ENTITY_SERVICE.findOne({
       where: { username },
     });
     if (user && (await this.passwordService.compare(password, user.password))) {
@@ -29,7 +29,7 @@ export class AuthService {
     }
     return null;
   }
-  async login(credentials: Credentials): Promise<UserInfo> {
+  async login(credentials: Credentials): Promise<ENTITY_NAME_INFO> {
     const { username, password } = credentials;
     const user = await this.validateUser(
       credentials.username,

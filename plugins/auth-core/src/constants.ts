@@ -7,3 +7,4 @@ export const envVariables: VariableDictionary = [
 ];
 
 export const templatesPath = resolve(__dirname, "./templates");
+export const AUTH_ENTITY_ERROR = "Authentication entity does not exist";

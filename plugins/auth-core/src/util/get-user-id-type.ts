@@ -1,21 +1,18 @@
-import {
-  DsgContext,
-  Entity,
-  EntityField,
-  types,
-} from "@amplication/code-gen-types";
+import { DsgContext, EntityField, types } from "@amplication/code-gen-types";
+import { AUTH_ENTITY_ERROR } from "../constants";
 
 export const getUserIdType = (dsgContext: DsgContext) => {
-  const { entities } = dsgContext;
-  const userEntity = entities?.find(
-    (entity: Entity) => entity.name === "User" // should be fixed and use the context after publishing the new version of code-gen-types
+  const { entities, resourceInfo } = dsgContext;
+  const authEntity = entities?.find(
+    (x) => x.name === resourceInfo?.settings.authEntityName
   );
 
-  if (!userEntity) {
-    throw new Error("User entity not found");
+  if (!authEntity) {
+    dsgContext.logger.error(AUTH_ENTITY_ERROR);
+    throw new Error(AUTH_ENTITY_ERROR);
   }
 
-  const idField = userEntity.fields.find(
+  const idField = authEntity.fields.find(
     (field: EntityField) => field.dataType === "Id" // should be fixed moving dataTypes to a shared package
   );
   if (!idField) {

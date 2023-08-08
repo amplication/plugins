@@ -1,29 +1,60 @@
-import { types, Module, DsgContext } from "@amplication/code-gen-types";
+import { types, Module, DsgContext, Entity } from "@amplication/code-gen-types";
 import { readFile } from "@amplication/code-gen-utils";
-import { interpolate, removeTSClassDeclares } from "../util/ast";
+import {
+  addImports,
+  importNames,
+  interpolate,
+  removeTSClassDeclares,
+} from "../util/ast";
 import { builders, namedTypes } from "ast-types";
 import { print } from "@amplication/code-gen-utils";
 import { getUserIdType } from "../util/get-user-id-type";
 import { join } from "path";
-import { templatesPath } from "../constants";
+import { AUTH_ENTITY_ERROR, templatesPath } from "../constants";
 
 const userInfoPath = join(templatesPath, "user-info.template.ts");
 
 export async function createUserInfo(dsgContext: DsgContext): Promise<Module> {
-  const { serverDirectories } = dsgContext;
-  const authDir = `${serverDirectories.authDirectory}`;
+  const { serverDirectories, resourceInfo, entities } = dsgContext;
 
+  const authEntity = entities?.find(
+    (x) => x.name === resourceInfo?.settings.authEntityName
+  );
+  if (!authEntity) {
+    dsgContext.logger.error(AUTH_ENTITY_ERROR);
+    throw new Error(AUTH_ENTITY_ERROR);
+  }
+
+  const authDir = `${serverDirectories.authDirectory}`;
   const template = await readFile(userInfoPath);
   const idType = getUserIdType(dsgContext);
-  const templateMapping = prepareTemplateMapping(idType);
-  const filePath = `${authDir}/UserInfo.ts`;
+  const templateMapping = prepareTemplateMapping(idType, authEntity);
+  const { name } = authEntity;
+
+  const entityNameModuleId = builders.identifier(name);
+  const entityNamImport = importNames(
+    [entityNameModuleId],
+    `../${name.toLowerCase()}/base/${name}`
+  );
+
+  addImports(
+    template,
+    [entityNamImport].filter(
+      (x) => x //remove nulls and undefined
+    ) as namedTypes.ImportDeclaration[]
+  );
+
+  const filePath = `${authDir}/${name}Info.ts`;
   interpolate(template, templateMapping);
   removeTSClassDeclares(template);
 
   return { code: print(template).code, path: filePath };
 }
 
-function prepareTemplateMapping(idType: types.Id["idType"]) {
+function prepareTemplateMapping(
+  idType: types.Id["idType"],
+  authEntity: Entity
+) {
   const number = {
     class: "Number",
     type: "number",
@@ -54,5 +85,7 @@ function prepareTemplateMapping(idType: types.Id["idType"]) {
   return {
     USER_ID_TYPE_ANNOTATION: idTypeTSOptions[idType],
     USER_ID_CLASS: idTypClassOptions[idType],
+    ENTITY_NAME: builders.identifier(authEntity.name),
+    ENTITY_NAME_INFO: builders.identifier(`${authEntity.name}Info`),
   };
 }

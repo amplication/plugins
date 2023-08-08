@@ -1,11 +1,11 @@
 import { UnauthorizedException } from "@nestjs/common";
 import { mock } from "jest-mock-extended";
 import { JwtStrategyBase } from "../../../auth/jwt/base/jwt.strategy.base";
-import { UserService } from "../../../user/user.service";
 import { TEST_USER } from "../constants";
 
+declare class ENTITY_SERVICE {}
 describe("Testing the jwtStrategyBase.validate()", () => {
-  const userService = mock<UserService>();
+  const userService = mock<ENTITY_SERVICE>();
   const jwtStrategy = new JwtStrategyBase(userService, "Secrete");
   beforeEach(() => {
     userService.findOne.mockClear();
