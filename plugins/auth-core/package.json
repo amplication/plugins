@@ -12,8 +12,8 @@
   "author": "Mor Hagbi",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@amplication/code-gen-types": "^2.0.2-beta.2",
-    "@amplication/code-gen-utils": "^0.0.4",
+    "@amplication/code-gen-types": "^2.0.4",
+    "@amplication/code-gen-utils": "^0.0.5",
     "@babel/parser": "^7.18.11",
     "@babel/types": "^7.18.10",
     "@nestjs/common": "^9.0.9",
