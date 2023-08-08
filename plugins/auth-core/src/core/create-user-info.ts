@@ -10,7 +10,11 @@ import { builders, namedTypes } from "ast-types";
 import { print } from "@amplication/code-gen-utils";
 import { getUserIdType } from "../util/get-user-id-type";
 import { join } from "path";
-import { AUTH_ENTITY_ERROR, templatesPath } from "../constants";
+import {
+  AUTH_ENTITY_ERROR,
+  AUTH_ENTITY_LOG_ERROR,
+  templatesPath,
+} from "../constants";
 
 const userInfoPath = join(templatesPath, "user-info.template.ts");
 
@@ -21,7 +25,7 @@ export async function createUserInfo(dsgContext: DsgContext): Promise<Module> {
     (x) => x.name === resourceInfo?.settings.authEntityName
   );
   if (!authEntity) {
-    dsgContext.logger.error(AUTH_ENTITY_ERROR);
+    dsgContext.logger.error(AUTH_ENTITY_LOG_ERROR);
     throw new Error(AUTH_ENTITY_ERROR);
   }
 

@@ -9,7 +9,7 @@ import {
 } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
 import { print } from "@amplication/code-gen-utils";
-import { AUTH_ENTITY_ERROR } from "../constants";
+import { AUTH_ENTITY_ERROR, AUTH_ENTITY_LOG_ERROR } from "../constants";
 
 export async function mapAuthTemplate(
   context: DsgContext,
@@ -21,7 +21,7 @@ export async function mapAuthTemplate(
     (x) => x.name === resourceInfo?.settings.authEntityName
   );
   if (!authEntity) {
-    context.logger.error(AUTH_ENTITY_ERROR);
+    context.logger.error(AUTH_ENTITY_LOG_ERROR);
     throw new Error(AUTH_ENTITY_ERROR);
   }
 
