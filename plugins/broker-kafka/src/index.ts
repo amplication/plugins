@@ -35,11 +35,14 @@ class KafkaPlugin implements AmplicationPlugin {
       CreateServerAuth: {
         after: this.afterCreateServerAuth,
       },
+      CreateServerDockerCompose: {
+        before: this.beforeCreateDockerComposeFile,
+      },
       CreateServerPackageJson: {
         before: this.beforeCreateServerPackageJson,
       },
       CreateServerDockerComposeDev: {
-        before: this.beforeCreateDockerComposeDev,
+        before: this.beforeCreateDockerComposeFile,
       },
       CreateMessageBroker: {
         before: this.beforeCreateBroker,
@@ -194,13 +197,12 @@ class KafkaPlugin implements AmplicationPlugin {
     return modules;
   }
 
-  beforeCreateDockerComposeDev(
+  beforeCreateDockerComposeFile(
     dsgContext: DsgContext,
     eventParams: CreateServerDockerComposeDevParams
   ): CreateServerDockerComposeDevParams {
     const KAFKA_NAME = "kafka";
     const ZOOKEEPER_NAME = "zookeeper";
-    const KAFKA_UI = "kafka-ui";
     const NETWORK = "internal";
     const ZOOKEEPER_PORT = "2181";
     const KAFKA_PORT = "9092";
@@ -231,23 +233,11 @@ class KafkaPlugin implements AmplicationPlugin {
             KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1,
           },
         },
-        [KAFKA_UI]: {
-          container_name: KAFKA_UI,
-          image: "provectuslabs/kafka-ui:latest",
-          ports: ["8080:8080"],
-          depends_on: [ZOOKEEPER_NAME, KAFKA_NAME],
-          environment: {
-            KAFKA_CLUSTERS_0_NAME: "local",
-            KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:29092",
-            KAFKA_CLUSTERS_0_ZOOKEEPER: "zookeeper:2181",
-            KAFKA_CLUSTERS_0_JMXPORT: 9997,
-          },
-        },
-        networks: {
-          internal: {
-            name: NETWORK,
-            driver: "bridge",
-          },
+      },
+      networks: {
+        internal: {
+          name: NETWORK,
+          driver: "bridge",
         },
       },
     };
