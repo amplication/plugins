@@ -203,14 +203,14 @@ class KafkaPlugin implements AmplicationPlugin {
   ): CreateServerDockerComposeDevParams {
     const KAFKA_NAME = "kafka";
     const ZOOKEEPER_NAME = "zookeeper";
-    const NETWORK = "internal";
     const ZOOKEEPER_PORT = "2181";
     const KAFKA_PORT = "9092";
+    const KAFKA_UI = "kafka-ui";
+
     const newParams = {
       services: {
         [ZOOKEEPER_NAME]: {
           image: "confluentinc/cp-zookeeper:5.2.4",
-          networks: [NETWORK],
           environment: {
             ZOOKEEPER_CLIENT_PORT: 2181,
             ZOOKEEPER_TICK_TIME: 2000,
@@ -219,7 +219,6 @@ class KafkaPlugin implements AmplicationPlugin {
         },
         [KAFKA_NAME]: {
           image: "confluentinc/cp-kafka:7.3.1",
-          networks: [NETWORK],
           depends_on: [ZOOKEEPER_NAME],
           ports: ["9092:9092", "9997:9997"],
           environment: {
@@ -233,11 +232,17 @@ class KafkaPlugin implements AmplicationPlugin {
             KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1,
           },
         },
-      },
-      networks: {
-        internal: {
-          name: NETWORK,
-          driver: "bridge",
+        [KAFKA_UI]: {
+          container_name: KAFKA_UI,
+          image: "provectuslabs/kafka-ui:latest",
+          ports: ["8080:8080"],
+          depends_on: [ZOOKEEPER_NAME, KAFKA_NAME],
+          environment: {
+            KAFKA_CLUSTERS_0_NAME: "local",
+            KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:29092",
+            KAFKA_CLUSTERS_0_ZOOKEEPER: "zookeeper:2181",
+            KAFKA_CLUSTERS_0_JMXPORT: 9997,
+          },
         },
       },
     };
