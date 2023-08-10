@@ -19,7 +19,7 @@ import { readFile, print } from "@amplication/code-gen-utils";
 import { kebabCase, merge } from "lodash";
 import { join, resolve } from "path";
 import { staticDirectory, templatesPath } from "./constants";
-import { builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import { getClassDeclarationById, interpolate } from "./util/ast";
 import { pascalCase } from "pascal-case";
 
@@ -309,21 +309,24 @@ class KafkaPlugin implements AmplicationPlugin {
           builders.callExpression(builders.identifier("Payload"), [])
         );
 
+        const messageId = builders.identifier.from({
+          name: "message",
+          typeAnnotation: builders.tsTypeAnnotation(
+            builders.tsTypeReference(builders.identifier("KafkaMessage"))
+          ),
+        });
+
+        const decorators: namedTypes.Decorator[] = [payloadDecorator];
+
+        //@ts-ignore
+        messageId.decorators = decorators;
+
         const currentClassMethod = builders.classMethod.from({
           body: builders.blockStatement([]),
           async: true,
           key: builders.identifier(`on${pascalCase(topic.topicName)}`),
 
-          params: [
-            builders.identifier.from({
-              name: "message",
-              typeAnnotation: builders.tsTypeAnnotation(
-                builders.tsTypeReference(builders.identifier("any"))
-              ),
-              //@ts-ignore
-              decorators: [payloadDecorator],
-            }),
-          ],
+          params: [messageId],
           returnType: builders.tsTypeAnnotation(
             builders.tsTypeReference(
               builders.identifier("Promise"),
