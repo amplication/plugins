@@ -51,7 +51,7 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
   ];
 
 export const dataSource: DataSource = {
-  name: "mysql",
+  name: "db",
   provider: DataSourceProvider.MySQL,
   url: {
     name: "DB_URL",
