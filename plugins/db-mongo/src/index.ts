@@ -286,6 +286,18 @@ class MongoPlugin implements AmplicationPlugin {
       return originalHandler(field, entity, fieldNamesCount);
     };
 
+    const { entities } = eventParams;
+    entities.forEach((entity) => {
+      entity.fields.forEach((field) => {
+        if (field.customAttributes) {
+          field.customAttributes = field.customAttributes.replace(
+            /@([\w]+)\./g,
+            `@${dataSource.name}.`
+          );
+        }
+      });
+    });
+
     return {
       ...eventParams,
       dataSource: dataSource,
