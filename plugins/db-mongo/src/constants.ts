@@ -56,7 +56,7 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
   ];
 
 export const dataSource: DataSource = {
-  name: "mongo",
+  name: "db",
   provider: DataSourceProvider.MongoDB,
   url: {
     name: "DB_URL",
