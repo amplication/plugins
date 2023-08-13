@@ -1,0 +1,9 @@
+{
+  "settings": {
+    "rules": {
+      "singleQuote": true,
+      "arrowParens": "avoid",
+      "trailingComma": "all"
+    }
+  }
+}
