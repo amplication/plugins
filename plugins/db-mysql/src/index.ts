@@ -12,7 +12,7 @@ import {
 } from "@amplication/code-gen-types";
 import { resolve } from "path";
 import { getPluginSettings } from "./utils";
-import { dataSource, updateDockerComposeProperties } from "./constants";
+import { dataSource, updateDockerComposeDevProperties, updateDockerComposeProperties } from "./constants";
 
 class MySQLPlugin implements AmplicationPlugin {
   register(): Events {
@@ -26,9 +26,8 @@ class MySQLPlugin implements AmplicationPlugin {
       CreateServerDockerCompose: {
         before: this.beforeCreateServerDockerCompose,
       },
-      CreateServerDockerComposeDB: {
-        before: this.beforeCreateServerDockerComposeDB,
-        after: this.afterCreateServerDockerComposeDB,
+      CreateServerDockerComposeDev: {
+        before: this.beforeCreateServerDockerComposeDev,
       },
       CreatePrismaSchema: {
         before: this.beforeCreatePrismaSchema,
@@ -88,22 +87,12 @@ class MySQLPlugin implements AmplicationPlugin {
     return eventParams;
   }
 
-  beforeCreateServerDockerComposeDB(
+  beforeCreateServerDockerComposeDev(
     context: DsgContext,
     eventParams: CreateServerDockerComposeDBParams
   ) {
-    context.utils.skipDefaultBehavior = true;
+    eventParams.updateProperties.push(...updateDockerComposeDevProperties);
     return eventParams;
-  }
-
-  async afterCreateServerDockerComposeDB(
-    context: DsgContext
-  ): Promise<ModuleMap> {
-    const staticPath = resolve(__dirname, "./static");
-    return await context.utils.importStaticModules(
-      staticPath,
-      context.serverDirectories.baseDirectory
-    );
   }
 
   beforeCreatePrismaSchema(
@@ -121,7 +110,7 @@ class MySQLPlugin implements AmplicationPlugin {
         }
       });
     });
-    
+
     return {
       ...eventParams,
       dataSource: dataSource,
