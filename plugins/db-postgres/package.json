@@ -12,7 +12,7 @@
   "author": "Amit Barletz",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@amplication/code-gen-types": "^2.0.1",
+    "@amplication/code-gen-types": "^2.0.4",
     "@babel/parser": "^7.18.11",
     "@babel/types": "^7.18.10",
     "@types/jest": "^29.5.0",
