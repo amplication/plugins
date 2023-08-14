@@ -26,6 +26,7 @@ export class ParseError extends SyntaxError {
     super(`${message}\nSource:\n${source}`);
   }
 }
+const MODULE_DECORATOR_NAME = "Module";
 
 /**
  * Consolidate import declarations to a valid minimal representation
@@ -652,6 +653,31 @@ export function typedExpression<T>(type: { check(v: any): v is T }) {
     }
     return exp;
   };
+}
+
+export function AddIdentifierFromModuleDecorator(
+  file: ASTNode,
+  searchIdentifier: namedTypes.Identifier,
+  addIdentifier: namedTypes.CallExpression
+): void {
+  const moduleDecorator = findFirstDecoratorByName(file, MODULE_DECORATOR_NAME);
+
+  recast.visit(moduleDecorator, {
+    visitIdentifier(path) {
+      //find the identifier inside and ArrayExpression
+      if (
+        path.value.name === searchIdentifier.name &&
+        path.parent.value.type === "ArrayExpression"
+      ) {
+        path.parent.value.elements.push(addIdentifier);
+        //If the parent array is left empty, remove the entire ObjectProperty that contained the array
+        // if (parentPath.value.elements.length === 0) {
+        //   parentPath.parent.prune();
+        // }
+      }
+      this.traverse(path);
+    },
+  });
 }
 
 export function typedStatement<T>(type: { check(v: any): v is T }) {

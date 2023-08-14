@@ -8,6 +8,12 @@ import {
 } from "@amplication/code-gen-types";
 import { EnumAuthProviderType } from "@amplication/code-gen-types/src/models";
 import { resolve } from "path";
+import {
+  createAuthModule,
+  createJwtStrategy,
+  createJwtStrategyBase,
+  createJwtStrategySpec,
+} from "./core";
 class JwtAuthPlugin implements AmplicationPlugin {
   register(): Events {
     return {
@@ -51,6 +57,22 @@ class JwtAuthPlugin implements AmplicationPlugin {
       staticPath,
       context.serverDirectories.srcDirectory
     );
+
+    // 1. create jwtStrategy base file.
+    const jwyStrategyBase = await createJwtStrategyBase(context);
+    await modules.set(jwyStrategyBase);
+
+    // 2. create jwtStrategy  file.
+    const jwyStrategy = await createJwtStrategy(context);
+    await modules.set(jwyStrategy);
+
+    // 3. create auth module  file.
+    const authModule = await createAuthModule(context);
+    await modules.set(authModule);
+
+    // 4. create jwtStrategy spec file.
+    const jwyStrategySpec = await createJwtStrategySpec(context);
+    await modules.set(jwyStrategySpec);
 
     await modules.merge(staticsFiles);
     return modules;
