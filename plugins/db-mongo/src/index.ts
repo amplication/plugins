@@ -23,7 +23,11 @@ import { pascalCase } from "pascal-case";
 import { resolve } from "path";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { ReferentialActions, ScalarType } from "prisma-schema-dsl-types";
-import { dataSource, updateDockerComposeProperties } from "./constants";
+import {
+  dataSource,
+  updateDockerComposeDevProperties,
+  updateDockerComposeProperties,
+} from "./constants";
 import { getPluginSettings } from "./utils";
 
 class MongoPlugin implements AmplicationPlugin {
@@ -38,9 +42,8 @@ class MongoPlugin implements AmplicationPlugin {
       CreateServerDockerCompose: {
         before: this.beforeCreateServerDockerCompose,
       },
-      CreateServerDockerComposeDB: {
-        before: this.beforeCreateServerDockerComposeDB,
-        after: this.afterCreateServerDockerComposeDB,
+      CreateServerDockerComposeDev: {
+        before: this.beforeCreateServerDockerComposeDev,
       },
       CreatePrismaSchema: {
         before: this.beforeCreatePrismaSchema,
@@ -127,22 +130,12 @@ class MongoPlugin implements AmplicationPlugin {
     return eventParams;
   }
 
-  beforeCreateServerDockerComposeDB(
+  beforeCreateServerDockerComposeDev(
     context: DsgContext,
     eventParams: CreateServerDockerComposeDBParams
   ) {
-    context.utils.skipDefaultBehavior = true;
+    eventParams.updateProperties.push(...updateDockerComposeDevProperties);
     return eventParams;
-  }
-
-  async afterCreateServerDockerComposeDB(
-    context: DsgContext
-  ): Promise<ModuleMap> {
-    const staticPath = resolve(__dirname, "./static/docker-compose");
-    return await context.utils.importStaticModules(
-      staticPath,
-      context.serverDirectories.baseDirectory
-    );
   }
 
   async afterCreateServerStaticFiles(
