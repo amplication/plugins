@@ -1,12 +1,14 @@
 import { join } from "path";
+import { PackageJsonValues } from "./types";
 
 export const clientStaticPath = join(__dirname, "static/client");
 export const serverStaticPath = join(__dirname, "static/server");
 export const eventsPath = join(__dirname, "events");
 
 export const rulesPlaceholder = "\"${{ RULES }}\"";
+export const extendsPlaceholder = "\"${{ EXTENDS }}\"";
 
-export const serverPackageJsonValues = {
+export const serverPackageJsonValues : PackageJsonValues = {
   scripts: {
     "lint": "eslint './src/**/*.{ts, tsx}'",
     "lint:fix": "eslint --fix './src/**/*.{ts, tsx}'",
@@ -18,12 +20,12 @@ export const serverPackageJsonValues = {
   }
 };
 
-export const adminUIPackageJsonValues = {
+export const adminUIPackageJsonValues : PackageJsonValues = {
   scripts: {
     "lint": "eslint './src/**/*.{ts, tsx}'",
     "lint:fix": "eslint --fix './src/**/*.{ts, tsx}'",
   },
-  "devDependencies": {
+  devDependencies: {
     "@typescript-eslint/eslint-plugin": "^6.2.1",
     "@typescript-eslint/parser": "^6.2.1",
     "eslint": "^8.46.0",

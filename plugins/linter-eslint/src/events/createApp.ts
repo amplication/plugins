@@ -1,5 +1,5 @@
 import { CreateAdminUIParams, CreateServerParams, DsgContext, ModuleMap } from "@amplication/code-gen-types";
-import { clientStaticPath, rulesPlaceholder, serverStaticPath } from "../constants";
+import { clientStaticPath, extendsPlaceholder, rulesPlaceholder, serverStaticPath } from "../constants";
 import { format } from "prettier";
 import { getPluginSettings } from "../utils";
 
@@ -11,7 +11,7 @@ export const afterCreateApp = (
     eventParams: CreateAdminUIParams | CreateServerParams,
     modules: ModuleMap,
   ): Promise<ModuleMap> => {
-    const { rules } = getPluginSettings(
+    const { rules, formatter } = getPluginSettings(
       context.pluginInstallations
     );
     let staticFilesPath, baseDirectory;
@@ -31,11 +31,18 @@ export const afterCreateApp = (
       staticFilesPath,
       baseDirectory
     );
+
+    const extendsValue = (formatter === "prettier") ? ",\n\t  \"prettier\"" : "";
+
     staticFiles.replaceModulesCode(( code ) => 
       code.replaceAll(
         rulesPlaceholder, 
         format(JSON.stringify(rules, null, 2), { parser: "json" })
+      ).replaceAll(
+        extendsPlaceholder,
+        extendsValue
       ));
+      
   
     await modules.merge(staticFiles);
     return modules;

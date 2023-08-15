@@ -1,5 +1,6 @@
 import { CreateAdminUIPackageJsonParams, CreateServerPackageJsonParams, DsgContext } from "@amplication/code-gen-types";
 import { adminUIPackageJsonValues, serverPackageJsonValues } from "../constants";
+import { getPluginSettings } from "../utils";
 
 export const beforeCreatePackageJson = (
   event: "server" | "client",
@@ -10,6 +11,10 @@ export const beforeCreatePackageJson = (
   ): Promise<CreateAdminUIPackageJsonParams | CreateServerPackageJsonParams> => {
     let packageJsonValues;
 
+    const { formatter } = getPluginSettings(
+      context.pluginInstallations,
+    );
+
     switch (event) {
       case "server":
         packageJsonValues = serverPackageJsonValues;
@@ -17,6 +22,13 @@ export const beforeCreatePackageJson = (
       case "client":
         packageJsonValues = adminUIPackageJsonValues;
         break;
+    }
+
+    if(formatter === "prettier") {
+      packageJsonValues.devDependencies = {
+        ...packageJsonValues.devDependencies,
+        "eslint-config-prettier": "^8.3.0",
+      };
     }
 
     eventParams.updateProperties.push(packageJsonValues);  
