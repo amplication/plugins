@@ -41,10 +41,33 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
     },
   ];
 
+export const updateDockerComposeDevProperties: CreateServerDockerComposeParams["updateProperties"] =
+  [
+    {
+      services: {
+        db: {
+          image: "postgres:12",
+          ports: ["${DB_PORT}:5432"],
+          environment: {
+            POSTGRES_USER: "${DB_USER}",
+            POSTGRES_PASSWORD: "${DB_PASSWORD}",
+          },
+          volumes: ["postgres:/var/lib/postgresql/data"],
+        },
+      },
+      volumes: {
+        postgres: null,
+      },
+    },
+  ];
+
+const DATASOURCE_NAME = "db";
+const URL_NAME = "DB_URL";
+
 export const dataSource: DataSource = {
-  name: "postgres",
+  name: DATASOURCE_NAME,
   provider: DataSourceProvider.PostgreSQL,
   url: {
-    name: "DB_URL",
+    name: URL_NAME,
   },
 };

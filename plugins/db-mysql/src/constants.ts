@@ -50,10 +50,52 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
     },
   ];
 
+export const updateDockerComposeDevProperties: CreateServerDockerComposeParams["updateProperties"] =
+  [
+    {
+      services: {
+        db: {
+          image: "mysql",
+          command: "--default-authentication-plugin=mysql_native_password",
+          restart: "always",
+          ports: ["${DB_PORT}:3306"],
+          environment: {
+            MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}",
+          },
+          healthcheck: {
+            test: [
+              "CMD",
+              "mysqladmin",
+              "ping",
+              "-h",
+              "localhost",
+              "-u",
+              "${DB_USER}",
+            ],
+            timeout: "45s",
+            interval: "10s",
+            retries: 10,
+          },
+        },
+        adminer: {
+          image: "adminer",
+          restart: "always",
+          ports: ["1234:8080"],
+        },
+      },
+      volumes: {
+        mysql: null,
+      },
+    },
+  ];
+
+const DATASOURCE_NAME = "db";
+const URL_NAME = "DB_URL";
+
 export const dataSource: DataSource = {
-  name: "mysql",
+  name: DATASOURCE_NAME,
   provider: DataSourceProvider.MySQL,
   url: {
-    name: "DB_URL",
+    name: URL_NAME,
   },
 };
