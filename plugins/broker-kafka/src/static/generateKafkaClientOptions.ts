@@ -13,10 +13,6 @@ export const generateKafkaClientOptions = (
     throw new Error("KAFKA_BROKERS environment variable must be defined");
   }
 
-  if (!kafkaEnableSSL) {
-    throw new Error("KAFKA_ENABLE_SSL environment variable must be defined");
-  }
-
   if (!kafkaClientId) {
     throw new Error("KAFKA_CLIENT_ID environment variable must be defined");
   }
