@@ -1,5 +1,6 @@
 import {
   AmplicationPlugin,
+  CreateConnectMicroservicesParams,
   CreateMessageBrokerClientOptionsFactoryParams,
   CreateMessageBrokerNestJSModuleParams,
   CreateMessageBrokerParams,
@@ -20,7 +21,13 @@ import { kebabCase, merge } from "lodash";
 import { join, resolve } from "path";
 import { staticDirectory, templatesPath } from "./constants";
 import { builders, namedTypes } from "ast-types";
-import { getClassDeclarationById, interpolate } from "./util/ast";
+import {
+  addImports,
+  getClassDeclarationById,
+  getFunctionDeclarationById,
+  importNames,
+  interpolate,
+} from "./util/ast";
 import { pascalCase } from "pascal-case";
 
 class KafkaPlugin implements AmplicationPlugin {
@@ -58,6 +65,9 @@ class KafkaPlugin implements AmplicationPlugin {
       },
       CreateMessageBrokerService: {
         after: this.afterCreateMessageBrokerService,
+      },
+      CreateConnectMicroservices: {
+        before: this.beforeCreateConnectMicroservices,
       },
     };
   }
@@ -344,6 +354,61 @@ class KafkaPlugin implements AmplicationPlugin {
     await modules.set(controllerFile);
 
     return modules;
+  }
+
+  beforeCreateConnectMicroservices(
+    context: DsgContext,
+    eventParams: CreateConnectMicroservicesParams
+  ): CreateConnectMicroservicesParams {
+    const { template } = eventParams;
+
+    const generateKafkaClientOptionsImport = importNames(
+      [builders.identifier("generateKafkaClientOptions")],
+      "./kafka/generateKafkaClientOptions"
+    );
+
+    addImports(
+      template,
+      [generateKafkaClientOptionsImport].filter(
+        (x) => x //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[]
+    );
+
+    const test = builders.memberExpression(
+      builders.identifier("app"),
+      builders.identifier("connectMicroservice")
+    );
+
+    const typeArguments = builders.tsTypeParameterInstantiation([
+      builders.tsTypeReference(builders.identifier("MicroserviceOptions")),
+    ]);
+
+    const appExpression = builders.callExpression(
+      builders.memberExpression(
+        builders.identifier("app"),
+        builders.identifier("connectMicroservice")
+      ),
+      [
+        builders.callExpression(
+          builders.identifier("generateKafkaClientOptions"),
+          [builders.identifier("configService")]
+        ),
+      ]
+    );
+
+    appExpression.typeArguments =
+      typeArguments as unknown as namedTypes.TypeParameterInstantiation;
+
+    const kafkaServiceExpression = builders.expressionStatement(appExpression);
+
+    const functionDeclaration = getFunctionDeclarationById(
+      template,
+      builders.identifier("connectMicroservices")
+    );
+
+    functionDeclaration.body.body.push(kafkaServiceExpression);
+
+    return eventParams;
   }
 }
 

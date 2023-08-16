@@ -19,7 +19,7 @@ import { ConfigService } from "@nestjs/config";
     },
     KafkaProducerService,
   ],
-  controllers:[KafkaController]
+  controllers: [KafkaController],
   exports: [KafkaProducerService],
 })
 export class KafkaModule {}

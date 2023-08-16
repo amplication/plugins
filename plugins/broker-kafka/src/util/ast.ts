@@ -2,6 +2,7 @@ import * as recast from "recast";
 import { ASTNode, namedTypes, builders } from "ast-types";
 import { NodePath } from "ast-types/lib/node-path";
 import * as K from "ast-types/gen/kinds";
+import { groupBy, mapValues, uniqBy } from "lodash";
 
 /**
  * Finds class declaration in provided AST node, if no class is found throws an exception
@@ -31,6 +32,30 @@ export function getClassDeclarationById(
   }
 
   return classDeclaration;
+}
+
+export function getFunctionDeclarationById(
+  node: ASTNode,
+  id: namedTypes.Identifier
+): namedTypes.FunctionDeclaration {
+  let functionDeclaration: namedTypes.FunctionDeclaration | null = null;
+  recast.visit(node, {
+    visitFunctionDeclaration(path) {
+      if (path.node.id && path.node.id.name === id.name) {
+        functionDeclaration = path.node;
+        return false;
+      }
+      return this.traverse(path);
+    },
+  });
+
+  if (!functionDeclaration) {
+    throw new Error(
+      `Could not find function declaration with the identifier ${id.name} in provided AST node`
+    );
+  }
+
+  return functionDeclaration;
 }
 
 /**
@@ -112,6 +137,72 @@ export function interpolate(
       this.traverse(path);
     },
   });
+}
+
+export function importNames(
+  names: namedTypes.Identifier[],
+  source: string
+): namedTypes.ImportDeclaration {
+  return builders.importDeclaration(
+    names.map((name) => builders.importSpecifier(name)),
+    builders.stringLiteral(source)
+  );
+}
+
+function consolidateImports(
+  declarations: namedTypes.ImportDeclaration[]
+): namedTypes.ImportDeclaration[] {
+  const moduleToDeclarations = groupBy(
+    declarations,
+    (declaration) => declaration.source.value
+  );
+  const moduleToDeclaration = mapValues(
+    moduleToDeclarations,
+    (declarations, module) => {
+      const specifiers = uniqBy(
+        declarations.flatMap((declaration) => declaration.specifiers || []),
+        (specifier) => {
+          if (namedTypes.ImportSpecifier.check(specifier)) {
+            return specifier.imported.name;
+          }
+          return specifier.type;
+        }
+      );
+      return builders.importDeclaration(
+        specifiers,
+        builders.stringLiteral(module)
+      );
+    }
+  );
+  return Object.values(moduleToDeclaration);
+}
+
+export function extractImportDeclarations(
+  file: namedTypes.File
+): namedTypes.ImportDeclaration[] {
+  const newBody = [];
+  const imports = [];
+  for (const statement of file.program.body) {
+    if (namedTypes.ImportDeclaration.check(statement)) {
+      imports.push(statement);
+    } else {
+      newBody.push(statement);
+    }
+  }
+  file.program.body = newBody;
+  return imports;
+}
+
+export function addImports(
+  file: namedTypes.File,
+  imports: namedTypes.ImportDeclaration[]
+): void {
+  const existingImports = extractImportDeclarations(file);
+  const consolidatedImports = consolidateImports([
+    ...existingImports,
+    ...imports,
+  ]);
+  file.program.body.unshift(...consolidatedImports);
 }
 
 export function transformTemplateLiteralToStringLiteral(
