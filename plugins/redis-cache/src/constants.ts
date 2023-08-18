@@ -1,4 +1,4 @@
-import { CreateServerDockerComposeParams } from "@amplication/code-gen-types"
+import { CreateServerDockerComposeParams, CreateServerDockerComposeDevParams } from "@amplication/code-gen-types"
 
 export const dependencies = {
     dependencies: {
@@ -29,3 +29,20 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
         }
     }
 }]
+
+export const updateDockerComposeDevProperties: CreateServerDockerComposeParams["updateProperties"] = [{
+    services: {
+        redis: {
+            container_name: "${REDIS_HOST}",
+            image: "redis:6",
+            ports: "${REDIS_PORT}:6379",
+            volumes: ["redis:/data"]
+        }
+    },
+    volumes: {
+        redis: {
+            driver: "local"
+        }
+    }
+}]
+
