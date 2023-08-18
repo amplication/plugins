@@ -123,7 +123,7 @@ export function parse(source: string, options?: ParseOptions): namedTypes.File {
     });
   } catch (error) {
     if (error instanceof SyntaxError) {
-      throw new Error(`${error.message}Source:${source}`);
+      error.message = `${error.message}Source:${source}`;
     }
     throw error;
   }
