@@ -21,12 +21,12 @@ describe("Testing beforeCreateServerDockerCompose hook", () => {
         expect(updateProperties).toStrictEqual([{
             services: {
                 server: {
-                    depends_on: "redis"
+                    depends_on: ["redis"]
                 },
                 redis: {
                     container_name: "${REDIS_HOST}",
                     image: "redis:6",
-                    ports: "${REDIS_PORT}:6379",
+                    ports: ["${REDIS_PORT}:6379"],
                     volumes: ["redis:/data"]
                 }
             },

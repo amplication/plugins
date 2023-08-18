@@ -23,7 +23,7 @@ describe("Testing beforeCreateServerDockerCompose hook", () => {
                 redis: {
                     container_name: "${REDIS_HOST}",
                     image: "redis:6",
-                    ports: "${REDIS_PORT}:6379",
+                    ports: ["${REDIS_PORT}:6379"],
                     volumes: ["redis:/data"]
                 }
             },
