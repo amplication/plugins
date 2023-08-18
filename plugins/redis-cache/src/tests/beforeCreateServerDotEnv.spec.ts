@@ -1,5 +1,4 @@
 import { CreateServerDotEnvParams, DsgContext, VariableDictionary } from "@amplication/code-gen-types";
-import { deepEqual } from "assert";
 import { mock } from "jest-mock-extended";
 import { name } from "../../package.json";
 import RedisCachePlugin from "../index";
@@ -23,7 +22,7 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
         context.pluginInstallations[0].settings = {}
         const { envVariables } = plugin.beforeCreateServerDotEnv(context, params);
         const expectedEnvVars: VariableDictionary = utils.settingsToVarDict(defaultSettings)
-        deepEqual(envVariables, expectedEnvVars)
+        expect(envVariables).toStrictEqual(expectedEnvVars)
     });
     it("should use the user specified settings when the user specifies them", () => {
         const userSpecifiedSettings = {
@@ -34,7 +33,7 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
         }
         context.pluginInstallations[0].settings = userSpecifiedSettings;
         const { envVariables } = plugin.beforeCreateServerDotEnv(context, params);
-        deepEqual(envVariables, utils.settingsToVarDict(userSpecifiedSettings));
+        expect(envVariables).toStrictEqual(utils.settingsToVarDict(userSpecifiedSettings));
     });
 });
 

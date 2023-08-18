@@ -1,5 +1,4 @@
 import { DsgContext } from "@amplication/code-gen-types";
-import { deepEqual } from "assert";
 import { mock } from "jest-mock-extended";
 import { name } from "../../package.json";
 import RedisCachePlugin from "../index";
@@ -19,7 +18,7 @@ describe("Testing beforeServerPackageJson hook", () => {
             fileContent: "",
             updateProperties: [{}]
         })
-        deepEqual(updateProperties, [{
+        expect(updateProperties).toStrictEqual([{
             dependencies: {
                 "cache-manager": "3.6.3",
                 "cache-manager-redis-store": "2.0.0"
