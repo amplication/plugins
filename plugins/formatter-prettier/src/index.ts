@@ -46,8 +46,6 @@ class PrettierPlugin implements AmplicationPlugin {
       let baseDirectory;
       const staticFilesPath = resolve(__dirname, "static");
       const rulesPlaceholder = "\"${{ RULES }}\"";
-
-      console.log("rules", rules);
     
       switch (event) {
         case "server":
