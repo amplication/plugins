@@ -374,11 +374,6 @@ class KafkaPlugin implements AmplicationPlugin {
       ) as namedTypes.ImportDeclaration[]
     );
 
-    const test = builders.memberExpression(
-      builders.identifier("app"),
-      builders.identifier("connectMicroservice")
-    );
-
     const typeArguments = builders.tsTypeParameterInstantiation([
       builders.tsTypeReference(builders.identifier("MicroserviceOptions")),
     ]);
