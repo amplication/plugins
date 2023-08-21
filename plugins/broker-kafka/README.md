@@ -16,7 +16,7 @@ It generates the following parts:
 
 - Kafka controller with an endpoint listener for each topic connected to the service, and their type is “receive."
 
-- A Kafka options getter function that extracts all the relevant variables from the `process.env` data.
+- A Kafka options getter function that extracts all the relevant variables from the nestjs common ConfigService (by default if would load the available environment variables)
 
 ## Usage
 
