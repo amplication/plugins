@@ -1,6 +1,6 @@
-# @amplication/nestjs-nats
+# @amplication/plugin-broker-nats
 
-[![NPM Downloads](https://img.shields.io/npm/dt/@amplication/nestjs-nats)](https://www.npmjs.com/package/@amplication/nestjs-nats)
+[![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-broker-nats)](https://www.npmjs.com/package/@amplication/plugin-broker-nats)
 
 This plugin provide basic integration with NATS servers
 
@@ -10,7 +10,7 @@ This plugin saves the developers the mess of boilerplate a new microservice with
 
 ## Instructions
 
-To make sure that the `@amplicaiton/nestjs-nats` package will work currectly you as a developer needs to make sure you'r service is booting up with micro-service support in the `bootstrap` function in the main.ts [(This is called an hybrid app)](https://github.com/nestjs/docs.nestjs.com/blob/master/content/faq/hybrid-application.md).
+To make sure that the `@amplicaiton/broker-nats` package will work currectly you as a developer needs to make sure you'r service is booting up with micro-service support in the `bootstrap` function in the main.ts [(This is called an hybrid app)](https://github.com/nestjs/docs.nestjs.com/blob/master/content/faq/hybrid-application.md).
 
 The two most important function to call are the `app.connectMicroservice` with a NATS transport and the `app.startAllMicroservices` function.
 
