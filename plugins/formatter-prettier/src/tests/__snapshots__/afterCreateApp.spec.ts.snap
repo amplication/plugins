@@ -24,11 +24,7 @@ package-lock.json
     "path": ".prettierignore",
   },
   {
-    "code": "{
-  "singleQuote": true,
-  "arrowParens": "avoid",
-  "trailingComma": "all"
-}
+    "code": "{}
 ",
     "path": ".prettierrc.json",
   },
