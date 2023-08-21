@@ -10,14 +10,13 @@ This plugin generates the relevant code to provide you with end-to-end integrati
 
 It generates the following parts:
 
-
 - A topics list as a selectable enum.
 
-- Kafka module and service with a base service as the plugin default behavior.
+- Kafka module and service that contains an emit function to send messages to a Kafka queue.
+
+- Kafka controller with an endpoint listener for each topic connected to the service, and their type is “receive."
 
 - A Kafka options getter function that extracts all the relevant variables from the `process.env` data.
-
-
 
 ## Usage
 
