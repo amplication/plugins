@@ -1,5 +1,5 @@
 {
-  "name": "@amplication/plugin-nestjs-nats",
+  "name": "@amplication/plugin-broker-nats",
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {

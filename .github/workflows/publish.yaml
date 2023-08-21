@@ -20,7 +20,7 @@ on:
           - "db-postgres"
           - "deployment-helm-chart"
           - "formatter-prettier"
-          - "nestjs-nats"
+          - "broker-nats"
           - "swagger-apibody"
       publish:
         description: "Publish package"
