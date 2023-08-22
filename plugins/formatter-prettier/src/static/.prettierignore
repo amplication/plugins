@@ -1,1 +1,17 @@
-dist
+# Add further files to ignore here as needed
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+ 
+# testing
+/coverage
+ 
+# production
+/build
+/dist
+
+#Server Specific
+prisma/migrations/
+package-lock.json

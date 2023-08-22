@@ -4,6 +4,9 @@
 # Build Files
 dist/
 
+# Test files
+coverage
+
 # Private Node Modules
 node_modules/
 creds.js
