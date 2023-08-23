@@ -3,6 +3,7 @@ import type {
   CreateAdminUIParams,
   CreateMessageBrokerParams,
   CreateServerAppModuleParams,
+  CreateConnectMicroservicesParams,
   CreateServerParams,
   DsgContext,
   Events,
@@ -55,12 +56,67 @@ class RedisBrokerPlugin implements AmplicationPlugin {
     );
     return eventParams;
   }
+
+  beforeCreateConnectMicroservices(
+    context: DsgContext,
+    eventParams: CreateConnectMicroservicesParams
+  ): CreateConnectMicroservicesParams {
+    const { template } = eventParams;
+
+    utils.addImport(template, microserviceOptionsImport());
+    utils.addImport(template, genRedisClientOptsImport());
+
+    const connectFunc = utils.getFunctionDeclarationById(
+      template,
+      builders.identifier("connectMicroservices")
+    );
+    connectFunc.body.body.push(connectRedisMicroserviceExpr());
+
+    return eventParams;
+  }
 }
 
 const redisModuleImport = (redisModuleName: string): namedTypes.ImportDeclaration => {
   return builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(redisModuleName))],
     builders.stringLiteral("./redis/redis.module")
+  );
+}
+
+const microserviceOptionsImport = (): namedTypes.ImportDeclaration => {
+  return builders.importDeclaration(
+    [builders.importSpecifier(builders.identifier("MicroserviceOptions"))],
+    builders.stringLiteral("@nestjs/microservices")
+  )
+}
+
+const genRedisClientOptsImport = (): namedTypes.ImportDeclaration => {
+  return builders.importDeclaration(
+    [builders.importSpecifier(builders.identifier("generateRedisClientOptions"))],
+    builders.stringLiteral("./redis/generateRedisClientOptions")
+  )
+}
+
+const connectRedisMicroserviceExpr = (): namedTypes.ExpressionStatement => {
+  const typeArgs = builders.tsTypeParameterInstantiation([
+    builders.tsTypeReference(builders.identifier("MicroserviceOptions"))
+  ]);
+  const expr = builders.callExpression(appConnectMicroserviceObj(), [genRedisClientOptsInvocation()]);
+  expr.typeArguments = typeArgs as unknown as namedTypes.TypeParameterInstantiation;
+  return builders.expressionStatement(expr);
+}
+
+const appConnectMicroserviceObj = (): namedTypes.MemberExpression => {
+  return builders.memberExpression(
+    builders.identifier("app"),
+    builders.identifier("connectMicroservice")
+  );
+}
+
+const genRedisClientOptsInvocation = (): namedTypes.CallExpression => {
+  return builders.callExpression(
+    builders.identifier("generateRedisClientOptions"),
+    [builders.identifier("configService")]
   );
 }
 

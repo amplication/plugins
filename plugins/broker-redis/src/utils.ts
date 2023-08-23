@@ -3,7 +3,7 @@ import { name as PackageName } from "../package.json";
 import { Settings } from "./types";
 import defaultSettings from "../.amplicationrc.json";
 import { File } from "@babel/types";
-import { namedTypes, } from "ast-types";
+import { namedTypes, ASTNode } from "ast-types";
 import * as recast from "recast";
 import * as recastBabelParser from "recast/parsers/babel";
 import getBabelOptions, { Overrides } from "recast/parsers/_babel_options";
@@ -98,4 +98,32 @@ export function parse(source: string, options?: ParseOptions): namedTypes.File {
     }
     throw error;
   }
+}
+
+export const prettyCode = (code: string): string => {
+    return recast.prettyPrint(parse(code)).code
+}
+
+export function getFunctionDeclarationById(
+  node: ASTNode,
+  id: namedTypes.Identifier
+): namedTypes.FunctionDeclaration {
+  let functionDeclaration: namedTypes.FunctionDeclaration | null = null;
+  recast.visit(node, {
+    visitFunctionDeclaration(path) {
+      if (path.node.id && path.node.id.name === id.name) {
+        functionDeclaration = path.node as namedTypes.FunctionDeclaration;
+        return false;
+      }
+      return this.traverse(path);
+    },
+  });
+
+  if (!functionDeclaration) {
+    throw new Error(
+      `Could not find function declaration with the identifier ${id.name} in provided AST node`
+    );
+  }
+
+  return functionDeclaration;
 }

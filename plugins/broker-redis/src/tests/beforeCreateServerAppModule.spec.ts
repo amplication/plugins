@@ -33,7 +33,7 @@ describe("Testing beforeCreateServerAppModule hook", () => {
     });
     it("should add the necessary imports to the file", () => {
         const { template } = plugin.beforeCreateServerAppModule(context, params)
-        const expectedCode = prettyCode(`
+        const expectedCode = utils.prettyCode(`
         import { Module, Scope } from "@nestjs/common";
         import { APP_INTERCEPTOR } from "@nestjs/core";
         import { MorganInterceptor } from "nest-morgan";
@@ -47,8 +47,7 @@ describe("Testing beforeCreateServerAppModule hook", () => {
     })
     it("should add the redis module modules list", () => {
         const { templateMapping } = plugin.beforeCreateServerAppModule(context, params)
-        let expectedModules = prettyCode(`
-        [RedisModule]`);
+        let expectedModules = utils.prettyCode("[RedisModule]");
         // Remove the trailing semi-colon from the end which is inserted
         // by the prettyCode invocation
         expectedModules = utils.removeSemicolon(expectedModules)
@@ -56,7 +55,3 @@ describe("Testing beforeCreateServerAppModule hook", () => {
         expect(modulesCode).toBe(expectedModules);
     });
 });
-
-const prettyCode = (code: string): string => {
-    return recast.prettyPrint(utils.parse(code)).code
-}
