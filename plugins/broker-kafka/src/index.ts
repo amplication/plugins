@@ -367,9 +367,14 @@ class KafkaPlugin implements AmplicationPlugin {
       "./kafka/generateKafkaClientOptions"
     );
 
+    const MicroserviceOptionsImport = importNames(
+      [builders.identifier("MicroserviceOptions")],
+      "@nestjs/microservices"
+    );
+
     addImports(
       template,
-      [generateKafkaClientOptionsImport].filter(
+      [generateKafkaClientOptionsImport, MicroserviceOptionsImport].filter(
         (x) => x //remove nulls and undefined
       ) as namedTypes.ImportDeclaration[]
     );
