@@ -1,6 +1,7 @@
 import type {
   AmplicationPlugin,
   CreateAdminUIParams,
+  CreateMessageBrokerParams,
   CreateServerAppModuleParams,
   CreateServerParams,
   DsgContext,
@@ -9,6 +10,7 @@ import type {
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
 import { builders, namedTypes } from "ast-types";
+import { join } from "path";
 import * as utils from "./utils"
 
 class RedisBrokerPlugin implements AmplicationPlugin {
@@ -17,6 +19,9 @@ class RedisBrokerPlugin implements AmplicationPlugin {
     return {
       [EventNames.CreateServerAppModule]: {
         before: this.beforeCreateServerAppModule
+      },
+      [EventNames.CreateMessageBroker]: {
+        before: this.beforeCreateBroker
       }
     };
   }
@@ -37,6 +42,17 @@ class RedisBrokerPlugin implements AmplicationPlugin {
     const modules = templateMapping.MODULES as namedTypes.ArrayExpression;
     modules.elements.push(builders.identifier(redisModuleName));
 
+    return eventParams;
+  }
+
+  beforeCreateBroker(
+    dsgContext: DsgContext,
+    eventParams: CreateMessageBrokerParams
+  ): CreateMessageBrokerParams {
+    dsgContext.serverDirectories.messageBrokerDirectory = join(
+      dsgContext.serverDirectories.srcDirectory,
+      "redis"
+    );
     return eventParams;
   }
 }
