@@ -1,60 +1,51 @@
 import type {
   AmplicationPlugin,
   CreateAdminUIParams,
+  CreateServerAppModuleParams,
   CreateServerParams,
   DsgContext,
   Events,
   ModuleMap,
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
-import { resolve } from "path";
+import { builders, namedTypes } from "ast-types";
+import * as utils from "./utils"
 
-class ExamplePlugin implements AmplicationPlugin {
-  /**
-   * This is mandatory function that returns an object with the event name. Each event can have before or/and after
-   */
+class RedisBrokerPlugin implements AmplicationPlugin {
+  
   register(): Events {
     return {
-      [EventNames.CreateServer]: {
-        before: this.beforeCreateServer,
-        after: this.afterCreateServer,
-      },
-      [EventNames.CreateAdminUI]: {
-        before: this.beforeCreateAdminUI,
-      },
+      [EventNames.CreateServerAppModule]: {
+        before: this.beforeCreateServerAppModule
+      }
     };
   }
-  // You can combine many events in one plugin in order to change the related files.
+  
+  beforeCreateServerAppModule(
+    dsgContext: DsgContext,
+    eventParams: CreateServerAppModuleParams
+  ): CreateServerAppModuleParams {
+    const { template, templateMapping } = eventParams;
 
-  beforeCreateServer(context: DsgContext, eventParams: CreateServerParams) {
-    // Here you can manipulate the context or save any context variable for your after function.
-    // You can also manipulate the eventParams so it will change the result of Amplication function.
-    // context.utils.skipDefaultBehavior = true; this will prevent the default behavior and skip our handler.
+    const redisModuleName = "RedisModule";
+    utils.addImport(template, redisModuleImport(redisModuleName));
 
-    return eventParams; // eventParams must return from before function. It will be used for the builder function.
-  }
+    if(!templateMapping.MODULES) {
+      throw new Error("Failed to find the app module's imported modules");
+    }
 
-  async afterCreateServer(
-    context: DsgContext,
-    eventParams: CreateServerParams,
-    modules: ModuleMap
-  ): Promise<ModuleMap> {
-    // Here you can get the context, eventParams and the modules that Amplication created.
-    // Then you can manipulate the modules, add new ones, or create your own.
-    const staticPath = resolve(__dirname, "./static");
-    const staticsFiles = await context.utils.importStaticModules(
-      staticPath,
-      context.serverDirectories.srcDirectory
-    );
-    await modules.merge(staticsFiles);
-    return modules; // You must return the generated modules you want to generate at this part of the build.
-  }
-
-  beforeCreateAdminUI(context: DsgContext, eventParams: CreateAdminUIParams) {
-    // Same as beforeCreateExample but for a different event.
+    const modules = templateMapping.MODULES as namedTypes.ArrayExpression;
+    modules.elements.push(builders.identifier(redisModuleName));
 
     return eventParams;
   }
 }
 
-export default ExamplePlugin;
+const redisModuleImport = (redisModuleName: string): namedTypes.ImportDeclaration => {
+  return builders.importDeclaration(
+    [builders.importSpecifier(builders.identifier(redisModuleName))],
+    builders.stringLiteral("./redis/redis.module")
+  );
+}
+
+export default RedisBrokerPlugin
