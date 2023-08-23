@@ -8,11 +8,14 @@ import type {
   DsgContext,
   Events,
   ModuleMap,
+  CreateServerPackageJsonParams,
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
 import { builders, namedTypes } from "ast-types";
 import { join } from "path";
+import { merge } from "lodash"
 import * as utils from "./utils"
+import * as constants from "./constants"
 
 class RedisBrokerPlugin implements AmplicationPlugin {
   
@@ -23,6 +26,12 @@ class RedisBrokerPlugin implements AmplicationPlugin {
       },
       [EventNames.CreateMessageBroker]: {
         before: this.beforeCreateBroker
+      },
+      [EventNames.CreateConnectMicroservices]: {
+        before: this.beforeCreateConnectMicroservices
+      },
+      [EventNames.CreateServerPackageJson]: {
+        before: this.beforeCreateServerPackageJson
       }
     };
   }
@@ -71,6 +80,19 @@ class RedisBrokerPlugin implements AmplicationPlugin {
       builders.identifier("connectMicroservices")
     );
     connectFunc.body.body.push(connectRedisMicroserviceExpr());
+
+    return eventParams;
+  }
+
+  beforeCreateServerPackageJson(
+    context: DsgContext,
+    eventParams: CreateServerPackageJsonParams
+  ): CreateServerPackageJsonParams {
+    const redisDeps = constants.dependencies
+
+    eventParams.updateProperties.forEach((updateProperty) => {
+      merge(updateProperty, redisDeps);
+    });
 
     return eventParams;
   }
