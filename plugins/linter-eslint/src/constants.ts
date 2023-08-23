@@ -14,9 +14,9 @@ export const serverPackageJsonValues : PackageJsonValues = {
     "lint:fix": "eslint --fix './src/**/*.{ts, tsx}'",
   },
   devDependencies: {
-    "@typescript-eslint/eslint-plugin": "^6.2.1",
-    "@typescript-eslint/parser": "^6.2.1",
-    "eslint": "^8.46.0",
+    "@typescript-eslint/eslint-plugin": "^4.1.0",
+    "@typescript-eslint/parser": "^4.1.0",
+    "eslint": "^7.0.0",
   }
 };
 
@@ -26,9 +26,9 @@ export const adminUIPackageJsonValues : PackageJsonValues = {
     "lint:fix": "eslint --fix './src/**/*.{ts, tsx}'",
   },
   devDependencies: {
-    "@typescript-eslint/eslint-plugin": "^6.2.1",
-    "@typescript-eslint/parser": "^6.2.1",
-    "eslint": "^8.46.0",
+    "@typescript-eslint/eslint-plugin": "^4.1.0",
+    "@typescript-eslint/parser": "^4.1.0",
+    "eslint": "^7.0.0",
     "eslint-plugin-react": "^7.33.1"
-  }
+  } 
 };
