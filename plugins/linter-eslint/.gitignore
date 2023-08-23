@@ -10,6 +10,7 @@
 
 # Build Files
 dist/
+coverage/
 
 # Private Node Modules
 node_modules/
