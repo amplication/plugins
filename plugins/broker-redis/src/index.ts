@@ -42,6 +42,9 @@ class RedisBrokerPlugin implements AmplicationPlugin {
       },
       [EventNames.CreateMessageBrokerNestJSModule]: {
         after: this.afterCreateMessageBrokerNestJSModule
+      },
+      [EventNames.CreateMessageBrokerService]: {
+        after: this.afterCreateMessageBrokerService
       }
     };
   }
@@ -141,6 +144,22 @@ class RedisBrokerPlugin implements AmplicationPlugin {
     return modules;
   }
 
+  async afterCreateMessageBrokerService(
+    context: DsgContext,
+    eventParams: CreateMessageBrokerServiceParams
+  ): Promise<ModuleMap> {
+    const filePath = resolve(constants.staticsPath, "redis.service.ts");
+
+    const file = await readFile(filePath);
+    const generateFileName = "redis.service.ts";
+
+    const modules = new ModuleMap(context.logger);
+    await modules.set({
+      code: print(file).code,
+      path: join(context.serverDirectories.messageBrokerDirectory, generateFileName),
+    });
+    return modules;
+  }
 }
 
 const redisModuleImport = (redisModuleName: string): namedTypes.ImportDeclaration => {

@@ -1,4 +1,4 @@
-import { CreateMessageBrokerClientOptionsFactoryParams, CreateMessageBrokerNestJSModuleParams, DsgContext } from "@amplication/code-gen-types";
+import { CreateMessageBrokerNestJSModuleParams, DsgContext } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
 import { name } from "../../package.json";
 import * as utils from "@amplication/code-gen-utils"
@@ -18,7 +18,7 @@ describe("Testing afterCreateMessageBrokerClientOptionsFactory hook", () => {
                 messageBrokerDirectory: "/"
             }
         });
-        params = mock<CreateMessageBrokerClientOptionsFactoryParams>();
+        params = mock<CreateMessageBrokerNestJSModuleParams>();
     });
     it("should correctly add the code for generating message broker module", async () => {
         const modules = await plugin.afterCreateMessageBrokerNestJSModule(context, params);
