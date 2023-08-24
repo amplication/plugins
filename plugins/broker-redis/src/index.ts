@@ -9,7 +9,9 @@ import {
   Events,
   ModuleMap,
   CreateServerPackageJsonParams,
-  CreateMessageBrokerClientOptionsFactoryParams
+  CreateMessageBrokerClientOptionsFactoryParams,
+  CreateMessageBrokerNestJSModuleParams,
+  CreateMessageBrokerServiceParams
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
 import { builders, namedTypes } from "ast-types";
@@ -37,6 +39,9 @@ class RedisBrokerPlugin implements AmplicationPlugin {
       },
       [EventNames.CreateMessageBrokerClientOptionsFactory]: {
         after: this.afterCreateMessageBrokerClientOptionsFactory
+      },
+      [EventNames.CreateMessageBrokerNestJSModule]: {
+        after: this.afterCreateMessageBrokerNestJSModule
       }
     };
   }
@@ -118,6 +123,24 @@ class RedisBrokerPlugin implements AmplicationPlugin {
     await modules.set({ code: print(file).code, path });
     return modules;
   }
+
+  async afterCreateMessageBrokerNestJSModule(
+    context: DsgContext,
+    eventParams: CreateMessageBrokerNestJSModuleParams
+  ): Promise<ModuleMap> {
+    const filePath = resolve(constants.staticsPath, "redis.module.ts");
+
+    const file = await readFile(filePath);
+    const generateFileName = "redis.module.ts";
+
+    const modules = new ModuleMap(context.logger);
+    await modules.set({
+      code: print(file).code,
+      path: join(context.serverDirectories.messageBrokerDirectory, generateFileName),
+    });
+    return modules;
+  }
+
 }
 
 const redisModuleImport = (redisModuleName: string): namedTypes.ImportDeclaration => {
