@@ -2,11 +2,11 @@ import { PluginInstallation, VariableDictionary } from "@amplication/code-gen-ty
 import { name as PackageName } from "../package.json";
 import { Settings } from "./types";
 import { settings as defaultSettings }  from "../.amplicationrc.json";
-import { File } from "@babel/types";
 import { namedTypes, ASTNode } from "ast-types";
 import * as recast from "recast";
-import * as recastBabelParser from "recast/parsers/babel";
-import getBabelOptions, { Overrides } from "recast/parsers/_babel_options";
+import { appendImports, parse } from "@amplication/code-gen-utils"
+export * from "@amplication/code-gen-utils"
+export { prettyPrint } from "recast";
 
 export const getPluginSettings = (
   pluginInstallations: PluginInstallation[]
@@ -59,72 +59,7 @@ export const removeSemicolon = (stmt: string) => {
   if(stmt[stmt.length - 1] !== ";") {
     throw new Error("This statement doesn't end in a semicolon. No semicolon to remove")
   }
-  return stmt.slice(0, -1)
-}
-
-export function addImport(
-  file: namedTypes.File,
-  newImport: namedTypes.ImportDeclaration
-): void {
-  const imports = extractImportDeclarations(file);
-  imports.push(newImport);
-  file.program.body.unshift(...imports);
-}
-
-/**
- * Extract all the import declarations from given file
- * @param file file AST representation
- * @returns array of import declarations ast nodes
- */
-export function extractImportDeclarations(
-  file: namedTypes.File
-): namedTypes.ImportDeclaration[] {
-  const newBody = [];
-  const imports = [];
-  for (const statement of file.program.body) {
-    if (namedTypes.ImportDeclaration.check(statement)) {
-      imports.push(statement);
-    } else {
-      newBody.push(statement);
-    }
-  }
-  file.program.body = newBody;
-  return imports;
-}
-
-export function getOptions(options?: Overrides): Options {
-  const babelOptions = getBabelOptions(options);
-  babelOptions.plugins.push("typescript", "jsx");
-  return babelOptions;
-}
-
-export type Options = ReturnType<typeof getBabelOptions>;
-
-type ParseOptions = Omit<recast.Options, "parser">;
-
-/**
- * Wraps recast.parse()
- * Sets parser to use the TypeScript parser
- */
-export function parse(source: string, options?: ParseOptions): namedTypes.File {
-  try {
-    return recast.parse(source, {
-      ...{
-        parser: {
-          getOptions,
-          parse: (source: string, options?: Overrides): File => {
-            return recastBabelParser.parser.parse(source, getOptions(options));
-          },
-        },
-      },
-      ...options,
-    });
-  } catch (error) {
-    if (error instanceof SyntaxError) {
-      error.message = `${error.message}Source:${source}`;
-    }
-    throw error;
-  }
+  return stmt.slice(0, -1);
 }
 
 export const prettyCode = (code: string): string => {

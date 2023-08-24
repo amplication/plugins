@@ -1,11 +1,11 @@
 import { CreateMessageBrokerNestJSModuleParams, DsgContext } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
 import { name } from "../../package.json";
-import * as utils from "@amplication/code-gen-utils"
+import * as utils from "../utils"
 import RedisBrokerPlugin from "../index";
 
 
-describe("Testing afterCreateMessageBrokerClientOptionsFactory hook", () => {
+describe("Testing afterCreateMessageBrokerNestJSModule hook", () => {
     let plugin: RedisBrokerPlugin;
     let context: DsgContext;
     let params: CreateMessageBrokerNestJSModuleParams;

@@ -2,7 +2,6 @@ import { CreateServerAppModuleParams, DsgContext } from "@amplication/code-gen-t
 import { mock } from "jest-mock-extended";
 import { name } from "../../package.json";
 import { builders } from "ast-types"
-import * as recast from "recast"
 import * as utils from "../utils"
 import RedisBrokerPlugin from "../index";
 
@@ -41,7 +40,7 @@ describe("Testing beforeCreateServerAppModule hook", () => {
 
         declare const MODULES: any;
         `)
-        const templateCode = recast.prettyPrint(template).code
+        const templateCode = utils.prettyPrint(template).code
         expect(templateCode).toBe(expectedCode)
 
     })
@@ -51,7 +50,7 @@ describe("Testing beforeCreateServerAppModule hook", () => {
         // Remove the trailing semi-colon from the end which is inserted
         // by the prettyCode invocation
         expectedModules = utils.removeSemicolon(expectedModules)
-        const modulesCode = recast.prettyPrint(templateMapping.MODULES).code;
+        const modulesCode = utils.prettyPrint(templateMapping.MODULES).code;
         expect(modulesCode).toBe(expectedModules);
     });
 });

@@ -1,7 +1,6 @@
-import { CreateConnectMicroservicesParams, CreateMessageBrokerParams, DsgContext } from "@amplication/code-gen-types";
+import { CreateConnectMicroservicesParams, DsgContext } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
 import { name } from "../../package.json";
-import * as recast from "recast"
 import * as utils from "../utils"
 import RedisBrokerPlugin from "../index";
 
@@ -41,7 +40,7 @@ describe("Testing beforeCreateConnectMicroservices hook", () => {
             app.connectMicroservice<MicroserviceOptions>(generateRedisClientOptions(configService));
         }
         `)
-        const templateCode = recast.prettyPrint(template).code;
+        const templateCode = utils.prettyPrint(template).code;
         expect(templateCode).toBe(expectedCode);
     })
 });

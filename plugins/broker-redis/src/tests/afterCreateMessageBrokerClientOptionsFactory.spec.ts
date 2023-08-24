@@ -1,7 +1,7 @@
-import { CreateMessageBrokerClientOptionsFactoryParams, CreateMessageBrokerParams, DsgContext } from "@amplication/code-gen-types";
+import { CreateMessageBrokerClientOptionsFactoryParams, DsgContext } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
 import { name } from "../../package.json";
-import * as utils from "@amplication/code-gen-utils"
+import * as utils from "../utils";
 import RedisBrokerPlugin from "../index";
 
 

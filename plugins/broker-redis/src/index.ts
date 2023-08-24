@@ -1,10 +1,8 @@
 import {
   AmplicationPlugin,
-  CreateAdminUIParams,
   CreateMessageBrokerParams,
   CreateServerAppModuleParams,
   CreateConnectMicroservicesParams,
-  CreateServerParams,
   DsgContext,
   Events,
   ModuleMap,
@@ -32,7 +30,7 @@ class RedisBrokerPlugin implements AmplicationPlugin {
         before: this.beforeCreateServerAppModule
       },
       [EventNames.CreateMessageBroker]: {
-        before: this.beforeCreateBroker
+        before: this.beforeCreateMessageBroker
       },
       [EventNames.CreateConnectMicroservices]: {
         before: this.beforeCreateConnectMicroservices
@@ -68,7 +66,7 @@ class RedisBrokerPlugin implements AmplicationPlugin {
     const { template, templateMapping } = eventParams;
 
     const redisModuleName = "RedisModule";
-    utils.addImport(template, redisModuleImport(redisModuleName));
+    utils.appendImports(template, [redisModuleImport(redisModuleName)]);
 
     if(!templateMapping.MODULES) {
       throw new Error("Failed to find the app module's imported modules");
@@ -80,7 +78,7 @@ class RedisBrokerPlugin implements AmplicationPlugin {
     return eventParams;
   }
 
-  beforeCreateBroker(
+  beforeCreateMessageBroker(
     dsgContext: DsgContext,
     eventParams: CreateMessageBrokerParams
   ): CreateMessageBrokerParams {
@@ -97,8 +95,10 @@ class RedisBrokerPlugin implements AmplicationPlugin {
   ): CreateConnectMicroservicesParams {
     const { template } = eventParams;
 
-    utils.addImport(template, microserviceOptionsImport());
-    utils.addImport(template, genRedisClientOptsImport());
+    utils.appendImports(template, [
+      microserviceOptionsImport(),
+      genRedisClientOptsImport()
+    ]);
 
     const connectFunc = utils.getFunctionDeclarationById(
       template,
