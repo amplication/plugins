@@ -11,7 +11,9 @@ import {
   CreateServerPackageJsonParams,
   CreateMessageBrokerClientOptionsFactoryParams,
   CreateMessageBrokerNestJSModuleParams,
-  CreateMessageBrokerServiceParams
+  CreateMessageBrokerServiceParams,
+  CreateServerDockerComposeDevParams,
+  CreateServerDockerComposeParams
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
 import { builders, namedTypes } from "ast-types";
@@ -45,6 +47,9 @@ class RedisBrokerPlugin implements AmplicationPlugin {
       },
       [EventNames.CreateMessageBrokerService]: {
         after: this.afterCreateMessageBrokerService
+      },
+      [EventNames.CreateServerDockerCompose]: {
+        before: this.beforeCreateServerDockerCompose
       }
     };
   }
@@ -159,6 +164,16 @@ class RedisBrokerPlugin implements AmplicationPlugin {
       path: join(context.serverDirectories.messageBrokerDirectory, generateFileName),
     });
     return modules;
+  }
+
+  beforeCreateServerDockerCompose(
+    context: DsgContext,
+    eventParams: CreateServerDockerComposeParams
+  ): CreateServerDockerComposeParams {
+
+    eventParams.updateProperties.push(...constants.updateDockerComposeProperties)
+
+    return eventParams;
   }
 }
 
