@@ -1,4 +1,4 @@
-import type {
+import {
   AmplicationPlugin,
   CreateAdminUIParams,
   CreateMessageBrokerParams,
@@ -9,11 +9,13 @@ import type {
   Events,
   ModuleMap,
   CreateServerPackageJsonParams,
+  CreateMessageBrokerClientOptionsFactoryParams
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
 import { builders, namedTypes } from "ast-types";
-import { join } from "path";
+import { join, resolve } from "path";
 import { merge } from "lodash"
+import { readFile, print } from "@amplication/code-gen-utils";
 import * as utils from "./utils"
 import * as constants from "./constants"
 
@@ -32,6 +34,9 @@ class RedisBrokerPlugin implements AmplicationPlugin {
       },
       [EventNames.CreateServerPackageJson]: {
         before: this.beforeCreateServerPackageJson
+      },
+      [EventNames.CreateMessageBrokerClientOptionsFactory]: {
+        after: this.afterCreateMessageBrokerClientOptionsFactory
       }
     };
   }
@@ -95,6 +100,23 @@ class RedisBrokerPlugin implements AmplicationPlugin {
     });
 
     return eventParams;
+  }
+
+  async afterCreateMessageBrokerClientOptionsFactory(
+    context: DsgContext,
+    eventParams: CreateMessageBrokerClientOptionsFactoryParams
+  ): Promise<ModuleMap> {
+    const filePath = resolve(constants.staticsPath, "generateRedisClientOptions.ts");
+    const file = await readFile(filePath);
+    const generateFileName = "generateRedisClientOptions.ts";
+
+    const path = join(
+      context.serverDirectories.messageBrokerDirectory,
+      generateFileName
+    );
+    const modules = new ModuleMap(context.logger);
+    await modules.set({ code: print(file).code, path });
+    return modules;
   }
 }
 
