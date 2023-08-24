@@ -13,7 +13,8 @@ import {
   CreateMessageBrokerNestJSModuleParams,
   CreateMessageBrokerServiceParams,
   CreateServerDockerComposeDevParams,
-  CreateServerDockerComposeParams
+  CreateServerDockerComposeParams,
+  CreateServerDotEnvParams
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
 import { builders, namedTypes } from "ast-types";
@@ -53,6 +54,9 @@ class RedisBrokerPlugin implements AmplicationPlugin {
       },
       [EventNames.CreateServerDockerComposeDev]: {
         before: this.beforeCreateServerDockerComposeDev
+      },
+      [EventNames.CreateServerDotEnv]: {
+        before: this.beforeCreateServerDotEnv
       }
     };
   }
@@ -186,6 +190,17 @@ class RedisBrokerPlugin implements AmplicationPlugin {
     eventParams.updateProperties.push(...constants.updateDockerComposeDevProperties)
 
     return eventParams;
+  }
+
+  beforeCreateServerDotEnv(
+    context: DsgContext,
+    eventParams: CreateServerDotEnvParams
+  ): CreateServerDotEnvParams {
+
+    const settings = utils.getPluginSettings(context.pluginInstallations)
+    eventParams.envVariables.push(...utils.settingsToVarDict(settings))
+
+    return eventParams
   }
 }
 

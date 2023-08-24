@@ -1,7 +1,7 @@
-import { PluginInstallation } from "@amplication/code-gen-types";
+import { PluginInstallation, VariableDictionary } from "@amplication/code-gen-types";
 import { name as PackageName } from "../package.json";
 import { Settings } from "./types";
-import defaultSettings from "../.amplicationrc.json";
+import { settings as defaultSettings }  from "../.amplicationrc.json";
 import { File } from "@babel/types";
 import { namedTypes, ASTNode } from "ast-types";
 import * as recast from "recast";
@@ -24,6 +24,33 @@ export const getPluginSettings = (
 
   return settings;
 };
+
+export const settingToEnvVar = (settingKey: keyof Settings): string => {
+  const mapping: {[key in keyof Settings]: string} = {
+    url: "REDIS_BROKER_URL",
+    retryAttempts: "REDIS_BROKER_RETRY_ATTEMPTS",
+    retryDelay: "REDIS_BROKER_RETRY_DELAY",
+    enableTls: "REDIS_BROKER_ENABLE_TLS"
+  }
+  return mapping[settingKey]
+}
+
+export const settingsToVarDict = (settings: Settings): VariableDictionary => {
+  return Object.keys(settings)
+      .map((settingKey) => ({
+          [settingToEnvVar(settingKey as keyof Settings)]:
+            settings[settingKey as keyof Settings]?.toString()
+      }))
+      .filter((obj) => {
+        const key = Object.keys(obj)[0];
+        return obj[key] !== undefined && obj[key] !== null
+      })
+      // Added this last map to get rid of typescript errors
+      .map((obj) => {
+        const key = Object.keys(obj)[0]
+        return { [key]: obj[key]! }
+      })
+}
 
 export const removeSemicolon = (stmt: string) => {
   if(stmt.length === 0) {
