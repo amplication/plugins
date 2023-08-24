@@ -50,6 +50,9 @@ class RedisBrokerPlugin implements AmplicationPlugin {
       },
       [EventNames.CreateServerDockerCompose]: {
         before: this.beforeCreateServerDockerCompose
+      },
+      [EventNames.CreateServerDockerComposeDev]: {
+        before: this.beforeCreateServerDockerComposeDev
       }
     };
   }
@@ -172,6 +175,15 @@ class RedisBrokerPlugin implements AmplicationPlugin {
   ): CreateServerDockerComposeParams {
 
     eventParams.updateProperties.push(...constants.updateDockerComposeProperties)
+
+    return eventParams;
+  }
+  beforeCreateServerDockerComposeDev(
+    context: DsgContext,
+    eventParams: CreateServerDockerComposeDevParams
+  ): CreateServerDockerComposeParams {
+
+    eventParams.updateProperties.push(...constants.updateDockerComposeDevProperties)
 
     return eventParams;
   }

@@ -3,7 +3,7 @@
  * Add all your constants here.
  */
 
-import { CreateServerDockerComposeParams } from "@amplication/code-gen-types";
+import { CreateServerDockerComposeDevParams, CreateServerDockerComposeParams } from "@amplication/code-gen-types";
 import { join } from "path";
 
 export const ExampleConst = "example";
@@ -23,6 +23,22 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
         server: {
             depends_on: ["redis"]
         },
+        redis: {
+            container_name: "${REDIS_HOST}",
+            image: "redis:6",
+            ports: ["${REDIS_PORT}:6379"],
+            volumes: ["redis:/data"]
+        }
+    },
+    volumes: {
+        redis: {
+            driver: "local"
+        }
+    }
+}]
+
+export const updateDockerComposeDevProperties: CreateServerDockerComposeDevParams["updateProperties"] = [{
+    services: {
         redis: {
             container_name: "${REDIS_HOST}",
             image: "redis:6",
