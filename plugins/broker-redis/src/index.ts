@@ -160,16 +160,24 @@ class RedisBrokerPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateMessageBrokerServiceParams
   ): Promise<ModuleMap> {
-    const filePath = resolve(constants.staticsPath, "redis.service.ts");
+    const { serverDirectories } = context;
+    const servicePath = resolve(constants.staticsPath, "redis.service.ts");
+    const controllerPath = resolve(constants.staticsPath, "redis.controller.ts");
 
-    const file = await readFile(filePath);
-    const generateFileName = "redis.service.ts";
+    const service = await readFile(servicePath);
+    const controller = await readFile(controllerPath);
+    const generateServiceFileName = "redis.service.ts";
+    const generateControllerFileName = "redis.controller.ts";
 
     const modules = new ModuleMap(context.logger);
     await modules.set({
-      code: print(file).code,
-      path: join(context.serverDirectories.messageBrokerDirectory, generateFileName),
+      code: print(service).code,
+      path: join(serverDirectories.messageBrokerDirectory, generateServiceFileName),
     });
+    await modules.set({
+      code: print(controller).code,
+      path: join(serverDirectories.messageBrokerDirectory, generateControllerFileName)
+    })
     return modules;
   }
 
