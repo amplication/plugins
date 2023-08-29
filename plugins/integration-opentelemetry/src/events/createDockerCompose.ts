@@ -9,5 +9,6 @@ export const beforeCreateServerDockerCompose = (
   eventParams: CreateServerDockerComposeParams
 ): CreateServerDockerComposeParams => {
   eventParams.updateProperties.push(...dockerComposeValues);
+
   return eventParams;
 };

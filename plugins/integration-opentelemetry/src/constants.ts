@@ -1,4 +1,7 @@
 import { builders } from "ast-types";
+import { join } from "path";
+
+export const staticPath = join(__dirname, "static");
 
 export const placeholders = {
   serviceName: "${{ SERVICE_NAME }}",

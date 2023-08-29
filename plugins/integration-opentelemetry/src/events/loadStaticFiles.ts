@@ -4,15 +4,13 @@ import {
   ModuleMap,
 } from "@amplication/code-gen-types";
 import { getPluginSettings } from "@utils/getPluginSettings";
-import { resolve } from "path";
-import { placeholders } from "@/constants";
+import { placeholders, staticPath } from "@/constants";
 
 export const afterLoadStaticFiles = async (
   context: DsgContext,
   eventParams: LoadStaticFilesParams,
   modules: ModuleMap
 ): Promise<ModuleMap> => {
-  const staticPath = resolve(__dirname, "./static");
   const { OTEL_COLLECTOR_PORT_GRPC, OTEL_COLLECTOR_PORT_HTTP } =
     getPluginSettings(context.pluginInstallations);
 

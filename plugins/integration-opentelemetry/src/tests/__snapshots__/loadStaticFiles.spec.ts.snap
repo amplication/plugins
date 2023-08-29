@@ -1,0 +1,91 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Testing loadStaticFiles hook should use default settings if no settings are provided 1`] = `
+[
+  {
+    "code": "receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+      grpc:
+        endpoint: 0.0.0.0:4317
+processors:
+  batch:
+    timeout: 1s
+  resource:
+    attributes:
+      - key: test.key
+        value: "test-value"
+        action: insert
+exporters:
+  logging:
+    loglevel: info
+  jaeger:
+    endpoint: jaeger:14250
+    tls:
+      insecure: true
+
+extensions:
+  health_check:
+  pprof:
+    endpoint: :1888
+  zpages:
+    endpoint: :55679
+service:
+  extensions: [pprof, zpages, health_check]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch, resource]
+      exporters: [logging, jaeger]
+",
+    "path": "otel-config.yml",
+  },
+]
+`;
+
+exports[`Testing loadStaticFiles hook should use plugin settings if defined 1`] = `
+[
+  {
+    "code": "receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:1236
+      grpc:
+        endpoint: 0.0.0.0:1235
+processors:
+  batch:
+    timeout: 1s
+  resource:
+    attributes:
+      - key: test.key
+        value: "test-value"
+        action: insert
+exporters:
+  logging:
+    loglevel: info
+  jaeger:
+    endpoint: jaeger:14250
+    tls:
+      insecure: true
+
+extensions:
+  health_check:
+  pprof:
+    endpoint: :1888
+  zpages:
+    endpoint: :55679
+service:
+  extensions: [pprof, zpages, health_check]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch, resource]
+      exporters: [logging, jaeger]
+",
+    "path": "otel-config.yml",
+  },
+]
+`;
