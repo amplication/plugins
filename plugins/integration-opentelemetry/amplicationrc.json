@@ -1,0 +1,8 @@
+{
+  "settings": {
+    "serviceName": "my-service",
+    "OTEL_COLLECTOR_PORT_GRPC": 4317,
+    "OTEL_COLLECTOR_PORT_HTTP": 4318,
+    "JAEGER_AGENT_PORT": 16686
+  }
+}
