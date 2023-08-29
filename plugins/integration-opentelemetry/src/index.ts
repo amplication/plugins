@@ -1,21 +1,30 @@
-import type {
-  AmplicationPlugin,
-  Events,
-} from "@amplication/code-gen-types";
+import type { AmplicationPlugin, Events } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
-import { beforeCreateServerDockerCompose, beforeCreateServerDotEnv, beforeCreateServerPackageJson } from "./events";
+import {
+  afterLoadStaticFiles,
+  beforeCreateServerAppModule,
+  beforeCreateServerDockerCompose,
+  beforeCreateServerDotEnv,
+  beforeCreateServerPackageJson,
+} from "@/events";
 
 class ESLintPlugin implements AmplicationPlugin {
   register(): Events {
     return {
+      [EventNames.CreateServerAppModule]: {
+        before: beforeCreateServerAppModule,
+      },
       [EventNames.CreateServerDockerCompose]: {
-        before: beforeCreateServerDockerCompose
+        before: beforeCreateServerDockerCompose,
       },
       [EventNames.CreateServerDotEnv]: {
-        before: beforeCreateServerDotEnv
+        before: beforeCreateServerDotEnv,
       },
       [EventNames.CreateServerPackageJson]: {
-        before: beforeCreateServerPackageJson
+        before: beforeCreateServerPackageJson,
+      },
+      [EventNames.LoadStaticFiles]: {
+        after: afterLoadStaticFiles,
       },
     };
   }

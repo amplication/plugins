@@ -17,9 +17,11 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@amplication/code-gen-types": "^2.0.1",
+    "@amplication/code-gen-utils": "^0.0.5",
     "@babel/parser": "^7.20.7",
     "@babel/types": "^7.20.7",
     "@types/jest": "^29.5.3",
+    "@types/lodash": "^4.14.197",
     "@typescript-eslint/eslint-plugin": "^6.2.1",
     "@typescript-eslint/parser": "^6.2.1",
     "copy-webpack-plugin": "^11.0.0",
