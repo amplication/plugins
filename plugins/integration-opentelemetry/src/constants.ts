@@ -19,19 +19,9 @@ export const packageJsonValues = {
 const JAEGER_NAME = "jaeger";
 const OTEL_NAME = "opentelemetry";
 
-export const dockerComposeValues = [
+export const dockerComposeDevValues = [
   {
     services: {
-      server: {
-        environment: {
-          JAEGER_AGENT_HOST: "${JAEGER_AGENT_HOST}",
-          JAEGER_AGENT_PORT: "${JAEGER_AGENT_PORT}",
-          OTEL_COLLECTOR_HOST: "${OTEL_COLLECTOR_HOST}",
-          OTEL_COLLECTOR_PORT_GRPC: "${OTEL_COLLECTOR_PORT_GRPC}",
-          OTEL_COLLECTOR_PORT_HTTP: "${OTEL_COLLECTOR_PORT_HTTP}",
-          OTEL_EXPORTER_OTLP_ENDPOINT: "${OTEL_EXPORTER_OTLP_ENDPOINT}",
-        },
-      },
       [JAEGER_NAME]: {
         image: "jaegertracing/all-in-one:latest",
         ports: [
@@ -55,6 +45,24 @@ export const dockerComposeValues = [
       },
     },
   },
+];
+
+export const dockerComposeValues = [
+  {
+    services: {
+      server: {
+        environment: {
+          JAEGER_AGENT_HOST: "${JAEGER_AGENT_HOST}",
+          JAEGER_AGENT_PORT: "${JAEGER_AGENT_PORT}",
+          OTEL_COLLECTOR_HOST: "${OTEL_COLLECTOR_HOST}",
+          OTEL_COLLECTOR_PORT_GRPC: "${OTEL_COLLECTOR_PORT_GRPC}",
+          OTEL_COLLECTOR_PORT_HTTP: "${OTEL_COLLECTOR_PORT_HTTP}",
+          OTEL_EXPORTER_OTLP_ENDPOINT: "${OTEL_EXPORTER_OTLP_ENDPOINT}",
+        },
+      },
+      ...dockerComposeDevValues[0].services,
+    },
+  }
 ];
 
 export const identifiers = {

@@ -17,6 +17,9 @@ class ESLintPlugin implements AmplicationPlugin {
       [EventNames.CreateServerDockerCompose]: {
         before: beforeCreateServerDockerCompose,
       },
+      [EventNames.CreateServerDockerComposeDB]: {
+        before: beforeCreateServerDockerCompose,
+      },
       [EventNames.CreateServerDotEnv]: {
         before: beforeCreateServerDotEnv,
       },
