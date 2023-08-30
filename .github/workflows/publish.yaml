@@ -22,6 +22,7 @@ on:
           - "formatter-prettier"
           - "broker-nats"
           - "swagger-apibody"
+          - "linter-eslint"
       publish:
         description: "Publish package"
         type: boolean
