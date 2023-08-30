@@ -23,8 +23,6 @@ describe("Testing loadStaticFiles hook", () => {
             ignore: ["**.js", "**.js.map", "**.d.ts"],
           });
 
-          console.log(source);
-
           const modules = await Promise.all(
             staticModules
               .sort()
