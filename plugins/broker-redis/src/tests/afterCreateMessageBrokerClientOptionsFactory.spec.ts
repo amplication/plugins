@@ -61,4 +61,5 @@ export const generateRedisClientOptions = (
       tls: redisEnableTLS
     },
   };
-};`
+};
+`

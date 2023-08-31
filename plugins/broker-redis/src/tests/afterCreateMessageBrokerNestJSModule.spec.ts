@@ -54,4 +54,5 @@ import { REDIS_BROKER_CLIENT } from "./constants";
   controllers: [RedisController],
   exports: [RedisService]
 })
-export class RedisModule {}`
+export class RedisModule {}
+`

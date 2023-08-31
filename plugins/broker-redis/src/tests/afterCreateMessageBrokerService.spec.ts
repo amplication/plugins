@@ -33,8 +33,6 @@ describe("Testing afterCreateMessageBrokerService hook", () => {
         const expectedConstsCode = utils.print(utils.parse(expectedConsts)).code;
         expect(serviceCode).toStrictEqual(expectedServiceCode);
         expect(controllerCode).toStrictEqual(expectedControllerCode);
-        console.log(constsCode)
-        console.log(expectedConstsCode)
         expect(constsCode).toStrictEqual(expectedConstsCode);
     })
 });
@@ -50,12 +48,14 @@ export class RedisService {
   async onModuleInit() {
     await this.redisClient.connect();
   }
-}`
+}
+`
 
 const expectedController = `import { Controller } from "@nestjs/common";
 
 @Controller()
-export class RedisController {}`
+export class RedisController {}
+`
 
 const expectedConsts = `export const REDIS_BROKER_CLIENT = "REDIS_BROKER_CLIENT";
 `
