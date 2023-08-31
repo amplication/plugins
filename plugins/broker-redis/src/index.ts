@@ -163,11 +163,14 @@ class RedisBrokerPlugin implements AmplicationPlugin {
     const { serverDirectories } = context;
     const servicePath = resolve(constants.staticsPath, "redis.service.ts");
     const controllerPath = resolve(constants.staticsPath, "redis.controller.ts");
+    const constsPath = resolve(constants.staticsPath, "constants.ts");
 
     const service = await readFile(servicePath);
     const controller = await readFile(controllerPath);
+    const consts = await readFile(constsPath);
     const generateServiceFileName = "redis.service.ts";
     const generateControllerFileName = "redis.controller.ts";
+    const generateConstsFileName = "constants.ts";
 
     const modules = new ModuleMap(context.logger);
     await modules.set({
@@ -177,7 +180,11 @@ class RedisBrokerPlugin implements AmplicationPlugin {
     await modules.set({
       code: print(controller).code,
       path: join(serverDirectories.messageBrokerDirectory, generateControllerFileName)
-    })
+    });
+    await modules.set({
+      code: print(consts).code,
+      path: join(serverDirectories.messageBrokerDirectory, generateConstsFileName)
+    });
     return modules;
   }
 

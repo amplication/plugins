@@ -28,17 +28,24 @@ describe("Testing afterCreateMessageBrokerService hook", () => {
         const controllerModule = modules.get("/redis.controller.ts");
         const controllerCode = utils.print(utils.parse(controllerModule.code)).code;
         const expectedControllerCode = utils.print(utils.parse(expectedController)).code;
+        const constsModule = modules.get("/constants.ts");
+        const constsCode = utils.print(utils.parse(constsModule.code)).code;
+        const expectedConstsCode = utils.print(utils.parse(expectedConsts)).code;
         expect(serviceCode).toStrictEqual(expectedServiceCode);
         expect(controllerCode).toStrictEqual(expectedControllerCode);
+        console.log(constsCode)
+        console.log(expectedConstsCode)
+        expect(constsCode).toStrictEqual(expectedConstsCode);
     })
 });
 
 const expectedService = `import { Inject, Injectable } from "@nestjs/common";
 import { ClientRedis } from "@nestjs/microservices";
+import { REDIS_BROKER_CLIENT } from "./constants";
 
 @Injectable()
 export class RedisService {
-  constructor(@Inject("REDIS_BROKER_CLIENT") private redisClient: ClientRedis) {}
+  constructor(@Inject(REDIS_BROKER_CLIENT) private redisClient: ClientRedis) {}
 
   async onModuleInit() {
     await this.redisClient.connect();
@@ -49,3 +56,6 @@ const expectedController = `import { Controller } from "@nestjs/common";
 
 @Controller()
 export class RedisController {}`
+
+const expectedConsts = `export const REDIS_BROKER_CLIENT = "REDIS_BROKER_CLIENT";
+`
