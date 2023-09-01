@@ -26,26 +26,23 @@ exports[`Testing afterCreateApp hook should add prettier to extends if formatter
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended" ,
-	  "prettier"
+    "plugin:react/recommended",
+    "prettier"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": [
-    "@typescript-eslint",
-    "react"
-  ],
+  "plugins": ["@typescript-eslint", "react"],
   "settings": {
     "react": {
       "version": "detect"
     }
   },
   "rules": {}
-
-}",
+}
+",
     "path": ".eslintrc",
   },
 ]
@@ -77,25 +74,22 @@ exports[`Testing afterCreateApp hook should use default settings if no settings 
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended" 
+    "plugin:react/recommended"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": [
-    "@typescript-eslint",
-    "react"
-  ],
+  "plugins": ["@typescript-eslint", "react"],
   "settings": {
     "react": {
       "version": "detect"
     }
   },
   "rules": {}
-
-}",
+}
+",
     "path": ".eslintrc",
   },
 ]
@@ -127,29 +121,26 @@ exports[`Testing afterCreateApp hook should use provided settings 1`] = `
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended" 
+    "plugin:react/recommended"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": [
-    "@typescript-eslint",
-    "react"
-  ],
+  "plugins": ["@typescript-eslint", "react"],
   "settings": {
     "react": {
       "version": "detect"
     }
   },
   "rules": {
-  "indent": ["error", 4],
-  "linebreak-style": ["error", "unix"],
-  "quotes": ["error", "single"]
+    "indent": ["error", 4],
+    "linebreak-style": ["error", "unix"],
+    "quotes": ["error", "single"]
+  }
 }
-
-}",
+",
     "path": ".eslintrc",
   },
 ]
