@@ -60,7 +60,8 @@ export const settingToEnvVar = (settingKey: keyof Settings): string => {
     apiGatewayPath: `${prefix}_API_GATEWAY_PATH`,
     connectionUri: `${prefix}_CONNECTION_URI`,
     websiteBasePath: `${prefix}_WEBSITE_BASE_PATH`,
-    websiteDomain: `${prefix}_WEBSITE_DOMAIN`
+    websiteDomain: `${prefix}_WEBSITE_DOMAIN`,
+    apiKey: `${prefix}_API_KEY`
   }
   return mapping[settingKey]
 }

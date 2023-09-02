@@ -6,6 +6,7 @@
         "websiteBasePath": "/auth",
         "apiBasePath": "/api/auth",
         "connectionUri": "https://try.supertokens.com",
-        "apiGatewayPath": ""
+        "apiGatewayPath": "",
+        "apiKey": ""
     }
 }

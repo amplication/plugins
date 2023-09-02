@@ -5,6 +5,7 @@ export interface Settings {
   websiteBasePath: string,
   apiBasePath: string,
   connectionUri: string,
-  apiGatewayPath: string
+  apiGatewayPath: string,
+  apiKey: string
 }
 
