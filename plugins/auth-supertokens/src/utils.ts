@@ -1,10 +1,10 @@
-import { PluginInstallation } from "@amplication/code-gen-types";
+import { PluginInstallation, VariableDictionary } from "@amplication/code-gen-types";
 import { namedTypes, ASTNode } from "ast-types";
 import * as recast from "recast";
 import { parse } from "@amplication/code-gen-utils";
 import { name as PackageName } from "../package.json";
 import { Settings } from "./types";
-import defaultSettings from "../.amplicationrc.json";
+import { settings as defaultSettings } from "../.amplicationrc.json";
 
 export const getPluginSettings = (
   pluginInstallations: PluginInstallation[]
@@ -49,4 +49,26 @@ export function getFunctionDeclarationById(
 
 export const prettyCode = (code: string): string => {
     return recast.prettyPrint(parse(code)).code
+}
+
+export const settingToEnvVar = (settingKey: keyof Settings): string => {
+  const prefix = "SUPERTOKENS";
+  const mapping: {[key in keyof Settings]: string} = {
+    apiBasePath: `${prefix}_API_BASE_PATH`,
+    apiDomain: `${prefix}_API_DOMAIN`,
+    appName: `${prefix}_APP_NAME`,
+    apiGatewayPath: `${prefix}_API_GATEWAY_PATH`,
+    connectionUri: `${prefix}_CONNECTION_URI`,
+    websiteBasePath: `${prefix}_WEBSITE_BASE_PATH`,
+    websiteDomain: `${prefix}_WEBSITE_DOMAIN`
+  }
+  return mapping[settingKey]
+}
+
+export const settingsToVarDict = (settings: Settings): VariableDictionary => {
+  return Object.keys(settings)
+      .map((settingKey) => ({
+          [settingToEnvVar(settingKey as keyof Settings)]:
+            settings[settingKey as keyof Settings].toString()
+      }))
 }

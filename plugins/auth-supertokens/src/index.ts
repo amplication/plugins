@@ -3,6 +3,7 @@ import {
   CreateConnectMicroservicesParams,
   CreateServerAppModuleParams,
   CreateServerAuthParams,
+  CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
   DsgContext,
   Events,
@@ -31,8 +32,22 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       },
       [EventNames.CreateServerAppModule]: {
         before: this.beforeCreateServerAppModule
+      },
+      [EventNames.CreateServerDotEnv]: {
+        before: this.beforeCreateServerDotEnv
       }
     };
+  }
+
+  beforeCreateServerDotEnv(
+    context: DsgContext,
+    eventParams: CreateServerDotEnvParams
+  ): CreateServerDotEnvParams {
+
+    const settings = utils.getPluginSettings(context.pluginInstallations);
+    eventParams.envVariables.push(...utils.settingsToVarDict(settings));
+
+    return eventParams
   }
 
   beforeCreateServerAppModule(

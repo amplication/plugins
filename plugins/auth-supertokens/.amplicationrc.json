@@ -1,1 +1,11 @@
-{}
+{
+    "settings": {
+        "apiDomain": "http://localhost:3000",
+        "appName": "Amplication App",
+        "websiteDomain": "http://localhost:3000",
+        "websiteBasePath": "/auth",
+        "apiBasePath": "/api/auth",
+        "connectionUri": "https://try.supertokens.com",
+        "apiGatewayPath": ""
+    }
+}

@@ -11,6 +11,8 @@ export const generateSupertokensOptions = (
   const websiteDomain = configService.get("SUPERTOKENS_WEBSITE_DOMAIN");
   const apiBasePath = configService.get("SUPERTOKENS_API_BASE_PATH");
   const websiteBasePath = configService.get("SUPERTOKENS_WEBSITE_BASE_PATH");
+  const apiKey = configService.get("SUPERTOKENS_API_KEY");
+  const apiGatewayPath = configService.get("SUPERTOKENS_API_GATEWAY_PATH");
 
   if(!connectionURI) {
     throw new Error("SUPERTOKENS_CONNECTION_URI environment variable must be defined");
@@ -32,12 +34,14 @@ export const generateSupertokensOptions = (
 
   return {
     connectionURI,
+    apiKey,
     appInfo: {
       appName,
       apiDomain,
       websiteDomain,
       apiBasePath,
       websiteBasePath,
+      apiGatewayPath
     },
     recipeList
   }
