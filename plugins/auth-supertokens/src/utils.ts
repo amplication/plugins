@@ -1,6 +1,7 @@
 import { PluginInstallation } from "@amplication/code-gen-types";
 import { namedTypes, ASTNode } from "ast-types";
 import * as recast from "recast";
+import { parse } from "@amplication/code-gen-utils";
 import { name as PackageName } from "../package.json";
 import { Settings } from "./types";
 import defaultSettings from "../.amplicationrc.json";
@@ -44,4 +45,8 @@ export function getFunctionDeclarationById(
   }
 
   return functionDeclaration;
+}
+
+export const prettyCode = (code: string): string => {
+    return recast.prettyPrint(parse(code)).code
 }

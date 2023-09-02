@@ -4,6 +4,7 @@ import { parse } from "@amplication/code-gen-utils";
 import { prettyPrint } from "recast";
 import { name } from "../../package.json";
 import RedisBrokerPlugin from "../index";
+import { prettyCode } from "../utils";
 
 
 describe("Testing beforeCreateConnectMicroservices hook", () => {
@@ -32,7 +33,7 @@ describe("Testing beforeCreateConnectMicroservices hook", () => {
         const expectedCode = prettyCode(`
         import { INestApplication } from "@nestjs/common";
         import { ConfigService } from "@nestjs/config";
-        
+
         import supertokens from 'supertokens-node';
         import { AuthFilter } from './auth/auth.filter';
         import { generateSupertokensOptions } from "./auth/generateSupertokensOptions";
@@ -51,6 +52,3 @@ describe("Testing beforeCreateConnectMicroservices hook", () => {
     })
 });
 
-export const prettyCode = (code: string): string => {
-    return prettyPrint(parse(code)).code
-}

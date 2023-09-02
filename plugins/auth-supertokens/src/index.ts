@@ -1,6 +1,7 @@
 import {
   AmplicationPlugin,
   CreateConnectMicroservicesParams,
+  CreateServerAppModuleParams,
   CreateServerAuthParams,
   CreateServerPackageJsonParams,
   DsgContext,
@@ -28,8 +29,33 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       [EventNames.CreateConnectMicroservices]: {
         before: this.beforeCreateConnectMicroservices
       },
-      [EventNames.CreateServer]: {}
+      [EventNames.CreateServerAppModule]: {
+        before: this.beforeCreateServerAppModule
+      }
     };
+  }
+
+  beforeCreateServerAppModule(
+    context: DsgContext,
+    eventParams: CreateServerAppModuleParams
+  ): CreateServerAppModuleParams {
+    const { template, templateMapping } = eventParams;
+
+    appendImports(template, [
+      authModuleImport(),
+      genSupertokensOptionsImport()
+    ])
+
+    if(!templateMapping["MODULES"]) {
+      throw new Error("Failed to find the app module's imported modules")
+    }
+
+    const modules = templateMapping.MODULES as namedTypes.ArrayExpression;
+    const authModule = authModuleInstantiation();
+
+    modules.elements.push(authModule);
+
+    return eventParams
   }
 
   beforeCreateConnectMicroservices(
@@ -40,7 +66,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
 
     appendImports(template, [
       supertokensImport(),
-      authfilterImport(),
+      authFilterImport(),
       genSupertokensOptionsImport()
     ]);
 
@@ -108,7 +134,14 @@ const supertokensImport = (): namedTypes.ImportDeclaration => {
   )
 }
 
-const authfilterImport = (): namedTypes.ImportDeclaration => {
+const authModuleImport = (): namedTypes.ImportDeclaration => {
+  return builders.importDeclaration(
+    [builders.importSpecifier(builders.identifier("AuthModule"))],
+    builders.stringLiteral("./auth/auth.module")
+  )
+}
+
+const authFilterImport = (): namedTypes.ImportDeclaration => {
   return builders.importDeclaration(
     [builders.importSpecifier(builders.identifier("AuthFilter"))],
     builders.stringLiteral("./auth/auth.filter")
@@ -190,6 +223,31 @@ const appCallExpression = (
       builders.identifier(funcName)
     ),
     params
+  )
+}
+
+const authModuleInstantiation = (): namedTypes.CallExpression => {
+  return builders.callExpression(
+    builders.memberExpression(
+      builders.identifier("AuthModule"),
+      builders.identifier("forRootAsync")
+    ),
+    [
+      builders.objectExpression([
+        builders.objectProperty(
+          builders.identifier("useFactory"),
+          builders.arrowFunctionExpression(
+            [builders.identifier("configService")],
+            builders.blockStatement([
+              builders.returnStatement(builders.callExpression(
+                builders.identifier("generateSupertokensOptions"),
+                [builders.identifier("configService")]
+              ))
+            ])
+          )
+        )
+      ])
+    ]
   )
 }
 
