@@ -1,6 +1,7 @@
 import {
   AmplicationPlugin,
   CreateServerAuthParams,
+  CreateServerPackageJsonParams,
   DsgContext,
   Events,
   ModuleMap,
@@ -8,6 +9,7 @@ import {
 import { EventNames } from "@amplication/code-gen-types";
 import { resolve, join } from "path";
 import { readFile, print } from "@amplication/code-gen-utils";
+import { merge } from "lodash";
 import * as constants from "./constants";
 
 class SupertokensAuthPlugin implements AmplicationPlugin {
@@ -16,8 +18,24 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     return {
       [EventNames.CreateServerAuth]: {
         after: this.afterCreateServerAuth
+      },
+      [EventNames.CreateServerPackageJson]: {
+        before: this.beforeCreateServerPackageJson
       }
     };
+  }
+
+  beforeCreateServerPackageJson(
+    context: DsgContext,
+    eventParams: CreateServerPackageJsonParams
+  ): CreateServerPackageJsonParams {
+    const supertokensDeps = constants.dependencies
+
+    eventParams.updateProperties.forEach((updateProperty) => {
+      merge(updateProperty, supertokensDeps);
+    });
+
+    return eventParams;
   }
 
   async afterCreateServerAuth(
