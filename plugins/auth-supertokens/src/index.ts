@@ -1,5 +1,6 @@
 import {
   AmplicationPlugin,
+  CreateConnectMicroservicesParams,
   CreateServerAuthParams,
   CreateServerPackageJsonParams,
   DsgContext,
@@ -8,8 +9,10 @@ import {
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
 import { resolve, join } from "path";
-import { readFile, print } from "@amplication/code-gen-utils";
+import { readFile, print, appendImports } from "@amplication/code-gen-utils";
 import { merge } from "lodash";
+import { builders, namedTypes } from "ast-types";
+import * as utils from "./utils";
 import * as constants from "./constants";
 
 class SupertokensAuthPlugin implements AmplicationPlugin {
@@ -21,8 +24,33 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       },
       [EventNames.CreateServerPackageJson]: {
         before: this.beforeCreateServerPackageJson
-      }
+      },
+      [EventNames.CreateConnectMicroservices]: {
+        before: this.beforeCreateConnectMicroservices
+      },
+      [EventNames.CreateServer]: {}
     };
+  }
+
+  beforeCreateConnectMicroservices(
+    context: DsgContext,
+    eventParams: CreateConnectMicroservicesParams
+  ): CreateConnectMicroservicesParams {
+    const { template } = eventParams;
+
+    appendImports(template, [
+      supertokensImport(),
+      authfilterImport(),
+      genSupertokensOptionsImport()
+    ]);
+
+    const connectFunc = utils.getFunctionDeclarationById(
+      template,
+      builders.identifier("connectMicroservices")
+    );
+    connectFunc.body.body.push(enableCorsStatement(), globalFiltersStatement());
+
+    return eventParams;
   }
 
   beforeCreateServerPackageJson(
@@ -71,6 +99,98 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
 
     return modules;
   }
+}
+
+const supertokensImport = (): namedTypes.ImportDeclaration => {
+  return builders.importDeclaration(
+    [builders.importDefaultSpecifier(builders.identifier("supertokens"))],
+    builders.stringLiteral("supertokens-node")
+  )
+}
+
+const authfilterImport = (): namedTypes.ImportDeclaration => {
+  return builders.importDeclaration(
+    [builders.importSpecifier(builders.identifier("AuthFilter"))],
+    builders.stringLiteral("./auth/auth.filter")
+  )
+}
+
+const genSupertokensOptionsImport = (): namedTypes.ImportDeclaration => {
+  return builders.importDeclaration(
+    [builders.importSpecifier(builders.identifier("generateSupertokensOptions"))],
+    builders.stringLiteral("./auth/generateSupertokensOptions")
+  )
+}
+
+const globalFiltersStatement = (): namedTypes.ExpressionStatement => {
+  return builders.expressionStatement(
+    appCallExpression("useGlobalFilters", [
+      builders.newExpression(builders.identifier("AuthFilter"), [])
+    ])
+  );
+}
+
+const enableCorsStatement = (): namedTypes.ExpressionStatement => {
+  return builders.expressionStatement(appCallExpression(
+    "enableCors",
+    [
+      builders.objectExpression([
+        allowOriginWebsiteDomainProp(),
+        allowedSupertokenHeadersProp(),
+        builders.objectProperty(
+          builders.identifier("credentials"),
+          builders.booleanLiteral(true)
+        )
+      ])
+    ]
+  ))
+}
+
+const allowedSupertokenHeadersProp = (): namedTypes.ObjectProperty => {
+  return builders.objectProperty(
+    builders.identifier("allowedHeaders"),
+    builders.arrayExpression([
+      builders.stringLiteral("content-type"),
+      builders.spreadElement(builders.callExpression(
+        builders.memberExpression(
+          builders.identifier("supertokens"),
+          builders.identifier("getAllCORSHeaders")
+        ),
+        []
+      ))
+    ])
+  )
+}
+
+const allowOriginWebsiteDomainProp = (): namedTypes.ObjectProperty => {
+  return builders.objectProperty(
+    builders.identifier("origin"),
+    builders.arrayExpression([
+      builders.memberExpression(
+        builders.memberExpression(
+          builders.callExpression(
+            builders.identifier("generateSupertokensOptions"),
+            [builders.identifier("configService")]
+          ),
+          builders.identifier("appInfo")
+        ),
+        builders.identifier("websiteDomain")
+      )
+    ])
+  )
+}
+
+const appCallExpression = (
+  funcName: string,
+  params: namedTypes.CallExpression["arguments"]
+): namedTypes.CallExpression => {
+  return builders.callExpression(
+    builders.memberExpression(
+      builders.identifier("app"),
+      builders.identifier(funcName)
+    ),
+    params
+  )
 }
 
 export default SupertokensAuthPlugin;

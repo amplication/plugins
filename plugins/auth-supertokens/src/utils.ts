@@ -1,4 +1,6 @@
 import { PluginInstallation } from "@amplication/code-gen-types";
+import { namedTypes, ASTNode } from "ast-types";
+import * as recast from "recast";
 import { name as PackageName } from "../package.json";
 import { Settings } from "./types";
 import defaultSettings from "../.amplicationrc.json";
@@ -19,3 +21,27 @@ export const getPluginSettings = (
 
   return settings;
 };
+
+export function getFunctionDeclarationById(
+  node: ASTNode,
+  id: namedTypes.Identifier
+): namedTypes.FunctionDeclaration {
+  let functionDeclaration: namedTypes.FunctionDeclaration | null = null;
+  recast.visit(node, {
+    visitFunctionDeclaration(path) {
+      if (path.node.id && path.node.id.name === id.name) {
+        functionDeclaration = path.node as namedTypes.FunctionDeclaration;
+        return false;
+      }
+      return this.traverse(path);
+    },
+  });
+
+  if (!functionDeclaration) {
+    throw new Error(
+      `Could not find function declaration with the identifier ${id.name} in provided AST node`
+    );
+  }
+
+  return functionDeclaration;
+}
