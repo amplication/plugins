@@ -1,60 +1,58 @@
-import type {
+import {
   AmplicationPlugin,
-  CreateAdminUIParams,
-  CreateServerParams,
+  CreateServerAuthParams,
   DsgContext,
   Events,
   ModuleMap,
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
-import { resolve } from "path";
+import { resolve, join } from "path";
+import { readFile, print } from "@amplication/code-gen-utils";
+import * as constants from "./constants";
 
-class ExamplePlugin implements AmplicationPlugin {
-  /**
-   * This is mandatory function that returns an object with the event name. Each event can have before or/and after
-   */
+class SupertokensAuthPlugin implements AmplicationPlugin {
+  
   register(): Events {
     return {
-      [EventNames.CreateServer]: {
-        before: this.beforeCreateServer,
-        after: this.afterCreateServer,
-      },
-      [EventNames.CreateAdminUI]: {
-        before: this.beforeCreateAdminUI,
-      },
+      [EventNames.CreateServerAuth]: {
+        after: this.afterCreateServerAuth
+      }
     };
   }
-  // You can combine many events in one plugin in order to change the related files.
 
-  beforeCreateServer(context: DsgContext, eventParams: CreateServerParams) {
-    // Here you can manipulate the context or save any context variable for your after function.
-    // You can also manipulate the eventParams so it will change the result of Amplication function.
-    // context.utils.skipDefaultBehavior = true; this will prevent the default behavior and skip our handler.
-
-    return eventParams; // eventParams must return from before function. It will be used for the builder function.
-  }
-
-  async afterCreateServer(
+  async afterCreateServerAuth(
     context: DsgContext,
-    eventParams: CreateServerParams,
-    modules: ModuleMap
+    eventParams: CreateServerAuthParams
   ): Promise<ModuleMap> {
-    // Here you can get the context, eventParams and the modules that Amplication created.
-    // Then you can manipulate the modules, add new ones, or create your own.
-    const staticPath = resolve(__dirname, "./static");
-    const staticsFiles = await context.utils.importStaticModules(
-      staticPath,
-      context.serverDirectories.srcDirectory
-    );
-    await modules.merge(staticsFiles);
-    return modules; // You must return the generated modules you want to generate at this part of the build.
-  }
+    const { serverDirectories, logger } = context;
+    const fileNames = [
+      "supertokens/supertokens.service.ts",
+      "supertokens/supertokens.service.spec.ts",
+      "auth.filter.ts",
+      "auth.filter.spec.ts",
+      "auth.guard.ts",
+      "auth.guard.spec.ts",
+      "auth.middleware.ts",
+      "auth.middleware.spec.ts",
+      "auth.module.ts",
+      "config.interface.ts",
+      "generateSupertokensOptions.ts",
+      "recipes.ts",
+      "session.decorator.ts"
+    ];
 
-  beforeCreateAdminUI(context: DsgContext, eventParams: CreateAdminUIParams) {
-    // Same as beforeCreateExample but for a different event.
+    const modules = new ModuleMap(logger);
+    for(const name of fileNames) {
+      const filePath = resolve(constants.staticsPath, name);
+      const file = await readFile(filePath);
+      await modules.set({
+        code: print(file).code,
+        path: join(serverDirectories.authDirectory, name)
+      });
+    }
 
-    return eventParams;
+    return modules;
   }
 }
 
-export default ExamplePlugin;
+export default SupertokensAuthPlugin;
