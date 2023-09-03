@@ -1,0 +1,10 @@
+{
+    "settings":{
+        "host": "localhost",
+        "port": 1433,
+        "user": "admin",
+        "password": "admin",
+        "dbName": "my-db"
+    }
+
+}
