@@ -12,7 +12,7 @@
   "author": "Muly Gottlieb",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@amplication/code-gen-types": "^2.0.6",
+    "@amplication/code-gen-types": "^2.0.7",
     "@babel/parser": "^7.18.11",
     "@babel/types": "^7.18.10",
     "@types/lodash": "^4.14.182",
