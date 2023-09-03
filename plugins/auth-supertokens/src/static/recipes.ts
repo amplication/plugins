@@ -3,4 +3,8 @@ import Session from "supertokens-node/recipe/session"
 import Dashboard from "supertokens-node/recipe/dashboard"
 import { RecipeListFunction } from "supertokens-node/types";
 
-export const recipeList: RecipeListFunction[] = [];
+export const recipeList: RecipeListFunction[] = [
+	Session.init(),
+	Dashboard.init()
+];
+
