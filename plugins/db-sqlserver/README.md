@@ -16,9 +16,8 @@ It updates the following parts:
 
 ## Configuration
 
-The plugin uses the parameters configured on the database tab on the service settings page
-
-![image](https://user-images.githubusercontent.com/43705455/190962515-6ffc6751-71de-4acb-9a85-da9e7096f923.png)
+The plugin uses the parameters configured on the plugin settings page.
+These settings include: `host`, `port`, `user`, `password`, `dbName`
 
 ## Usage
 
