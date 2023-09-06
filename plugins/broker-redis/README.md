@@ -17,7 +17,9 @@ It updates the following parts:
 
 ## Configuration
 
-The `url` setting is the url of the Redis server. 
+The `port` setting is the port that will be used for the url of the redis server.
+
+The `host` setting is the host that will be used for the url of the redis server.
 
 The `retryAttempts` setting is the number of times to retry a message.
 
@@ -29,7 +31,8 @@ If no configuration is provided the .amplicationrc.json file will use be used as
 
 ```json
 {
-    "url": "redis://localhost:6379",
+    "host": "localhost",
+    "port": 6379,
     "retryAttempts": 3,
     "retryDelay": 3,
     "enableTls": false
@@ -55,7 +58,9 @@ Running `npm run test` will run the plugin's test suite.
 This plugin provides you with a Redis cache module that you can use in your service.
 To configure, set the following environment variables:
 
-REDIS_BROKER_URL - the url of the Redis server to use for the message broker.
+REDIS_BROKER_HOST - the host that will be used in the url of the Redis server.
+
+REDIS_BROKER_PORT - the port that will be used in the url of the Redis server.
 
 REDIS_BROKER_RETRY_ATTEMPTS - The number of times to retry a message.
 

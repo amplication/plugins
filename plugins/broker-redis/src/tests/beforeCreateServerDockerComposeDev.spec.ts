@@ -20,15 +20,15 @@ describe("Testing beforeCreateServerDockerCompose hook", () => {
         const { updateProperties } = plugin.beforeCreateServerDockerComposeDev(context, params)
         expect(updateProperties).toStrictEqual( [{
             services: {
-                redis: {
-                    container_name: "${REDIS_HOST}",
+                redis_broker: {
+                    container_name: "${REDIS_BROKER_HOST}",
                     image: "redis:6",
-                    ports: ["${REDIS_PORT}:6379"],
-                    volumes: ["redis:/data"]
+                    ports: ["${REDIS_BROKER_PORT}:6379"],
+                    volumes: ["redis_broker:/redis-broker-data"]
                 }
             },
             volumes: {
-                redis: {
+                redis_broker: {
                     driver: "local"
                 }
             }

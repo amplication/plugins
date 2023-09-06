@@ -1,6 +1,7 @@
 {
     "settings": {
-        "url": "redis://localhost:6379",
+        "host": "localhost",
+        "port": 6379,
         "retryAttempts": 3,
         "retryDelay": 3,
         "enableTls": false

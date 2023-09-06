@@ -27,14 +27,21 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
     });
     it("should use the user specified settings when the user specifies them", () => {
         const userSpecifiedSettings: Settings = {
-            url: "redis://192.168.0.1:9000",
+            host: "192.168.0.1",
+            port: 9000,
             retryAttempts: 45,
             retryDelay: 50,
             enableTls: true
         }
         context.pluginInstallations[0].settings = userSpecifiedSettings;
         const { envVariables } = plugin.beforeCreateServerDotEnv(context, params);
-        expect(envVariables).toStrictEqual(utils.settingsToVarDict(userSpecifiedSettings));
+        expect(envVariables).toStrictEqual([
+            { REDIS_BROKER_HOST: "192.168.0.1" },
+            { REDIS_BROKER_PORT: "9000" },
+            { REDIS_BROKER_RETRY_ATTEMPTS: "45" },
+            { REDIS_BROKER_RETRY_DELAY: "50" },
+            { REDIS_BROKER_ENABLE_TLS: "true" }
+        ]);
     });
 });
 

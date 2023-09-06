@@ -13,17 +13,17 @@ export const dependencies = {
 export const updateDockerComposeProperties: CreateServerDockerComposeParams["updateProperties"] = [{
     services: {
         server: {
-            depends_on: ["redis"]
+            depends_on: ["redis_broker"]
         },
-        redis: {
-            container_name: "${REDIS_HOST}",
+        redis_broker: {
+            container_name: "${REDIS_BROKER_HOST}",
             image: "redis:6",
-            ports: ["${REDIS_PORT}:6379"],
-            volumes: ["redis:/data"]
+            ports: ["${REDIS_BROKER_PORT}:6379"],
+            volumes: ["redis_broker:/redis-broker-data"]
         }
     },
     volumes: {
-        redis: {
+        redis_broker: {
             driver: "local"
         }
     }
@@ -31,15 +31,15 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
 
 export const updateDockerComposeDevProperties: CreateServerDockerComposeDevParams["updateProperties"] = [{
     services: {
-        redis: {
-            container_name: "${REDIS_HOST}",
+        redis_broker: {
+            container_name: "${REDIS_BROKER_HOST}",
             image: "redis:6",
-            ports: ["${REDIS_PORT}:6379"],
-            volumes: ["redis:/data"]
+            ports: ["${REDIS_BROKER_PORT}:6379"],
+            volumes: ["redis_broker:/redis-broker-data"]
         }
     },
     volumes: {
-        redis: {
+        redis_broker: {
             driver: "local"
         }
     }

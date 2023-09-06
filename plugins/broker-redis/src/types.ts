@@ -1,5 +1,6 @@
 export interface Settings {
-  url: string,
+  host: string,
+  port: number,
   retryAttempts: number,
   retryDelay: number,
   enableTls: boolean

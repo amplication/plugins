@@ -27,7 +27,8 @@ export const getPluginSettings = (
 
 export const settingToEnvVar = (settingKey: keyof Settings): string => {
   const mapping: {[key in keyof Settings]: string} = {
-    url: "REDIS_BROKER_URL",
+    host: "REDIS_BROKER_HOST",
+    port: "REDIS_BROKER_PORT",
     retryAttempts: "REDIS_BROKER_RETRY_ATTEMPTS",
     retryDelay: "REDIS_BROKER_RETRY_DELAY",
     enableTls: "REDIS_BROKER_ENABLE_TLS"
@@ -43,7 +44,10 @@ export const settingsToVarDict = (settings: Settings): VariableDictionary => {
       }))
       .filter((obj) => {
         const key = Object.keys(obj)[0];
-        return obj[key] !== undefined && obj[key] !== null
+        // To filter out unexpected settings that don't map to
+        // environment variables
+        return key !== "undefined" &&
+          obj[key] !== undefined && obj[key] !== null
       })
       // Added this last map to get rid of typescript errors
       .map((obj) => {
