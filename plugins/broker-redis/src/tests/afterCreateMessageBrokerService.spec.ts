@@ -58,4 +58,8 @@ export class RedisController {}
 `
 
 const expectedConsts = `export const REDIS_BROKER_CLIENT = "REDIS_BROKER_CLIENT";
+export const REDIS_BROKER_ENABLE_TLS = "REDIS_BROKER_ENABLE_TLS";
+export const REDIS_BROKER_URL = "REDIS_BROKER_URL";
+export const REDIS_BROKER_RETRY_DELAY = "REDIS_BROKER_RETRY_DELAY";
+export const REDIS_BROKER_RETRY_ATTEMPTS = "REDIS_BROKER_RETRY_ATTEMPTS";
 `

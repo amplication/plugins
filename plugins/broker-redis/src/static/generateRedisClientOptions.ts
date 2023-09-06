@@ -1,13 +1,14 @@
 import { ConfigService } from "@nestjs/config";
+import { REDIS_BROKER_ENABLE_TLS, REDIS_BROKER_URL, REDIS_BROKER_RETRY_ATTEMPTS, REDIS_BROKER_RETRY_DELAY } from "./constants";
 import { RedisOptions, Transport } from "@nestjs/microservices";
 
 export const generateRedisClientOptions = (
     configService: ConfigService
 ): RedisOptions => {
-  const redisEnableTLS = configService.get("REDIS_BROKER_ENABLE_TLS") === "true";
-  const redisUrl = configService.get("REDIS_BROKER_URL");
-  const redisRetryAttempts = configService.get("REDIS_BROKER_RETRY_ATTEMPTS");
-  const redisRetryDelay = configService.get("REDIS_BROKER_RETRY_DELAY");
+  const redisEnableTLS = configService.get(REDIS_BROKER_ENABLE_TLS) === "true";
+  const redisUrl = configService.get(REDIS_BROKER_URL);
+  const redisRetryAttempts = configService.get(REDIS_BROKER_RETRY_ATTEMPTS);
+  const redisRetryDelay = configService.get(REDIS_BROKER_RETRY_DELAY);
 
   if (!redisUrl) {
     throw new Error("REDIS_BROKER_URL environment variable must be defined");
