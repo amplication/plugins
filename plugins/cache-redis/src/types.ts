@@ -3,6 +3,6 @@ export interface Settings {
   port: number,
   ttl: number,
   max: number,
-  username?: string | null,
-  password?: string | null
+  username: string,
+  password: string
 }
