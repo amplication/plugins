@@ -9,7 +9,7 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
   beforeEach(() => {
     context = mock<DsgContext>({
       pluginInstallations: [{
-        npm: "@amplication/plugin-integrate-opentelemetry",
+        npm: "@amplication/plugin-observability-opentelemetry",
       }],
     });
     eventParams = mock<CreateServerDotEnvParams>({

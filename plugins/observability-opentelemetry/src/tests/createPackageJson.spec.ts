@@ -8,7 +8,7 @@ describe("Testing beforeServerPackageJson hook", () => {
 
   beforeEach(() => {
     context = mock<DsgContext>({
-      pluginInstallations: [{ npm: "@amplication/plugin-integrate-opentelemetry" }],
+      pluginInstallations: [{ npm: "@amplication/plugin-observability-opentelemetry" }],
     });
     eventParams = {
       fileContent: "",
