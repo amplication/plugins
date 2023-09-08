@@ -39,8 +39,8 @@ export const dockerComposeDevValues = [
           "13133:13133", // health check extension
           "55670:55679", // zpages debugging extension
         ],
-        volumes: ["./otel-config.yaml:/etc/otel-config.yaml"],
-        command: ["--config=/etc/otel-config.yaml"],
+        volumes: ["./otel-config.yml:/etc/otel-config.yml"],
+        command: ["--config=/etc/otel-config.yml"],
         depends_on: [JAEGER_NAME],
       },
     },
@@ -62,7 +62,7 @@ export const dockerComposeValues = [
       },
       ...dockerComposeDevValues[0].services,
     },
-  }
+  },
 ];
 
 export const identifiers = {
