@@ -23,7 +23,7 @@
     "webpack-cli": "^4.10.0"
   },
   "devDependencies": {
-    "@amplication/code-gen-types": "^2.0.1",
+    "@amplication/code-gen-types": "^2.0.8",
     "@types/jest": "^29.5.3",
     "@types/lodash": "^4.14.182",
     "@types/normalize-path": "^3.0.0",
