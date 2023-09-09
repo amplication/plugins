@@ -42,7 +42,7 @@ import { ClientRedis } from "@nestjs/microservices";
 import { REDIS_BROKER_CLIENT } from "./constants";
 
 @Injectable()
-export class RedisService {
+export class RedisProducerService {
   constructor(@Inject(REDIS_BROKER_CLIENT) private redisClient: ClientRedis) {}
 
   async onModuleInit() {

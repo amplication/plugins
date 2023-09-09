@@ -4,7 +4,7 @@ import { Settings } from "./types";
 import { settings as defaultSettings }  from "../.amplicationrc.json";
 import { namedTypes, ASTNode } from "ast-types";
 import * as recast from "recast";
-import { appendImports, parse } from "@amplication/code-gen-utils"
+import { parse } from "@amplication/code-gen-utils"
 export * from "@amplication/code-gen-utils"
 export { prettyPrint } from "recast";
 
