@@ -1,0 +1,36 @@
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:${{ OTEL_AGENT_HTTP_ENDPOINT }}
+      grpc:
+        endpoint: 0.0.0.0:${{ OTEL_AGENT_GRPC_ENDPOINT }}
+processors:
+  batch:
+    timeout: 1s
+  resource:
+    attributes:
+      - key: test.key
+        value: "test-value"
+        action: insert
+exporters:
+  logging:
+    loglevel: info
+  jaeger:
+    endpoint: jaeger:14250
+    tls:
+      insecure: true
+
+extensions:
+  health_check:
+  pprof:
+    endpoint: :1888
+  zpages:
+    endpoint: :55679
+service:
+  extensions: [pprof, zpages, health_check]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch, resource]
+      exporters: [logging, jaeger]

@@ -3,6 +3,7 @@
 		"es2021": true,
 		"node": true
 	},
+  "root": true,
 	"extends": [
 		"eslint:recommended",
 		"plugin:@typescript-eslint/recommended"
@@ -15,7 +16,11 @@
 	"plugins": [
 		"@typescript-eslint"
 	],
-	"rules": {},
+	"rules": {
+		"linebreak-style": [ "error", "unix" ],
+		"quotes": [ "error", "double" ],
+		"semi": [ "error", "always" ]
+	},
 	"overrides": [
 		{
       "files": ["*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx"],

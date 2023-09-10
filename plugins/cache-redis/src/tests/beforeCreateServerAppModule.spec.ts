@@ -49,15 +49,28 @@ describe("Testing beforeCreateServerAppModule hook", () => {
     it("should add the cache module configured with Redis to the modules list", () => {
         const { templateMapping } = plugin.beforeCreateServerAppModule(context, params)
         let expectedModules = prettyCode(`
-        [CacheModule.register({
+        [CacheModule.registerAsync({
             isGlobal: true,
-            store: redisStore,
-            host: process.env.REDIS_HOST,
-            port: process.env.REDIS_PORT,
-            username: process.env.REDIS_USERNAME,
-            password: process.env.REDIS_PASSWORD,
-            ttl: parseInt(process.env.REDIS_TTL ? process.env.REDIS_TTL : "5"),
-            max: parseInt(process.env.REDIS_MAX_REQUESTS_CACHED ? process.env.REDIS_MAX_REQUESTS_CACHED : "100")
+            imports: [ConfigModule],
+            useFactory: (configService) => {
+                const host = configService.get("REDIS_HOST");
+                const port = configService.get("REDIS_PORT");
+                const username = configService.get("REDIS_USERNAME");
+                const password = configService.get("REDIS_PASSWORD");
+                const ttl = configService.get("REDIS_TTL", 5);
+                const max = configService.get("REDIS_MAX_REQUESTS_CACHED", 100);
+
+                return {
+                store: redisStore,
+                host: host,
+                port: port,
+                username: username,
+                password: password,
+                ttl: ttl,
+                max: max
+                }
+            },
+            inject: [ConfigService]
         })]`);
         // Remove the trailing semi-colon from the end which is inserted
         // by the prettyCode invocation

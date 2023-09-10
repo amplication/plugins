@@ -1,5 +1,5 @@
 import { CreateAdminUIParams, CreateServerParams, DsgContext, ModuleMap } from "@amplication/code-gen-types";
-import { clientStaticPath, extendsPlaceholder, rulesPlaceholder, serverStaticPath } from "../constants";
+import { clientStaticPath, serverStaticPath } from "../constants";
 import { format } from "prettier";
 import { getPluginSettings } from "../utils";
 
@@ -32,18 +32,25 @@ export const afterCreateApp = (
       baseDirectory
     );
 
-    const extendsValue = (formatter === "prettier") ? ",\n\t  \"prettier\"" : "";
+    const extendsValue = (formatter === "prettier") ? "prettier" : null;
 
-    staticFiles.replaceModulesCode(( code ) => 
-      code.replaceAll(
-        rulesPlaceholder, 
-        format(JSON.stringify(rules, null, 2), { parser: "json" })
-      ).replaceAll(
-        extendsPlaceholder,
-        extendsValue
-      ));
-      
-  
+    staticFiles.modules().forEach((module) => {
+      console.log(module.path);
+
+      if (module.path.endsWith(".eslintrc")) {
+        const code = format(
+          JSON.stringify({
+            ...JSON.parse(module.code),
+            extends: extendsValue ? JSON.parse(module.code).extends.concat(extendsValue) : JSON.parse(module.code).extends,
+            rules: rules,
+          }, null, 2),
+          { parser: "json" }
+        );
+
+        module.code = code;
+      }
+    });
+
     await modules.merge(staticFiles);
     return modules;
   };
