@@ -17,6 +17,9 @@ import { dataSource, updateDockerComposeDevProperties, updateDockerComposeProper
 class MSSQLServerPlugin implements AmplicationPlugin {
   register(): Events {
     return {
+      CreateServer: {
+        before: this.beforeCreateServer,
+      },
       CreateServerDotEnv: {
         before: this.beforeCreateServerDotEnv,
       },
@@ -30,6 +33,42 @@ class MSSQLServerPlugin implements AmplicationPlugin {
         before: this.beforeCreatePrismaSchema,
       },
     };
+  }
+
+  beforeCreateServer(context: DsgContext, eventParams: CreateServerParams) {
+    const generateErrorMessageForEnums = (
+      fieldType: string,
+      entityName: string,
+      fieldName: string
+    ) => `${fieldType} (list of primitives type) on entity: ${entityName}, field: ${fieldName}, is not supported by SQL Server prisma provider. 
+    You can select another data type or change your DB to PostgreSQL`;
+
+    const generateErrorMessageForJson = (
+      entityName: string,
+      fieldName: string
+    ) => `field type JSON on entity: ${entityName}, field: ${fieldName}, is not supported by SQL Server prisma provider. 
+    You can select another data type or change your DB provider`;
+
+    context.entities?.forEach(({ name: entityName, fields }) => {
+      const enumField = fields.find(
+        ({ dataType }) => dataType === EnumDataType.MultiSelectOptionSet || dataType === EnumDataType.OptionSet
+      );
+      if (enumField) {
+        const errorMessage = generateErrorMessageForEnums(enumField.dataType as string, entityName, enumField.name);
+        context.logger.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+
+      const jsonField = fields.find(
+        ({ dataType }) => dataType === EnumDataType.Json);
+      if (jsonField) {
+        const errorMessage = generateErrorMessageForJson(entityName, jsonField.name);
+        context.logger.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+    });
+
+    return eventParams;
   }
 
   beforeCreateServerDotEnv(
