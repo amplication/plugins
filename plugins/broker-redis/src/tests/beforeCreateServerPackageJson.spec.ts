@@ -21,7 +21,8 @@ describe("Testing beforeServerPackageJson hook", () => {
         expect(updateProperties).toStrictEqual([{
             dependencies: {
                 "redis": "3.1.2",
-                "@nestjs/microservices": "8.2.3"
+                "@nestjs/microservices": "8.2.3",
+                "rxjs": "^7.8.1"
             }
         }]);
     });
