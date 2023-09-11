@@ -186,11 +186,7 @@ class MSSQLServerPlugin implements AmplicationPlugin {
             relatedEntity.name,
             !isOneToOneWithoutForeignKey,
             allowMultipleSelection || false,
-            relationName,
-            undefined,
-            undefined,
-            ReferentialActions.NoAction,
-            ReferentialActions.NoAction
+            relationName
           ),
         ];
       }
