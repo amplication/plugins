@@ -121,50 +121,58 @@ const cacheModuleInstantiation = () => {
   return builders.callExpression(
     builders.memberExpression(
       builders.identifier("CacheModule"),
-      builders.identifier("register")
+      builders.identifier("registerAsync")
     ),
     [
       builders.objectExpression([
         objProp("isGlobal", builders.booleanLiteral(true)),
-        objProp("store", builders.identifier("redisStore")),
-        objProp("host", envVar("REDIS_HOST")),
-        objProp("port", envVar("REDIS_PORT")),
-        objProp("username", envVar("REDIS_USERNAME")),
-        objProp("password", envVar("REDIS_PASSWORD")),
-        objProp("ttl", parseIntOr(envVar("REDIS_TTL"), "5")),
-        objProp("max", parseIntOr(envVar("REDIS_MAX_REQUESTS_CACHED"), "100"))
+        objProp("imports", builders.arrayExpression([builders.identifier("ConfigModule")])),
+        objProp("useFactory", useFactoryConfigFunc()),
+        objProp("inject", builders.arrayExpression([builders.identifier("ConfigService")]))
       ]),
     ]
   );
 }
 
-const parseIntOr = (val: namedTypes.MemberExpression, defaultVal: string) => {
-  return builders.callExpression(
-    builders.identifier("parseInt"),
-    [
-      builders.conditionalExpression(
-        val,
-        val,
-        builders.stringLiteral(defaultVal)
-      )
-    ]
-  )
+const useFactoryConfigFunc = (): namedTypes.ArrowFunctionExpression => {
+  return builders.arrowFunctionExpression([builders.identifier("configService")],
+    builders.blockStatement([
+      configAssign("host", "REDIS_HOST"),
+      configAssign("port", "REDIS_PORT"),
+      configAssign("username", "REDIS_USERNAME"),
+      configAssign("password", "REDIS_PASSWORD"),
+      configAssign("ttl", "REDIS_TTL", builders.literal(5)),
+      configAssign("max", "REDIS_MAX_REQUESTS_CACHED", builders.literal(100)),
+      builders.returnStatement(builders.objectExpression([
+        objProp("store", builders.identifier("redisStore")),
+        objProp("host", builders.identifier("host")),
+        objProp("port", builders.identifier("port")),
+        objProp("username", builders.identifier("username")),
+        objProp("password", builders.identifier("password")),
+        objProp("ttl", builders.identifier("ttl")),
+        objProp("max", builders.identifier("max"))
+      ]))
+  ]));
+}
+
+const configAssign = (
+  name: string,
+  key: string,
+  ...others: any[]
+): namedTypes.VariableDeclaration => {
+  return builders.variableDeclaration("const", [builders.variableDeclarator(
+    builders.identifier(name),
+    builders.callExpression(builders.memberExpression(
+      builders.identifier("configService"),
+      builders.identifier("get")
+    ), [builders.stringLiteral(key), ...others])
+  )])
 }
 
 const objProp = (key: string, val: any): namedTypes.ObjectProperty => {
   return builders.objectProperty(
     builders.identifier(key),
     val
-  )
-}
-
-const envVar = (variable: string): namedTypes.MemberExpression => {
-  return builders.memberExpression(
-    builders.memberExpression(
-      builders.identifier("process"),
-      builders.identifier("env")
-    ),
-    builders.identifier(variable)
   )
 }
 

@@ -4,6 +4,7 @@ import {
   afterLoadStaticFiles,
   beforeCreateServerAppModule,
   beforeCreateServerDockerCompose,
+  beforeCreateServerDockerComposeDev,
   beforeCreateServerDotEnv,
   beforeCreateServerPackageJson,
 } from "@/events";
@@ -17,8 +18,8 @@ class ESLintPlugin implements AmplicationPlugin {
       [EventNames.CreateServerDockerCompose]: {
         before: beforeCreateServerDockerCompose,
       },
-      [EventNames.CreateServerDockerComposeDB]: {
-        before: beforeCreateServerDockerCompose,
+      [EventNames.CreateServerDockerComposeDev]: {
+        before: beforeCreateServerDockerComposeDev,
       },
       [EventNames.CreateServerDotEnv]: {
         before: beforeCreateServerDotEnv,

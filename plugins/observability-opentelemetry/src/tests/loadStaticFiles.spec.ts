@@ -13,7 +13,7 @@ describe("Testing loadStaticFiles hook", () => {
   beforeEach(() => {
     logger = mock<BuildLogger>();
     context = mock<DsgContext>({
-      pluginInstallations: [{ npm: "@amplication/plugin-integrate-opentelemetry" }],
+      pluginInstallations: [{ npm: "@amplication/plugin-observability-opentelemetry" }],
       utils: {
         importStaticModules: async (source, basePath) => {
           const directory = `${(source)}/`;

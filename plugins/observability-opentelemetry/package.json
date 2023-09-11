@@ -1,6 +1,6 @@
 {
-  "name": "@amplication/plugin-integrate-opentelemetry",
-  "version": "0.0.1",
+  "name": "@amplication/plugin-observability-opentelemetry",
+  "version": "1.0.0",
   "description": "This plugin is created to add integrate opentelemetry to the amplication app",
   "main": "dist/index.js",
   "scripts": {
@@ -16,7 +16,7 @@
   "author": "Ashish Padhy",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@amplication/code-gen-types": "^2.0.1",
+    "@amplication/code-gen-types": "^2.0.8",
     "@amplication/code-gen-utils": "^0.0.5",
     "@babel/parser": "^7.20.7",
     "@babel/types": "^7.20.7",

@@ -29,7 +29,9 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
             host: "192.168.10.1",
             port: 7000,
             ttl: 10000,
-            max: 1000000
+            max: 1000000,
+            username: "name",
+            password: "password"
         }
         context.pluginInstallations[0].settings = userSpecifiedSettings;
         const { envVariables } = plugin.beforeCreateServerDotEnv(context, params);

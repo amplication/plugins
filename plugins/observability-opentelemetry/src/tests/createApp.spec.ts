@@ -10,7 +10,7 @@ describe("Testing createApp hook", () => {
 
   beforeEach(() => {
     context = mock<DsgContext>({
-      pluginInstallations: [{ npm: "@amplication/plugin-integrate-opentelemetry" }],
+      pluginInstallations: [{ npm: "@amplication/plugin-observability-opentelemetry" }],
       resourceInfo: {
         name: "sample-service",
       },

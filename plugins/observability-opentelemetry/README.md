@@ -1,4 +1,4 @@
-# @amplication/plugin-integrate-opentelemetry
+# @amplication/plugin-observability-opentelemetry
 
 <!-- [![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-auth-basic)](https://www.npmjs.com/package/@amplication/plugin-auth-basic) -->
 
