@@ -13,7 +13,8 @@ import {
   CreateServerDockerComposeDevParams,
   CreateServerDockerComposeParams,
   CreateServerDotEnvParams,
-  EnumMessagePatternConnectionOptions
+  EnumMessagePatternConnectionOptions,
+  CreateMessageBrokerTopicsEnumParams
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
 import { builders, namedTypes } from "ast-types";
@@ -23,6 +24,7 @@ import { readFile, print } from "@amplication/code-gen-utils";
 import { pascalCase } from "pascal-case";
 import * as utils from "./utils";
 import * as constants from "./constants";
+import { TSType } from "@babel/types";
 
 class RedisBrokerPlugin implements AmplicationPlugin {
   
@@ -57,10 +59,47 @@ class RedisBrokerPlugin implements AmplicationPlugin {
       },
       [EventNames.CreateServerDotEnv]: {
         before: this.beforeCreateServerDotEnv
+      },
+      [EventNames.CreateMessageBrokerTopicsEnum]: {
+        after: this.afterCreateMessageBrokerTopicsEnum
       }
     };
   }
   
+  async afterCreateMessageBrokerTopicsEnum(
+    context: DsgContext,
+    eventParams: CreateMessageBrokerTopicsEnumParams,
+    modules: ModuleMap
+  ): Promise<ModuleMap> {
+    const { serverDirectories } = context;
+    const topicsPath = join(serverDirectories.messageBrokerDirectory, "topics.ts");
+    const topicsModule = modules.get(topicsPath);
+    if(!topicsModule) {
+      throw new Error("Failed to find the topics.ts file for the message broker topics enum");
+    }
+
+    const topicsFile = utils.parse(topicsModule.code);
+    const topicEnumNames: string[] = [];
+    topicsFile.program.body.forEach((stmt) => {
+      if(stmt.type === "ExportNamedDeclaration") {
+        //@ts-ignore
+        if(!stmt.declaration || !stmt.declaration.id || !stmt.declaration.id.name) {
+          throw new Error("Couldn't find the name of an enum in the message broker topics file");
+        }
+        //@ts-ignore
+        topicEnumNames.push(stmt.declaration.id.name);
+      }
+    })
+    const umbrellaTypeDeclaration = allMessageBrokerTopicsTypeDeclaration(topicEnumNames);
+    topicsFile.program.body.push(builders.emptyStatement(), umbrellaTypeDeclaration);
+
+    await modules.set({
+      code: print(topicsFile).code,
+      path: topicsPath
+    });
+    return modules;
+  }
+
   beforeCreateServerAppModule(
     dsgContext: DsgContext,
     eventParams: CreateServerAppModuleParams
@@ -191,7 +230,7 @@ class RedisBrokerPlugin implements AmplicationPlugin {
         controllerClass.body.body.push(controllerMethod);
       });
     });
-    
+
     await modules.set({
       code: print(template).code,
       path: join(serverDirectories.messageBrokerDirectory, "redis.controller.ts")
@@ -312,6 +351,23 @@ const eventPatternDecorator = (topicName: string): namedTypes.Decorator => {
       builders.stringLiteral(topicName),
     ])
   );
+}
+
+const allMessageBrokerTopicsTypeDeclaration = (topicEnumNames: string[]) => {
+  const enumTypes: namedTypes.TSTypeReference[] = topicEnumNames.map((enumName) =>
+    builders.tsTypeReference(builders.identifier(enumName))
+  )
+  const declaration = (rightSide: any) => {
+    return builders.exportDeclaration(false, builders.tsTypeAliasDeclaration(
+      builders.identifier("AllMessageBrokerTopics"),
+      rightSide
+    ))
+  }
+  if(enumTypes.length === 0) {
+    return declaration(builders.tsNeverKeyword())
+  } else {
+    return declaration(builders.tsUnionType(enumTypes))
+  }
 }
 
 export default RedisBrokerPlugin
