@@ -7,12 +7,12 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
       services: {
         server: {
           environment: {
-            DB_URL: "`sqlserver://db:1143;database=${DB_NAME};user=${DB_USER};password=${DB_PASSWORD}`",
+            DB_URL: "`sqlserver://db:1433;database=${DB_NAME};user=${DB_USER};password=${DB_PASSWORD};TrustServerCertificate=true`",
           },
         },
         migrate: {
           environment: {
-            DB_URL: "`sqlserver://db:1143;database=${DB_NAME};user=${DB_USER};password=${DB_PASSWORD}`",
+            DB_URL: "`sqlserver://db:1433;database=${DB_NAME};user=${DB_USER};password=${DB_PASSWORD};TrustServerCertificate=true`",
           },
         },
         db: {

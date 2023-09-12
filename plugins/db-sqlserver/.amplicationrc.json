@@ -2,9 +2,8 @@
     "settings":{
         "host": "localhost",
         "port": 1433,
-        "user": "admin",
-        "password": "admin",
+        "user": "sa",
+        "password": "SqlAdminChangeMe1234!",
         "dbName": "my-db"
     }
-
 }

@@ -109,7 +109,7 @@ class MSSQLServerPlugin implements AmplicationPlugin {
         { DB_PORT: port.toString() },
         { DB_NAME: dbName },
         {
-          DB_URL: `sqlserver://${host}:${port};database=${dbName};user=${user};password=${password}`,
+          DB_URL: `sqlserver://${host}:${port};database=${dbName};user=${user};password=${password};TrustServerCertificate=true`,
         },
       ],
     ];
