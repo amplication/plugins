@@ -41,7 +41,7 @@ export const settingsToVarDict = (settings: Settings): VariableDictionary => {
   return Object.keys(settings)
       .map((settingKey) => ({
           [settingToEnvVar(settingKey as keyof Settings)]:
-            defaultSettings[settingKey as keyof Settings]?.toString()
+            settings[settingKey as keyof Settings]?.toString()
       }))
       .filter((obj) => {
         const key = Object.keys(obj)[0];
