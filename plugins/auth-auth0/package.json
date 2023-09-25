@@ -16,7 +16,7 @@
   "author": "Ashish Padhy <100484401+Shurtu-gal@users.noreply.github.com>",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@amplication/code-gen-types": "^2.0.8",
+    "@amplication/code-gen-types": "file:../../../amplication/dist/packages/amplication-code-gen-types/",
     "@amplication/code-gen-utils": "^0.0.5",
     "@babel/parser": "^7.20.7",
     "@babel/types": "^7.20.7",
