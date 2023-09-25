@@ -5,6 +5,7 @@ import {
   beforeCreateAdminAppModule,
   beforeCreateAdminDotEnv,
   beforeCreatePackageJson,
+  beforeCreateServerDotEnv,
 } from "./events";
 
 class ESLintPlugin implements AmplicationPlugin {
@@ -13,15 +14,21 @@ class ESLintPlugin implements AmplicationPlugin {
       [EventNames.CreateAdminAppModule]: {
         before: beforeCreateAdminAppModule,
       },
-      [EventNames.CreateAdminUIPackageJson]: {
-        before: beforeCreatePackageJson("client"),
-      },
       [EventNames.CreateAdminDotEnv]: {
         before: beforeCreateAdminDotEnv,
       },
       [EventNames.CreateAdminUI]: {
         after: afterCreateApp("client"),
       },
+      [EventNames.CreateAdminUIPackageJson]: {
+        before: beforeCreatePackageJson("client"),
+      },
+      [EventNames.CreateServerDotEnv]: {
+        before: beforeCreateServerDotEnv,
+      },
+      [EventNames.CreateServerPackageJson]: {
+        before: beforeCreatePackageJson("server"),
+      }, 
     };
   }
 }
