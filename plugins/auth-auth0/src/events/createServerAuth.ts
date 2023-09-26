@@ -46,9 +46,23 @@ export const afterCreateAuthModules = async (
   modules.set(authResolver);
 
   await modules.merge(staticFiles);
-  
+
   // Remove array of files
-  const filesToRemove : string[] = ["auth.controller.ts", "auth.service.ts", "auth.service.spec.ts", "constants.ts", "ITokenService.ts", "LoginArgs.ts", "password.service.ts", "password.service.spec.ts", "token.service.ts"];
-  modules.removeMany(filesToRemove.map((file) => `${context.serverDirectories.authDirectory}/${file}`));
+  const filesToRemove: string[] = [
+    "auth.controller.ts",
+    "auth.service.ts",
+    "auth.service.spec.ts",
+    "constants.ts",
+    "ITokenService.ts",
+    "LoginArgs.ts",
+    "password.service.ts",
+    "password.service.spec.ts",
+    "token.service.ts",
+  ];
+  modules.removeMany(
+    filesToRemove.map(
+      (file) => `${context.serverDirectories.authDirectory}/${file}`
+    )
+  );
   return modules;
 };
