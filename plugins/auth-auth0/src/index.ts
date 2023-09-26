@@ -1,14 +1,16 @@
 import type { AmplicationPlugin, Events } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
 import {
-  afterCreateApp,
+  afterCreateAdminApp,
+  afterCreateAuthModules,
   beforeCreateAdminAppModule,
   beforeCreateAdminDotEnv,
+  beforeCreateAuthModules,
   beforeCreatePackageJson,
   beforeCreateServerDotEnv,
 } from "./events";
 
-class ESLintPlugin implements AmplicationPlugin {
+class Auth0Plugin implements AmplicationPlugin {
   register(): Events {
     return {
       [EventNames.CreateAdminAppModule]: {
@@ -18,7 +20,7 @@ class ESLintPlugin implements AmplicationPlugin {
         before: beforeCreateAdminDotEnv,
       },
       [EventNames.CreateAdminUI]: {
-        after: afterCreateApp("client"),
+        after: afterCreateAdminApp,
       },
       [EventNames.CreateAdminUIPackageJson]: {
         before: beforeCreatePackageJson("client"),
@@ -28,9 +30,13 @@ class ESLintPlugin implements AmplicationPlugin {
       },
       [EventNames.CreateServerPackageJson]: {
         before: beforeCreatePackageJson("server"),
-      }, 
+      },
+      [EventNames.CreateServerAuth]: {
+        before: beforeCreateAuthModules,
+        after: afterCreateAuthModules,
+      },
     };
   }
 }
 
-export default ESLintPlugin;
+export default Auth0Plugin;

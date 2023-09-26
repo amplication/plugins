@@ -7,12 +7,8 @@ import { Auth0User } from "./User";
 declare class ENTITY_SERVICE {}
 declare class ENTITY_NAME_INFO {}
 
-export class JwtBaseStrategy 
-  extends PassportStrategy(Strategy)  
-{
-  constructor(
-    protected readonly configService: ConfigService, 
-  ) {
+export class JwtStrategyBase extends PassportStrategy(Strategy) {
+  constructor(protected readonly configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // Extract JWT from the Authorization header
       audience: configService.get("AUTH0_AUDIENCE"), // The resource server where the JWT is processed
@@ -23,20 +19,22 @@ export class JwtBaseStrategy
         cache: true,
         rateLimit: true,
         jwksRequestsPerMinute: 5,
-        jwksUri: `${configService.get("AUTH0_ISSUER_URL")}.well-known/jwks.json`,
+        jwksUri: `${configService.get(
+          "AUTH0_ISSUER_URL"
+        )}.well-known/jwks.json`,
       }),
     });
   }
 
   // Validate the received JWT and construct the user object out of the decoded token.
-  async validateBase(payload: { user: Auth0User }) : Promise<ENTITY_NAME_INFO> {
+  async validateBase(payload: { user: Auth0User }): Promise<ENTITY_NAME_INFO> {
     const { email, name } = payload.user;
-    const ENTITY = await this.ENTITY_SERVICE.findOne({ 
-      where: { 
+    const ENTITY = await this.ENTITY_SERVICE.findOne({
+      where: {
         name_email: { email, name },
       },
     });
 
-    return ENTITY ?  { ...ENTITY, roles: ENTITY?.roles as string[] } : null;
+    return ENTITY ? { ...ENTITY, roles: ENTITY?.roles as string[] } : null;
   }
 }

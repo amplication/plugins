@@ -1,11 +1,14 @@
-import { CreateServerDotEnvParams, DsgContext } from "@amplication/code-gen-types";
+import {
+  CreateServerDotEnvParams,
+  DsgContext,
+} from "@amplication/code-gen-types";
 import { convertToVarDict } from "@utils/convertToVarDict";
 import { getPluginSettings } from "@utils/getPluginSettings";
 
 export const beforeCreateServerDotEnv = (
   context: DsgContext,
   eventParams: CreateServerDotEnvParams
-) : CreateServerDotEnvParams => {
+): CreateServerDotEnvParams => {
   const { AUTH0_AUDIENCE, AUTH0_ISSUER_URL } = getPluginSettings(
     context.pluginInstallations
   );

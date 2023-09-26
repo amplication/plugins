@@ -6,12 +6,10 @@ declare class ENTITY_MODULE {}
 
 @Module({
   imports: [
-    forwardRef(()  => ENTITY_MODULE),
-    PassportModule.register({ defaultStrategy: "jwt" })
+    forwardRef(() => ENTITY_MODULE),
+    PassportModule.register({ defaultStrategy: "jwt" }),
   ],
-  providers: [
-    JwtStrategy,
-  ],
+  providers: [JwtStrategy],
   controllers: [],
   exports: [PassportModule],
 })

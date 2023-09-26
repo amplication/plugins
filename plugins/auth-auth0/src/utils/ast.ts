@@ -385,7 +385,7 @@ export function addImports(
   const existingImports = extractImportDeclarations(file);
   const consolidatedImports = consolidateImports([
     ...existingImports,
-    ...imports.filter((x) => x) // remove nulls and undefined
+    ...imports.filter((x) => x), // remove nulls and undefined
   ]);
   file.program.body.unshift(...consolidatedImports);
 }

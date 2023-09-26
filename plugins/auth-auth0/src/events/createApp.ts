@@ -1,38 +1,22 @@
 import {
   CreateAdminUIParams,
-  CreateServerParams,
   DsgContext,
   ModuleMap,
 } from "@amplication/code-gen-types";
-import { clientStaticPath, serverStaticPath } from "../constants";
+import { clientStaticPath } from "../constants";
+import { merge } from "lodash";
 
-export const afterCreateApp = (event: "server" | "client") => {
-  return async (
-    context: DsgContext,
-    eventParams: CreateAdminUIParams | CreateServerParams,
-    modules: ModuleMap
-  ): Promise<ModuleMap> => {
-    let staticFilesPath, baseDirectory;
+export const afterCreateAdminApp = async (
+  context: DsgContext,
+  eventParams: CreateAdminUIParams,
+  modules: ModuleMap
+): Promise<ModuleMap> => {
+  const staticFiles = await context.utils.importStaticModules(
+    clientStaticPath,
+    context.clientDirectories.srcDirectory
+  );
 
-    switch (event) {
-      case "server":
-        staticFilesPath = serverStaticPath;
-        baseDirectory = context.serverDirectories.baseDirectory;
-        break;
-
-      case "client":
-        staticFilesPath = clientStaticPath;
-        baseDirectory = context.clientDirectories.baseDirectory;
-    }
-
-    const staticFiles = await context.utils.importStaticModules(
-      staticFilesPath,
-      baseDirectory
-    );
-
-    await modules.merge(staticFiles);
-    return modules;
-  };
+  // Merge the static files with the existing modules replacing any existing files
+  merge(modules, staticFiles);
+  return modules;
 };
-
-export default afterCreateApp;
