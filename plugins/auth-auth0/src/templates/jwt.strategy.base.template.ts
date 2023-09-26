@@ -27,7 +27,7 @@ export class JwtStrategyBase extends PassportStrategy(Strategy) {
   }
 
   // Validate the received JWT and construct the user object out of the decoded token.
-  async validateBase(payload: { user: Auth0User }): Promise<ENTITY_NAME_INFO> {
+  async validateBase(payload: { user: Auth0User }): Promise<ENTITY_NAME_INFO | null> {
     const { email, name } = payload.user;
     const ENTITY = await this.ENTITY_SERVICE.findOne({
       where: {

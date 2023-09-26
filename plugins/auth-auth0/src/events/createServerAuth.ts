@@ -6,6 +6,7 @@ import {
 import { serverStaticPath } from "../constants";
 import {
   createAuthModule,
+  createAuthResolver,
   createJwtStrategy,
   createJwtStrategyBase,
 } from "../core";
@@ -40,10 +41,14 @@ export const afterCreateAuthModules = async (
   const authModule = await createAuthModule(context);
   modules.set(authModule);
 
+  // 4. Create auth resolver
+  const authResolver = await createAuthResolver(context);
+  modules.set(authResolver);
+
   await modules.merge(staticFiles);
   
   // Remove array of files
-  const filesToRemove : string[] = ["auth.controller.ts"];
-  modules.removeMany(filesToRemove);
+  const filesToRemove : string[] = ["auth.controller.ts", "auth.service.ts", "auth.service.spec.ts", "constants.ts", "ITokenService.ts", "LoginArgs.ts", "password.service.ts", "password.service.spec.ts", "token.service.ts"];
+  modules.removeMany(filesToRemove.map((file) => `${context.serverDirectories.authDirectory}/${file}`));
   return modules;
 };
