@@ -51,5 +51,8 @@
       "**/*.(t|j)s"
     ],
     "testEnvironment": "node"
+  },
+  "dependencies": {
+    "cuid": "^2.1.8"
   }
 }

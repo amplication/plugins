@@ -17,7 +17,12 @@ import { merge } from "lodash";
 import { builders, namedTypes } from "ast-types";
 import * as utils from "./utils";
 import * as constants from "./constants";
-import { addSupertokensFiles, alterGraphqlSettingsInAppModule, removeRemoveDefaultCorsSettingInMain } from "./core";
+import {
+  addSupertokensFiles,
+  alterGraphqlSettingsInAppModule,
+  removeRemoveDefaultCorsSettingInMain,
+  addSupertokensIdFieldToAuthEntity
+} from "./core";
 
 class SupertokensAuthPlugin implements AmplicationPlugin {
   
@@ -40,9 +45,20 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
         before: this.beforeCreateServerDotEnv
       },
       [EventNames.CreateServer]: {
+        before: this.beforeCreateServer,
         after: this.afterCreateServer
       }
     };
+  }
+
+  beforeCreateServer(
+    context: DsgContext,
+    eventParams: CreateServerParams
+  ): CreateServerParams {
+
+    addSupertokensIdFieldToAuthEntity(context);
+
+    return eventParams;
   }
 
   async afterCreateServer(
