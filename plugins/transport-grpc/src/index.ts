@@ -2,6 +2,7 @@ import {
   AmplicationPlugin,
   CreateConnectMicroservicesParams,
   CreateEntityControllerBaseParams,
+  CreateEntityControllerParams,
   CreateServerPackageJsonParams,
   DsgContext,
   EnumDataType,
@@ -11,6 +12,7 @@ import {
 import {
   connectGrpcMicroService,
   createGrpcClientOptionsFile,
+  createGrpcController,
   createGrpcControllerBase,
 } from "./core";
 import { merge } from "lodash";
@@ -20,6 +22,9 @@ class JwtAuthPlugin implements AmplicationPlugin {
     return {
       CreateEntityControllerBase: {
         after: this.afterCreateControllerBaseModules,
+      },
+      CreateEntityController: {
+        after: this.afterCreateControllerModules,
       },
       CreateServerPackageJson: {
         before: this.beforeCreateServerPackageJson,
@@ -90,6 +95,21 @@ class JwtAuthPlugin implements AmplicationPlugin {
       modules
     );
     await modules.set(controllerGrpcBase);
+
+    return modules;
+  }
+
+  async afterCreateControllerModules(
+    context: DsgContext,
+    eventParams: CreateEntityControllerParams,
+    modules: ModuleMap
+  ): Promise<ModuleMap> {
+    const controllerGrpc = await createGrpcController(
+      context,
+      eventParams,
+      modules
+    );
+    await modules.set(controllerGrpc);
 
     return modules;
   }
