@@ -16,6 +16,7 @@ import { merge } from "lodash";
 import { builders, namedTypes } from "ast-types";
 import * as utils from "./utils";
 import * as constants from "./constants";
+import { alterGraphqlSettingsInAppModule } from "./core";
 
 class SupertokensAuthPlugin implements AmplicationPlugin {
   
@@ -31,7 +32,8 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
         before: this.beforeCreateConnectMicroservices
       },
       [EventNames.CreateServerAppModule]: {
-        before: this.beforeCreateServerAppModule
+        before: this.beforeCreateServerAppModule,
+        after: this.afterCreateServerAppModule,
       },
       [EventNames.CreateServerDotEnv]: {
         before: this.beforeCreateServerDotEnv
@@ -54,23 +56,32 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerAppModuleParams
   ): CreateServerAppModuleParams {
-    const { template, templateMapping } = eventParams;
+    const { template } = eventParams;
 
     appendImports(template, [
-      authModuleImport(),
       genSupertokensOptionsImport()
     ])
 
-    if(!templateMapping["MODULES"]) {
-      throw new Error("Failed to find the app module's imported modules")
+    return eventParams
+  }
+
+  async afterCreateServerAppModule(
+    context: DsgContext,
+    eventParams: CreateServerAppModuleParams,
+    modules: ModuleMap
+  ): Promise<ModuleMap> {
+    
+    const { srcDirectory } = context.serverDirectories;
+    const appModulePath = `${srcDirectory}/app.module.ts`;
+    const appModule = modules.get(appModulePath);
+    
+    if(!appModule) {
+      throw new Error("Failed to find the app module");
     }
 
-    const modules = templateMapping.MODULES as namedTypes.ArrayExpression;
-    const authModule = authModuleInstantiation();
+    alterGraphqlSettingsInAppModule(modules, appModule);
 
-    modules.elements.push(authModule);
-
-    return eventParams
+    return modules;
   }
 
   beforeCreateConnectMicroservices(
@@ -146,13 +157,6 @@ const supertokensImport = (): namedTypes.ImportDeclaration => {
   return builders.importDeclaration(
     [builders.importDefaultSpecifier(builders.identifier("supertokens"))],
     builders.stringLiteral("supertokens-node")
-  )
-}
-
-const authModuleImport = (): namedTypes.ImportDeclaration => {
-  return builders.importDeclaration(
-    [builders.importSpecifier(builders.identifier("AuthModule"))],
-    builders.stringLiteral("./auth/auth.module")
   )
 }
 
@@ -238,31 +242,6 @@ const appCallExpression = (
       builders.identifier(funcName)
     ),
     params
-  )
-}
-
-const authModuleInstantiation = (): namedTypes.CallExpression => {
-  return builders.callExpression(
-    builders.memberExpression(
-      builders.identifier("AuthModule"),
-      builders.identifier("forRootAsync")
-    ),
-    [
-      builders.objectExpression([
-        builders.objectProperty(
-          builders.identifier("useFactory"),
-          builders.arrowFunctionExpression(
-            [builders.identifier("configService")],
-            builders.blockStatement([
-              builders.returnStatement(builders.callExpression(
-                builders.identifier("generateSupertokensOptions"),
-                [builders.identifier("configService")]
-              ))
-            ])
-          )
-        )
-      ])
-    ]
   )
 }
 
