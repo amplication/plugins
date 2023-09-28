@@ -42,24 +42,3 @@ describe("Testing beforeCreateServer hook", () => {
         expect(newEntity.unique).toBe(true);
     });
 });
-
-const beforeRemovingCorsSetting = `import { connectMicroservices } from "./connectMicroservices";
-
-const { PORT = 3000 } = process.env;
-
-async function main() {
-  const app = await NestFactory.create(AppModule, { cors: true });
-  app.setGlobalPrefix("api");
-}
-`;
-
-const afterRemoveCorsSetting = `import { connectMicroservices } from "./connectMicroservices";
-
-const { PORT = 3000 } = process.env;
-
-async function main() {
-  const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix("api");
-}
-
-`;

@@ -1,6 +1,7 @@
 import {
   AmplicationPlugin,
   CreateConnectMicroservicesParams,
+  CreateEntityModuleParams,
   CreateServerAppModuleParams,
   CreateServerAuthParams,
   CreateServerDotEnvParams,
@@ -21,10 +22,14 @@ import {
   addSupertokensFiles,
   alterGraphqlSettingsInAppModule,
   removeRemoveDefaultCorsSettingInMain,
-  addSupertokensIdFieldToAuthEntity
+  addSupertokensIdFieldToAuthEntity,
+  addAuthModuleInAuthDir
 } from "./core";
 
 class SupertokensAuthPlugin implements AmplicationPlugin {
+  // Used to check if the auth module has been successfully added
+  // after the server creation
+  addedAuthModuleInAuthDir = false;
   
   register(): Events {
     return {
@@ -47,8 +52,33 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       [EventNames.CreateServer]: {
         before: this.beforeCreateServer,
         after: this.afterCreateServer
+      },
+      [EventNames.CreateEntityModule]: {
+        after: this.afterCreateEntityModule
       }
     };
+  }
+
+  async afterCreateEntityModule(
+    context: DsgContext,
+    eventParams: CreateEntityModuleParams,
+    modules: ModuleMap
+  ): Promise<ModuleMap> {
+    const { srcDirectory, authDirectory } = context.serverDirectories;
+    const authEntityName = context.resourceInfo?.settings.authEntityName;
+    if(!authEntityName) {
+      throw new Error("Failed to find the authEntityName in the settings");
+    }
+
+    if(eventParams.entityName === authEntityName) {
+      console.log("jjjdd")
+      await addAuthModuleInAuthDir(eventParams, modules, srcDirectory, authDirectory);
+      this.addedAuthModuleInAuthDir = true;
+    } else {
+      console.log("dkkdk")
+    }
+
+    return modules;
   }
 
   beforeCreateServer(
@@ -168,7 +198,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     modules: ModuleMap
   ): Promise<ModuleMap> {
     const newModules = await addSupertokensFiles(context, modules);
-
+  
     return newModules;
   }
 }
