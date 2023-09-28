@@ -19,8 +19,8 @@ describe("Testing afterCreateEntityModule hook", () => {
         context = mock<DsgContext>({
             pluginInstallations: [{ npm: name }],
             serverDirectories: {
-                srcDirectory: "",
-                authDirectory: "auth"
+                srcDirectory: "/",
+                authDirectory: "/auth"
             },
             entities: [
                 {
@@ -46,7 +46,7 @@ describe("Testing afterCreateEntityModule hook", () => {
         const modules = await plugin.afterCreateEntityModule(context, params, moduleMap);
         let expectedCode = prettyCode(authModuleRaw);
         console.log(modules);
-        const code = prettyCode(modules.get("auth/auth.module.ts").code);
+        const code = prettyCode(modules.get("/auth/auth.module.ts").code);
         expect(code).toStrictEqual(expectedCode);
     });
 });
@@ -61,7 +61,7 @@ import {
 import { PasswordService } from "./password.service";
 import { STAuthMiddleware } from "./supertokens/auth.middleware";
 import { AuthService } from "./auth.service";
-import { TheEntityModule } from "/TheEntity/TheEntity.module.ts";
+import { TheEntityModule } from "../TheEntity/TheEntity.module";
 
 @Module({
   providers: [AuthService, PasswordService],

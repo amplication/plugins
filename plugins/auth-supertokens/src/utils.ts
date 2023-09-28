@@ -8,6 +8,8 @@ import { settings as defaultSettings } from "../.amplicationrc.json";
 import { builders } from "ast-types";
 import * as K from "ast-types/gen/kinds";
 import { NodePath } from "ast-types/lib/node-path";
+import * as path from "path";
+import normalize from "normalize-path";
 
 export const getPluginSettings = (
   pluginInstallations: PluginInstallation[]
@@ -209,3 +211,4 @@ export function transformTemplateLiteralToStringLiteral(
     .join("");
   return builders.stringLiteral(value);
 }
+

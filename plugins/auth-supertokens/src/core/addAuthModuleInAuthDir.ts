@@ -1,6 +1,6 @@
-import { CreateEntityModuleParams, DsgContext, ModuleMap } from "@amplication/code-gen-types";
+import { CreateEntityModuleParams, ModuleMap } from "@amplication/code-gen-types";
 import { appendImports, print, readFile } from "@amplication/code-gen-utils";
-import { join } from "path";
+import { join, relative } from "path";
 import { templatesPath } from "../constants";
 import { builders, namedTypes } from "ast-types";
 import { interpolate } from "../utils";
@@ -20,7 +20,7 @@ export const addAuthModuleInAuthDir = async (
     appendImports(template, [
         builders.importDeclaration([
             builders.importSpecifier(moduleId)
-        ], getModulePath(params, srcDirectory))
+        ], getModulePath(params, srcDirectory, authDirectory))
     ]);
     interpolate(template, templateMapping);
     modules.set({
@@ -36,6 +36,15 @@ const getModuleId = (params: CreateEntityModuleParams): namedTypes.Identifier =>
     return params.templateMapping.MODULE as namedTypes.Identifier
 }
 
-const getModulePath = (params: CreateEntityModuleParams, srcDirectory: string): namedTypes.StringLiteral => {
-    return builders.stringLiteral(`${srcDirectory}/${params.entityName}/${params.entityName}.module.ts`);
+const getModulePath = (
+    params: CreateEntityModuleParams,
+    srcDirectory: string,
+    authDirectory: string
+): namedTypes.StringLiteral => {
+    const modulePath = `${srcDirectory}/${params.entityName}/${params.entityName}.module`;
+    const path = relative(authDirectory, modulePath);
+    if(!path) {
+        throw new Error("The source directory is not a parent of the auth directory");
+    }
+    return builders.stringLiteral(path);
 }

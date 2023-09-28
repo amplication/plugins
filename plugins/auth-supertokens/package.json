@@ -21,6 +21,7 @@
     "@jest/globals": "^29.6.2",
     "@types/jest": "^29.5.3",
     "@types/lodash": "^4.14.197",
+    "@types/normalize-path": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^5.33.0",
     "@typescript-eslint/parser": "^5.33.0",
     "copy-webpack-plugin": "^11.0.0",
@@ -53,6 +54,7 @@
     "testEnvironment": "node"
   },
   "dependencies": {
-    "cuid": "^2.1.8"
+    "cuid": "^2.1.8",
+    "normalize-path": "^3.0.0"
   }
 }
