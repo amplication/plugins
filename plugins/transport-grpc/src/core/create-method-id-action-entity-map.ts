@@ -1,13 +1,14 @@
-import {
-  Entity,
-  EnumEntityAction,
-  EnumEntityPermissionType,
-} from "@amplication/code-gen-types";
-import { namedTypes } from "ast-types";
+import { Entity } from "@amplication/code-gen-types";
+import { namedTypes, builders } from "ast-types";
 
 type MethodsIdsActionEntityTriplet = {
   methodId: namedTypes.Identifier;
   entity: Entity;
+  methodName: string;
+};
+
+type MethodsIdsActionEntity = {
+  methodId: namedTypes.Identifier;
   methodName: string;
 };
 
@@ -61,28 +62,23 @@ export const controllerMethodsIdsActionPairs = (
 ];
 
 export const controllerToManyMethodsIdsActionPairs = (
-  toManyMapping: { [key: string]: any },
-  entity: Entity,
-  relatedEntity: Entity
-): MethodsIdsActionEntityTriplet[] => [
+  relatedEntityName: string
+): MethodsIdsActionEntity[] => [
   {
-    methodId: toManyMapping["FIND_MANY"],
-    entity: relatedEntity,
-    methodName: "findMany",
+    methodId: builders.identifier(`findMany${relatedEntityName}`),
+
+    methodName: `findMany${relatedEntityName}`,
   },
   {
-    methodId: toManyMapping["UPDATE"],
-    entity: entity,
-    methodName: "update",
+    methodId: builders.identifier(`update${relatedEntityName}`),
+    methodName: `update${relatedEntityName}`,
   },
   {
-    methodId: toManyMapping["CONNECT"],
-    entity: entity,
-    methodName: "",
+    methodId: builders.identifier(`connect${relatedEntityName}`),
+    methodName: `connect${relatedEntityName}`,
   },
   {
-    methodId: toManyMapping["DISCONNECT"],
-    entity: entity,
-    methodName: "",
+    methodId: builders.identifier(`disconnect${relatedEntityName}`),
+    methodName: `disconnect${relatedEntityName}`,
   },
 ];

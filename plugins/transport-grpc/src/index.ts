@@ -4,6 +4,7 @@ import {
   CreateEntityControllerBaseParams,
   CreateServerPackageJsonParams,
   DsgContext,
+  EnumDataType,
   Events,
   ModuleMap,
 } from "@amplication/code-gen-types";
@@ -76,9 +77,16 @@ class JwtAuthPlugin implements AmplicationPlugin {
     eventParams: CreateEntityControllerBaseParams,
     modules: ModuleMap
   ): Promise<ModuleMap> {
+    const relatedEntities = eventParams.entity.fields.filter(
+      (field) =>
+        field.dataType === EnumDataType.Lookup &&
+        field.properties?.allowMultipleSelection
+    );
+
     const controllerGrpcBase = await createGrpcControllerBase(
       context,
       eventParams,
+      relatedEntities,
       modules
     );
     await modules.set(controllerGrpcBase);

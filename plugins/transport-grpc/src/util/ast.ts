@@ -611,7 +611,7 @@ export function getMethods(
       namedTypes.ClassMethod.check(member) && !isConstructor(member)
   );
 }
-export function getClassMethodById(
+export function getClassMethodByIdName(
   classDeclaration: namedTypes.ClassDeclaration,
   methodId: namedTypes.Identifier
 ): namedTypes.ClassMethod | null {
@@ -621,6 +621,17 @@ export function getClassMethodById(
       //@ts-ignore
       (method) => method.key.name === methodId.name
     ) || null
+  );
+}
+
+export function getClassMethodById(
+  classDeclaration: namedTypes.ClassDeclaration,
+  methodId: namedTypes.Identifier
+): namedTypes.ClassMethod | null {
+  const allMethodWithoutConstructor = getMethods(classDeclaration);
+  return (
+    allMethodWithoutConstructor.find((method) => method.key === methodId) ||
+    null
   );
 }
 
