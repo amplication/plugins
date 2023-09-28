@@ -5,6 +5,7 @@ import {
   CreateServerAuthParams,
   CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
+  CreateServerParams,
   DsgContext,
   Events,
   Module,
@@ -16,7 +17,7 @@ import { merge } from "lodash";
 import { builders, namedTypes } from "ast-types";
 import * as utils from "./utils";
 import * as constants from "./constants";
-import { addSupertokensFiles, alterGraphqlSettingsInAppModule } from "./core";
+import { addSupertokensFiles, alterGraphqlSettingsInAppModule, removeRemoveDefaultCorsSettingInMain } from "./core";
 
 class SupertokensAuthPlugin implements AmplicationPlugin {
   
@@ -37,8 +38,23 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       },
       [EventNames.CreateServerDotEnv]: {
         before: this.beforeCreateServerDotEnv
+      },
+      [EventNames.CreateServer]: {
+        after: this.afterCreateServer
       }
     };
+  }
+
+  async afterCreateServer(
+    context: DsgContext,
+    eventParams: CreateServerParams,
+    modules: ModuleMap
+  ): Promise<ModuleMap> {
+    const { srcDirectory } = context.serverDirectories;
+    // Because the default cors setting doesn't work with the supertokens
+    // cors setting
+    removeRemoveDefaultCorsSettingInMain(srcDirectory, modules);
+    return modules;
   }
 
   beforeCreateServerDotEnv(

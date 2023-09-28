@@ -55,13 +55,10 @@ describe("Testing beforeCreateServerAppModule hook", () => {
 
     })
     it("should add the necessary graphql settings", async () => {
-        const modules = await plugin.afterCreateServerAppModule(context, {
-            ...params
-        }, moduleMap)
+        const modules = await plugin.afterCreateServerAppModule(context, params, moduleMap);
         let expectedCode = prettyCode(afterGraphqlSetting);
         // Remove the trailing semi-colon from the end which is inserted
         // by the prettyCode invocation
-        //expectedModules = removeSemicolon(expectedModules);
         expect(modules.get("/app.module.ts").code).toBe(expectedCode);
     });
 });
