@@ -1,6 +1,5 @@
 import { ConfigService } from "@nestjs/config";
 import { AuthModuleConfig } from "./config.interface";
-import { recipeList } from "./recipes";
 
 export const generateSupertokensOptions = (
   configService: ConfigService
@@ -38,25 +37,27 @@ export const generateSupertokensOptions = (
     );
   }
 
-  if(apiBasePath !== undefined && apiBasePath.length === 0) {
+  if (apiBasePath !== undefined && apiBasePath.length === 0) {
     apiBasePath = undefined;
   }
-  
-  if(websiteBasePath !== undefined && websiteBasePath.length === 0) {
+
+  if (websiteBasePath !== undefined && websiteBasePath.length === 0) {
     websiteBasePath = undefined;
   }
 
-  if(apiKey !== undefined && apiKey.length === 0) {
+  if (apiKey !== undefined && apiKey.length === 0) {
     apiKey = undefined;
   }
 
-  if(apiGatewayPath !== undefined && apiGatewayPath.length === 0) {
+  if (apiGatewayPath !== undefined && apiGatewayPath.length === 0) {
     apiGatewayPath = undefined;
   }
 
   return {
-    connectionURI,
-    apiKey,
+    supertokens: {
+      connectionURI,
+      apiKey
+    },
     appInfo: {
       appName,
       apiDomain,
@@ -64,7 +65,6 @@ export const generateSupertokensOptions = (
       apiBasePath,
       websiteBasePath,
       apiGatewayPath,
-    },
-    recipeList,
+    }
   };
 };

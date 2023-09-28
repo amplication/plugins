@@ -1,3 +1,2 @@
-import { fromPairs } from "lodash"
-
 export { alterGraphqlSettingsInAppModule } from "./alterGraphqlSettings";
+export { addSupertokensFiles } from "./addSupertokensFiles";

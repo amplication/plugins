@@ -1,11 +1,11 @@
-import { ExceptionFilter, Catch, ArgumentsHost } from '@nestjs/common';
-import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
+import { ExceptionFilter, Catch, ArgumentsHost } from "@nestjs/common";
+import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
 
-import { errorHandler } from 'supertokens-node/framework/express';
-import { Error as STError } from 'supertokens-node';
+import { errorHandler } from "supertokens-node/framework/express";
+import { Error as STError } from "supertokens-node";
 
 @Catch(STError)
-export class AuthFilter implements ExceptionFilter {
+export class STAuthFilter implements ExceptionFilter {
   handler: ErrorRequestHandler;
 
   constructor() {
@@ -24,7 +24,7 @@ export class AuthFilter implements ExceptionFilter {
       exception,
       ctx.getRequest<Request>(),
       resp,
-      ctx.getNext<NextFunction>(),
+      ctx.getNext<NextFunction>()
     );
   }
 }

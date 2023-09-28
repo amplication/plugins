@@ -7,16 +7,16 @@ import {
   CreateServerPackageJsonParams,
   DsgContext,
   Events,
+  Module,
   ModuleMap,
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
-import { resolve, join } from "path";
-import { readFile, print, appendImports } from "@amplication/code-gen-utils";
+import { appendImports } from "@amplication/code-gen-utils";
 import { merge } from "lodash";
 import { builders, namedTypes } from "ast-types";
 import * as utils from "./utils";
 import * as constants from "./constants";
-import { alterGraphqlSettingsInAppModule } from "./core";
+import { addSupertokensFiles, alterGraphqlSettingsInAppModule } from "./core";
 
 class SupertokensAuthPlugin implements AmplicationPlugin {
   
@@ -79,9 +79,21 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       throw new Error("Failed to find the app module");
     }
 
-    alterGraphqlSettingsInAppModule(modules, appModule);
+    const newModules = new ModuleMap(context.logger);
+    const unneededInSrc = [
+      "tests/auth/constants.ts",
+      "constants.ts"
+    ];
+    for(const module of modules.modules()) {
+      if(unneededInSrc.includes(`${srcDirectory}/${module.path}`)) {
+        continue;
+      }
+      newModules.set(module);
+    }
 
-    return modules;
+    alterGraphqlSettingsInAppModule(newModules, appModule);
+
+    return newModules;
   }
 
   beforeCreateConnectMicroservices(
@@ -120,36 +132,12 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
 
   async afterCreateServerAuth(
     context: DsgContext,
-    eventParams: CreateServerAuthParams
+    eventParams: CreateServerAuthParams,
+    modules: ModuleMap
   ): Promise<ModuleMap> {
-    const { serverDirectories, logger } = context;
-    const fileNames = [
-      "supertokens/supertokens.service.ts",
-      "supertokens/supertokens.service.spec.ts",
-      "auth.filter.ts",
-      "auth.filter.spec.ts",
-      "auth.guard.ts",
-      "auth.guard.spec.ts",
-      "auth.middleware.ts",
-      "auth.middleware.spec.ts",
-      "auth.module.ts",
-      "config.interface.ts",
-      "generateSupertokensOptions.ts",
-      "recipes.ts",
-      "session.decorator.ts"
-    ];
+    const newModules = await addSupertokensFiles(context, modules);
 
-    const modules = new ModuleMap(logger);
-    for(const name of fileNames) {
-      const filePath = resolve(constants.staticsPath, name);
-      const file = await readFile(filePath);
-      await modules.set({
-        code: print(file).code,
-        path: join(serverDirectories.authDirectory, name)
-      });
-    }
-
-    return modules;
+    return newModules;
   }
 }
 
