@@ -41,8 +41,6 @@ export async function connectGrpcMicroService(template: namedTypes.File) {
 
   const func = exportNameDeclarationFromBody.declaration as FunctionDeclaration;
 
-  console.log("exportNameDeclarationFromBody: ", exportNameDeclarationFromBody);
-
   func.body.body.push(
     builders.expressionStatement(grpcMicroServiceCallExpression) as Statement
   );
