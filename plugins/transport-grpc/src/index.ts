@@ -1,12 +1,17 @@
 import {
   AmplicationPlugin,
+  CreateConnectMicroservicesParams,
   CreateEntityControllerBaseParams,
   CreateServerPackageJsonParams,
   DsgContext,
   Events,
   ModuleMap,
 } from "@amplication/code-gen-types";
-import { createGrpcControllerBase } from "./core";
+import {
+  connectGrpcMicroService,
+  createGrpcClientOptionsFile,
+  createGrpcControllerBase,
+} from "./core";
 import { merge } from "lodash";
 
 class JwtAuthPlugin implements AmplicationPlugin {
@@ -17,6 +22,10 @@ class JwtAuthPlugin implements AmplicationPlugin {
       },
       CreateServerPackageJson: {
         before: this.beforeCreateServerPackageJson,
+      },
+      CreateConnectMicroservices: {
+        before: this.beforeCreateConnectMicroservices,
+        after: this.afterCreateConnectMicroservices,
       },
     };
   }
@@ -40,6 +49,28 @@ class JwtAuthPlugin implements AmplicationPlugin {
     return eventParams;
   }
 
+  async beforeCreateConnectMicroservices(
+    context: DsgContext,
+    eventParams: CreateConnectMicroservicesParams
+  ) {
+    const { template } = eventParams;
+
+    await connectGrpcMicroService(template);
+
+    return eventParams;
+  }
+  async afterCreateConnectMicroservices(
+    context: DsgContext,
+    eventParams: CreateConnectMicroservicesParams,
+    modules: ModuleMap
+  ): Promise<ModuleMap> {
+    const grpcClientOptions = await createGrpcClientOptionsFile(context);
+
+    await modules.set(grpcClientOptions);
+
+    return modules;
+  }
+
   async afterCreateControllerBaseModules(
     context: DsgContext,
     eventParams: CreateEntityControllerBaseParams,
@@ -47,7 +78,8 @@ class JwtAuthPlugin implements AmplicationPlugin {
   ): Promise<ModuleMap> {
     const controllerGrpcBase = await createGrpcControllerBase(
       context,
-      eventParams
+      eventParams,
+      modules
     );
     await modules.set(controllerGrpcBase);
 

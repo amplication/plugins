@@ -617,8 +617,10 @@ export function getClassMethodById(
 ): namedTypes.ClassMethod | null {
   const allMethodWithoutConstructor = getMethods(classDeclaration);
   return (
-    allMethodWithoutConstructor.find((method) => method.key === methodId) ||
-    null
+    allMethodWithoutConstructor.find(
+      //@ts-ignore
+      (method) => method.key.name === methodId.name
+    ) || null
   );
 }
 
