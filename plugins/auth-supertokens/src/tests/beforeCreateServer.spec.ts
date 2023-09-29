@@ -17,7 +17,7 @@ describe("Testing beforeCreateServer hook", () => {
     beforeEach(() => {
         plugin = new SupertokensAuthPlugin();
         context = mock<DsgContext>({
-            pluginInstallations: [{ npm: name }],
+            pluginInstallations: [{ npm: name }, { npm: "@amplication/plugin-auth-core" }],
             serverDirectories: {
                 srcDirectory: ""
             },

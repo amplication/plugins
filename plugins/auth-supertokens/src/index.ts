@@ -10,7 +10,6 @@ import {
   CreateDTOsParams,
   DsgContext,
   Events,
-  Module,
   ModuleMap,
   CreateEntityControllerParams,
   CreateEntityControllerBaseParams,
@@ -18,10 +17,9 @@ import {
   CreateEntityResolverBaseParams,
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
-import { appendImports, readFile } from "@amplication/code-gen-utils";
+import { appendImports } from "@amplication/code-gen-utils";
 import { merge } from "lodash";
 import { builders, namedTypes } from "ast-types";
-import { resolve } from "path";
 import * as utils from "./utils";
 import * as constants from "./constants";
 import {
@@ -37,7 +35,8 @@ import {
   replaceEntityResolverTemplate,
   replaceEntityResolverBaseTemplate,
   createSupertokensService,
-  createAuthService
+  createAuthService,
+  verifyAuthCorePluginIsInstalled
 } from "./core";
 
 class SupertokensAuthPlugin implements AmplicationPlugin {
@@ -199,6 +198,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     eventParams: CreateServerParams
   ): CreateServerParams {
 
+    verifyAuthCorePluginIsInstalled(context.pluginInstallations);
     addSupertokensIdFieldToAuthEntity(context);
 
     return eventParams;
@@ -213,6 +213,25 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     // Because the default cors setting doesn't work with the supertokens
     // cors setting
     removeRemoveDefaultCorsSettingInMain(srcDirectory, modules);
+
+    if(!this.addedAuthModuleInAuthDir) {
+      throw new Error("Failed to add the auth module to the auth directory");
+    }
+    if(!this.replacedEntityController) {
+      throw new Error("Failed to replace the entity controller template");
+    }
+    if(!this.replacedEntityControllerBase) {
+      throw new Error("Failed to replace the entity controller base template");
+    }
+    if(context.resourceInfo?.settings.serverSettings.generateGraphQL) {
+      if(!this.replacedEntityResolver) {
+        throw new Error("Failed to replace the auth entity resolver template");
+      }
+      if(!this.replacedEntityResolverBase) {
+        throw new Error("Failed to replace the auth entity resolver base template");
+      }
+    }
+
     return modules;
   }
 

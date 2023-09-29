@@ -8,3 +8,4 @@ export { removeSTIdFromUpdateInput } from "./removeSTIdFromUpdateInput";
 export { replaceEntityControllerBaseTemplate, replaceEntityControllerTemplate } from "./replaceEntityControllerTemplates";
 export { replaceEntityResolverBaseTemplate, replaceEntityResolverTemplate } from "./replaceEntityResolverTemplates";
 export { createAuthService } from "./createAuthService";
+export { verifyAuthCorePluginIsInstalled } from "./verifyAuthCorePluginIsInstalled";

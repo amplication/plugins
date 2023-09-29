@@ -20,6 +20,13 @@ describe("Testing afterCreateServer hook", () => {
             pluginInstallations: [{ npm: name }],
             serverDirectories: {
                 srcDirectory: ""
+            },
+            resourceInfo: {
+                settings: {
+                    serverSettings: {
+                        generateGraphQL: false
+                    }
+                }
             }
         });
         params = mock<CreateServerParams>()
@@ -28,6 +35,11 @@ describe("Testing afterCreateServer hook", () => {
             path: "/main.ts",
             code: prettyCode(beforeRemovingCorsSetting)
         });
+        plugin.addedAuthModuleInAuthDir = true;
+        plugin.replacedEntityController = true;
+        plugin.replacedEntityControllerBase = true;
+        plugin.replacedEntityResolver = true;
+        plugin.replacedEntityResolverBase = true;
     });
     it("should remove the default cors settings", async () => {
         const modules = await plugin.afterCreateServer(context, params, moduleMap);
