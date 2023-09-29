@@ -14,6 +14,8 @@ import {
   ModuleMap,
   CreateEntityControllerParams,
   CreateEntityControllerBaseParams,
+  CreateEntityResolverParams,
+  CreateEntityResolverBaseParams,
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
 import { appendImports, readFile } from "@amplication/code-gen-utils";
@@ -31,7 +33,9 @@ import {
   makeSTIdFieldOptionalInCreation,
   removeSTIdFromUpdateInput,
   replaceEntityControllerBaseTemplate,
-  replaceEntityControllerTemplate
+  replaceEntityControllerTemplate,
+  replaceEntityResolverTemplate,
+  replaceEntityResolverBaseTemplate
 } from "./core";
 
 class SupertokensAuthPlugin implements AmplicationPlugin {
@@ -40,6 +44,8 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
   addedAuthModuleInAuthDir = false;
   replacedEntityController = false;
   replacedEntityControllerBase = false;
+  replacedEntityResolver = false;
+  replacedEntityResolverBase = false;
   
   register(): Events {
     return {
@@ -74,8 +80,36 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       },
       [EventNames.CreateEntityControllerBase]: {
         before: this.beforeCreateEntityControllerBase
+      },
+      [EventNames.CreateEntityResolver]: {
+        before: this.beforeCreateEntityResolver
       }
     };
+  }
+
+  async beforeCreateEntityResolver(
+    context: DsgContext,
+    eventParams: CreateEntityResolverParams
+  ): Promise<CreateEntityResolverParams> {
+
+    if(context.resourceInfo?.settings.authEntityName === eventParams.entityName) {
+      await replaceEntityResolverTemplate(eventParams);
+      this.replacedEntityResolver = true;
+    }
+    return eventParams;
+  }
+
+  async beforeCreateEntityResolverBase(
+    context: DsgContext,
+    eventParams: CreateEntityResolverBaseParams
+  ): Promise<CreateEntityResolverBaseParams> {
+
+    const settings = utils.getPluginSettings(context.pluginInstallations);
+    if(context.resourceInfo?.settings.authEntityName === eventParams.entityName) {
+      await replaceEntityResolverBaseTemplate(eventParams, context.entities, settings);
+      this.replacedEntityResolverBase = true;
+    }
+    return eventParams
   }
 
   async beforeCreateEntityController(
