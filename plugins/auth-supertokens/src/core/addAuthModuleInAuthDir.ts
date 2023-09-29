@@ -4,6 +4,7 @@ import { join, relative } from "path";
 import { templatesPath } from "../constants";
 import { builders, namedTypes } from "ast-types";
 import { interpolate } from "../utils";
+import { camelCase } from "lodash";
 
 export const addAuthModuleInAuthDir = async (
     params: CreateEntityModuleParams,
@@ -24,7 +25,7 @@ export const addAuthModuleInAuthDir = async (
     ]);
     interpolate(template, templateMapping);
     modules.set({
-        path: `${authDirectory}/auth.module.ts`,
+        path: join(authDirectory, "auth.module.ts"),
         code: print(template).code
     })
 }
@@ -41,7 +42,7 @@ const getModulePath = (
     srcDirectory: string,
     authDirectory: string
 ): namedTypes.StringLiteral => {
-    const modulePath = `${srcDirectory}/${params.entityName}/${params.entityName}.module`;
+    const modulePath = `${srcDirectory}/${camelCase(params.entityName)}/${camelCase(params.entityName)}.module`;
     const path = relative(authDirectory, modulePath);
     if(!path) {
         throw new Error("The source directory is not a parent of the auth directory");

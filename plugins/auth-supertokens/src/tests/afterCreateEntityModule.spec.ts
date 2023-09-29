@@ -17,7 +17,10 @@ describe("Testing afterCreateEntityModule hook", () => {
     beforeEach(() => {
         plugin = new SupertokensAuthPlugin();
         context = mock<DsgContext>({
-            pluginInstallations: [{ npm: name }],
+            pluginInstallations: [{
+                npm: name,
+                settings: { emailFieldName: "theEmail", passwordFieldName: "thePassword" }
+            }],
             serverDirectories: {
                 srcDirectory: "/",
                 authDirectory: "/auth"
@@ -36,7 +39,9 @@ describe("Testing afterCreateEntityModule hook", () => {
         params = {
             ...mock<CreateEntityModuleParams>(),
             templateMapping: {
-                MODULE: builders.identifier("TheEntityModule")
+                MODULE: builders.identifier("TheEntityModule"),
+                SERVICE: builders.identifier("TheEntityService"),
+                ENTITY: builders.identifier("TheEntity")
             },
             entityName: "TheEntity"
         }
@@ -60,7 +65,7 @@ import {
 import { PasswordService } from "./password.service";
 import { STAuthMiddleware } from "./supertokens/auth.middleware";
 import { AuthService } from "./auth.service";
-import { TheEntityModule } from "../TheEntity/TheEntity.module";
+import { TheEntityModule } from "../theEntity/theEntity.module";
 
 @Module({
   providers: [AuthService, PasswordService],

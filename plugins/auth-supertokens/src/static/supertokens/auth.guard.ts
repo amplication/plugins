@@ -1,10 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
-import { Error as STError } from "supertokens-node";
-
-import { verifySession } from "supertokens-node/recipe/session/framework/express";
-import { VerifySessionOptions } from "supertokens-node/recipe/session";
 import Session from "supertokens-node/recipe/session";
-import UserMetadata from "supertokens-node/recipe/usermetadata"
 import { AuthService } from "../auth.service";
 import { AuthError } from "./auth.error";
 import { GqlContextType, GqlExecutionContext } from "@nestjs/graphql";

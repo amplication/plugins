@@ -35,7 +35,8 @@ import {
   replaceEntityControllerBaseTemplate,
   replaceEntityControllerTemplate,
   replaceEntityResolverTemplate,
-  replaceEntityResolverBaseTemplate
+  replaceEntityResolverBaseTemplate,
+  createSupertokensService
 } from "./core";
 
 class SupertokensAuthPlugin implements AmplicationPlugin {
@@ -73,7 +74,8 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
         after: this.afterCreateEntityModule
       },
       [EventNames.CreateDTOs]: {
-        before: this.beforeCreateDTOs
+        before: this.beforeCreateDTOs,
+        after: this.afterCreateDTOs
       },
       [EventNames.CreateEntityController]: {
         before: this.beforeCreateEntityController
@@ -151,6 +153,23 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     removeSTIdFromUpdateInput(eventParams.dtos[authEntityName].updateInput);
 
     return eventParams;
+  }
+
+  async afterCreateDTOs(
+    context: DsgContext,
+    eventParams: CreateDTOsParams,
+    modules: ModuleMap
+  ): Promise<ModuleMap> {
+
+    const { authDirectory, srcDirectory } = context.serverDirectories;
+    const authEntityName = context.resourceInfo?.settings.authEntityName;
+    if(!authEntityName) {
+      throw new Error("The auth entity name has not been set");
+    }
+    const settings = utils.getPluginSettings(context.pluginInstallations);
+    await createSupertokensService(settings, authDirectory, srcDirectory, authEntityName, modules);
+
+    return modules;
   }
 
   async afterCreateEntityModule(
@@ -289,8 +308,9 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     eventParams: CreateServerAuthParams,
     modules: ModuleMap
   ): Promise<ModuleMap> {
-    const newModules = await addSupertokensFiles(context, modules);
-  
+    const settings = utils.getPluginSettings(context.pluginInstallations);
+    const newModules = await addSupertokensFiles(context, modules, settings);
+
     return newModules;
   }
 }

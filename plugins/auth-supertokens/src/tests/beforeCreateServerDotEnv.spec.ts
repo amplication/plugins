@@ -36,7 +36,9 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
             websiteBasePath: "/site/path",
             websiteDomain: "https://app.site.com",
             connectionUri: "https://supertokens.site.com",
-            apiKey: "THEKey!"
+            apiKey: "THEKey!",
+            emailFieldName: "email",
+            passwordFieldName: "password"
         }
         context.pluginInstallations[0].settings = userSpecifiedSettings;
         const { envVariables } = plugin.beforeCreateServerDotEnv(context, params);

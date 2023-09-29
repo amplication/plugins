@@ -32,8 +32,6 @@ describe("Testing afterCreateServer hook", () => {
     it("should remove the default cors settings", async () => {
         const modules = await plugin.afterCreateServer(context, params, moduleMap);
         let expectedCode = prettyCode(afterRemoveCorsSetting);
-        // Remove the trailing semi-colon from the end which is inserted
-        // by the prettyCode invocation
         const code = prettyCode(modules.get("/main.ts").code);
         expect(code).toStrictEqual(expectedCode);
     });

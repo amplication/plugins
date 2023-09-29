@@ -8,8 +8,6 @@ import { settings as defaultSettings } from "../.amplicationrc.json";
 import { builders } from "ast-types";
 import * as K from "ast-types/gen/kinds";
 import { NodePath } from "ast-types/lib/node-path";
-import * as path from "path";
-import normalize from "normalize-path";
 
 export const getPluginSettings = (
   pluginInstallations: PluginInstallation[]
@@ -56,9 +54,9 @@ export const prettyCode = (code: string): string => {
     return recast.prettyPrint(parse(code)).code
 }
 
-export const settingToEnvVar = (settingKey: keyof Settings): string => {
+export const settingToEnvVar = (settingKey: keyof Settings): string | undefined => {
   const prefix = "SUPERTOKENS";
-  const mapping: {[key in keyof Settings]: string} = {
+  const mapping: {[key in keyof Settings]?: string} = {
     apiBasePath: `${prefix}_API_BASE_PATH`,
     apiDomain: `${prefix}_API_DOMAIN`,
     appName: `${prefix}_APP_NAME`,
@@ -73,10 +71,16 @@ export const settingToEnvVar = (settingKey: keyof Settings): string => {
 
 export const settingsToVarDict = (settings: Settings): VariableDictionary => {
   return Object.keys(settings)
-      .map((settingKey) => ({
-          [settingToEnvVar(settingKey as keyof Settings)]:
-            settings[settingKey as keyof Settings].toString()
-      }))
+      .map((settingKey) => {
+        const envVar = settingToEnvVar(settingKey as keyof Settings);
+        if(envVar) {
+          return {
+              [envVar]: settings[settingKey as keyof Settings].toString()
+          }
+        }
+        return {};
+      })
+      .filter((envVar) => Object.keys(envVar).length !== 0)
 }
 
 /**

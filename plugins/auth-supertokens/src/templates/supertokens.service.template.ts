@@ -1,19 +1,17 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import supertokens, { deleteUser } from "supertokens-node";
-import { generateSupertokensOptions } from "./generateSupertokensOptions";
 import Session from "supertokens-node/recipe/session";
 import Dashboard from "supertokens-node/recipe/dashboard";
 import EmailPassword, { RecipeInterface } from "supertokens-node/recipe/emailpassword";
-import { UserService } from "../../user/user.service";
-import { User } from "../../user/base/User";
+import { generateSupertokensOptions } from "./generateSupertokensOptions";
 import { AuthError } from "./auth.error";
 
 @Injectable()
 export class SupertokensService {
   constructor(
     protected readonly configService: ConfigService,
-    protected readonly userService: UserService
+    protected readonly userService: AUTH_ENTITY_SERVICE_ID
   ) {
     supertokens.init({
       ...generateSupertokensOptions(configService),
@@ -31,9 +29,9 @@ export class SupertokensService {
                     ) {
                       userService.create({
                         data: {
-                          username: input.email,
-                          password: input.password,
-                          supertokensId: resp.user.id,
+                          EMAIL_FIELD_NAME: input.email,
+                          PASSWORD_FIELD_NAME: input.password,
+                          SUPERTOKENS_ID_FIELD_NAME: resp.user.id,
                           roles: []
                         }
                       })
@@ -50,10 +48,10 @@ export class SupertokensService {
     });
   }
 
-  async getUserBySupertokensId(supertokensId: string): Promise<User | null> {
+  async getUserBySupertokensId(supertokensId: string): Promise<AUTH_ENTITY_ID | null> {
     return await this.userService.findOne({
       where: {
-        supertokensId
+        SUPERTOKENS_ID_FIELD_NAME: supertokensId
       }
     })
   }
