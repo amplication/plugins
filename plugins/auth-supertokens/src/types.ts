@@ -6,6 +6,8 @@ export interface Settings {
   apiBasePath: string,
   connectionUri: string,
   apiGatewayPath: string,
-  apiKey: string
+  apiKey: string,
+  emailFieldName: string,
+  passwordFieldName: string
 }
 

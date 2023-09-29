@@ -14,7 +14,6 @@ export class STAuthGuard implements CanActivate {
   constructor(private authService: AuthService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    console.log("Here!")
     const [req, resp] = this.getReqResp(context);
 
     const session = await Session.getSession(req, resp);

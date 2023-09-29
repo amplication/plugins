@@ -12,11 +12,14 @@ import {
   Events,
   Module,
   ModuleMap,
+  CreateEntityControllerParams,
+  CreateEntityControllerBaseParams,
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
-import { appendImports } from "@amplication/code-gen-utils";
+import { appendImports, readFile } from "@amplication/code-gen-utils";
 import { merge } from "lodash";
 import { builders, namedTypes } from "ast-types";
+import { resolve } from "path";
 import * as utils from "./utils";
 import * as constants from "./constants";
 import {
@@ -26,13 +29,17 @@ import {
   addSupertokensIdFieldToAuthEntity,
   addAuthModuleInAuthDir,
   makeSTIdFieldOptionalInCreation,
-  removeSTIdFromUpdateInput
+  removeSTIdFromUpdateInput,
+  replaceEntityControllerBaseTemplate,
+  replaceEntityControllerTemplate
 } from "./core";
 
 class SupertokensAuthPlugin implements AmplicationPlugin {
   // Used to check if the auth module has been successfully added
   // after the server creation
   addedAuthModuleInAuthDir = false;
+  replacedEntityController = false;
+  replacedEntityControllerBase = false;
   
   register(): Events {
     return {
@@ -61,8 +68,39 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       },
       [EventNames.CreateDTOs]: {
         before: this.beforeCreateDTOs
+      },
+      [EventNames.CreateEntityController]: {
+        before: this.beforeCreateEntityController
+      },
+      [EventNames.CreateEntityControllerBase]: {
+        before: this.beforeCreateEntityControllerBase
       }
     };
+  }
+
+  async beforeCreateEntityController(
+    context: DsgContext,
+    eventParams: CreateEntityControllerParams
+  ): Promise<CreateEntityControllerParams> {
+
+    if(context.resourceInfo?.settings.authEntityName === eventParams.entityName) {
+      await replaceEntityControllerTemplate(eventParams);
+      this.replacedEntityController = true;
+    }
+    return eventParams;
+  }
+
+  async beforeCreateEntityControllerBase(
+    context: DsgContext,
+    eventParams: CreateEntityControllerBaseParams
+  ): Promise<CreateEntityControllerBaseParams> {
+
+    const settings = utils.getPluginSettings(context.pluginInstallations);
+    if(context.resourceInfo?.settings.authEntityName === eventParams.entityName) {
+      await replaceEntityControllerBaseTemplate(eventParams, context.entities, settings);
+      this.replacedEntityControllerBase = true;
+    }
+    return eventParams
   }
 
   beforeCreateDTOs(

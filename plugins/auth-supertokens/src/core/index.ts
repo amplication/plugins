@@ -5,3 +5,4 @@ export { addSupertokensIdFieldToAuthEntity } from "./addSupertokensIdFieldToAuth
 export { addAuthModuleInAuthDir } from "./addAuthModuleInAuthDir";
 export { makeSTIdFieldOptionalInCreation } from "./makeSTIdFieldOptionalInCreation";
 export { removeSTIdFromUpdateInput } from "./removeSTIdFromUpdateInput";
+export { replaceEntityControllerBaseTemplate, replaceEntityControllerTemplate } from "./replaceEntityControllerTemplates";
