@@ -36,7 +36,8 @@ import {
   replaceEntityControllerTemplate,
   replaceEntityResolverTemplate,
   replaceEntityResolverBaseTemplate,
-  createSupertokensService
+  createSupertokensService,
+  createAuthService
 } from "./core";
 
 class SupertokensAuthPlugin implements AmplicationPlugin {
@@ -168,6 +169,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     }
     const settings = utils.getPluginSettings(context.pluginInstallations);
     await createSupertokensService(settings, authDirectory, srcDirectory, authEntityName, modules);
+    await createAuthService(modules, srcDirectory, authDirectory, authEntityName);
 
     return modules;
   }

@@ -38,7 +38,7 @@ describe("Testing afterCreateDTOs hook", () => {
             ...mock<CreateDTOsParams>(),
             dtos: {
                 // Ignoring the rest of the fields because only the createInput and
-                // updateInput are required for the test
+                // updateInput and entity are required for the tests
                 //@ts-ignore
                 TheEntity: {
                     createInput: parse(createInputRawBefore).program.body[0] as NamedClassDeclaration,
@@ -65,6 +65,12 @@ describe("Testing afterCreateDTOs hook", () => {
         const expectedSupertokensCode = prettyCode(supertokensService);
         const code = prettyCode(moduleMap.get("/auth/supertokens/supertokens.service.ts").code);
         expect(code).toStrictEqual(expectedSupertokensCode);
+    });
+    it("should add the auth.service.ts to the auth directory", async () => {
+        const moduleMap = await plugin.afterCreateDTOs(context, params, new ModuleMap(context.logger));
+        const expectedAuthServiceCode = prettyCode(authService);
+        const code = prettyCode(moduleMap.get("/auth/auth.service.ts").code);
+        expect(code).toStrictEqual(expectedAuthServiceCode);
     })
 });
 
@@ -277,3 +283,19 @@ export class SupertokensService {
 }
 `;
 
+const authService = `
+import { Injectable } from "@nestjs/common";
+import { SupertokensService } from "./supertokens/supertokens.service";
+import { ConfigService } from "@nestjs/config";
+import { TheEntityService } from "../theEntity/theEntity.service";
+
+@Injectable()
+export class AuthService extends SupertokensService {
+  constructor(
+    protected readonly configService: ConfigService,
+    protected readonly userService: TheEntityService) {
+    super(configService, userService);
+  }
+}
+
+`
