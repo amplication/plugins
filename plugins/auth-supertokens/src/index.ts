@@ -7,6 +7,7 @@ import {
   CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
   CreateServerParams,
+  CreateDTOsParams,
   DsgContext,
   Events,
   Module,
@@ -23,7 +24,9 @@ import {
   alterGraphqlSettingsInAppModule,
   removeRemoveDefaultCorsSettingInMain,
   addSupertokensIdFieldToAuthEntity,
-  addAuthModuleInAuthDir
+  addAuthModuleInAuthDir,
+  makeSTIdFieldOptionalInCreation,
+  removeSTIdFromUpdateInput
 } from "./core";
 
 class SupertokensAuthPlugin implements AmplicationPlugin {
@@ -55,8 +58,27 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       },
       [EventNames.CreateEntityModule]: {
         after: this.afterCreateEntityModule
+      },
+      [EventNames.CreateDTOs]: {
+        before: this.beforeCreateDTOs
       }
     };
+  }
+
+  beforeCreateDTOs(
+    context: DsgContext,
+    eventParams: CreateDTOsParams
+  ): CreateDTOsParams {
+
+    const authEntityName = context.resourceInfo?.settings.authEntityName;
+    if(!authEntityName) {
+      throw new Error("Failed to find the auth entity name");
+    }
+    
+    makeSTIdFieldOptionalInCreation(eventParams.dtos[authEntityName].createInput);
+    removeSTIdFromUpdateInput(eventParams.dtos[authEntityName].updateInput);
+
+    return eventParams;
   }
 
   async afterCreateEntityModule(
@@ -64,6 +86,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     eventParams: CreateEntityModuleParams,
     modules: ModuleMap
   ): Promise<ModuleMap> {
+
     const { srcDirectory, authDirectory } = context.serverDirectories;
     const authEntityName = context.resourceInfo?.settings.authEntityName;
     if(!authEntityName) {
@@ -71,11 +94,8 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     }
 
     if(eventParams.entityName === authEntityName) {
-      console.log("jjjdd")
       await addAuthModuleInAuthDir(eventParams, modules, srcDirectory, authDirectory);
       this.addedAuthModuleInAuthDir = true;
-    } else {
-      console.log("dkkdk")
     }
 
     return modules;

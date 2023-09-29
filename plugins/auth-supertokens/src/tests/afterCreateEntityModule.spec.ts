@@ -45,7 +45,6 @@ describe("Testing afterCreateEntityModule hook", () => {
     it("should add the auth module to the auth directory", async () => {
         const modules = await plugin.afterCreateEntityModule(context, params, moduleMap);
         let expectedCode = prettyCode(authModuleRaw);
-        console.log(modules);
         const code = prettyCode(modules.get("/auth/auth.module.ts").code);
         expect(code).toStrictEqual(expectedCode);
     });

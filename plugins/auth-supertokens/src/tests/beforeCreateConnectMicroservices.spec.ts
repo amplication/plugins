@@ -28,7 +28,7 @@ describe("Testing beforeCreateConnectMicroservices hook", () => {
             `)
         };
     });
-    it("should add the necessary code to connect the redis microservice", () => {
+    it("should add the code for the supertokens cors and filters settings", () => {
         const { template } = plugin.beforeCreateConnectMicroservices(context, params);
         const expectedCode = prettyCode(`
         import { INestApplication } from "@nestjs/common";

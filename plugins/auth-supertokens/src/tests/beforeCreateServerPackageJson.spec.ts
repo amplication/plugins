@@ -4,7 +4,7 @@ import { name } from "../../package.json";
 import SupertokensAuthPlugin from "../index";
 
 
-describe("Testing beforeServerPackageJson hook", () => {
+describe("Testing beforeCreateServerPackageJson hook", () => {
     let plugin: SupertokensAuthPlugin;
     let context: DsgContext;
     beforeEach(() => {

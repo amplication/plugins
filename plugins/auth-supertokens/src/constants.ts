@@ -9,3 +9,5 @@ export const dependencies = {
         "supertokens-node": "15.1.0"
     }
 }
+
+export const SUPERTOKENS_ID_FIELD_NAME = "supertokensId";
