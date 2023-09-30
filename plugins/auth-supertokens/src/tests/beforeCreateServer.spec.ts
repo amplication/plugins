@@ -1,11 +1,6 @@
-import { CreateServerParams, DsgContext, ModuleMap } from "@amplication/code-gen-types";
+import { CreateServerParams, DsgContext } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
-import { parse } from "@amplication/code-gen-utils";
-import { builders } from "ast-types"
-import * as recast from "recast"
-import { prettyCode } from "../utils"
 import SupertokensAuthPlugin from "../index";
-import { print } from "@amplication/code-gen-utils";
 import { name } from "../../package.json";
 
 describe("Testing beforeCreateServer hook", () => {
@@ -23,7 +18,7 @@ describe("Testing beforeCreateServer hook", () => {
             },
             entities: [{
                 name: authEntity,
-                fields: []
+                fields: [{ name: "email" }, { name: "password" }]
             }],
             resourceInfo: {
                 settings: {
@@ -35,10 +30,10 @@ describe("Testing beforeCreateServer hook", () => {
     });
     it("should add the supertokens user ID field", () => {
         plugin.beforeCreateServer(context, params);
-        expect(context.entities![0].fields.length).toStrictEqual(1);
-        const newEntity = context.entities![0].fields[0];
-        expect(newEntity.name).toStrictEqual("supertokensId");
-        expect(newEntity.required).toBe(true);
-        expect(newEntity.unique).toBe(true);
+        expect(context.entities![0].fields.length).toStrictEqual(3);
+        const newEntityField = context.entities![0].fields[2];
+        expect(newEntityField.name).toStrictEqual("supertokensId");
+        expect(newEntityField.required).toBe(true);
+        expect(newEntityField.unique).toBe(true);
     });
 });

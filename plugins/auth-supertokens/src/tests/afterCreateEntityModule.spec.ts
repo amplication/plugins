@@ -1,11 +1,8 @@
-import { CreateEntityModuleParams, CreateServerParams, DsgContext, ModuleMap } from "@amplication/code-gen-types";
+import { CreateEntityModuleParams, DsgContext, ModuleMap } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
-import { parse } from "@amplication/code-gen-utils";
 import { builders } from "ast-types"
-import * as recast from "recast"
 import { prettyCode } from "../utils"
 import SupertokensAuthPlugin from "../index";
-import { print } from "@amplication/code-gen-utils";
 import { name } from "../../package.json";
 
 describe("Testing afterCreateEntityModule hook", () => {
@@ -43,7 +40,7 @@ describe("Testing afterCreateEntityModule hook", () => {
                 SERVICE: builders.identifier("TheEntityService"),
                 ENTITY: builders.identifier("TheEntity")
             },
-            entityName: "TheEntity"
+            entityName: "theEntity"
         }
         moduleMap = new ModuleMap(context.logger);
     });

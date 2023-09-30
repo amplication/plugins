@@ -8,6 +8,7 @@ import { settings as defaultSettings } from "../.amplicationrc.json";
 import { builders } from "ast-types";
 import * as K from "ast-types/gen/kinds";
 import { NodePath } from "ast-types/lib/node-path";
+import { groupBy, mapValues, uniqBy } from "lodash";
 
 export const getPluginSettings = (
   pluginInstallations: PluginInstallation[]
@@ -215,4 +216,3 @@ export function transformTemplateLiteralToStringLiteral(
     .join("");
   return builders.stringLiteral(value);
 }
-

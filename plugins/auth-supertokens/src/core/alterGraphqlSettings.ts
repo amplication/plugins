@@ -9,27 +9,31 @@ import { print } from "@amplication/code-gen-utils";
  * from the supertokens websiteDomain.
  */
 export const alterGraphqlSettingsInAppModule = (modules: ModuleMap, appModule: Module) => {
-    const code = parse(appModule.code);
-    const namedDeclarations = code.program.body.filter((stmt) => (
-      stmt.type === "ExportNamedDeclaration"
-      && stmt.declaration && stmt.declaration.type
-      && stmt.declaration.type === "ClassDeclaration"
-    ));
-    if(namedDeclarations.length !== 1) {
-      throw new Error("Unexpected number of exported classes in the app module");
-    }
-    const classDeclaration = namedDeclarations[0];
-    //@ts-ignore
-    const imports = getAppModuleImports(classDeclaration.declaration);
-    const graphqlImport = getGraphqlImport(imports);
-    if(graphqlImport) {
-      const config = getGraphqlImportConfig(graphqlImport);
-      alterGraphqlConfig(config);
-      modules.replace(appModule, {
-        path: appModule.path,
-        code: print(code).code
-      });
-    }
+  // Removing duplicate auth module imports here because
+  // the parse(appModule.code) keeps failing sue to duplicate
+  // AuthModule imports
+  appModule.code = removeDuplicateAuthModuleImports(appModule.code);
+  const code = parse(appModule.code);
+  const namedDeclarations = code.program.body.filter((stmt) => (
+    stmt.type === "ExportNamedDeclaration"
+    && stmt.declaration && stmt.declaration.type
+    && stmt.declaration.type === "ClassDeclaration"
+  ));
+  if(namedDeclarations.length !== 1) {
+    throw new Error("Unexpected number of exported classes in the app module");
+  }
+  const classDeclaration = namedDeclarations[0];
+  //@ts-ignore
+  const imports = getAppModuleImports(classDeclaration.declaration);
+  const graphqlImport = getGraphqlImport(imports);
+  if(graphqlImport) {
+    const config = getGraphqlImportConfig(graphqlImport);
+    alterGraphqlConfig(config);
+    modules.replace(appModule, {
+      path: appModule.path,
+      code: print(code).code
+    });
+  }
 }
 
 const getAppModuleImports = (classDeclaration: namedTypes.ClassDeclaration): namedTypes.ArrayExpression => {
@@ -160,4 +164,20 @@ const alterGraphqlConfig = (config: namedTypes.ObjectExpression) => {
   } else {
     config.properties.push(corsProp);
   }
+}
+
+const removeDuplicateAuthModuleImports = (code: string): string => {
+  const lines = code.split("\n");
+  const newLines = [];
+  let hasSeenAuthModule = false;
+  for(const line of lines) {
+    if(line.startsWith("import") && line.includes("AuthModule")) {
+      if(hasSeenAuthModule) {
+        continue;
+      }
+      hasSeenAuthModule = true
+    }
+    newLines.push(line);
+  }
+  return newLines.join("\n");
 }

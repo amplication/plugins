@@ -46,7 +46,7 @@ describe("Testing beforeCreateServerAppModule hook", () => {
         import { Module, Scope } from "@nestjs/common";
         import { APP_INTERCEPTOR } from "@nestjs/core";
         import { MorganInterceptor } from "nest-morgan";
-        import { generateSupertokensOptions } from "./auth/generateSupertokensOptions";
+        import { generateSupertokensOptions } from "./auth/supertokens/generateSupertokensOptions";
 
         declare const MODULES: any;
         `)

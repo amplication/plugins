@@ -35,8 +35,8 @@ describe("Testing beforeCreateConnectMicroservices hook", () => {
         import { ConfigService } from "@nestjs/config";
 
         import supertokens from 'supertokens-node';
-        import { AuthFilter } from './auth/auth.filter';
-        import { generateSupertokensOptions } from "./auth/generateSupertokensOptions";
+        import { STAuthFilter } from './auth/supertokens/auth.filter';
+        import { generateSupertokensOptions } from "./auth/supertokens/generateSupertokensOptions";
         export async function connectMicroservices(app: INestApplication) {
             const configService = app.get(ConfigService);
             app.enableCors({
@@ -44,7 +44,7 @@ describe("Testing beforeCreateConnectMicroservices hook", () => {
                 allowedHeaders: ['content-type', ...supertokens.getAllCORSHeaders()],
                 credentials: true,
             });
-            app.useGlobalFilters(new AuthFilter());
+            app.useGlobalFilters(new STAuthFilter());
         }
         `)
         const templateCode = prettyPrint(template).code;

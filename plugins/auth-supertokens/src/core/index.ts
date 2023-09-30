@@ -5,7 +5,8 @@ export { addSupertokensIdFieldToAuthEntity } from "./addSupertokensIdFieldToAuth
 export { addAuthModuleInAuthDir } from "./addAuthModuleInAuthDir";
 export { makeSTIdFieldOptionalInCreation } from "./makeSTIdFieldOptionalInCreation";
 export { removeSTIdFromUpdateInput } from "./removeSTIdFromUpdateInput";
-export { replaceEntityControllerBaseTemplate, replaceEntityControllerTemplate } from "./replaceEntityControllerTemplates";
-export { replaceEntityResolverBaseTemplate, replaceEntityResolverTemplate } from "./replaceEntityResolverTemplates";
+export { injectAuthService } from "./injectAuthService";
 export { createAuthService } from "./createAuthService";
 export { verifyAuthCorePluginIsInstalled } from "./verifyAuthCorePluginIsInstalled";
+export { verifyEmailAndPasswordFieldsExist } from "./verifyEmailAndPasswordFieldsExist";
+export { alterAuthControllerBaseMethods, alterAuthResolverBaseMethods } from "./alterAuthControllerResolverMethods";

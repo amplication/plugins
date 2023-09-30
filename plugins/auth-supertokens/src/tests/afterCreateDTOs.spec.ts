@@ -83,7 +83,32 @@ class TheEntityCreateInput {
     })
     @IsString()
     @Field(() => String)
-    username!: string;
+    theEmail!: string;
+
+    @ApiProperty({
+        required: true,
+        type: String,
+    })
+    @IsString()
+    @Field(() => String)
+    thePassword!: string;
+
+    @ApiProperty({
+        required: false,
+        type: String,
+    })
+    @IsString()
+    @IsOptional()
+    @Field(() => String)
+    firstName?: string;
+
+    @ApiProperty({
+        required: true,
+        type: String,
+    })
+    @IsString()
+    @Field(() => String)
+    lastName!: string;
 
     @ApiProperty({
         required: true,
@@ -92,6 +117,42 @@ class TheEntityCreateInput {
     @IsString()
     @Field(() => String)
     supertokensId!: string;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsJSONValue()
+  @Field(() => GraphQLJSON)
+  roles!: InputJsonValue;
+
+  @ApiProperty({
+    required: true,
+    enum: EnumUserInterests,
+    isArray: true,
+  })
+  @IsEnum(EnumUserInterests, {
+    each: true,
+  })
+  @Field(() => [EnumUserInterests], {
+    nullable: true,
+  })
+  interests!: Array<"programming" | "design">;
+
+  @ApiProperty({
+    required: true,
+    enum: EnumUserPriority,
+  })
+  @IsEnum(EnumUserPriority)
+  @Field(() => EnumUserPriority)
+  priority!: "high" | "medium" | "low";
+
+  @ApiProperty({
+    required: true,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @Field(() => Boolean)
+  isCurious!: boolean;
 }
 `
 
@@ -104,7 +165,32 @@ class TheEntityCreateInput {
     })
     @IsString()
     @Field(() => String)
-    username!: string;
+    theEmail!: string;
+
+    @ApiProperty({
+        required: true,
+        type: String,
+    })
+    @IsString()
+    @Field(() => String)
+    thePassword!: string;
+
+    @ApiProperty({
+        required: false,
+        type: String,
+    })
+    @IsString()
+    @IsOptional()
+    @Field(() => String)
+    firstName?: string;
+
+    @ApiProperty({
+        required: true,
+        type: String,
+    })
+    @IsString()
+    @Field(() => String)
+    lastName!: string;
 
     @ApiProperty({
         required: false,
@@ -113,6 +199,42 @@ class TheEntityCreateInput {
     @IsString()
     @Field(() => String)
     supertokensId?: string;
+
+     @ApiProperty({
+      required: true,
+    })
+    @IsJSONValue()
+    @Field(() => GraphQLJSON)
+    roles!: InputJsonValue;
+
+    @ApiProperty({
+      required: true,
+      enum: EnumUserInterests,
+      isArray: true,
+    })
+    @IsEnum(EnumUserInterests, {
+      each: true,
+    })
+    @Field(() => [EnumUserInterests], {
+      nullable: true,
+    })
+    interests!: Array<"programming" | "design">;
+
+    @ApiProperty({
+      required: true,
+      enum: EnumUserPriority,
+    })
+    @IsEnum(EnumUserPriority)
+    @Field(() => EnumUserPriority)
+    priority!: "high" | "medium" | "low";
+
+    @ApiProperty({
+      required: true,
+      type: Boolean,
+    })
+    @IsBoolean()
+    @Field(() => Boolean)
+    isCurious!: boolean;
 }
 `
 
@@ -176,7 +298,15 @@ class TheEntity {
   })
   @IsString()
   @Field(() => String)
-  username!: string;
+  theEmail!: string;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  thePassword!: string;
 }
 `;
 
@@ -217,7 +347,13 @@ export class SupertokensService {
                             theEmail: input.email,
                             thePassword: input.password,
                             supertokensId: resp.user.id,
-                            roles: []
+                            ...{
+                              lastName: "",
+                              roles: [],
+                              interests: [],
+                              priority: "high",
+                              isCurious: false
+                            }
                         }
                       })
                   }

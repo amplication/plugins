@@ -32,7 +32,7 @@ export class SupertokensService {
                           EMAIL_FIELD_NAME: input.email,
                           PASSWORD_FIELD_NAME: input.password,
                           SUPERTOKENS_ID_FIELD_NAME: resp.user.id,
-                          roles: []
+                          ...DEFAULT_FIELD_VALUES
                         }
                       })
                   }

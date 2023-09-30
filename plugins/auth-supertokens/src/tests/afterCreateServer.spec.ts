@@ -1,11 +1,7 @@
 import { CreateServerParams, DsgContext, ModuleMap } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
-import { parse } from "@amplication/code-gen-utils";
-import { builders } from "ast-types"
-import * as recast from "recast"
 import { prettyCode } from "../utils"
-import SupertokensAuthPlugin from "../index";
-import { print } from "@amplication/code-gen-utils";
+import SupertokensAuthPlugin, { checks } from "../index";
 import { name } from "../../package.json";
 
 describe("Testing afterCreateServer hook", () => {
@@ -32,19 +28,19 @@ describe("Testing afterCreateServer hook", () => {
         params = mock<CreateServerParams>()
         moduleMap = new ModuleMap(context.logger);
         moduleMap.set({
-            path: "/main.ts",
+            path: "main.ts",
             code: prettyCode(beforeRemovingCorsSetting)
         });
-        plugin.addedAuthModuleInAuthDir = true;
-        plugin.replacedEntityController = true;
-        plugin.replacedEntityControllerBase = true;
-        plugin.replacedEntityResolver = true;
-        plugin.replacedEntityResolverBase = true;
+        checks.addedAuthModuleInAuthDir = true;
+        checks.replacedEntityController = true;
+        checks.replacedEntityControllerBase = true;
+        checks.replacedEntityResolver = true;
+        checks.replacedEntityResolverBase = true;
     });
     it("should remove the default cors settings", async () => {
         const modules = await plugin.afterCreateServer(context, params, moduleMap);
         let expectedCode = prettyCode(afterRemoveCorsSetting);
-        const code = prettyCode(modules.get("/main.ts").code);
+        const code = prettyCode(modules.get("main.ts").code);
         expect(code).toStrictEqual(expectedCode);
     });
 });

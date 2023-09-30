@@ -18,7 +18,8 @@ import {
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
 import { appendImports } from "@amplication/code-gen-utils";
-import { merge } from "lodash";
+import { camelCase, merge } from "lodash";
+import { join } from "path";
 import { builders, namedTypes } from "ast-types";
 import * as utils from "./utils";
 import * as constants from "./constants";
@@ -30,23 +31,26 @@ import {
   addAuthModuleInAuthDir,
   makeSTIdFieldOptionalInCreation,
   removeSTIdFromUpdateInput,
-  replaceEntityControllerBaseTemplate,
-  replaceEntityControllerTemplate,
-  replaceEntityResolverTemplate,
-  replaceEntityResolverBaseTemplate,
+  injectAuthService,
   createSupertokensService,
   createAuthService,
-  verifyAuthCorePluginIsInstalled
+  verifyAuthCorePluginIsInstalled,
+  verifyEmailAndPasswordFieldsExist,
+  alterAuthControllerBaseMethods,
+  alterAuthResolverBaseMethods
 } from "./core";
 
-class SupertokensAuthPlugin implements AmplicationPlugin {
+export const checks = {
   // Used to check if the auth module has been successfully added
   // after the server creation
-  addedAuthModuleInAuthDir = false;
-  replacedEntityController = false;
-  replacedEntityControllerBase = false;
-  replacedEntityResolver = false;
-  replacedEntityResolverBase = false;
+  addedAuthModuleInAuthDir: false,
+  replacedEntityController: false,
+  replacedEntityControllerBase: false,
+  replacedEntityResolver: false,
+  replacedEntityResolverBase: false
+}
+
+class SupertokensAuthPlugin implements AmplicationPlugin {
   
   register(): Events {
     return {
@@ -85,6 +89,9 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       },
       [EventNames.CreateEntityResolver]: {
         before: this.beforeCreateEntityResolver
+      },
+      [EventNames.CreateEntityResolverBase]: {
+        before: this.beforeCreateEntityResolverBase
       }
     };
   }
@@ -94,9 +101,10 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     eventParams: CreateEntityResolverParams
   ): Promise<CreateEntityResolverParams> {
 
-    if(context.resourceInfo?.settings.authEntityName === eventParams.entityName) {
-      await replaceEntityResolverTemplate(eventParams);
-      this.replacedEntityResolver = true;
+    const authEntityName = context.resourceInfo?.settings.authEntityName;
+    if(camelCase(authEntityName ?? "") === eventParams.entityName) {
+      await injectAuthService(eventParams.template, 1);
+      checks.replacedEntityResolver = true;
     }
     return eventParams;
   }
@@ -107,9 +115,11 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
   ): Promise<CreateEntityResolverBaseParams> {
 
     const settings = utils.getPluginSettings(context.pluginInstallations);
-    if(context.resourceInfo?.settings.authEntityName === eventParams.entityName) {
-      await replaceEntityResolverBaseTemplate(eventParams, context.entities, settings);
-      this.replacedEntityResolverBase = true;
+    const authEntityName = context.resourceInfo?.settings.authEntityName;
+    if(camelCase(authEntityName ?? "") === eventParams.entityName) {
+      await injectAuthService(eventParams.template, 2);
+      alterAuthResolverBaseMethods(eventParams, settings);
+      checks.replacedEntityResolverBase = true;
     }
     return eventParams
   }
@@ -119,9 +129,10 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     eventParams: CreateEntityControllerParams
   ): Promise<CreateEntityControllerParams> {
 
-    if(context.resourceInfo?.settings.authEntityName === eventParams.entityName) {
-      await replaceEntityControllerTemplate(eventParams);
-      this.replacedEntityController = true;
+    const authEntityName = context.resourceInfo?.settings.authEntityName;
+    if(camelCase(authEntityName ?? "") === eventParams.entityName) {
+      await injectAuthService(eventParams.template, 1);
+      checks.replacedEntityController = true;
     }
     return eventParams;
   }
@@ -132,9 +143,14 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
   ): Promise<CreateEntityControllerBaseParams> {
 
     const settings = utils.getPluginSettings(context.pluginInstallations);
-    if(context.resourceInfo?.settings.authEntityName === eventParams.entityName) {
-      await replaceEntityControllerBaseTemplate(eventParams, context.entities, settings);
-      this.replacedEntityControllerBase = true;
+    const authEntityName = context.resourceInfo?.settings.authEntityName;
+    if(!authEntityName) {
+      throw new Error("Failed to find the auth entity name");
+    }
+    if(camelCase(authEntityName ?? "") === eventParams.entityName) {
+      injectAuthService(eventParams.template, 2);
+      alterAuthControllerBaseMethods(eventParams, settings);
+      checks.replacedEntityControllerBase = true;
     }
     return eventParams
   }
@@ -167,7 +183,8 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       throw new Error("The auth entity name has not been set");
     }
     const settings = utils.getPluginSettings(context.pluginInstallations);
-    await createSupertokensService(settings, authDirectory, srcDirectory, authEntityName, modules);
+    await createSupertokensService(settings, authDirectory, srcDirectory, authEntityName, modules, 
+      eventParams.dtos[authEntityName].createInput);
     await createAuthService(modules, srcDirectory, authDirectory, authEntityName);
 
     return modules;
@@ -185,9 +202,9 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       throw new Error("Failed to find the authEntityName in the settings");
     }
 
-    if(eventParams.entityName === authEntityName) {
+    if(eventParams.entityName === camelCase(authEntityName)) {
       await addAuthModuleInAuthDir(eventParams, modules, srcDirectory, authDirectory);
-      this.addedAuthModuleInAuthDir = true;
+      checks.addedAuthModuleInAuthDir = true;
     }
 
     return modules;
@@ -198,7 +215,14 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     eventParams: CreateServerParams
   ): CreateServerParams {
 
+    const authEntityName = context.resourceInfo?.settings.authEntityName;
+    const settings = utils.getPluginSettings(context.pluginInstallations);
     verifyAuthCorePluginIsInstalled(context.pluginInstallations);
+    verifyEmailAndPasswordFieldsExist(
+      context.entities?.find((e) => e.name === authEntityName),
+      settings.emailFieldName,
+      settings.passwordFieldName
+    )
     addSupertokensIdFieldToAuthEntity(context);
 
     return eventParams;
@@ -214,20 +238,20 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     // cors setting
     removeRemoveDefaultCorsSettingInMain(srcDirectory, modules);
 
-    if(!this.addedAuthModuleInAuthDir) {
+    if(!checks.addedAuthModuleInAuthDir) {
       throw new Error("Failed to add the auth module to the auth directory");
     }
-    if(!this.replacedEntityController) {
+    if(!checks.replacedEntityController) {
       throw new Error("Failed to replace the entity controller template");
     }
-    if(!this.replacedEntityControllerBase) {
+    if(!checks.replacedEntityControllerBase) {
       throw new Error("Failed to replace the entity controller base template");
     }
     if(context.resourceInfo?.settings.serverSettings.generateGraphQL) {
-      if(!this.replacedEntityResolver) {
+      if(!checks.replacedEntityResolver) {
         throw new Error("Failed to replace the auth entity resolver template");
       }
-      if(!this.replacedEntityResolverBase) {
+      if(!checks.replacedEntityResolverBase) {
         throw new Error("Failed to replace the auth entity resolver base template");
       }
     }
@@ -275,11 +299,11 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
 
     const newModules = new ModuleMap(context.logger);
     const unneededInSrc = [
-      "tests/auth/constants.ts",
+      join("tests", "auth", "constants.ts"),
       "constants.ts"
     ];
     for(const module of modules.modules()) {
-      if(unneededInSrc.includes(`${srcDirectory}/${module.path}`)) {
+      if(unneededInSrc.includes(join(srcDirectory, module.path))) {
         continue;
       }
       newModules.set(module);
@@ -345,22 +369,22 @@ const supertokensImport = (): namedTypes.ImportDeclaration => {
 
 const authFilterImport = (): namedTypes.ImportDeclaration => {
   return builders.importDeclaration(
-    [builders.importSpecifier(builders.identifier("AuthFilter"))],
-    builders.stringLiteral("./auth/auth.filter")
+    [builders.importSpecifier(builders.identifier("STAuthFilter"))],
+    builders.stringLiteral("./auth/supertokens/auth.filter")
   )
 }
 
 const genSupertokensOptionsImport = (): namedTypes.ImportDeclaration => {
   return builders.importDeclaration(
     [builders.importSpecifier(builders.identifier("generateSupertokensOptions"))],
-    builders.stringLiteral("./auth/generateSupertokensOptions")
+    builders.stringLiteral("./auth/supertokens/generateSupertokensOptions")
   )
 }
 
 const globalFiltersStatement = (): namedTypes.ExpressionStatement => {
   return builders.expressionStatement(
     appCallExpression("useGlobalFilters", [
-      builders.newExpression(builders.identifier("AuthFilter"), [])
+      builders.newExpression(builders.identifier("STAuthFilter"), [])
     ])
   );
 }

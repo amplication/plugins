@@ -1,9 +1,10 @@
 import { ModuleMap } from "@amplication/code-gen-types";
 import { parse, print } from "@amplication/code-gen-utils";
 import { namedTypes } from "ast-types";
+import { join } from "path";
 
 export const removeRemoveDefaultCorsSettingInMain = (srcDir: string, modules: ModuleMap) => {
-    const mainModule = modules.get(`${srcDir}/main.ts`);
+    const mainModule = modules.get(join(srcDir, "main.ts"));
     if(!mainModule) {
         throw new Error("Failed to find the main.ts module")
     }
