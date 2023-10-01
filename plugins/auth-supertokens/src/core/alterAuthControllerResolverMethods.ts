@@ -56,7 +56,8 @@ export const alterAuthResolverBaseMethods = (
     appendImports(template, [
         isInstanceImport(),
         authErrorImport()
-    ])
+    ]);
+    
     visit(template, {
         visitClassMethod: function(path) {
             const method = path.node;

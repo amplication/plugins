@@ -1,47 +1,54 @@
 import { NamedClassDeclaration } from "@amplication/code-gen-types";
-import { builders, namedTypes } from "ast-types";
+import { builders, namedTypes, NodePath } from "ast-types";
 import { SUPERTOKENS_ID_FIELD_NAME } from "../constants";
+import { visit } from "recast";
 
 export const makeSTIdFieldOptionalInCreation = (createInput: NamedClassDeclaration) => {
-    for(const stmt of createInput.body.body) {
-        if(stmt.type !== "ClassProperty") {
-            continue;
-        }
-        const prop = stmt as namedTypes.ClassProperty;
-        if(prop.key.type !== "Identifier" || prop.key.name !== SUPERTOKENS_ID_FIELD_NAME) {
-            continue;
-        }
-        //@ts-ignore
-        prop.optional = true;
-        //@ts-ignore
-        for(const d of prop.decorators) {
-            const decorator = d as namedTypes.Decorator;
-            if(decorator.expression.type !== "CallExpression") {
-                continue;
+    let foundSTIdProp = false;
+    visit(createInput, {
+        visitClassProperty: function(path) {
+            if(path.node.key.type !== "Identifier"
+                || path.node.key.name !== SUPERTOKENS_ID_FIELD_NAME) {
+                    return false;
             }
-            const callExpr = decorator.expression as namedTypes.CallExpression;
-            if(callExpr.callee.type !== "Identifier" || callExpr.callee.name !== "ApiProperty") {
-                continue;
+            foundSTIdProp = true;
+            //@ts-ignore
+            path.node.optional = true;
+            //@ts-ignore
+            const decorators = path.node.decorators;
+            let apiPropDecorator;
+            for(const d of decorators) {
+                const decorator = d as namedTypes.Decorator;
+                if(decorator.expression.type !== "CallExpression"
+                    || decorator.expression.callee.type !== "Identifier"
+                    || decorator.expression.callee.name !== "ApiProperty"
+                    || decorator.expression.arguments.length !== 1
+                    || decorator.expression.arguments[0].type !== "ObjectExpression") {
+                        continue;
+                    }
+                apiPropDecorator = decorator;
             }
-            for(const argument of callExpr.arguments) {
-                if(argument.type !== "ObjectExpression") {
-                    continue;
-                }
-                const apiPropObj = argument as namedTypes.ObjectExpression;
-                const containsRequiredKey = apiPropObj.properties.filter((prop) => (
-                    prop.type === "ObjectProperty"
+            if(!apiPropDecorator) {
+                return false;
+            }
+            this.traverse(new NodePath(apiPropDecorator, path, "callExpression"));
+        },
+        visitCallExpression: function(path) {
+            const obj = path.node.arguments[0];
+            if(obj.type !== "ObjectExpression") {
+                return false;
+            }
+            for(const prop of obj.properties) {
+                if(prop.type === "ObjectProperty"
                     && prop.key.type === "Identifier"
-                    && prop.key.name === "required"
-                ));
-                if(containsRequiredKey.length !== 1) {
-                    continue;
-                }
-                const requiredProp = containsRequiredKey[0] as namedTypes.ObjectProperty;
-                requiredProp.value = builders.booleanLiteral(false);
-                return;
+                    && prop.key.name === "required") {
+                        prop.value = builders.booleanLiteral(false);
+                    }
             }
+            return false;
         }
+    });
+    if(!foundSTIdProp) {
+        throw new Error(`Failed to find the ${SUPERTOKENS_ID_FIELD_NAME} field in the auth entity's createInput DTO`);
     }
-    throw new Error(`Failed to find the ${SUPERTOKENS_ID_FIELD_NAME} field in the auth entity's createInput DTO`);
-
 }

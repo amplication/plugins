@@ -1,7 +1,7 @@
 import { ModuleMap } from "@amplication/code-gen-types";
 import { parse, print } from "@amplication/code-gen-utils";
-import { namedTypes } from "ast-types";
 import { join } from "path";
+import { visit } from "recast";
 
 export const removeRemoveDefaultCorsSettingInMain = (srcDir: string, modules: ModuleMap) => {
     const mainModule = modules.get(join(srcDir, "main.ts"));
@@ -9,67 +9,51 @@ export const removeRemoveDefaultCorsSettingInMain = (srcDir: string, modules: Mo
         throw new Error("Failed to find the main.ts module")
     }
     const mainCode = parse(mainModule.code);
-   const mainFunc = getMainFunc(mainCode, srcDir);
-    const variableDeclarations = mainFunc.body.body.filter((stmt) => (
-        stmt.type === "VariableDeclaration"
-        && stmt.declarations
-    ));
-    if(!variableDeclarations) {
-        throw new Error(`Expected to find variable declarations in the ${srcDir}/main.ts main function`);
-    }
-    for(const s of variableDeclarations) {
-        const stmt = s as namedTypes.VariableDeclaration;
-        for(const d of stmt.declarations) {
-            const initCall = getNestFactoryCallExpr(d);
-            if(!initCall) {
-                continue;
+    let foundCorsProp = false;
+
+    visit(mainCode, {
+        visitVariableDeclaration: function(path) {
+            if(path.node.declarations.length !== 1
+                || path.node.declarations[0].type !== "VariableDeclarator"
+                || path.node.declarations[0].id.type !== "Identifier"
+                || path.node.declarations[0].id.name !== "app") {
+                    return false;
+                }
+            const rightSide = path.node.declarations[0].init;
+            if(!rightSide || rightSide.type !== "AwaitExpression"
+                || !rightSide.argument
+                || rightSide.argument.type !== "CallExpression"
+                || rightSide.argument.callee.type !== "MemberExpression"
+                || rightSide.argument.callee.object.type !== "Identifier"
+                || rightSide.argument.callee.object.name !== "NestFactory"
+                || rightSide.argument.callee.property.type !== "Identifier"
+                || rightSide.argument.callee.property.name !== "create") {
+                    return false;
+                }
+            const args = rightSide.argument.arguments;
+            if(args.length !== 2) {
+                return false;
             }
-            initCall.arguments = initCall.arguments.slice(0, -1);
-            modules.replace(mainModule, {
-                path: mainModule.path,
-                code: print(mainCode).code
-            })
-            return;
+            if(args[0].type !== "Identifier"
+                || args[0].name !== "AppModule"
+                || args[1].type !== "ObjectExpression"
+                || args[1].properties.length !== 1
+                || args[1].properties[0].type !== "ObjectProperty"
+                || args[1].properties[0].key.type !== "Identifier"
+                || args[1].properties[0].key.name !== "cors") {
+                    return false
+                }
+            foundCorsProp = true;
+            args.pop();
+            return false;
         }
-    }
-    throw new Error(`Failed to find the NestFactory app instantiation in the ${srcDir}/main.ts main function`);
-}
+    })
 
-const getMainFunc = (mainCode: namedTypes.File, srcDir: string): namedTypes.FunctionDeclaration => {
-    const containsMainFunc = mainCode.program.body.filter((stmt) => (
-        stmt.type === "FunctionDeclaration"
-        && stmt.id?.name === "main"
-    ));
-    if(containsMainFunc.length !== 1) {
-        throw new Error(`Expected a single main function in the ${srcDir}/main.ts file`);
+    if(!foundCorsProp) {
+        throw new Error(`Failed to find the NestFactory app instantiation in the ${srcDir}/main.ts main function`);
     }
-    return containsMainFunc[0] as namedTypes.FunctionDeclaration;
-}
-
-const getNestFactoryCallExpr = (d: any): namedTypes.CallExpression | null => {
-    if(!d.type || d.type !== "VariableDeclarator") {
-        return null;
-    }
-    const declarator = d as namedTypes.VariableDeclarator;
-    //@ts-ignore
-    if(declarator.id.name !== "app" || !declarator.init
-        || declarator.init.type !== "AwaitExpression") {
-        return null;
-    }
-    const awaitExpr = declarator.init as namedTypes.AwaitExpression;
-    if(awaitExpr.argument?.type !== "CallExpression") {
-        return null;
-    }
-    const initCall = awaitExpr.argument as namedTypes.CallExpression;
-    if(initCall.callee.type !== "MemberExpression") {
-        return null;
-    }
-    const memExpr = initCall.callee as namedTypes.MemberExpression;
-    if(memExpr.object.type !== "Identifier" 
-        || memExpr.object.name !== "NestFactory"
-        || memExpr.property.type !== "Identifier"
-        || memExpr.property.name !== "create") {
-        return null;
-    }
-    return initCall;
+    modules.replace(mainModule, {
+        path: mainModule.path,
+        code: print(mainCode).code
+    });
 }
