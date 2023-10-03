@@ -13,7 +13,7 @@ Amplication uses plugins to extend the functionality of the generated applicatio
 
 ## Using Plugins
 
-Available plugins are listed in the Amplication console. Use the UI to install and activate the required plugins. For more information, read [Using Plugins](https://docs.amplication.com/docs/getting-started/getting-started/plugins/)
+Available plugins are listed in the Amplication console. Use the UI to install and activate the required plugins. For more information, see [documentation](#documentation)
 
 ## Developing Plugins
 
