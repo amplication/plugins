@@ -125,7 +125,7 @@ class HelmChartPlugin implements AmplicationPlugin {
         .replaceAll(configurationKey, configmap);
     });
 
-    await context.logger.info("Configuring Helm chart template...");
+    await context.logger.info("Configuring Helm Charts template...");
     await modules.merge(chartTemplateFiles);
     return modules;
   }
