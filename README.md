@@ -30,3 +30,9 @@ An GitHub Actions worflow has been added to publish a plugin the npm registry. I
 ## Integration on Amplication
 
 After publishing the plugin to NPM from the GitHub the plugin will not be visible in the Amplication plugin settings/list immediately. This works in conjunction with the [amplication/plugin-catalog](https://github.com/amplication/plugin-catalog), where the `plugin-catalog` is indexed. Adding the new plugin there will add it to the list of plugins in amplication. Any subsequent version that is released to NPM, will be updated automatically - this can take about 5-10 minutes to propagate.
+
+## Documentation
+
+- [How to create a plugin](https://docs.amplication.com/plugins/how-to-create-plugin/)
+- [How to test a plugin](https://docs.amplication.com/plugins/how-to-test-plugin/)
+- [How to publish a plugin](https://docs.amplication.com/plugins/publish-plugin/)
