@@ -6,7 +6,7 @@ export const templatesPath = join(__dirname, "templates");
 
 export const dependencies = {
     dependencies: {
-        "supertokens-node": "15.1.0"
+        "supertokens-node": "^16.2.0"
     }
 }
 

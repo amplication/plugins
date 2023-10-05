@@ -20,7 +20,7 @@ describe("Testing beforeCreateServerPackageJson hook", () => {
         })
         expect(updateProperties).toStrictEqual([{
             dependencies: {
-                "supertokens-node": "15.1.0"
+                "supertokens-node": "^16.2.0"
             }
         }]);
     });

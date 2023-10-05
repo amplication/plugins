@@ -16,6 +16,7 @@ export const makeSTIdFieldOptionalInCreation = (createInput: NamedClassDeclarati
             path.node.optional = true;
             //@ts-ignore
             const decorators = path.node.decorators;
+            decorators.push(isOptionalDec());
             let apiPropDecorator;
             for(const d of decorators) {
                 const decorator = d as namedTypes.Decorator;
@@ -51,4 +52,11 @@ export const makeSTIdFieldOptionalInCreation = (createInput: NamedClassDeclarati
     if(!foundSTIdProp) {
         throw new Error(`Failed to find the ${SUPERTOKENS_ID_FIELD_NAME} field in the auth entity's createInput DTO`);
     }
+}
+
+const isOptionalDec = (): namedTypes.Decorator => {
+    return builders.decorator(builders.callExpression(
+        builders.identifier("IsOptional"),
+        []
+    ))
 }

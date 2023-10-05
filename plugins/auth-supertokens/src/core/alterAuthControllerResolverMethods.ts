@@ -124,9 +124,7 @@ const extractFuncStmts = (code: string): namedTypes.BlockStatement => {
 }
 
 const newCreateEntityFuncRaw = `
-async function CREATE_ENTITY_FUNCTION(
-    @common.Body() data: CREATE_INPUT
-): Promise<ENTITY> {
+async function CREATE_ENTITY_FUNCTION(): Promise<ENTITY> {
     if(data.SUPERTOKENS_ID_FIELD_NAME) {
         throw new common.BadRequestException("You cannot set the supertokens user ID");
     }
@@ -150,10 +148,7 @@ async function CREATE_ENTITY_FUNCTION(
 `
 
 const newUpdateEntityFuncRaw = `
-async function UPDATE_ENTITY_FUNCTION(
-    @common.Param() params: WHERE_UNIQUE_INPUT,
-    @common.Body() data: UPDATE_INPUT
-  ): Promise<ENTITY | null> {
+async function UPDATE_ENTITY_FUNCTION(): Promise<ENTITY | null> {
     if((data as any).SUPERTOKENS_ID_FIELD_NAME) {
         throw new common.BadRequestException("You cannot modify the supertokens user ID");
     }
@@ -165,7 +160,11 @@ async function UPDATE_ENTITY_FUNCTION(
             );
         }
         if(data.EMAIL_FIELD_NAME || data.PASSWORD_FIELD_NAME) {
-            await this.authService.updateSupertokensEmailPassword(user.SUPERTOKENS_ID_FIELD_NAME, data.EMAIL_FIELD_NAME, data.PASSWORD_FIELD_NAME);
+            await this.authService.updateSupertokensUser(
+                await this.authService.getRecipeUserId(user.SUPERTOKENS_ID_FIELD_NAME),
+                data.EMAIL_FIELD_NAME,
+                data.PASSWORD_FIELD_NAME
+            );
         }
         return await this.service.update({
             where: params,
@@ -190,9 +189,7 @@ async function UPDATE_ENTITY_FUNCTION(
 `;
 
 const newDeleteEntityFuncRaw = `
-  async function DELETE_ENTITY_FUNCTION(
-    @common.Param() params: WHERE_UNIQUE_INPUT
-  ): Promise<ENTITY | null> {
+  async function DELETE_ENTITY_FUNCTION(): Promise<ENTITY | null> {
     const user = await this.service.findOne({ where: { id: params.id } });
     if(!user) {
       throw new errors.NotFoundException(
@@ -217,7 +214,7 @@ const newDeleteEntityFuncRaw = `
 `;
 
 const createUserFuncRaw = `
-async function CREATE_MUTATION(@graphql.Args() args: CreateUserArgs): Promise<User> {
+async function CREATE_MUTATION(): Promise<User> {
     try {
         const SUPERTOKENS_ID_FIELD_NAME = await this.authService.createSupertokensUser(args.data.EMAIL_FIELD_NAME, args.data.PASSWORD_FIELD_NAME);
         return await this.service.create({
@@ -237,9 +234,7 @@ async function CREATE_MUTATION(@graphql.Args() args: CreateUserArgs): Promise<Us
 `
 
 const updateUserFuncRaw = `
-  async function UPDATE_MUTATION(
-    @graphql.Args() args: UPDATE_ARGS
-  ): Promise<ENTITY | null> {
+  async function UPDATE_MUTATION(): Promise<ENTITY | null> {
     try {
         const user = await this.service.findOne({ where: { id: args.where.id } });
         if(!user) {
@@ -248,7 +243,11 @@ const updateUserFuncRaw = `
             );
         }
         if(args.data.EMAIL_FIELD_NAME || args.data.PASSWORD_FIELD_NAME) {
-            await this.authService.updateSupertokensEmailPassword(user.SUPERTOKENS_ID_FIELD_NAME, args.data.EMAIL_FIELD_NAME, args.data.PASSWORD_FIELD_NAME);
+            await this.authService.updateSupertokensUser(
+                await this.authService.getRecipeUserId(user.SUPERTOKENS_ID_FIELD_NAME),
+                args.data.EMAIL_FIELD_NAME,
+                args.data.PASSWORD_FIELD_NAME
+            );
         }
         return await this.service.update({
         ...args,
@@ -272,9 +271,7 @@ const updateUserFuncRaw = `
 `
 
 const deleteUserFuncRaw = `
-async function DELETE_MUTATION(
-    @graphql.Args() args: DELETE_ARGS
-  ): Promise<ENTITY | null> {
+async function DELETE_MUTATION(): Promise<ENTITY | null> {
     const user = await this.service.findOne({ where: { id: args.where.id } });
     if(!user) {
       throw new apollo.ApolloError(

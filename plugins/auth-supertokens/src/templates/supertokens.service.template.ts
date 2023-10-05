@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import supertokens, { deleteUser } from "supertokens-node";
+import supertokens, { deleteUser, RecipeUserId, User as STUser } from "supertokens-node";
 import Session from "supertokens-node/recipe/session";
 import Dashboard from "supertokens-node/recipe/dashboard";
 import EmailPassword, { RecipeInterface } from "supertokens-node/recipe/emailpassword";
@@ -25,6 +25,7 @@ export class SupertokensService {
                   let resp = await originalImplementation.signUp(input);
                   if(
                       resp.status === "OK" &&
+                      resp.user.loginMethods.length === 1 &&
                       (!input.userContext || !input.userContext.skipDefaultPostUserSignUp)
                     ) {
                       userService.create({
@@ -76,9 +77,9 @@ export class SupertokensService {
     }
   }
 
-  async updateSupertokensEmailPassword(supertokensId: string, email?: string, password?: string): Promise<void> {
+  async updateSupertokensUser(recipeUserId: RecipeUserId, email?: string, password?: string): Promise<void> {
     const resp = await EmailPassword.updateEmailOrPassword({
-      userId: supertokensId,
+      recipeUserId,
       email,
       password
     });
@@ -94,5 +95,22 @@ export class SupertokensService {
       default:
         throw new AuthError("UNKNOWN_ERROR");
     }
+  }
+
+  async getSupertokensUserInfo(supertokensId: string): Promise<STUser> {
+    const user = await supertokens.getUser(supertokensId);
+    if(!user) {
+      throw new AuthError("SUPERTOKENS_ID_WITH_NO_CORRESPONDING_SUPERTOKENS_USER");
+    }
+    return user;
+  }
+
+  async getRecipeUserId(supertokensId: string): Promise<RecipeUserId> {
+    const user = await this.getSupertokensUserInfo(supertokensId);
+    const loginMethod = user.loginMethods.find((lm) => lm.recipeId === "emailpassword");
+    if(!loginMethod) {
+      throw new Error("Failed to find the login method");
+    }
+    return loginMethod.recipeUserId;
   }
 }

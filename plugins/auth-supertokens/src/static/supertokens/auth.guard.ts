@@ -25,6 +25,7 @@ export class STAuthGuard implements CanActivate {
       return false
     }
     req.user = user;
+    req.session = session;
 
     return true;
   }
