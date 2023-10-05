@@ -1,5 +1,5 @@
 import { builders, namedTypes } from "ast-types";
-import { addImports, importNames, interpolate } from "../util/ast";
+import { interpolate } from "../util/ast";
 import { join } from "path";
 import { templatesPath } from "../constants";
 import {

@@ -14,6 +14,7 @@ import {
   createGrpcClientOptionsFile,
   createGrpcController,
   createGrpcControllerBase,
+  createGrpcProtoFile,
 } from "./core";
 import { merge } from "lodash";
 
@@ -95,6 +96,15 @@ class JwtAuthPlugin implements AmplicationPlugin {
       modules
     );
     await modules.set(controllerGrpcBase);
+
+    // create proto file
+    const protoFile = await createGrpcProtoFile(
+      context,
+      eventParams,
+      relatedEntities
+    );
+
+    await modules.set(protoFile);
 
     return modules;
   }
