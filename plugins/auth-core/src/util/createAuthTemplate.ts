@@ -1,5 +1,5 @@
 import { Module, DsgContext } from "@amplication/code-gen-types";
-import { readFile } from "@amplication/code-gen-utils";
+import { print, readFile } from "@amplication/code-gen-utils";
 import {
   addImports,
   importNames,

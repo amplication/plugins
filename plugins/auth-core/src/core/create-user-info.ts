@@ -1,5 +1,5 @@
 import { types, Module, DsgContext, Entity } from "@amplication/code-gen-types";
-import { readFile } from "@amplication/code-gen-utils";
+import { print, readFile } from "@amplication/code-gen-utils";
 import {
   addImports,
   importNames,
@@ -7,7 +7,6 @@ import {
   removeTSClassDeclares,
 } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
-import { print } from "@amplication/code-gen-utils";
 import { getUserIdType } from "../util/get-user-id-type";
 import { join } from "path";
 import {
