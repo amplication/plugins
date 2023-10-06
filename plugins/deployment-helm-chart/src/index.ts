@@ -3,7 +3,6 @@ import type {
   CreateServerDotEnvParams,
   DsgContext,
   Events,
-  Module,
   ModuleMap,
 } from "@amplication/code-gen-types";
 import {
@@ -65,7 +64,7 @@ class HelmChartPlugin implements AmplicationPlugin {
 
     variables.forEach((variable) => {
       const [name, value] = Object.entries(variable)[0];
-      configmap = `${configmap}\n${configmapIndentation}${name}: ${value}`;
+      configmap = `${configmap}\n${configmapIndentation}${name}: "${value}"`;
     });
 
     /**
@@ -126,7 +125,7 @@ class HelmChartPlugin implements AmplicationPlugin {
         .replaceAll(configurationKey, configmap);
     });
 
-    await context.logger.info("Configuring Helm chart template...");
+    await context.logger.info("Configuring Helm Charts template...");
     await modules.merge(chartTemplateFiles);
     return modules;
   }
