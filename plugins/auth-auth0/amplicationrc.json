@@ -1,8 +1,8 @@
 {
   "settings": {
-    "AUTH0_DOMAIN": "dev-p27ryta7rrcalcea.us.auth0.com",
-    "AUTH0_CLIENT_ID": "A9Dvb0BS8His5lrzRNduNxtGcoTHagid",
-    "AUTH0_AUDIENCE": "https://sample-nest.demo.com",
-    "AUTH0_ISSUER_URL": "https://dev-p27ryta7rrcalcea.us.auth0.com/"
+    "AUTH0_DOMAIN": "AUTH0_DOMAIN",
+    "AUTH0_CLIENT_ID": "AUTH0_CLIENT_ID",
+    "AUTH0_AUDIENCE": "AUTH0_AUDIENCE",
+    "AUTH0_ISSUER_URL": "AUTH0_ISSUER_URL"
   }
 }
