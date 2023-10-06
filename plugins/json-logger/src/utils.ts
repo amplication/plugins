@@ -1,9 +1,8 @@
-// src/utils.ts
-
 import { PluginInstallation } from "@amplication/code-gen-types";
 import { name as PackageName } from "../package.json";
-import Settings from "./types";
+
 import defaultSettings from "../.amplicationrc.json";
+import { Settings } from "./types";
 
 export const getPluginSettings = (
   pluginInstallations: PluginInstallation[]
@@ -14,10 +13,8 @@ export const getPluginSettings = (
 
   const userSettings = plugin?.settings ?? {};
 
-  const defaultPluginSettings = defaultSettings.settings;
-
   const settings: Settings = {
-    ...defaultPluginSettings,
+    ...defaultSettings,
     ...userSettings,
   };
 

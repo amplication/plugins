@@ -2,8 +2,8 @@
     "settings": {
       "logLevel": "WARN",
       "additionalLogProperties": {
-        "environment": "development",
-        "version": "1.0.0"
+        "customProperty": "customValue",
+        "anotherProperty": "anotherValue"
       }
     }
   }
