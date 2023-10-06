@@ -6,6 +6,7 @@ import {
   interpolate,
   removeTSClassDeclares,
 } from "../util/ast";
+import { idTypClassOptions, idTypeTSOptions } from "../util/idTypeMapper";
 import { builders, namedTypes } from "ast-types";
 import { getUserIdType } from "../util/get-user-id-type";
 import { join } from "path";
@@ -58,35 +59,6 @@ function prepareTemplateMapping(
   idType: types.Id["idType"],
   authEntity: Entity
 ) {
-  const number = {
-    class: "Number",
-    type: "number",
-  };
-
-  const string = {
-    class: "String",
-    type: "string",
-  };
-
-  const idTypClassOptions: {
-    [key in types.Id["idType"]]: namedTypes.Identifier;
-  } = {
-    AUTO_INCREMENT: builders.identifier(number.class),
-    AUTO_INCREMENT_BIG_INT: builders.identifier(number.class),
-    UUID: builders.identifier(string.class),
-    CUID: builders.identifier(string.class),
-  };
-
-  /* eslint-disable @typescript-eslint/naming-convention */
-  const idTypeTSOptions: {
-    [key in types.Id["idType"]]: namedTypes.Identifier;
-  } = {
-    AUTO_INCREMENT: builders.identifier(number.type),
-    AUTO_INCREMENT_BIG_INT: builders.identifier(number.type),
-    UUID: builders.identifier(string.type),
-    CUID: builders.identifier(string.type),
-  };
-
   return {
     USER_ID_TYPE_ANNOTATION: idTypeTSOptions[idType],
     USER_ID_CLASS: idTypClassOptions[idType],

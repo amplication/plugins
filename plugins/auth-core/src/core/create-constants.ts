@@ -10,6 +10,7 @@ import { builders, namedTypes } from "ast-types";
 import { getUserIdType } from "../util/get-user-id-type";
 import { join } from "path";
 import { templatesPath } from "../constants";
+import { idTypeTSOptions } from "../util/idTypeMapper";
 
 const templatePath = join(templatesPath, "create-constants.template.ts");
 
@@ -56,16 +57,6 @@ function prepareTemplateMapping(
   idType: types.Id["idType"],
   entityServiceName: string
 ) {
-  /* eslint-disable @typescript-eslint/naming-convention */
-  const idTypeTSOptions: {
-    [key in types.Id["idType"]]: any;
-  } = {
-    AUTO_INCREMENT: builders.numericLiteral(1),
-    AUTO_INCREMENT_BIG_INT: builders.numericLiteral(1),
-    UUID: builders.stringLiteral("cl7qmjh4h0000tothyjqapgj5"),
-    CUID: builders.stringLiteral("cl7qmjh4h0000tothyjqapgj5"),
-  };
-
   return {
     ID_TYPE: idTypeTSOptions[idType],
     ENTITY_INFO: builders.identifier(entityServiceName),
