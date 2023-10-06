@@ -32,6 +32,7 @@ function prepareTemplateMapping(idType: types.Id["idType"]) {
     [key in types.Id["idType"]]: namedTypes.Identifier;
   } = {
     AUTO_INCREMENT: builders.identifier("number"),
+    AUTO_INCREMENT_BIG_INT: builders.identifier("number"),
     UUID: builders.identifier("string"),
     CUID: builders.identifier("string"),
   };

@@ -61,6 +61,7 @@ function prepareTemplateMapping(
     [key in types.Id["idType"]]: any;
   } = {
     AUTO_INCREMENT: builders.numericLiteral(1),
+    AUTO_INCREMENT_BIG_INT: builders.numericLiteral(1),
     UUID: builders.stringLiteral("cl7qmjh4h0000tothyjqapgj5"),
     CUID: builders.stringLiteral("cl7qmjh4h0000tothyjqapgj5"),
   };

@@ -8,7 +8,6 @@ import {
   removeTSInterfaceDeclares,
 } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
-import { print } from "@amplication/code-gen-utils";
 import { AUTH_ENTITY_ERROR, AUTH_ENTITY_LOG_ERROR } from "../constants";
 
 export async function mapAuthTemplate(
