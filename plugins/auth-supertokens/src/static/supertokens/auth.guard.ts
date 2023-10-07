@@ -3,13 +3,35 @@ import Session from "supertokens-node/recipe/session";
 import { AuthService } from "../auth.service";
 import { AuthError } from "./auth.error";
 import { GqlContextType, GqlExecutionContext } from "@nestjs/graphql";
+import { verifySession } from 'supertokens-node/recipe/session/framework/express';
+import { VerifySessionOptions } from 'supertokens-node/recipe/session';
+import { Error as STError } from "supertokens-node";
 
 @Injectable()
 export class STAuthGuard implements CanActivate {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService,
+    private readonly verifyOptions?: VerifySessionOptions) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const [req, resp] = this.getReqResp(context);
+
+    let err = undefined;
+    await verifySession(this.verifyOptions)(
+      req,
+      resp,
+      (res) => {
+        err = res;
+      },
+    );
+    if (resp.headersSent) {
+      throw new STError({
+        message: "RESPONSE_SENT",
+        type: "RESPONSE_SENT",
+      });
+    }
+    if(err) {
+      throw err;
+    }
 
     const session = await Session.getSession(req, resp);
     if(session === undefined) {

@@ -2,79 +2,50 @@ import { DsgContext, ModuleMap, NamedClassDeclaration } from "@amplication/code-
 import { resolve, join, relative } from "path";
 import { readFile, print, appendImports } from "@amplication/code-gen-utils";
 import * as constants from "../constants";
-import { Settings } from "../types";
+import { EmailPasswordSettings, Settings } from "../types";
 import { SUPERTOKENS_ID_FIELD_NAME } from "../constants";
 import { namedTypes, builders } from "ast-types";
-import { interpolate } from "../utils";
-import { camelCase } from "lodash";
+import { interpolate, settingsToVarDict } from "../utils";
+import { camelCase, create } from "lodash";
 import { visit } from "recast";
 
-export const addSupertokensFiles = async (context: DsgContext, modules: ModuleMap, settings: Settings) => {
-    const { authDirectory, srcDirectory } = context.serverDirectories;
-
-    const unneededInAuth = [
-      "token.service.ts",
-      "LoginArgs.ts",
-      "ITokenService.ts",
-      "IAuthStrategy.ts",
-      "Credentials.ts",
-      "constants.ts",
-      "auth.service.ts",
-      "auth.service.spec.ts",
-      "auth.controller.ts",
-      "auth.resolver.ts"
-    ];
-
-    const newModules = new ModuleMap(context.logger);
-
-    for(const module of modules.modules()) {
-      if(unneededInAuth.find((filename) => `${authDirectory}/${filename}` === module.path)) {
-        continue;
-      }
-      if(module.path === `${srcDirectory}/tests/auth/constants.ts`) {
-        continue;
-      }
-      newModules.set(module);
-    }
-
-    const fileNames = [
-      "auth.filter.ts",
-      "auth.guard.ts",
-      "auth.middleware.ts",
-      "config.interface.ts",
-      "generateSupertokensOptions.ts",
-      "session.decorator.ts",
-      "auth.error.ts"
-    ];
-
-    for(const name of fileNames) {
-      const filePath = resolve(constants.staticsPath, "supertokens", name);
-      const file = await readFile(filePath);
-      await newModules.set({
-        code: print(file).code,
-        path: join(authDirectory, "supertokens", name)
-      });
-    }
-
-    const authGuardFileName = "defaultAuth.guard.ts";
-    const filePath = resolve(constants.staticsPath, authGuardFileName);
-    const file = await readFile(filePath);
-    await newModules.set({
-        path: join(authDirectory, authGuardFileName),
-        code: print(file).code
-    });
-
-    return newModules;
-}
 
 export const createSupertokensService = async (
-    settings: Settings,
+    recipeSettings: Settings["recipe"],
     authDirectory: string,
     srcDirectory: string,
     authEntityName: string,
     modules: ModuleMap,
     authEntityCreateInput: NamedClassDeclaration
 ) => {
+    const createFunc = baseCreateSupertokensService(
+        authDirectory,
+        srcDirectory,
+        authEntityName,
+        modules,
+        authEntityCreateInput
+    );
+    if(recipeSettings.name === "emailpassword") {
+        const { emailFieldName, passwordFieldName } = recipeSettings;
+        await createFunc(
+            resolve(constants.templatesPath, "emailpassword"),
+            {
+                EMAIL_FIELD_NAME: builders.identifier(emailFieldName),
+                PASSWORD_FIELD_NAME: builders.identifier(passwordFieldName),
+            },
+            [emailFieldName, passwordFieldName]
+        );
+    } else if(recipeSettings.name === "passwordless") {
+        await createFunc(
+            resolve(constants.templatesPath, "passwordless"),
+            {
+                FLOW_TYPE: builders.stringLiteral(recipeSettings.flowType),
+                CONTACT_METHOD: builders.stringLiteral(recipeSettings.contactMethod)
+            },
+            []
+        );
+    }
+    /*
     const templatePath = resolve(constants.templatesPath, "supertokens.service.template.ts");
     const template = await readFile(templatePath);
     const templateMapping = {
@@ -97,13 +68,48 @@ export const createSupertokensService = async (
     modules.set({
         path: join(authDirectory, "supertokens", "supertokens.service.ts"),
         code: print(template).code
-    })
+    })*/
+}
+
+const baseCreateSupertokensService = (
+    authDirectory: string,
+    srcDirectory: string,
+    authEntityName: string,
+    modules: ModuleMap,
+    authEntityCreateInput: NamedClassDeclaration
+) => {
+    return async (
+        templateDir: string,
+        baseTemplateMapping: {[key: string]: namedTypes.ASTNode},
+        skipDefaultCreation: string[]
+    ) => {
+        const templatePath = resolve(templateDir, "supertokens.service.template.ts");
+        const template = await readFile(templatePath);
+        const templateMapping = {
+            ...baseTemplateMapping,
+            SUPERTOKENS_ID_FIELD_NAME: builders.identifier(constants.SUPERTOKENS_ID_FIELD_NAME),
+            AUTH_ENTITY_SERVICE_ID: getAuthEntityServiceId(authEntityName),
+            AUTH_ENTITY_ID: builders.identifier(authEntityName),
+            DEFAULT_FIELD_VALUES: getDefaultCreateValues(
+                authEntityCreateInput,
+                skipDefaultCreation
+            )
+        }
+        appendImports(template, [
+            authEntityServiceImport(srcDirectory, authDirectory, authEntityName),
+            authEntityImport(srcDirectory, authDirectory, authEntityName)
+        ])
+        interpolate(template, templateMapping);
+        modules.set({
+            path: join(authDirectory, "supertokens", "supertokens.service.ts"),
+            code: print(template).code
+        })
+    }
 }
 
 const getDefaultCreateValues = (
     createInput: NamedClassDeclaration,
-    emailFieldName: string,
-    passwordFieldName: string
+    skipDefaultCreation: string[]
 ): namedTypes.ObjectExpression => {
     const defaultValues: namedTypes.ObjectProperty[] = [];
     visit(createInput, {
@@ -111,9 +117,9 @@ const getDefaultCreateValues = (
             const prop = path.node;
             //@ts-ignore
             const propName = prop.key.name;
-            if(propName !== SUPERTOKENS_ID_FIELD_NAME && propName !== emailFieldName
+            if(propName !== SUPERTOKENS_ID_FIELD_NAME && !skipDefaultCreation.includes(propName)
                 //@ts-ignore
-                && propName !== passwordFieldName && !prop.optional) {
+                && !prop.optional) {
                     if(!prop.typeAnnotation) {
                         throw new Error("Failed to find the type annotation of a property");
                     }

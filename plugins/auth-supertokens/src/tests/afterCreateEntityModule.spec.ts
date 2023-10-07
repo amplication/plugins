@@ -16,7 +16,12 @@ describe("Testing afterCreateEntityModule hook", () => {
         context = mock<DsgContext>({
             pluginInstallations: [{
                 npm: name,
-                settings: { emailFieldName: "theEmail", passwordFieldName: "thePassword" }
+                settings: {
+                    emailPasswordSettings: {
+                        emailFieldName: "theEmail",
+                        passwordFieldName: "thePassword"
+                    }
+                }
             }],
             serverDirectories: {
                 srcDirectory: "/",

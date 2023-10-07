@@ -15,6 +15,7 @@ import {
   CreateEntityControllerBaseParams,
   CreateEntityResolverParams,
   CreateEntityResolverBaseParams,
+  CreateSeedParams
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
 import { appendImports } from "@amplication/code-gen-utils";
@@ -24,7 +25,7 @@ import { builders, namedTypes } from "ast-types";
 import * as utils from "./utils";
 import * as constants from "./constants";
 import {
-  addSupertokensFiles,
+  addRemoveAuthFiles,
   alterGraphqlSettingsInAppModule,
   removeRemoveDefaultCorsSettingInMain,
   addSupertokensIdFieldToAuthEntity,
@@ -37,7 +38,12 @@ import {
   verifyAuthCorePluginIsInstalled,
   verifyEmailAndPasswordFieldsExist,
   alterAuthControllerBaseMethods,
-  alterAuthResolverBaseMethods
+  alterAuthResolverBaseMethods,
+  removeEmailUsernamePasswordField,
+  addEmailPhoneNumberToDTO,
+  alterSeedData,
+  replaceCustomSeedTemplate,
+  alterSeedCode
 } from "./core";
 
 export const checks = {
@@ -92,8 +98,39 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       },
       [EventNames.CreateEntityResolverBase]: {
         before: this.beforeCreateEntityResolverBase
+      },
+      [EventNames.CreateSeed]: {
+        before: this.beforeCreateSeed,
+        after: this.afterCreateSeed
       }
     };
+  }
+
+  beforeCreateSeed(
+    context: DsgContext,
+    eventParams: CreateSeedParams
+  ): CreateSeedParams {
+
+    const settings = utils.getPluginSettings(context.pluginInstallations);
+    if(settings.recipe.name === "passwordless") {
+      alterSeedData(eventParams);
+    }
+
+    return eventParams;
+  }
+
+  async afterCreateSeed(
+    context: DsgContext,
+    eventParams: CreateSeedParams,
+    modules: ModuleMap
+  ): Promise<ModuleMap> {
+    const { scriptsDirectory } = context.serverDirectories;
+    const settings = utils.getPluginSettings(context.pluginInstallations);
+    if(settings.recipe.name === "passwordless") {
+      alterSeedCode(scriptsDirectory, modules);
+    }
+
+    return modules;
   }
 
   async beforeCreateEntityResolver(
@@ -164,9 +201,14 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     if(!authEntityName) {
       throw new Error("Failed to find the auth entity name");
     }
-    
-    makeSTIdFieldOptionalInCreation(eventParams.dtos[authEntityName].createInput);
-    removeSTIdFromUpdateInput(eventParams.dtos[authEntityName].updateInput);
+    const settings = utils.getPluginSettings(context.pluginInstallations);
+    const dtos = eventParams.dtos[authEntityName];
+    makeSTIdFieldOptionalInCreation(dtos.createInput);
+    removeSTIdFromUpdateInput(dtos.updateInput);
+    if(settings.recipe.name === "passwordless") {
+      addEmailPhoneNumberToDTO(dtos.createInput);
+      addEmailPhoneNumberToDTO(dtos.updateInput);
+    }
 
     return eventParams;
   }
@@ -183,7 +225,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       throw new Error("The auth entity name has not been set");
     }
     const settings = utils.getPluginSettings(context.pluginInstallations);
-    await createSupertokensService(settings, authDirectory, srcDirectory, authEntityName, modules, 
+    await createSupertokensService(settings.recipe, authDirectory, srcDirectory, authEntityName, modules, 
       eventParams.dtos[authEntityName].createInput);
     await createAuthService(modules, srcDirectory, authDirectory, authEntityName);
 
@@ -218,11 +260,15 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     const authEntityName = context.resourceInfo?.settings.authEntityName;
     const settings = utils.getPluginSettings(context.pluginInstallations);
     verifyAuthCorePluginIsInstalled(context.pluginInstallations);
-    verifyEmailAndPasswordFieldsExist(
-      context.entities?.find((e) => e.name === authEntityName),
-      settings.emailFieldName,
-      settings.passwordFieldName
-    )
+    if(settings.recipe.name === "emailpassword") {
+      verifyEmailAndPasswordFieldsExist(
+        context.entities?.find((e) => e.name === authEntityName),
+        settings.recipe.emailFieldName,
+        settings.recipe.passwordFieldName
+      );
+    } else if(settings.recipe.name === "passwordless") {
+      removeEmailUsernamePasswordField(context)
+    }
     addSupertokensIdFieldToAuthEntity(context);
 
     return eventParams;
@@ -353,9 +399,23 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     eventParams: CreateServerAuthParams,
     modules: ModuleMap
   ): Promise<ModuleMap> {
-    const settings = utils.getPluginSettings(context.pluginInstallations);
-    const newModules = await addSupertokensFiles(context, modules, settings);
+    const newModules = await addRemoveAuthFiles(context, modules);
 
+    const settings = utils.getPluginSettings(context.pluginInstallations);
+    const { scriptsDirectory } = context.serverDirectories;
+    const authEntity = context.entities?.find(
+      (x) => x.name === context.resourceInfo?.settings.authEntityName
+    );
+    if(!authEntity) {
+      throw new Error("Failed to find the auth entity");
+    }
+    if(settings.recipe.name === "passwordless") {
+      await replaceCustomSeedTemplate(
+        scriptsDirectory,
+        authEntity,
+        newModules
+      );
+    }
     return newModules;
   }
 }

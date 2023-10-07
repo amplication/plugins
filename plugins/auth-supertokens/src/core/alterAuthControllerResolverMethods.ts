@@ -6,12 +6,24 @@ import { Settings } from "../types";
 import { ExpressionKind } from "ast-types/gen/kinds";
 import { visit } from "recast";
 
-const newMapping = (oldMapping: {[key: string]: string}, settings: Settings): any => ({
-    ...oldMapping,
-    SUPERTOKENS_ID_FIELD_NAME: builders.identifier(SUPERTOKENS_ID_FIELD_NAME),
-    EMAIL_FIELD_NAME: builders.identifier(settings.emailFieldName),
-    PASSWORD_FIELD_NAME: builders.identifier(settings.passwordFieldName)
-})
+const newMapping = (oldMapping: {[key: string]: string}, settings: Settings): any => {
+    const base = {
+        ...oldMapping,
+        SUPERTOKENS_ID_FIELD_NAME: builders.identifier(SUPERTOKENS_ID_FIELD_NAME),
+    }
+    switch(settings.recipe.name) {
+        case "emailpassword":
+            return {
+                ...base,
+                EMAIL_FIELD_NAME: builders.identifier(settings.recipe.emailFieldName),
+                PASSWORD_FIELD_NAME: builders.identifier(settings.recipe.passwordFieldName)
+            }
+        case "passwordless":
+            return base;
+        default:
+            throw new Error("unrecognized recipe");
+    }
+}
 
 export const alterAuthControllerBaseMethods = (
     eventParams: CreateEntityControllerBaseParams,
@@ -22,7 +34,8 @@ export const alterAuthControllerBaseMethods = (
     appendImports(template, [
         isInstanceImport(),
         authErrorImport()
-    ])
+    ]);
+    const extractFuncStmts = baseExtractFuncStmts(settings.recipe.name, "controller");
     visit(template, {
         visitClassMethod: function(path) {
             const method = path.node;
@@ -31,13 +44,13 @@ export const alterAuthControllerBaseMethods = (
             }
             switch(method.key.name) {
                 case "create":
-                    method.body = extractFuncStmts(newCreateEntityFuncRaw);
+                    method.body = extractFuncStmts("create");
                     return false;
                 case "update":
-                    method.body = extractFuncStmts(newUpdateEntityFuncRaw);
+                    method.body = extractFuncStmts("update");
                     return false;
                 case "delete":
-                    method.body = extractFuncStmts(newDeleteEntityFuncRaw);
+                    method.body = extractFuncStmts("delete");
                     return false;
                 default:
                     return false;
@@ -57,7 +70,7 @@ export const alterAuthResolverBaseMethods = (
         isInstanceImport(),
         authErrorImport()
     ]);
-    
+    const extractFuncStmts = baseExtractFuncStmts(settings.recipe.name, "resolver");
     visit(template, {
         visitClassMethod: function(path) {
             const method = path.node;
@@ -66,13 +79,13 @@ export const alterAuthResolverBaseMethods = (
             }
             switch(method.key.name) {
                 case "createUser":
-                    method.body = extractFuncStmts(createUserFuncRaw);
+                    method.body = extractFuncStmts("create");
                     return false;
                 case "updateUser":
-                    method.body = extractFuncStmts(updateUserFuncRaw);
+                    method.body = extractFuncStmts("update");
                     return false;
                 case "deleteUser":
-                    method.body = extractFuncStmts(deleteUserFuncRaw);
+                    method.body = extractFuncStmts("delete");
                     return false;
                 default:
                     return false;
@@ -109,21 +122,26 @@ const alterCreateDataMapping = (original: ExpressionKind) => {
     })
 }
 
-const extractFuncStmts = (code: string): namedTypes.BlockStatement => {
-    let body: namedTypes.BlockStatement | null = null;
-    visit(parse(code), {
-        visitFunctionDeclaration: function(path) {
-            body = path.node.body;
-            return false;
+const baseExtractFuncStmts = (
+    recipe: Settings["recipe"]["name"],
+    codeType: keyof RawFuncs["emailpassword"]
+) => {
+    return (code: keyof RawFuncs["emailpassword"]["controller"]): namedTypes.BlockStatement => {
+        let body: namedTypes.BlockStatement | null = null;
+        visit(parse(rawFuncs[recipe][codeType][code]), {
+            visitFunctionDeclaration: function(path) {
+                body = path.node.body;
+                return false;
+            }
+        })
+        if(!body) {
+            throw new Error("Failed to extract function statements");
         }
-    })
-    if(!body) {
-        throw new Error("Failed to extract function statements");
+        return body;
     }
-    return body;
 }
 
-const newCreateEntityFuncRaw = `
+const emailPasswordControllerCreateEntityFuncRaw = `
 async function CREATE_ENTITY_FUNCTION(): Promise<ENTITY> {
     if(data.SUPERTOKENS_ID_FIELD_NAME) {
         throw new common.BadRequestException("You cannot set the supertokens user ID");
@@ -147,7 +165,7 @@ async function CREATE_ENTITY_FUNCTION(): Promise<ENTITY> {
 }
 `
 
-const newUpdateEntityFuncRaw = `
+const emailPasswordControllerUpdateEntityFuncRaw = `
 async function UPDATE_ENTITY_FUNCTION(): Promise<ENTITY | null> {
     if((data as any).SUPERTOKENS_ID_FIELD_NAME) {
         throw new common.BadRequestException("You cannot modify the supertokens user ID");
@@ -188,7 +206,7 @@ async function UPDATE_ENTITY_FUNCTION(): Promise<ENTITY | null> {
   }
 `;
 
-const newDeleteEntityFuncRaw = `
+const emailPasswordControllerDeleteEntityFuncRaw = `
   async function DELETE_ENTITY_FUNCTION(): Promise<ENTITY | null> {
     const user = await this.service.findOne({ where: { id: params.id } });
     if(!user) {
@@ -213,7 +231,7 @@ const newDeleteEntityFuncRaw = `
   }
 `;
 
-const createUserFuncRaw = `
+const emailPasswordResolverCreateEntityFuncRaw = `
 async function CREATE_MUTATION(): Promise<User> {
     try {
         const SUPERTOKENS_ID_FIELD_NAME = await this.authService.createSupertokensUser(args.data.EMAIL_FIELD_NAME, args.data.PASSWORD_FIELD_NAME);
@@ -233,7 +251,7 @@ async function CREATE_MUTATION(): Promise<User> {
   }
 `
 
-const updateUserFuncRaw = `
+const emailPasswordResolverUpdateEntityFuncRaw = `
   async function UPDATE_MUTATION(): Promise<ENTITY | null> {
     try {
         const user = await this.service.findOne({ where: { id: args.where.id } });
@@ -270,7 +288,7 @@ const updateUserFuncRaw = `
   }
 `
 
-const deleteUserFuncRaw = `
+const emailPasswordResolverDeleteEntityFuncRaw = `
 async function DELETE_MUTATION(): Promise<ENTITY | null> {
     const user = await this.service.findOne({ where: { id: args.where.id } });
     if(!user) {
@@ -291,3 +309,212 @@ async function DELETE_MUTATION(): Promise<ENTITY | null> {
     }
   }
 `
+
+const passwordlessControllerCreateEntityFuncRaw = `
+async function CREATE_ENTITY_FUNCTION(): Promise<ENTITY> {
+    if(data.SUPERTOKENS_ID_FIELD_NAME) {
+        throw new common.BadRequestException("You cannot set the supertokens user ID");
+    }
+    if(!data.email && !data.phoneNumber) {
+      throw new common.BadRequestException("An email or a phone number must be supplied to create a user");
+    }
+    try {
+        const SUPERTOKENS_ID_FIELD_NAME = await this.authService.createSupertokensUser(
+            data.email,
+            data.phoneNumber
+        );
+        delete data.email;
+        delete data.phoneNumber;
+
+        return await this.service.create({
+            data: CREATE_DATA_MAPPING,
+            select: SELECT,
+        });
+    } catch(err) {
+        throw err;
+    }
+}
+`
+
+const passwordlessControllerUpdateEntityFuncRaw = `
+async function UPDATE_ENTITY_FUNCTION(): Promise<ENTITY | null> {
+    if((data as any).SUPERTOKENS_ID_FIELD_NAME) {
+        throw new common.BadRequestException("You cannot modify the supertokens user ID");
+    }
+    try {
+        const user = await this.service.findOne({ where: { id: params.id } });
+        if(!user) {
+            throw new errors.NotFoundException(
+            \`No resource was found for \${JSON.stringify(params)}\`
+            );
+        }
+        if(data.email || data.phoneNumber) {
+            await this.authService.updateSupertokensUser(
+                await this.authService.getRecipeUserId(user.SUPERTOKENS_ID_FIELD_NAME),
+                data.email,
+                data.phoneNumber
+            );
+        }
+        delete data.email;
+        delete data.phoneNumber;
+        return await this.service.update({
+            where: params,
+            data: UPDATE_DATA_MAPPING,
+            select: SELECT,
+        });
+    } catch (error) {
+      if (isInstance(error, AuthError)) {
+        const err = error as AuthError;
+        switch (err.cause) {
+          case "EMAIL_ALREADY_EXISTS_ERROR":
+            throw new common.BadRequestException("The email already exists");
+          case "EMAIL_CHANGE_NOT_ALLOWED_ERROR":
+            throw new common.BadRequestException("You are not allowed to change the email");
+          case "PHONE_NUMBER_ALREADY_EXISTS_ERROR":
+            throw new common.BadRequestException("The phone number already exists");
+          case "PHONE_NUMBER_CHANGE_NOT_ALLOWED_ERROR":
+            throw new common.BadRequestException("You are not allowed to change your phone number");
+          default:
+            throw err;
+        }
+      }
+      throw error;
+    }
+  }
+`
+
+const passwordlessControllerDeleteEntityFuncRaw = `
+async function DELETE_ENTITY_FUNCTION(): Promise<ENTITY | null> {
+    const user = await this.service.findOne({ where: { id: params.id } });
+    if(!user) {
+        throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+        );
+    }
+    await this.authService.deleteSupertokensUser(user.SUPERTOKENS_ID_FIELD_NAME);
+    return await this.service.delete({
+        where: params,
+        select: SELECT,
+    });
+}
+`
+
+const passwordlessResolverCreateEntityFuncRaw = `
+async function CREATE_MUTATION(): Promise<User> {
+    if(!args.data.email && !args.data.phoneNumber) {
+      throw new apollo.ApolloError("An email or a phone number must be supplied to create a user");
+    }
+    try {
+        const SUPERTOKENS_ID_FIELD_NAME = await this.authService.createSupertokensUser(
+            args.data.email,
+            args.data.phoneNumber
+        );
+        delete args.data.email;
+        delete args.data.phoneNumber;
+        return await this.service.create({
+            ...args,
+            data: CREATE_DATA_MAPPING,
+        });
+    } catch(error) {
+      throw error;
+    }
+}
+`
+
+const passwordlessResolverUpdateEntityFuncRaw = `
+async function UPDATE_MUTATION(): Promise<ENTITY | null> {
+    try {
+        const user = await this.service.findOne({ where: { id: args.where.id } });
+        if(!user) {
+            throw new apollo.ApolloError(
+                \`No resource was found for \${JSON.stringify(args.where)}\`
+            );
+        }
+        if (args.data.email || args.data.phoneNumber) {
+            await this.authService.updateSupertokensUser(
+            await this.authService.getRecipeUserId(user.supertokensId),
+            args.data.email,
+            args.data.phoneNumber
+            );
+        }
+        delete args.data.email;
+        delete args.data.phoneNumber;
+        return await this.service.update({
+        ...args,
+        data: UPDATE_DATA_MAPPING,
+        });
+    } catch (error) {
+        if (isInstance(error, AuthError)) {
+            const err = error as AuthError;
+            switch (err.cause) {
+            case "EMAIL_ALREADY_EXISTS_ERROR":
+                throw new apollo.ApolloError("The email already exists");
+            case "EMAIL_CHANGE_NOT_ALLOWED_ERROR":
+                throw new apollo.ApolloError("You are not allowed to change the email");
+            case "PHONE_NUMBER_ALREADY_EXISTS_ERROR":
+                throw new apollo.ApolloError("The phone number already exists");
+            case "PHONE_NUMBER_CHANGE_NOT_ALLOWED_ERROR":
+                throw new apollo.ApolloError("You are not allowed to change your phone number");
+            default:
+                throw err;
+            }
+        }
+        throw error;
+    }
+  }
+`
+
+const passwordlessResolverDeleteEntityFuncRaw = `
+async function DELETE_MUTATION(): Promise<ENTITY | null> {
+    const user = await this.service.findOne({ where: { id: args.where.id } });
+    if(!user) {
+      throw new apollo.ApolloError(
+          \`No resource was found for \${JSON.stringify(args.where)}\`
+        );
+    }
+    await this.authService.deleteSupertokensUser(user.SUPERTOKENS_ID_FIELD_NAME);
+    return await this.service.delete(args);
+}
+`
+
+const rawFuncs: RawFuncs = {
+    emailpassword: {
+        controller: {
+            create: emailPasswordControllerCreateEntityFuncRaw,
+            update: emailPasswordControllerUpdateEntityFuncRaw,
+            delete: emailPasswordControllerDeleteEntityFuncRaw
+        },
+        resolver: {
+            create: emailPasswordResolverCreateEntityFuncRaw,
+            update: emailPasswordResolverUpdateEntityFuncRaw,
+            delete: emailPasswordResolverDeleteEntityFuncRaw
+        }
+    },
+    passwordless: {
+        controller: {
+            create: passwordlessControllerCreateEntityFuncRaw,
+            update: passwordlessControllerUpdateEntityFuncRaw,
+            delete: passwordlessControllerDeleteEntityFuncRaw
+        },
+        resolver: {
+            create: passwordlessResolverCreateEntityFuncRaw,
+            update: passwordlessResolverUpdateEntityFuncRaw,
+            delete: passwordlessResolverDeleteEntityFuncRaw
+        }
+    }
+}
+
+type RawFuncs = {
+    [key in Settings["recipe"]["name"]]: {
+        controller: {
+            create: string,
+            update: string,
+            delete: string
+        },
+        resolver: {
+            create: string,
+            update: string,
+            delete: string
+        }
+    }
+}
