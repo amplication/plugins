@@ -119,6 +119,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       case "passwordless":
       case "thirdparty":
       case "thirdpartyemailpassword":
+      case "thirdpartypasswordless":
         alterSeedData(eventParams);
     }
 
@@ -136,6 +137,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       case "passwordless":
       case "thirdparty":
       case "thirdpartyemailpassword":
+      case "thirdpartypasswordless":
         alterSeedCode(scriptsDirectory, modules);
     }
 
@@ -231,6 +233,13 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       addThirdPartyIdPropertyToDTO(dtos.updateInput);
       addPasswordPropertyToDTO(dtos.createInput);
       addPasswordPropertyToDTO(dtos.updateInput);
+    } else if(settings.recipe.name === "thirdpartypasswordless") {
+      addEmailPropertyToDTO(dtos.createInput);
+      addEmailPropertyToDTO(dtos.updateInput);
+      addThirdPartyIdPropertyToDTO(dtos.createInput);
+      addThirdPartyIdPropertyToDTO(dtos.updateInput);
+      addPhoneNumberPropertyToDTO(dtos.createInput)
+      addPhoneNumberPropertyToDTO(dtos.updateInput);
     }
 
     return eventParams;
@@ -291,7 +300,8 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       );
     } else if(settings.recipe.name === "passwordless"
       || settings.recipe.name === "thirdparty"
-      || settings.recipe.name === "thirdpartyemailpassword") {
+      || settings.recipe.name === "thirdpartyemailpassword"
+      || settings.recipe.name === "thirdpartypasswordless") {
       removeEmailUsernamePasswordField(context)
     }
     addSupertokensIdFieldToAuthEntity(context);
@@ -438,6 +448,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       case "passwordless":
       case "thirdparty":
       case "thirdpartyemailpassword":
+      case "thirdpartypasswordless":
         await replaceCustomSeedTemplate(
           scriptsDirectory,
           authEntity,

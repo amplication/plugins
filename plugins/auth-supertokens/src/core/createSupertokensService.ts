@@ -5,8 +5,8 @@ import * as constants from "../constants";
 import { Settings, ThirdPartyProviderSettings, ThirdPartyRecipeSettings } from "../types";
 import { SUPERTOKENS_ID_FIELD_NAME } from "../constants";
 import { namedTypes, builders } from "ast-types";
-import { interpolate, settingsToVarDict } from "../utils";
-import { camelCase, create } from "lodash";
+import { interpolate } from "../utils";
+import { camelCase } from "lodash";
 import { visit } from "recast";
 
 
@@ -56,6 +56,16 @@ export const createSupertokensService = async (
         await createFunc(
             resolve(constants.templatesPath, "thirdpartyemailpassword"),
             {
+                THIRD_PARTY_PROVIDERS: thirdPartyProvidersArray(recipeSettings)
+            },
+            []
+        )
+    } else if(recipeSettings.name === "thirdpartypasswordless") {
+        await createFunc(
+            resolve(constants.templatesPath, "thirdpartypasswordless"),
+            {
+                FLOW_TYPE: builders.stringLiteral(recipeSettings.flowType),
+                CONTACT_METHOD: builders.stringLiteral(recipeSettings.contactMethod),
                 THIRD_PARTY_PROVIDERS: thirdPartyProvidersArray(recipeSettings)
             },
             []
@@ -243,7 +253,8 @@ const authEntityImport = (
 
 const thirdPartyProvidersArray = (recipeSettings: Settings["recipe"]) => {
     if(recipeSettings.name !== "thirdparty"
-        && recipeSettings.name !== "thirdpartyemailpassword") {
+        && recipeSettings.name !== "thirdpartyemailpassword"
+        && recipeSettings.name !== "thirdpartypasswordless") {
         throw new Error("Not a third party recipe");
     }
     const { apple, twitter, google, github } = recipeSettings;

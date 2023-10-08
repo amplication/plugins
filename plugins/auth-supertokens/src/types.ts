@@ -13,14 +13,23 @@ export interface Settings {
     passwordFieldName: string
   } | {
     name: "passwordless",
-    flowType: "USER_INPUT_CODE_AND_MAGIC_LINK"
-      | "USER_INPUT_CODE" | "MAGIC_LINK",
-    contactMethod: "EMAIL" | "PHONE" | "EMAIL_OR_PHONE"
+    flowType: PasswordlessFlowType,
+    contactMethod: PasswordlessContactMethod
   } | ThirdPartyRecipeSettings
   | {
     name: "thirdpartyemailpassword" 
   } & Omit<ThirdPartyRecipeSettings, "name">
+  | {
+    name: "thirdpartypasswordless",
+    flowType: PasswordlessFlowType,
+    contactMethod: PasswordlessContactMethod
+  } & Omit<ThirdPartyRecipeSettings, "name">
 }
+
+type PasswordlessFlowType = "USER_INPUT_CODE_AND_MAGIC_LINK"
+  | "USER_INPUT_CODE" | "MAGIC_LINK";
+
+type PasswordlessContactMethod = "EMAIL" | "PHONE" | "EMAIL_OR_PHONE";
 
 export type ThirdPartyRecipeSettings = {
   name: "thirdparty",

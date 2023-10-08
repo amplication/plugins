@@ -21,6 +21,7 @@ const newMapping = (oldMapping: {[key: string]: string}, settings: Settings): an
         case "passwordless":
         case "thirdparty":
         case "thirdpartyemailpassword":
+        case "thirdpartypasswordless":
             return base
         default:
             throw new Error("unrecognized recipe");
@@ -651,6 +652,200 @@ async function UPDATE_MUTATION(): Promise<ENTITY | null> {
   }
 `
 
+const thirdPartyPasswordlessControllerCreateEntityFuncRaw = `
+async function CREATE_ENTITY_FUNCTION(): Promise<ENTITY> {
+    if(data.SUPERTOKENS_ID_FIELD_NAME) {
+        throw new common.BadRequestException("You cannot set the supertokens user ID");
+    }
+    if (data.thirdPartyId && !data.thirdPartyId && !data.phoneNumber) {
+      throw new common.BadRequestException(
+        "An email must be supplied with the third party ID to create a user"
+      );
+    }
+    try {
+        const supertokensId = await this.authService.createSupertokensUser(
+          data.email,
+          data.phoneNumber,
+          data.thirdPartyId
+        );
+        delete data.email;
+        delete data.thirdPartyId;
+        delete data.phoneNumber;
+
+        return await this.service.create({
+            data: CREATE_DATA_MAPPING,
+            select: SELECT,
+        });
+    } catch(error) {
+       if (isInstance(error, AuthError)) {
+        const err = error as AuthError;
+        switch (err.cause) {
+          case "EMAIL_CHANGE_NOT_ALLOWED_ERROR":
+            throw new common.BadRequestException(
+              "You are not allowed to change the email"
+            );
+          case "SIGN_IN_UP_NOT_ALLOWED":
+            throw new common.BadRequestException(
+              "You are not allowed to sign up or sign in"
+            );
+          default:
+            throw err;
+        }
+      }
+      throw error;
+    }
+}
+`
+
+const thirdPartyPasswordlessControllerUpdateEntityFuncRaw = `
+async function UPDATE_ENTITY_FUNCTION(): Promise<ENTITY | null> {
+    if((data as any).SUPERTOKENS_ID_FIELD_NAME) {
+        throw new common.BadRequestException("You cannot modify the supertokens user ID");
+    }
+    try {
+        const user = await this.service.findOne({ where: { id: params.id } });
+        if(!user) {
+            throw new errors.NotFoundException(
+            \`No resource was found for \${JSON.stringify(params)}\`
+            );
+        }
+        if (data.email || data.thirdPartyId || data.phoneNumber) {
+        await this.authService.updateSupertokensUser(
+            data.email,
+            data.thirdPartyId,
+            data.phoneNumber,
+            user.supertokensId
+          );
+        }
+        delete data.email;
+        delete data.thirdPartyId;
+        delete data.phoneNumber;
+        return await this.service.update({
+            where: params,
+            data: UPDATE_DATA_MAPPING,
+            select: SELECT,
+        });
+    } catch (error) {
+      if (isInstance(error, AuthError)) {
+        const err = error as AuthError;
+        switch (err.cause) {
+          case "EMAIL_CHANGE_NOT_ALLOWED_ERROR":
+            throw new common.BadRequestException(
+              "You are not allowed to change the email"
+            );
+          case "SIGN_IN_UP_NOT_ALLOWED":
+            throw new common.BadRequestException(
+              "You are not allowed to sign up or sign in"
+            );
+          case "EMAIL_ALREADY_EXISTS_ERROR":
+            throw new common.BadRequestException("The email already exists")
+          case "PHONE_NUMBER_ALREADY_EXISTS_ERROR":
+            throw new common.BadRequestException("The phone number already exists");
+          case "PHONE_NUMBER_CHANGE_NOT_ALLOWED_ERROR":
+            throw new common.BadRequestException("You are not allowed to change the phone number");
+          default:
+            throw err;
+        }
+      }
+      throw error;
+    }
+  }
+`
+
+const thirdPartyPasswordlessResolverCreateEntityFuncRaw = `
+async function CREATE_MUTATION(): Promise<User> {
+    if (args.data.thirdPartyId && !args.data.thirdPartyId && !args.data.phoneNumber) {
+      throw new apollo.ApolloError(
+        "An email must be supplied with the third party ID to create a user"
+      );
+    }
+    try {
+        const SUPERTOKENS_ID_FIELD_NAME = await this.authService.createSupertokensUser(
+            args.data.email,
+            args.data.phoneNumber,
+            args.data.thirdPartyId
+        );
+        delete args.data.email;
+        delete args.data.thirdPartyId;
+        delete args.data.phoneNumber;
+
+        return await this.service.create({
+            ...args,
+            data: CREATE_DATA_MAPPING,
+        });
+    } catch(error) {
+      if (isInstance(error, AuthError)) {
+        const err = error as AuthError;
+        switch (err.cause) {
+          case "EMAIL_CHANGE_NOT_ALLOWED_ERROR":
+            throw new apollo.ApolloError(
+              "You are not allowed to change the email"
+            );
+          case "SIGN_IN_UP_NOT_ALLOWED":
+            throw new apollo.ApolloError(
+              "You are not allowed to sign up or sign in"
+            );
+          default:
+            throw err;
+        }
+      }
+      throw error;
+    }
+  }
+`
+
+const thirdPartyPasswordlessResolverUpdateEntityFuncRaw = `
+async function UPDATE_MUTATION(): Promise<ENTITY | null> {
+    try {
+        const user = await this.service.findOne({ where: { id: args.where.id } });
+        if(!user) {
+            throw new apollo.ApolloError(
+                \`No resource was found for \${JSON.stringify(args.where)}\`
+            );
+        }
+        if (args.data.email || args.data.thirdPartyId || args.data.phoneNumber) {
+          await this.authService.updateSupertokensUser(
+            args.data.email,
+            args.data.thirdPartyId,
+            args.data.phoneNumber,
+            user.SUPERTOKENS_ID_FIELD_NAME
+          );
+        }
+        delete args.data.email;
+        delete args.data.thirdPartyId;
+        delete args.data.phoneNumber;
+
+        return await this.service.update({
+            ...args,
+            data: UPDATE_DATA_MAPPING,
+        });
+    } catch (error) {
+      if (isInstance(error, AuthError)) {
+        const err = error as AuthError;
+        switch (err.cause) {
+          case "EMAIL_CHANGE_NOT_ALLOWED_ERROR":
+            throw new apollo.ApolloError(
+              "You are not allowed to change the email"
+            );
+          case "SIGN_IN_UP_NOT_ALLOWED":
+            throw new apollo.ApolloError(
+              "You are not allowed to sign up or sign in"
+            );
+          case "EMAIL_ALREADY_EXISTS_ERROR":
+            throw new apollo.ApolloError("The email already exists")
+          case "PHONE_NUMBER_ALREADY_EXISTS_ERROR":
+            throw new apollo.ApolloError("The phone number already exists");
+          case "PHONE_NUMBER_CHANGE_NOT_ALLOWED_ERROR":
+            throw new apollo.ApolloError("You are not allowed to change the phone number");
+          default:
+            throw err;
+        }
+      }
+      throw error;
+    }
+  }
+`
+
 const thirdPartyEmailPasswordControllerCreateEntityFuncRaw = `
 async function CREATE_ENTITY_FUNCTION(): Promise<ENTITY> {
     if(data.SUPERTOKENS_ID_FIELD_NAME) {
@@ -877,6 +1072,18 @@ const rawFuncs: RawFuncs = {
         resolver: {
             create: thirdPartyEmailPasswordResolverCreateEntityFuncRaw,
             update: thirdPartyEmailPasswordResolverUpdateEntityFuncRaw,
+            delete: passwordlessResolverDeleteEntityFuncRaw
+        }
+    },
+    thirdpartypasswordless: {
+      controller: {
+            create: thirdPartyPasswordlessControllerCreateEntityFuncRaw,
+            update: thirdPartyPasswordlessControllerUpdateEntityFuncRaw,
+            delete: passwordlessControllerDeleteEntityFuncRaw
+        },
+        resolver: {
+            create: thirdPartyPasswordlessResolverCreateEntityFuncRaw,
+            update: thirdPartyPasswordlessResolverUpdateEntityFuncRaw,
             delete: passwordlessResolverDeleteEntityFuncRaw
         }
     }
