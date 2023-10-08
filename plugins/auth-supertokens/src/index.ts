@@ -40,7 +40,9 @@ import {
   alterAuthControllerBaseMethods,
   alterAuthResolverBaseMethods,
   removeEmailUsernamePasswordField,
-  addEmailPhoneNumberToDTO,
+  addEmailPropertyToDTO,
+  addPhoneNumberPropertyToDTO,
+  addThirdPartyIdPropertyToDTO,
   alterSeedData,
   replaceCustomSeedTemplate,
   alterSeedCode
@@ -112,8 +114,10 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
   ): CreateSeedParams {
 
     const settings = utils.getPluginSettings(context.pluginInstallations);
-    if(settings.recipe.name === "passwordless") {
-      alterSeedData(eventParams);
+    switch(settings.recipe.name) {
+      case "passwordless":
+      case "thirdparty":
+        alterSeedData(eventParams);
     }
 
     return eventParams;
@@ -126,8 +130,10 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
   ): Promise<ModuleMap> {
     const { scriptsDirectory } = context.serverDirectories;
     const settings = utils.getPluginSettings(context.pluginInstallations);
-    if(settings.recipe.name === "passwordless") {
-      alterSeedCode(scriptsDirectory, modules);
+    switch(settings.recipe.name) {
+      case "passwordless":
+      case "thirdparty":
+        alterSeedCode(scriptsDirectory, modules);
     }
 
     return modules;
@@ -206,8 +212,15 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     makeSTIdFieldOptionalInCreation(dtos.createInput);
     removeSTIdFromUpdateInput(dtos.updateInput);
     if(settings.recipe.name === "passwordless") {
-      addEmailPhoneNumberToDTO(dtos.createInput);
-      addEmailPhoneNumberToDTO(dtos.updateInput);
+      addEmailPropertyToDTO(dtos.createInput);
+      addEmailPropertyToDTO(dtos.updateInput);
+      addPhoneNumberPropertyToDTO(dtos.createInput)
+      addPhoneNumberPropertyToDTO(dtos.updateInput);
+    } else if(settings.recipe.name === "thirdparty") {
+      addEmailPropertyToDTO(dtos.createInput);
+      addEmailPropertyToDTO(dtos.updateInput);
+      addThirdPartyIdPropertyToDTO(dtos.createInput);
+      addThirdPartyIdPropertyToDTO(dtos.updateInput);
     }
 
     return eventParams;
@@ -266,7 +279,8 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
         settings.recipe.emailFieldName,
         settings.recipe.passwordFieldName
       );
-    } else if(settings.recipe.name === "passwordless") {
+    } else if(settings.recipe.name === "passwordless"
+      || settings.recipe.name === "thirdparty") {
       removeEmailUsernamePasswordField(context)
     }
     addSupertokensIdFieldToAuthEntity(context);
@@ -409,12 +423,14 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     if(!authEntity) {
       throw new Error("Failed to find the auth entity");
     }
-    if(settings.recipe.name === "passwordless") {
-      await replaceCustomSeedTemplate(
-        scriptsDirectory,
-        authEntity,
-        newModules
-      );
+    switch(settings.recipe.name) {
+      case "passwordless":
+      case "thirdparty":
+        await replaceCustomSeedTemplate(
+          scriptsDirectory,
+          authEntity,
+          newModules
+        );
     }
     return newModules;
   }

@@ -1,8 +1,8 @@
 import { DsgContext, ModuleMap, NamedClassDeclaration } from "@amplication/code-gen-types";
 import { resolve, join, relative } from "path";
-import { readFile, print, appendImports } from "@amplication/code-gen-utils";
+import { readFile, print, appendImports, parse } from "@amplication/code-gen-utils";
 import * as constants from "../constants";
-import { EmailPasswordSettings, Settings } from "../types";
+import { Settings, ThirdPartyProviderSettings, ThirdPartyRecipeSettings } from "../types";
 import { SUPERTOKENS_ID_FIELD_NAME } from "../constants";
 import { namedTypes, builders } from "ast-types";
 import { interpolate, settingsToVarDict } from "../utils";
@@ -44,31 +44,15 @@ export const createSupertokensService = async (
             },
             []
         );
-    }
-    /*
-    const templatePath = resolve(constants.templatesPath, "supertokens.service.template.ts");
-    const template = await readFile(templatePath);
-    const templateMapping = {
-        EMAIL_FIELD_NAME: builders.identifier(settings.emailFieldName),
-        PASSWORD_FIELD_NAME: builders.identifier(settings.passwordFieldName),
-        SUPERTOKENS_ID_FIELD_NAME: builders.identifier(constants.SUPERTOKENS_ID_FIELD_NAME),
-        AUTH_ENTITY_SERVICE_ID: getAuthEntityServiceId(authEntityName),
-        AUTH_ENTITY_ID: builders.identifier(authEntityName),
-        DEFAULT_FIELD_VALUES: getDefaultCreateValues(
-            authEntityCreateInput,
-            settings.emailFieldName,
-            settings.passwordFieldName
+    } else if(recipeSettings.name === "thirdparty") {
+        await createFunc(
+            resolve(constants.templatesPath, "thirdparty"),
+            {
+                THIRD_PARTY_PROVIDERS: thirdPartyProvidersArray(recipeSettings)
+            },
+            []
         )
     }
-    appendImports(template, [
-        authEntityServiceImport(srcDirectory, authDirectory, authEntityName),
-        authEntityImport(srcDirectory, authDirectory, authEntityName)
-    ])
-    interpolate(template, templateMapping);
-    modules.set({
-        path: join(authDirectory, "supertokens", "supertokens.service.ts"),
-        code: print(template).code
-    })*/
 }
 
 const baseCreateSupertokensService = (
@@ -247,4 +231,46 @@ const authEntityImport = (
     return builders.importDeclaration([
         builders.importSpecifier(builders.identifier(authEntityName))
     ], getAuthEntityIdPath(authEntityName, srcDirectory, authDirectory))
+}
+
+const thirdPartyProvidersArray = (recipeSettings: Settings["recipe"]) => {
+    if(recipeSettings.name !== "thirdparty") {
+        throw new Error("Not third party settings");
+    }
+    const { apple, twitter, google, github } = recipeSettings;
+    if(!apple && !twitter && !google && !github) {
+        throw new Error("At least one provider's configuration must be provided");
+    }
+    const providerNames: (keyof ThirdPartyRecipeSettings)[] = ["apple", "twitter", "google", "github"];
+    const providerSettings = Object.keys(recipeSettings).map((sk) => {
+        const settingKey = sk as keyof ThirdPartyRecipeSettings;
+        if(providerNames.includes(settingKey)) {
+            const providerSetting = recipeSettings[settingKey] as ThirdPartyProviderSettings
+            return { name: settingKey, ...providerSetting }
+        }
+    }).filter((setting) => setting);
+    const providersArray = [];
+    for(const providerSetting of providerSettings) {
+        if(!providerSetting) {
+            continue;
+        }
+        const configObj = parse(`obj = {
+            config: {
+                thirdPartyId: "${providerSetting.name}",
+                clients: [{
+                    clientId: "${providerSetting.clientId}",
+                    ${providerSetting.clientSecret ? 
+                        `clientSecret: "${providerSetting.clientSecret}",`
+                        : ""}
+                    ${providerSetting.additionalConfig ?
+                        `additionalConfig: ${JSON.stringify(providerSetting.additionalConfig)}`
+                        : ""}
+                }]
+            }
+        }`);
+        const stmt = configObj.program.body[0] as namedTypes.ExpressionStatement;
+        const assignment = stmt.expression as namedTypes.AssignmentExpression;
+        providersArray.push(assignment.right);
+    }
+    return builders.arrayExpression(providersArray);
 }

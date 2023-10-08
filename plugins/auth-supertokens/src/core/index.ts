@@ -12,7 +12,7 @@ export { verifyAuthCorePluginIsInstalled } from "./verifyAuthCorePluginIsInstall
 export { verifyEmailAndPasswordFieldsExist } from "./verifyEmailAndPasswordFieldsExist";
 export { alterAuthControllerBaseMethods, alterAuthResolverBaseMethods } from "./alterAuthControllerResolverMethods";
 export { removeEmailUsernamePasswordField } from "./removeEmailUsernamePasswordField";
-export { addEmailPhoneNumberToDTO } from "./addEmailPhoneNumberToDTO";
+export { addEmailPropertyToDTO, addPhoneNumberPropertyToDTO, addThirdPartyIdPropertyToDTO } from "./addPropertyToDTO";
 export { alterSeedData } from "./alterSeedData";
 export { replaceCustomSeedTemplate } from "./replaceCustomSeedTemplate";
 export { alterSeedCode } from "./alterSeedCode";

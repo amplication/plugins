@@ -16,14 +16,19 @@ export interface Settings {
     flowType: "USER_INPUT_CODE_AND_MAGIC_LINK"
       | "USER_INPUT_CODE" | "MAGIC_LINK",
     contactMethod: "EMAIL" | "PHONE" | "EMAIL_OR_PHONE"
-  }
+  } | ThirdPartyRecipeSettings
 }
 
-export type EmailPasswordSettings = {
-  emailFieldName: string,
-  passwordFieldName: string
+export type ThirdPartyRecipeSettings = {
+  name: "thirdparty",
+  google?: ThirdPartyProviderSettings,
+  github?: ThirdPartyProviderSettings,
+  apple?: ThirdPartyProviderSettings,
+  twitter?: ThirdPartyProviderSettings
 }
 
-export type PasswordlessSettings = {}
-
-export type RecipeSettings = EmailPasswordSettings | PasswordlessSettings;
+export type ThirdPartyProviderSettings = {
+  clientId: string,
+  clientSecret?: string,
+  additionalConfig?: {[key: string]: string}
+}

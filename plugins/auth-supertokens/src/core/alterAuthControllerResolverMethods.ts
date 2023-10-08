@@ -19,7 +19,8 @@ const newMapping = (oldMapping: {[key: string]: string}, settings: Settings): an
                 PASSWORD_FIELD_NAME: builders.identifier(settings.recipe.passwordFieldName)
             }
         case "passwordless":
-            return base;
+        case "thirdparty":
+            return base
         default:
             throw new Error("unrecognized recipe");
     }
@@ -153,14 +154,14 @@ async function CREATE_ENTITY_FUNCTION(): Promise<ENTITY> {
             data: CREATE_DATA_MAPPING,
             select: SELECT,
         });
-    } catch(err) {
-        if(isInstance(err, AuthError)) {
-            const error = err as AuthError;
-            if(error.cause === "EMAIL_ALREADY_EXISTS_ERROR") {
+    } catch(error) {
+        if(isInstance(error, AuthError)) {
+            const err = error as AuthError;
+            if(err.cause === "EMAIL_ALREADY_EXISTS_ERROR") {
                 throw new common.BadRequestException("The email already exists");
             }
         }
-        throw err;
+        throw error;
     }
 }
 `
@@ -330,8 +331,8 @@ async function CREATE_ENTITY_FUNCTION(): Promise<ENTITY> {
             data: CREATE_DATA_MAPPING,
             select: SELECT,
         });
-    } catch(err) {
-        throw err;
+    } catch(error) {
+        throw error;
     }
 }
 `
@@ -432,7 +433,7 @@ async function UPDATE_MUTATION(): Promise<ENTITY | null> {
         }
         if (args.data.email || args.data.phoneNumber) {
             await this.authService.updateSupertokensUser(
-            await this.authService.getRecipeUserId(user.supertokensId),
+            await this.authService.getRecipeUserId(user.SUPERTOKENS_ID_FIELD_NAME),
             args.data.email,
             args.data.phoneNumber
             );
@@ -477,6 +478,178 @@ async function DELETE_MUTATION(): Promise<ENTITY | null> {
 }
 `
 
+const thirdPartyControllerCreateEntityFuncRaw = `
+async function CREATE_ENTITY_FUNCTION(): Promise<ENTITY> {
+    if(data.SUPERTOKENS_ID_FIELD_NAME) {
+        throw new common.BadRequestException("You cannot set the supertokens user ID");
+    }
+    if (!data.email || !data.thirdPartyId) {
+      throw new common.BadRequestException(
+        "An email and third party ID must be supplied to create a user"
+      );
+    }
+    try {
+        const SUPERTOKENS_ID_FIELD_NAME = await this.authService.createSupertokensUser(
+            data.email,
+            data.thirdPartyId
+        );
+        delete data.email;
+        delete data.thirdPartyId;
+
+        return await this.service.create({
+            data: CREATE_DATA_MAPPING,
+            select: SELECT,
+        });
+    } catch(error) {
+        if(isInstance(error, AuthError)) {
+            const err = error as AuthError;
+            switch(err.cause) {
+            case "EMAIL_CHANGE_NOT_ALLOWED_ERROR":
+                throw new common.BadRequestException(
+                "You are not allowed to change the email"
+                );
+            case "SIGN_IN_UP_NOT_ALLOWED":
+                throw new common.BadRequestException(
+                "You are not allowed to sign up or sign in"
+                );
+            default:
+                throw err;
+            }
+        }
+        throw error;
+    }
+}
+`
+
+const thirdPartyControllerUpdateEntityFuncRaw = `
+async function UPDATE_ENTITY_FUNCTION(): Promise<ENTITY | null> {
+    if((data as any).SUPERTOKENS_ID_FIELD_NAME) {
+        throw new common.BadRequestException("You cannot modify the supertokens user ID");
+    }
+    try {
+        const user = await this.service.findOne({ where: { id: params.id } });
+        if(!user) {
+            throw new errors.NotFoundException(
+            \`No resource was found for \${JSON.stringify(params)}\`
+            );
+        }
+        if (data.email || data.thirdPartyId) {
+            await this.authService.updateSupertokensUser(
+                data.email,
+                data.thirdPartyId,
+                user.SUPERTOKENS_ID_FIELD_NAME
+            );
+        }
+        delete data.email;
+        delete data.thirdPartyId; 
+        return await this.service.update({
+            where: params,
+            data: UPDATE_DATA_MAPPING,
+            select: SELECT,
+        });
+    } catch (error) {
+      if (isInstance(error, AuthError)) {
+        const err = error as AuthError;
+        switch (err.cause) {
+          case "EMAIL_CHANGE_NOT_ALLOWED_ERROR":
+            throw new common.BadRequestException(
+              "You are not allowed to change the email"
+            );
+          case "SIGN_IN_UP_NOT_ALLOWED":
+            throw new common.BadRequestException(
+              "You are not allowed to sign up or sign in"
+            );
+          default:
+            throw err;
+        }
+      }
+      throw error;
+    }
+  }
+`
+
+const thirdPartyResolverCreateEntityFuncRaw = `
+async function CREATE_MUTATION(): Promise<User> {
+    if (!args.data.email || !args.data.thirdPartyId) {
+      throw new apollo.ApolloError(
+        "An email and a third party ID must be supplied to create a user"
+      );
+    }
+    try {
+        const SUPERTOKENS_ID_FIELD_NAME = await this.authService.createSupertokensUser(
+            args.data.email,
+            args.data.thirdPartyId
+        );
+        delete args.data.email;
+        delete args.data.thirdPartyId;
+        return await this.service.create({
+            ...args,
+            data: CREATE_DATA_MAPPING,
+        });
+    } catch(error) {
+      if(isInstance(error, AuthError)) {
+        const err = error as AuthError;
+        switch(err.cause) {
+          case "EMAIL_CHANGE_NOT_ALLOWED_ERROR":
+            throw new apollo.ApolloError(
+              "You are not allowed to change the email"
+            );
+          case "SIGN_IN_UP_NOT_ALLOWED":
+            throw new apollo.ApolloError(
+              "You are not allowed to sign up or sign in"
+            );
+          default:
+            throw err;
+        }
+      }
+      throw error;
+    }
+  }
+`
+
+const thirdPartyResolverUpdateEntityFuncRaw = `
+async function UPDATE_MUTATION(): Promise<ENTITY | null> {
+    try {
+        const user = await this.service.findOne({ where: { id: args.where.id } });
+        if(!user) {
+            throw new apollo.ApolloError(
+                \`No resource was found for \${JSON.stringify(args.where)}\`
+            );
+        }
+        if (args.data.email || args.data.thirdPartyId) {
+            await this.authService.updateSupertokensUser(
+                args.data.email,
+                args.data.thirdPartyId,
+                user.SUPERTOKENS_ID_FIELD_NAME
+            );
+        }
+        delete args.data.email;
+        delete args.data.thirdPartyId;
+        return await this.service.update({
+            ...args,
+            data: UPDATE_DATA_MAPPING,
+        });
+    } catch (error) {
+        if (isInstance(error, AuthError)) {
+        const err = error as AuthError;
+        switch (err.cause) {
+          case "EMAIL_CHANGE_NOT_ALLOWED_ERROR":
+            throw new apollo.ApolloError(
+              "You are not allowed to change the email"
+            );
+          case "SIGN_IN_UP_NOT_ALLOWED":
+            throw new apollo.ApolloError(
+              "You are not allowed to sign up or sign in"
+            );
+          default:
+            throw err;
+        }
+      }
+      throw error;
+    }
+  }
+`
+
 const rawFuncs: RawFuncs = {
     emailpassword: {
         controller: {
@@ -499,6 +672,18 @@ const rawFuncs: RawFuncs = {
         resolver: {
             create: passwordlessResolverCreateEntityFuncRaw,
             update: passwordlessResolverUpdateEntityFuncRaw,
+            delete: passwordlessResolverDeleteEntityFuncRaw
+        }
+    },
+    thirdparty: {
+        controller: {
+            create: thirdPartyControllerCreateEntityFuncRaw,
+            update: thirdPartyControllerUpdateEntityFuncRaw,
+            delete: passwordlessControllerDeleteEntityFuncRaw
+        },
+        resolver: {
+            create: thirdPartyResolverCreateEntityFuncRaw,
+            update: thirdPartyResolverUpdateEntityFuncRaw,
             delete: passwordlessResolverDeleteEntityFuncRaw
         }
     }

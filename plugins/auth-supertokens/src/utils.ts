@@ -3,7 +3,7 @@ import { namedTypes, ASTNode } from "ast-types";
 import * as recast from "recast";
 import { parse } from "@amplication/code-gen-utils";
 import { name as PackageName } from "../package.json";
-import { EmailPasswordSettings, PasswordlessSettings, RecipeSettings, Settings } from "./types";
+import { Settings } from "./types";
 import { settings as defaultSettings } from "../.amplicationrc.json";
 import { builders } from "ast-types";
 import * as K from "ast-types/gen/kinds";
