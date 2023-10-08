@@ -21,6 +21,12 @@ export const addThirdPartyIdPropertyToDTO = (
     addPropertyToDTO(dto, "thirdPartyId", thirdPartyIdProp());
 }
 
+export const addPasswordPropertyToDTO = (
+    dto: NamedClassDeclaration
+) => {
+    addPropertyToDTO(dto, "password", passwordProp());
+}
+
 export const addPropertyToDTO = (
     dto: NamedClassDeclaration,
     propName: string,
@@ -89,6 +95,23 @@ const thirdPartyIdProp = (): namedTypes.ClassProperty => {
             @IsString()
             @IsOptional()
             thirdPartyId?: string;
+        }
+    `);
+    const cls = code.program.body[0] as NamedClassDeclaration;
+    const prop = cls.body.body[0] as namedTypes.ClassProperty;
+    return prop;
+}
+
+const passwordProp = (): namedTypes.ClassProperty => {
+    const code = parse(`
+        class Cls {
+            @ApiProperty({
+                required: false,
+                type: String,
+            })
+            @IsString()
+            @IsOptional()
+            password?: string;
         }
     `);
     const cls = code.program.body[0] as NamedClassDeclaration;

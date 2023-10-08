@@ -45,7 +45,8 @@ import {
   addThirdPartyIdPropertyToDTO,
   alterSeedData,
   replaceCustomSeedTemplate,
-  alterSeedCode
+  alterSeedCode,
+  addPasswordPropertyToDTO
 } from "./core";
 
 export const checks = {
@@ -117,6 +118,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     switch(settings.recipe.name) {
       case "passwordless":
       case "thirdparty":
+      case "thirdpartyemailpassword":
         alterSeedData(eventParams);
     }
 
@@ -133,6 +135,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     switch(settings.recipe.name) {
       case "passwordless":
       case "thirdparty":
+      case "thirdpartyemailpassword":
         alterSeedCode(scriptsDirectory, modules);
     }
 
@@ -221,6 +224,13 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       addEmailPropertyToDTO(dtos.updateInput);
       addThirdPartyIdPropertyToDTO(dtos.createInput);
       addThirdPartyIdPropertyToDTO(dtos.updateInput);
+    } else if(settings.recipe.name === "thirdpartyemailpassword") {
+      addEmailPropertyToDTO(dtos.createInput);
+      addEmailPropertyToDTO(dtos.updateInput);
+      addThirdPartyIdPropertyToDTO(dtos.createInput);
+      addThirdPartyIdPropertyToDTO(dtos.updateInput);
+      addPasswordPropertyToDTO(dtos.createInput);
+      addPasswordPropertyToDTO(dtos.updateInput);
     }
 
     return eventParams;
@@ -280,7 +290,8 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
         settings.recipe.passwordFieldName
       );
     } else if(settings.recipe.name === "passwordless"
-      || settings.recipe.name === "thirdparty") {
+      || settings.recipe.name === "thirdparty"
+      || settings.recipe.name === "thirdpartyemailpassword") {
       removeEmailUsernamePasswordField(context)
     }
     addSupertokensIdFieldToAuthEntity(context);
@@ -426,6 +437,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     switch(settings.recipe.name) {
       case "passwordless":
       case "thirdparty":
+      case "thirdpartyemailpassword":
         await replaceCustomSeedTemplate(
           scriptsDirectory,
           authEntity,

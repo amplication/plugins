@@ -17,6 +17,9 @@ export interface Settings {
       | "USER_INPUT_CODE" | "MAGIC_LINK",
     contactMethod: "EMAIL" | "PHONE" | "EMAIL_OR_PHONE"
   } | ThirdPartyRecipeSettings
+  | {
+    name: "thirdpartyemailpassword" 
+  } & Omit<ThirdPartyRecipeSettings, "name">
 }
 
 export type ThirdPartyRecipeSettings = {

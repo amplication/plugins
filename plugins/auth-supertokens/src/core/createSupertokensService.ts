@@ -52,6 +52,14 @@ export const createSupertokensService = async (
             },
             []
         )
+    } else if(recipeSettings.name === "thirdpartyemailpassword") {
+        await createFunc(
+            resolve(constants.templatesPath, "thirdpartyemailpassword"),
+            {
+                THIRD_PARTY_PROVIDERS: thirdPartyProvidersArray(recipeSettings)
+            },
+            []
+        )
     }
 }
 
@@ -234,8 +242,9 @@ const authEntityImport = (
 }
 
 const thirdPartyProvidersArray = (recipeSettings: Settings["recipe"]) => {
-    if(recipeSettings.name !== "thirdparty") {
-        throw new Error("Not third party settings");
+    if(recipeSettings.name !== "thirdparty"
+        && recipeSettings.name !== "thirdpartyemailpassword") {
+        throw new Error("Not a third party recipe");
     }
     const { apple, twitter, google, github } = recipeSettings;
     if(!apple && !twitter && !google && !github) {

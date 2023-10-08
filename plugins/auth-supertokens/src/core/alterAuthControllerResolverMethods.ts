@@ -20,6 +20,7 @@ const newMapping = (oldMapping: {[key: string]: string}, settings: Settings): an
             }
         case "passwordless":
         case "thirdparty":
+        case "thirdpartyemailpassword":
             return base
         default:
             throw new Error("unrecognized recipe");
@@ -650,6 +651,186 @@ async function UPDATE_MUTATION(): Promise<ENTITY | null> {
   }
 `
 
+const thirdPartyEmailPasswordControllerCreateEntityFuncRaw = `
+async function CREATE_ENTITY_FUNCTION(): Promise<ENTITY> {
+    if(data.SUPERTOKENS_ID_FIELD_NAME) {
+        throw new common.BadRequestException("You cannot set the supertokens user ID");
+    }
+    if (!data.email || (!data.thirdPartyId && !data.password)) {
+      throw new common.BadRequestException(
+        "An email and either a third party ID or password must be supplied to create a user"
+      );
+    }
+    try {
+        const supertokensId = await this.authService.createSupertokensUser(
+            data.email,
+            data.password,
+            data.thirdPartyId
+        );
+        delete data.email;
+        delete data.thirdPartyId;
+        delete data.password;
+
+        return await this.service.create({
+            data: CREATE_DATA_MAPPING,
+            select: SELECT,
+        });
+    } catch(error) {
+        if(isInstance(error, AuthError)) {
+            const err = error as AuthError;
+            switch(err.cause) {
+            case "EMAIL_CHANGE_NOT_ALLOWED_ERROR":
+                throw new common.BadRequestException(
+                "You are not allowed to change the email"
+                );
+            case "SIGN_IN_UP_NOT_ALLOWED":
+                throw new common.BadRequestException(
+                "You are not allowed to sign up or sign in"
+                );
+            default:
+                throw err;
+            }
+        }
+        throw error;
+    }
+}
+`
+
+const thirdPartyEmailPasswordControllerUpdateEntityFuncRaw = `
+async function UPDATE_ENTITY_FUNCTION(): Promise<ENTITY | null> {
+    if((data as any).SUPERTOKENS_ID_FIELD_NAME) {
+        throw new common.BadRequestException("You cannot modify the supertokens user ID");
+    }
+    try {
+        const user = await this.service.findOne({ where: { id: params.id } });
+        if(!user) {
+            throw new errors.NotFoundException(
+            \`No resource was found for \${JSON.stringify(params)}\`
+            );
+        }
+        if (data.email || data.thirdPartyId || data.password) {
+            await this.authService.updateSupertokensUser(
+            data.email,
+            data.thirdPartyId,
+            data.password,
+            user.supertokensId
+            );
+        }
+        delete data.email;
+        delete data.thirdPartyId;
+        delete data.password;
+        return await this.service.update({
+            where: params,
+            data: UPDATE_DATA_MAPPING,
+            select: SELECT,
+        });
+    } catch (error) {
+      if (isInstance(error, AuthError)) {
+        const err = error as AuthError;
+        switch (err.cause) {
+          case "EMAIL_CHANGE_NOT_ALLOWED_ERROR":
+            throw new common.BadRequestException(
+              "You are not allowed to change the email"
+            );
+          case "SIGN_IN_UP_NOT_ALLOWED":
+            throw new common.BadRequestException(
+              "You are not allowed to sign up or sign in"
+            );
+          default:
+            throw err;
+        }
+      }
+      throw error;
+    }
+  }
+`
+
+const thirdPartyEmailPasswordResolverCreateEntityFuncRaw = `
+async function CREATE_MUTATION(): Promise<User> {
+    if (!args.data.email || (!args.data.thirdPartyId && !args.data.password)) {
+      throw new apollo.ApolloError(
+        "An email and either a third party ID or password must be supplied to create a user"
+      );
+    }
+    try {
+        const SUPERTOKENS_ID_FIELD_NAME = await this.authService.createSupertokensUser(
+            args.data.email,
+            args.data.password,
+            args.data.thirdPartyId
+        );
+        delete args.data.email;
+        delete args.data.thirdPartyId;
+        delete args.data.password;
+        return await this.service.create({
+            ...args,
+            data: CREATE_DATA_MAPPING,
+        });
+    } catch(error) {
+      if(isInstance(error, AuthError)) {
+        const err = error as AuthError;
+        switch(err.cause) {
+          case "EMAIL_CHANGE_NOT_ALLOWED_ERROR":
+            throw new apollo.ApolloError(
+              "You are not allowed to change the email"
+            );
+          case "SIGN_IN_UP_NOT_ALLOWED":
+            throw new apollo.ApolloError(
+              "You are not allowed to sign up or sign in"
+            );
+          default:
+            throw err;
+        }
+      }
+      throw error;
+    }
+  }
+`
+
+const thirdPartyEmailPasswordResolverUpdateEntityFuncRaw = `
+async function UPDATE_MUTATION(): Promise<ENTITY | null> {
+    try {
+        const user = await this.service.findOne({ where: { id: args.where.id } });
+        if(!user) {
+            throw new apollo.ApolloError(
+                \`No resource was found for \${JSON.stringify(args.where)}\`
+            );
+        }
+        if (args.data.email || args.data.thirdPartyId || args.data.password) {
+            await this.authService.updateSupertokensUser(
+                args.data.email,
+                args.data.thirdPartyId,
+                args.data.password,
+                user.supertokensId
+            );
+        }
+        delete args.data.email;
+        delete args.data.thirdPartyId;
+        delete args.data.password;
+        return await this.service.update({
+            ...args,
+            data: UPDATE_DATA_MAPPING,
+        });
+    } catch (error) {
+        if (isInstance(error, AuthError)) {
+        const err = error as AuthError;
+        switch (err.cause) {
+          case "EMAIL_CHANGE_NOT_ALLOWED_ERROR":
+            throw new apollo.ApolloError(
+              "You are not allowed to change the email"
+            );
+          case "SIGN_IN_UP_NOT_ALLOWED":
+            throw new apollo.ApolloError(
+              "You are not allowed to sign up or sign in"
+            );
+          default:
+            throw err;
+        }
+      }
+      throw error;
+    }
+  }
+`
+
 const rawFuncs: RawFuncs = {
     emailpassword: {
         controller: {
@@ -684,6 +865,18 @@ const rawFuncs: RawFuncs = {
         resolver: {
             create: thirdPartyResolverCreateEntityFuncRaw,
             update: thirdPartyResolverUpdateEntityFuncRaw,
+            delete: passwordlessResolverDeleteEntityFuncRaw
+        }
+    },
+    thirdpartyemailpassword: {
+        controller: {
+            create: thirdPartyEmailPasswordControllerCreateEntityFuncRaw,
+            update: thirdPartyEmailPasswordControllerUpdateEntityFuncRaw,
+            delete: passwordlessControllerDeleteEntityFuncRaw
+        },
+        resolver: {
+            create: thirdPartyEmailPasswordResolverCreateEntityFuncRaw,
+            update: thirdPartyEmailPasswordResolverUpdateEntityFuncRaw,
             delete: passwordlessResolverDeleteEntityFuncRaw
         }
     }
