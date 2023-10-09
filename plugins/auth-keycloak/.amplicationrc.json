@@ -1,0 +1,11 @@
+{
+    "settings": {
+        "host": "localhost",
+        "realm": "dev",
+        "clientID": "clientId1",
+        "clientSecret": "secret",
+        "callbackURL": "http://localhost:8180/callback",
+        "password": "admin",
+        "port": 8180,
+        "user": "admin"
+    }
