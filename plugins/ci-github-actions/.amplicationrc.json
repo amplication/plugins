@@ -1,5 +1,6 @@
 {
-  "settings": {
-    "registry": ""
+  "settings" : {
+    "launch_type" : "aws_fargate"
+
   }
 }
