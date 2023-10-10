@@ -2,7 +2,7 @@ import { DsgContext, ModuleMap, NamedClassDeclaration } from "@amplication/code-
 import { resolve, join, relative } from "path";
 import { readFile, print, appendImports, parse } from "@amplication/code-gen-utils";
 import * as constants from "../constants";
-import { Settings, ThirdPartyProviderSettings, ThirdPartyRecipeSettings } from "../types";
+import { Settings, ThirdPartyProviderSettings, ThirdPartyProvider } from "../types";
 import { SUPERTOKENS_ID_FIELD_NAME } from "../constants";
 import { namedTypes, builders } from "ast-types";
 import { interpolate } from "../utils";
@@ -41,24 +41,21 @@ export const createSupertokensService = async (
             {
                 FLOW_TYPE: builders.stringLiteral(recipeSettings.flowType),
                 CONTACT_METHOD: builders.stringLiteral(recipeSettings.contactMethod)
-            },
-            []
+            }
         );
     } else if(recipeSettings.name === "thirdparty") {
         await createFunc(
             resolve(constants.templatesPath, "thirdparty"),
             {
                 THIRD_PARTY_PROVIDERS: thirdPartyProvidersArray(recipeSettings)
-            },
-            []
+            }
         )
     } else if(recipeSettings.name === "thirdpartyemailpassword") {
         await createFunc(
             resolve(constants.templatesPath, "thirdpartyemailpassword"),
             {
                 THIRD_PARTY_PROVIDERS: thirdPartyProvidersArray(recipeSettings)
-            },
-            []
+            }
         )
     } else if(recipeSettings.name === "thirdpartypasswordless") {
         await createFunc(
@@ -67,9 +64,22 @@ export const createSupertokensService = async (
                 FLOW_TYPE: builders.stringLiteral(recipeSettings.flowType),
                 CONTACT_METHOD: builders.stringLiteral(recipeSettings.contactMethod),
                 THIRD_PARTY_PROVIDERS: thirdPartyProvidersArray(recipeSettings)
-            },
-            []
+            }
         )
+    } else if(recipeSettings.name === "phonepassword") {
+        await createFunc(
+            resolve(constants.templatesPath, "phonepassword"),
+            {}
+        );
+        const newModule = modules.get(join(authDirectory, "supertokens", "supertokens.service.ts"));
+        const code = parse(newModule.code);
+        appendImports(code, [
+            phoneVerifiedClaimImport()
+        ]);
+        modules.replace(newModule, {
+            path: newModule.path,
+            code: print(code).code
+        })
     }
 }
 
@@ -83,7 +93,7 @@ const baseCreateSupertokensService = (
     return async (
         templateDir: string,
         baseTemplateMapping: {[key: string]: namedTypes.ASTNode},
-        skipDefaultCreation: string[]
+        skipDefaultCreation?: string[]
     ) => {
         const templatePath = resolve(templateDir, "supertokens.service.template.ts");
         const template = await readFile(templatePath);
@@ -111,16 +121,18 @@ const baseCreateSupertokensService = (
 
 const getDefaultCreateValues = (
     createInput: NamedClassDeclaration,
-    skipDefaultCreation: string[]
+    skipDefaultCreation?: string[]
 ): namedTypes.ObjectExpression => {
     const defaultValues: namedTypes.ObjectProperty[] = [];
     visit(createInput, {
         visitClassProperty: function(path) {
-            const prop = path.node;
-            //@ts-ignore
+            const prop = path.node as namedTypes.ClassProperty & { optional: boolean };
+            if(prop.key.type !== "Identifier") {
+                return false;
+            }
             const propName = prop.key.name;
-            if(propName !== SUPERTOKENS_ID_FIELD_NAME && !skipDefaultCreation.includes(propName)
-                //@ts-ignore
+            if(propName !== SUPERTOKENS_ID_FIELD_NAME && 
+                (!skipDefaultCreation || !skipDefaultCreation.includes(propName))
                 && !prop.optional) {
                     if(!prop.typeAnnotation) {
                         throw new Error("Failed to find the type annotation of a property");
@@ -251,6 +263,12 @@ const authEntityImport = (
     ], getAuthEntityIdPath(authEntityName, srcDirectory, authDirectory))
 }
 
+const phoneVerifiedClaimImport = () => {
+    return builders.importDeclaration([
+        builders.importSpecifier(builders.identifier("PhoneVerifiedClaim"))
+    ], builders.stringLiteral("./phoneVerifiedClaim"));
+}
+
 const thirdPartyProvidersArray = (recipeSettings: Settings["recipe"]) => {
     if(recipeSettings.name !== "thirdparty"
         && recipeSettings.name !== "thirdpartyemailpassword"
@@ -261,9 +279,9 @@ const thirdPartyProvidersArray = (recipeSettings: Settings["recipe"]) => {
     if(!apple && !twitter && !google && !github) {
         throw new Error("At least one provider's configuration must be provided");
     }
-    const providerNames: (keyof ThirdPartyRecipeSettings)[] = ["apple", "twitter", "google", "github"];
+    const providerNames: (keyof ThirdPartyProvider)[] = ["apple", "twitter", "google", "github"];
     const providerSettings = Object.keys(recipeSettings).map((sk) => {
-        const settingKey = sk as keyof ThirdPartyRecipeSettings;
+        const settingKey = sk as keyof ThirdPartyProvider;
         if(providerNames.includes(settingKey)) {
             const providerSetting = recipeSettings[settingKey] as ThirdPartyProviderSettings
             return { name: settingKey, ...providerSetting }

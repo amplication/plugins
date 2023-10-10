@@ -1,6 +1,6 @@
 import { DsgContext } from "@amplication/code-gen-types";
 
-export const removeEmailUsernamePasswordField = (
+export const removeEmailUsernamePhoneNumberPasswordField = (
     context: DsgContext
 ) => {
     const authEntityName = context.resourceInfo?.settings.authEntityName;
@@ -14,5 +14,6 @@ export const removeEmailUsernamePasswordField = (
         field.name !== "username"
         && field.name !== "password"
         && field.name !== "email"
+        && field.name !== "phoneNumber"
     ));
 }

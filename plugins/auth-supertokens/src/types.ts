@@ -15,15 +15,20 @@ export interface Settings {
     name: "passwordless",
     flowType: PasswordlessFlowType,
     contactMethod: PasswordlessContactMethod
-  } | ThirdPartyRecipeSettings
+  } | {
+    name: "thirdparty"
+  } & ThirdPartyProvider
   | {
     name: "thirdpartyemailpassword" 
-  } & Omit<ThirdPartyRecipeSettings, "name">
+  } & ThirdPartyProvider
   | {
     name: "thirdpartypasswordless",
     flowType: PasswordlessFlowType,
     contactMethod: PasswordlessContactMethod
-  } & Omit<ThirdPartyRecipeSettings, "name">
+  } & ThirdPartyProvider
+  | {
+    name: "phonepassword"
+  }
 }
 
 type PasswordlessFlowType = "USER_INPUT_CODE_AND_MAGIC_LINK"
@@ -31,8 +36,7 @@ type PasswordlessFlowType = "USER_INPUT_CODE_AND_MAGIC_LINK"
 
 type PasswordlessContactMethod = "EMAIL" | "PHONE" | "EMAIL_OR_PHONE";
 
-export type ThirdPartyRecipeSettings = {
-  name: "thirdparty",
+export type ThirdPartyProvider = {
   google?: ThirdPartyProviderSettings,
   github?: ThirdPartyProviderSettings,
   apple?: ThirdPartyProviderSettings,

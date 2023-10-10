@@ -39,7 +39,7 @@ import {
   verifyEmailAndPasswordFieldsExist,
   alterAuthControllerBaseMethods,
   alterAuthResolverBaseMethods,
-  removeEmailUsernamePasswordField,
+  removeEmailUsernamePhoneNumberPasswordField,
   addEmailPropertyToDTO,
   addPhoneNumberPropertyToDTO,
   addThirdPartyIdPropertyToDTO,
@@ -120,6 +120,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       case "thirdparty":
       case "thirdpartyemailpassword":
       case "thirdpartypasswordless":
+      case "phonepassword":
         alterSeedData(eventParams);
     }
 
@@ -138,6 +139,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       case "thirdparty":
       case "thirdpartyemailpassword":
       case "thirdpartypasswordless":
+      case "phonepassword":
         alterSeedCode(scriptsDirectory, modules);
     }
 
@@ -238,8 +240,13 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       addEmailPropertyToDTO(dtos.updateInput);
       addThirdPartyIdPropertyToDTO(dtos.createInput);
       addThirdPartyIdPropertyToDTO(dtos.updateInput);
-      addPhoneNumberPropertyToDTO(dtos.createInput)
+      addPhoneNumberPropertyToDTO(dtos.createInput);
       addPhoneNumberPropertyToDTO(dtos.updateInput);
+    } else if(settings.recipe.name === "phonepassword") {
+      addPhoneNumberPropertyToDTO(dtos.createInput);
+      addPhoneNumberPropertyToDTO(dtos.updateInput);
+      addPasswordPropertyToDTO(dtos.createInput);
+      addPasswordPropertyToDTO(dtos.updateInput);
     }
 
     return eventParams;
@@ -301,8 +308,9 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     } else if(settings.recipe.name === "passwordless"
       || settings.recipe.name === "thirdparty"
       || settings.recipe.name === "thirdpartyemailpassword"
-      || settings.recipe.name === "thirdpartypasswordless") {
-      removeEmailUsernamePasswordField(context)
+      || settings.recipe.name === "thirdpartypasswordless"
+      || settings.recipe.name === "phonepassword") {
+      removeEmailUsernamePhoneNumberPasswordField(context)
     }
     addSupertokensIdFieldToAuthEntity(context);
 
@@ -449,6 +457,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       case "thirdparty":
       case "thirdpartyemailpassword":
       case "thirdpartypasswordless":
+      case "phonepassword":
         await replaceCustomSeedTemplate(
           scriptsDirectory,
           authEntity,

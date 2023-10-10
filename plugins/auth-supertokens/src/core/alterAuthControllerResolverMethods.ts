@@ -22,6 +22,7 @@ const newMapping = (oldMapping: {[key: string]: string}, settings: Settings): an
         case "thirdparty":
         case "thirdpartyemailpassword":
         case "thirdpartypasswordless":
+        case "phonepassword":
             return base
         default:
             throw new Error("unrecognized recipe");
@@ -1026,6 +1027,149 @@ async function UPDATE_MUTATION(): Promise<ENTITY | null> {
   }
 `
 
+const phonePassowrdControllerCreateEntityFuncRaw = `
+async function CREATE_ENTITY_FUNCTION(): Promise<ENTITY> {
+    if(data.SUPERTOKENS_ID_FIELD_NAME) {
+        throw new common.BadRequestException("You cannot set the supertokens user ID");
+    }
+    if(!data.phoneNumber || !data.password) {
+      throw new common.BadRequestException("A phone number must be supplied with a password to create a user");
+    }
+    try {
+        const SUPERTOKENS_ID_FIELD_NAME = await this.authService.createSupertokensUser(
+          data.phoneNumber,
+          data.password
+        );
+        delete data.phoneNumber
+        delete data.password
+
+        return await this.service.create({
+            data: CREATE_DATA_MAPPING,
+            select: SELECT,
+        });
+    } catch(error) {
+        if(isInstance(error, AuthError)) {
+            const err = error as AuthError;
+            if(err.cause === "EMAIL_ALREADY_EXISTS_ERROR") {
+                throw new common.BadRequestException("The phone number already exists");
+            }
+        }
+        throw error;
+    }
+}
+`
+
+const phonePasswordControllerUpdateEntityFuncRaw = `
+async function UPDATE_ENTITY_FUNCTION(): Promise<ENTITY | null> {
+    if((data as any).SUPERTOKENS_ID_FIELD_NAME) {
+        throw new common.BadRequestException("You cannot modify the supertokens user ID");
+    }
+    try {
+        const user = await this.service.findOne({ where: { id: params.id } });
+        if(!user) {
+            throw new errors.NotFoundException(
+            \`No resource was found for \${JSON.stringify(params)}\`
+            );
+        }
+        if(data.phoneNumber || data.password) {
+            await this.authService.updateSupertokensUser(
+                await this.authService.getRecipeUserId(user.SUPERTOKENS_ID_FIELD_NAME),
+                data.phoneNumber,
+                data.password
+            );
+            delete data.phoneNumber;
+            delete data.password;
+        }
+        return await this.service.update({
+            where: params,
+            data: UPDATE_DATA_MAPPING,
+            select: SELECT,
+        });
+    } catch (error) {
+      if(isInstance(error, AuthError)) {
+        const err = error as AuthError;
+        switch(err.cause) {
+          case "EMAIL_ALREADY_EXISTS_ERROR":
+            throw new common.BadRequestException("The phone number already exists");
+          case "SUPERTOKENS_PASSWORD_POLICY_VIOLATED_ERROR":
+            throw new common.BadRequestException("The password doesn't fulfill the password requirements");
+          default:
+            throw err;
+        }
+      }
+      throw error;
+    }
+  }
+`
+
+const phonePasswordResolverCreateEntityFuncRaw = `
+async function CREATE_MUTATION(): Promise<User> {
+    if(!args.data.phoneNumber || !args.data.password) {
+      throw new apollo.ApolloError("A phone number must be supplied with a password to create a user");
+    }
+    try {
+        const SUPERTOKENS_ID_FIELD_NAME = await this.authService.createSupertokensUser(
+          args.data.phoneNumber,
+          args.data.password
+        );
+        delete args.data.phoneNumber;
+        delete args.data.password;
+
+        return await this.service.create({
+            ...args,
+            data: CREATE_DATA_MAPPING,
+        });
+    } catch(error) {
+      if(isInstance(error, AuthError)) {
+        const err = error as AuthError;
+        if(err.cause === "EMAIL_ALREADY_EXISTS_ERROR") {
+          throw new apollo.ApolloError("The phone number already exists");
+        }
+      }
+      throw error;
+    }
+  }
+`
+
+const phonePasswordResolverUpdateEntityFuncRaw = `
+async function UPDATE_MUTATION(): Promise<ENTITY | null> {
+    try {
+        const user = await this.service.findOne({ where: { id: args.where.id } });
+        if(!user) {
+            throw new apollo.ApolloError(
+                \`No resource was found for \${JSON.stringify(args.where)}\`
+            );
+        }
+        if(args.data.phoneNumber || args.data.password) {
+            await this.authService.updateSupertokensUser(
+                await this.authService.getRecipeUserId(user.SUPERTOKENS_ID_FIELD_NAME),
+                args.data.phoneNumber,
+                args.data.password
+            );
+            delete args.data.phoneNumber;
+            delete args.data.password;
+        }
+        return await this.service.update({
+        ...args,
+        data: UPDATE_DATA_MAPPING,
+        });
+    } catch (error) {
+        if(isInstance(error, AuthError)) {
+            const err = error as AuthError;
+            switch(err.cause) {
+                case "EMAIL_ALREADY_EXISTS_ERROR":
+                    throw new apollo.ApolloError("The phone number already exists");
+                case "SUPERTOKENS_PASSWORD_POLICY_VIOLATED_ERROR":
+                    throw new apollo.ApolloError("The password doesn't fulfill the password requirements");
+                default:
+                   throw err;
+            }
+        }
+        throw error;
+    }
+  }
+`
+
 const rawFuncs: RawFuncs = {
     emailpassword: {
         controller: {
@@ -1086,6 +1230,18 @@ const rawFuncs: RawFuncs = {
             update: thirdPartyPasswordlessResolverUpdateEntityFuncRaw,
             delete: passwordlessResolverDeleteEntityFuncRaw
         }
+    },
+    phonepassword: {
+      controller: {
+          create: phonePassowrdControllerCreateEntityFuncRaw,
+          update: phonePasswordControllerUpdateEntityFuncRaw,
+          delete: passwordlessControllerDeleteEntityFuncRaw
+      },
+      resolver: {
+          create: phonePasswordResolverCreateEntityFuncRaw,
+          update: phonePasswordResolverUpdateEntityFuncRaw,
+          delete: passwordlessResolverDeleteEntityFuncRaw
+      }
     }
 }
 

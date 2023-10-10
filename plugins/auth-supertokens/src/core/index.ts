@@ -11,7 +11,7 @@ export { createAuthService } from "./createAuthService";
 export { verifyAuthCorePluginIsInstalled } from "./verifyAuthCorePluginIsInstalled";
 export { verifyEmailAndPasswordFieldsExist } from "./verifyEmailAndPasswordFieldsExist";
 export { alterAuthControllerBaseMethods, alterAuthResolverBaseMethods } from "./alterAuthControllerResolverMethods";
-export { removeEmailUsernamePasswordField } from "./removeEmailUsernamePasswordField";
+export { removeEmailUsernamePhoneNumberPasswordField } from "./removeEmailUsernamePasswordPhoneNumberField";
 export { addEmailPropertyToDTO, addPhoneNumberPropertyToDTO, addThirdPartyIdPropertyToDTO, addPasswordPropertyToDTO } from "./addPropertyToDTO";
 export { alterSeedData } from "./alterSeedData";
 export { replaceCustomSeedTemplate } from "./replaceCustomSeedTemplate";
