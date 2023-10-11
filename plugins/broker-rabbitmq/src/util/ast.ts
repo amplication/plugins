@@ -3,6 +3,9 @@ import { ASTNode, namedTypes, builders } from "ast-types";
 import { NodePath } from "ast-types/lib/node-path";
 import * as K from "ast-types/gen/kinds";
 import { groupBy, mapValues, uniqBy } from "lodash";
+export { prettyPrint } from "recast";
+import { parse } from "@amplication/code-gen-utils"
+export * from "@amplication/code-gen-utils"
 
 /**
  * Finds class declaration in provided AST node, if no class is found throws an exception
@@ -58,6 +61,9 @@ export function getFunctionDeclarationById(
   return functionDeclaration;
 }
 
+export const prettyCode = (code: string): string => {
+  return recast.prettyPrint(parse(code)).code
+}
 /**
  * In given AST replaces identifiers with AST nodes according to given mapping
  * @param ast AST to replace identifiers in

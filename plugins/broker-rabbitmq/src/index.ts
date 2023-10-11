@@ -16,7 +16,7 @@ import {
   Module,
   ModuleMap,
 } from "@amplication/code-gen-types";
-import { readFile, print } from "@amplication/code-gen-utils";
+import { readFile, print, appendImports } from "@amplication/code-gen-utils";
 import { kebabCase, merge } from "lodash";
 import { join, resolve } from "path";
 import { staticDirectory, templatesPath } from "./constants";
@@ -85,8 +85,19 @@ class RabbitMQPlugin implements AmplicationPlugin {
       serverDirectories.messageBrokerDirectory,
       generateFileName
     );
+
+    const testFilePath = resolve(staticDirectory, "generateRabbitMQClientOptions.testfile.ts");
+    const testFile = await readFile(testFilePath);
+    const testGenerateFileName = "generateRabbitMQClientOptions.spec.ts";
+
+    const testPath = join(
+      serverDirectories.messageBrokerDirectory,
+      testGenerateFileName
+    );
+
     const modules = new ModuleMap(context.logger);
     await modules.set({ code: print(file).code, path });
+    await modules.set({ code: print(testFile).code, path: testPath });
     return modules;
   }
 
@@ -239,9 +250,12 @@ class RabbitMQPlugin implements AmplicationPlugin {
   ) {
     const file = RabbitMQPlugin.moduleFile;
     if (!file) {
-      throw new Error("RabbitMQ module file not found");
+       throw new Error("RabbitMQ module file not found");
     }
-    const rabbitmqModuleId = builders.identifier("RabbitMQModule");
+    const rabbitMQModuleName = "RabbitMQModule";
+    appendImports(eventParams.template, [rabbitModuleImport(rabbitMQModuleName)]);
+
+    const rabbitmqModuleId = builders.identifier(rabbitMQModuleName);
 
     const importArray = builders.arrayExpression([
       rabbitmqModuleId,
@@ -383,6 +397,13 @@ class RabbitMQPlugin implements AmplicationPlugin {
 
     return eventParams;
   }
+}
+
+const rabbitModuleImport = (rabbitMqModuleName: string): namedTypes.ImportDeclaration => {
+  return builders.importDeclaration(
+    [builders.importSpecifier(builders.identifier(rabbitMqModuleName))],
+    builders.stringLiteral("./rabbitmq/rabbitmq.module")
+  );
 }
 
 export default RabbitMQPlugin;
