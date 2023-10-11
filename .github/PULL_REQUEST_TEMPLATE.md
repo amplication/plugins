@@ -10,7 +10,7 @@ Make sure that:
 
 -->
 
-Fixes: #amplication/amplication#[issue-number]
+Fixes: amplication/amplication#[issue-number]
 
 ## PR Details
 
