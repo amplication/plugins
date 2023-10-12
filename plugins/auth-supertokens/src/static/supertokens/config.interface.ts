@@ -1,3 +1,8 @@
-import { TypeInput } from "supertokens-node/types";
+import { SuperTokensInfo, AppInfo } from "supertokens-node/types";
 
-export type AuthModuleConfig = Omit<TypeInput, "recipeList">;
+export type AuthModuleConfig = {
+    appInfo: {
+        websiteDomain: string
+    } & Omit<AppInfo, "websiteDomain">,
+    supertokens: SuperTokensInfo
+}
