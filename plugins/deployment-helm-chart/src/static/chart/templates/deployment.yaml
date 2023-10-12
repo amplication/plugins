@@ -30,6 +30,21 @@ spec:
       serviceAccountName: {{ include "${{ SERVICE_NAME }}.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if or .Values.variables.configmap.DB_URL .Values.variables.secret.DB_URL }}
+      initContainers:
+        - name: {{ .Chart.Name }}-prisma-migrate
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command: ["sh", "-c", "npx prisma migrate deploy; exit 0"]
+          {{- if .Values.variables.configmap.DB_URL }}
+          env:
+            - name: DATABASE_URL
+              value: {{ required ".Values.variables.configmap.DB_URL is required" .Values.variables.configmap.DB_URL }}
+          {{- else if .Values.variables.secret.DB_URL }}
+          env:
+            - name: DATABASE_URL
+              value: {{ required ".Values.variables.configmap.DB_URL is required" .Values.variables.configmap.DB_URL }}
+          {{- end }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
