@@ -2,53 +2,71 @@ import {
   CreateEntityControllerBaseParams,
   DsgContext,
   EntityField,
+  EnumDataType,
+  LookupResolvedProperties,
   Module,
+  types,
 } from "@amplication/code-gen-types";
 import { controllerMethodsIdsActionPairs } from "./create-method-id-action-entity-map";
-import { templatesPath } from "../constants";
-import { join } from "path";
-import { print, Schema, Message, Method } from "protobuf-dsl";
+import {
+  print,
+  Message,
+  Method,
+  ScalarField,
+  ScalarType,
+  ObjectField,
+} from "protobuf-dsl";
+import * as ProtobufSchemaDSL from "protobuf-dsl";
 
-const grpcProtoFilePath = join(templatesPath, "grpc.proto.template.proto");
 export async function createGrpcProtoFile(
   context: DsgContext,
   eventParams: CreateEntityControllerBaseParams,
   relatedEntities: EntityField[]
 ): Promise<Module> {
   try {
-    // const template = await readFile(grpcProtoFilePath);
-
     const { entityName, controllerBaseId, templateMapping, entity } =
       eventParams;
     const { serverDirectories } = context;
 
-    const entitySchema: Schema = {
-      service: {
-        name: entityName,
-        methods: [],
-      },
-      messages: [],
-    };
+    const methods: Method[] = [];
+    const fields: Array<ScalarField | ObjectField> = [];
+    const messages: Message[] = [];
+    console.log("entities fields: ", entity)
 
     controllerMethodsIdsActionPairs(templateMapping, entity).forEach(
       ({ methodName, inputObjectName, outputObjectName }) => {
-        const currentMethod: Method = {
-          name: methodName,
+        const currentMethod = ProtobufSchemaDSL.createMethod(
+          methodName,
           inputObjectName,
-          outputObjectName,
-        };
+          outputObjectName
+        );
 
-        entity.fields.forEach( x=>  {
-          
-        })
+        methods.push(currentMethod);
 
-        entitySchema.messages.push({name:inputObjectName, fields:})
+        entity.fields.forEach((field) => {
+          console.log({field});
+          let countField = 1;
+          const currentField = createProtobufSchemaFieldsHandler[
+            field.dataType
+          ](field.name, countField, field);
+          currentField && fields.push(currentField);
+          countField = +1;
+          console.log({currentField});
+        });
 
-        entitySchema.service.methods.push(currentMethod);
+        messages.push(ProtobufSchemaDSL.createMessage(inputObjectName, fields));
+        messages.push(
+          ProtobufSchemaDSL.createMessage(outputObjectName, fields)
+        );
       }
     );
 
-    const file = await print(entitySchema);
+    const protobufSchema = ProtobufSchemaDSL.createSchema(
+      { name: entityName, methods: methods },
+      messages
+    );
+
+    const file = await print(protobufSchema);
 
     // relatedEntities &&
     //   relatedEntities.forEach((entity) => {
@@ -67,8 +85,6 @@ export async function createGrpcProtoFile(
 
     const fileName = `${entityName}.proto`;
 
-    //const file = await fs.promises.readFile(grpcProtoFilePath, "utf-8");
-
     const filePath = `${serverDirectories.srcDirectory}/${entityName}/${fileName}`;
 
     return {
@@ -80,3 +96,239 @@ export async function createGrpcProtoFile(
     return { code: "", path: "" };
   }
 }
+
+export type CreateSchemaFieldHandler = (
+  fieldName: string,
+  countField: number,
+  field: EntityField
+) => ScalarField | ObjectField | null;
+
+export const createProtobufSchemaFieldsHandler: {
+  [key in EnumDataType]: CreateSchemaFieldHandler;
+} = {
+  [EnumDataType.SingleLineText]: (
+    fieldName: string,
+    countField: number,
+    field: EntityField
+  ) =>
+    ProtobufSchemaDSL.createScalarField(
+      fieldName,
+      ScalarType.String,
+      countField,
+      false
+    ),
+  [EnumDataType.MultiLineText]: (
+    fieldName: string,
+    countField: number,
+    field: EntityField
+  ) =>
+    ProtobufSchemaDSL.createScalarField(
+      fieldName,
+      ScalarType.String,
+      countField,
+      false
+    ),
+  [EnumDataType.Email]: (
+    fieldName: string,
+    countField: number,
+    field: EntityField
+  ) =>
+    ProtobufSchemaDSL.createScalarField(
+      fieldName,
+      ScalarType.String,
+      countField,
+      false
+    ),
+  [EnumDataType.WholeNumber]: (
+    fieldName: string,
+    countField: number,
+    field: EntityField
+  ) =>
+    ProtobufSchemaDSL.createScalarField(
+      fieldName,
+      ScalarType.Int,
+      countField,
+      false
+    ),
+  [EnumDataType.DateTime]: (
+    fieldName: string,
+    countField: number,
+    field: EntityField
+  ) =>
+    ProtobufSchemaDSL.createScalarField(
+      fieldName,
+      ScalarType.DateTime,
+      countField,
+      false
+    ),
+  [EnumDataType.DecimalNumber]: (
+    fieldName: string,
+    countField: number,
+    field: EntityField
+  ) =>
+    ProtobufSchemaDSL.createScalarField(
+      fieldName,
+      ScalarType.Float,
+      countField,
+      false
+    ),
+  [EnumDataType.Boolean]: (
+    fieldName: string,
+    countField: number,
+    field: EntityField
+  ) =>
+    ProtobufSchemaDSL.createScalarField(
+      fieldName,
+      ScalarType.Boolean,
+      countField,
+      false
+    ),
+  [EnumDataType.GeographicLocation]: (
+    fieldName: string,
+    countField: number,
+    field: EntityField
+  ) =>
+    ProtobufSchemaDSL.createScalarField(
+      fieldName,
+      ScalarType.String,
+      countField,
+      false
+    ),
+  [EnumDataType.Json]: (
+    fieldName: string,
+    countField: number,
+    field: EntityField
+  ) =>
+    ProtobufSchemaDSL.createScalarField(
+      fieldName,
+      ScalarType.Json,
+      countField,
+      false
+    ),
+  [EnumDataType.Lookup]: (
+    fieldName: string,
+    countField: number,
+    field: EntityField
+  ) => {
+    const { properties } = field;
+    const {
+      relatedEntity,
+      relatedField,
+      allowMultipleSelection,
+      isOneToOneWithoutForeignKey,
+    } = properties as LookupResolvedProperties;
+
+    if (allowMultipleSelection || isOneToOneWithoutForeignKey) {
+      return ProtobufSchemaDSL.createObjectField(
+        fieldName,
+        relatedEntity.name,
+        countField,
+        !isOneToOneWithoutForeignKey
+      );
+    }
+
+    return null;
+  },
+  [EnumDataType.MultiSelectOptionSet]: (
+    fieldName: string,
+    countField: number,
+    field: EntityField
+  ) =>
+    ProtobufSchemaDSL.createScalarField(
+      fieldName,
+      ScalarType.String,
+      countField,
+      true
+    ),
+  [EnumDataType.OptionSet]: (
+    fieldName: string,
+    countField: number,
+    field: EntityField
+  ) =>
+    ProtobufSchemaDSL.createScalarField(
+      fieldName,
+      ScalarType.String,
+      countField,
+      true
+    ),
+  [EnumDataType.Id]: (
+    fieldName: string,
+    countField: number,
+    field: EntityField
+  ) => {
+    const { properties } = field;
+    const idType = (properties as types.Id)?.idType ?? "CUID";
+
+    return ProtobufSchemaDSL.createScalarField(
+      fieldName,
+      idTypeToProtobufScalarType[idType],
+      countField,
+      false
+    );
+  },
+  [EnumDataType.CreatedAt]: (
+    fieldName: string,
+    countField: number,
+    field: EntityField
+  ) =>
+    ProtobufSchemaDSL.createScalarField(
+      fieldName,
+      ScalarType.DateTime,
+      countField,
+      false
+    ),
+  [EnumDataType.UpdatedAt]: (
+    fieldName: string,
+    countField: number,
+    field: EntityField
+  ) =>
+    ProtobufSchemaDSL.createScalarField(
+      fieldName,
+      ScalarType.DateTime,
+      countField,
+      false
+    ),
+  [EnumDataType.Roles]: (
+    fieldName: string,
+    countField: number,
+    field: EntityField
+  ) =>
+    ProtobufSchemaDSL.createScalarField(
+      fieldName,
+      ScalarType.Json,
+      countField,
+      false
+    ),
+  [EnumDataType.Username]: (
+    fieldName: string,
+    countField: number,
+    field: EntityField
+  ) =>
+    ProtobufSchemaDSL.createScalarField(
+      fieldName,
+      ScalarType.String,
+      countField,
+      false
+    ),
+
+  [EnumDataType.Password]: (
+    fieldName: string,
+    countField: number,
+    field: EntityField
+  ) =>
+    ProtobufSchemaDSL.createScalarField(
+      fieldName,
+      ScalarType.String,
+      countField,
+      false
+    ),
+};
+
+export const idTypeToProtobufScalarType: {
+  [key in types.Id["idType"]]: ScalarType;
+} = {
+  AUTO_INCREMENT: ScalarType.Int,
+  AUTO_INCREMENT_BIG_INT: ScalarType.Int,
+  CUID: ScalarType.String,
+  UUID: ScalarType.String,
+};
