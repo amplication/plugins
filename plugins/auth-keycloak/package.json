@@ -9,37 +9,42 @@
     "prebuild": "rimraf dist",
     "format:write": "prettier --write \"**/*.{js,ts}\"",
     "lint:fix": "eslint './src/**/*.{ts, tsx}' --fix --c .eslintrc",
-    "lint": "eslint './src/**/*.{ts, tsx}' --c .eslintrc"
+    "lint": "eslint './src/**/*.{ts, tsx}' --c .eslintrc",
+    "test": "jest"
   },
   "author": "Damanpreet singh<daman.4880@gmail.com>",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@amplication/code-gen-types": "file:../../../amplication/dist/packages/amplication-code-gen-types/", 
-    "@amplication/code-gen-utils": "^0.0.5",
-    "@babel/parser": "^7.20.7",
-    "@babel/types": "^7.20.7",
+    "@amplication/code-gen-types": "^2.0.12",
+    "@amplication/code-gen-utils": "^0.0.6",
+    "@babel/parser": "^7.23.0",
+    "@babel/types": "^7.23.0",
+    "@types/jest": "^29.5.3",
+    "@types/lodash": "^4.14.199",
+    "@typescript-eslint/eslint-plugin": "^6.7.5",
+    "@typescript-eslint/parser": "^6.7.5",
+    "copy-webpack-plugin": "^11.0.0",
+    "eslint": "^8.51.0",
+    "jest-mock-extended": "^3.0.5",
+    "lodash": "^4.17.21",
+    "prettier": "^3.0.3",
+    "rimraf": "^5.0.5",
+    "ts-jest": "^29.1.1",
+
+    "ts-loader": "^9.5.0",
+    "ts-node": "^10.9.1",
+    "tsconfig-paths-webpack-plugin": "^4.1.0",
+    "typescript": "^5.2.2",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "webpack-node-externals": "^3.0.0",
+
     "@nestjs/common": "^10.2.7",
     "@nestjs/passport": "^9.0.3",
-    "@types/lodash": "^4.14.199",
+    
     "@types/node": "^20.8.2",
-    "@types/normalize-path": "^3.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.33.0",
-    "@typescript-eslint/parser": "^5.33.0",
-    "copy-webpack-plugin": "^11.0.0",
-    "eslint": "^8.21.0",
-    "jest-mock-extended": "^3.0.1",
-    "lodash": "^4.17.21",
-    "nx": "16.10.0",
-    "prettier": "^2.8.7",
-    "rimraf": "^4.0.7",
-    "ts-loader": "^9.4.2",
-    "typescript": "^5.2.2",
-    "webpack": "^5.76.0",
-    "webpack-cli": "^5.0.1",
-    "webpack-node-externals": "^3.0.0"
+    "@types/normalize-path": "^3.0.0"
   },
   "dependencies": {
-    "nest-keycloak-connect": "^1.9.2",
-    "passport-keycloak-oauth2-oidc": "^1.0.5"
   }
 }

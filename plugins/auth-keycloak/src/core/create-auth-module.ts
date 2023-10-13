@@ -11,33 +11,32 @@ import {
   removeTSClassDeclares,
 } from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
-import {
-  addImports,
-  importNames,
-  interpolate,
-} from "@utils/ast";
+import { addImports, importNames, interpolate } from "@utils/ast";
 
 const authModulePath = join(templatesPath, "auth.module.template.ts");
 
 export async function createAuthModule(
-  dsgContext: DsgContext
+  dsgContext: DsgContext,
 ): Promise<Module> {
   return await mapAuthModuleTemplate(
     dsgContext,
     authModulePath,
-    "auth.module.ts"
+    "auth.module.ts",
   );
 }
 
 async function mapAuthModuleTemplate(
   context: DsgContext,
   templatePath: string,
-  fileName: string
+  fileName: string,
 ): Promise<Module> {
   const { entities, resourceInfo, serverDirectories } = context;
   const authEntity = entities?.find(
-    (x) => x.name === resourceInfo?.settings.authEntityName
+    (x) => x.name === resourceInfo?.settings.authEntityName,
   );
+
+  context.logger.info(`Creating ${fileName} file...`);
+
   if (!authEntity) {
     context.logger.error(AUTH_ENTITY_LOG_ERROR);
     throw new Error(AUTH_ENTITY_ERROR);
@@ -52,14 +51,14 @@ async function mapAuthModuleTemplate(
 
     const authModuleImport = importNames(
       [authModuleNameId],
-      `../${entityNameToLower}/${entityNameToLower}.module`
+      `../${entityNameToLower}/${entityNameToLower}.module`,
     );
 
     addImports(
       template,
       [authModuleImport].filter(
-        (x) => x //remove nulls and undefined
-      ) as namedTypes.ImportDeclaration[]
+        (x) => x, //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[],
     );
 
     const templateMapping = {

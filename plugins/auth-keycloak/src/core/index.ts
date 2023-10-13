@@ -1,4 +1,4 @@
-export { createKeycloakStrategyBase } from "./create-keycloak-strategy-base";
-export { createKeycloakStrategy } from "./create-keycloak-strategy";
-export { createAuthModule } from "./create-auth-module";
-export { createKeycloakStrategySpec } from "./create-keycloak-strategy-spec";
+export * from "./create-auth-module";
+export * from "./create-jwt-strategy";
+export * from "./create-jwt-strategy-base";
+export * from "./create-auth-resolver";

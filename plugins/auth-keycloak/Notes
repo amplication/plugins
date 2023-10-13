@@ -1,0 +1,9 @@
+
+
+Files not Created:::
+> plugins/auth-auth0/src/events/createAdminAppModule.ts
+> plugins/auth-auth0/src/events/createAdminDotEnv.ts
+> plugins/auth-auth0/src/events/createApp.ts
+> plugins/auth-auth0/src/events/createPackageJson.ts
+> plugins/auth-auth0/src/static/client/Login.tsx
+> plugins/auth-auth0/src/templates/App.template.tsx

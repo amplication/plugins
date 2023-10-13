@@ -1,11 +1,9 @@
 {
     "settings": {
-        "host": "localhost",
-        "realm": "dev",
-        "clientID": "clientId1",
-        "clientSecret": "secret",
-        "callbackURL": "http://localhost:8180/callback",
-        "password": "admin",
-        "port": 8180,
-        "user": "admin"
+        "KEYCLOAK_HOST": "localhost",
+        "KEYCLOAK_REALM": "master",
+        "KEYCLOAK_CLIENT_ID": "master",
+        "KEYCLOAK_CLIENT_SECRET": "secret",
+        "KEYCLOAK_CALLBACK_URL": "/api/keycloak_callback"
     }
+}

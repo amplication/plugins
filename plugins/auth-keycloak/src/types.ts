@@ -1,10 +1,7 @@
 export interface Settings {
-  host: string;
-  realm: string;
-  clientID: string;
-  clientSecret: string;
-  callbackURL: string;
-  password: string;
-  port: number;
-  user: string;
+  KEYCLOAK_HOST: string;
+  KEYCLOAK_REALM: string;
+  KEYCLOAK_CLIENT_ID: string;
+  KEYCLOAK_CLIENT_SECRET: string;
+  KEYCLOAK_CALLBACK_URL: string;
 }
