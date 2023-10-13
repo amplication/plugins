@@ -10,6 +10,10 @@ export const adminUIPackageJsonValues = {
     "react-router-dom": "^5.3.3",
     history: "4.10.1",
   },
+  devDependencies: {
+    "@types/react-router-dom": "5.3.2",
+    "@types/history": "^4.7.11",
+  },
 };
 
 export const serverPackageJsonValues = {

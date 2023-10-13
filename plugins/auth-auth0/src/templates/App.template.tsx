@@ -7,7 +7,6 @@ import { theme } from "./theme/theme";
 //@ts-ignore
 import Login from "./Login";
 import "./App.scss";
-//@ts-ignore
 import Dashboard from "./pages/Dashboard";
 import { createBrowserHistory as createHistory } from "history";
 import { BrowserRouter } from "react-router-dom";
