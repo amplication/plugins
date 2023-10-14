@@ -84,6 +84,13 @@ export const settingsToVarDict = (settings: Settings): VariableDictionary => {
       .filter((envVar) => Object.keys(envVar).length !== 0)
 }
 
+export const varDictToReactEnvVars = (varDict: VariableDictionary): VariableDictionary => {
+  return varDict.map((val) => {
+    const envName = Object.keys(val)[0];
+    return { [`REACT_APP_${envName}`]: val[envName] }
+  })
+}
+
 /**
  * In given AST replaces identifiers with AST nodes according to given mapping
  * @param ast AST to replace identifiers in

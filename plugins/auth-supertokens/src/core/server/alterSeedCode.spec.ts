@@ -1,24 +1,24 @@
 import { ModuleMap, BuildLogger } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
-import { prettyCode } from "../utils";
+import { prettyCode } from "../../utils";
 import { alterSeedCode } from "./alterSeedCode";
 
 const modules = new ModuleMap(mock<BuildLogger>());
 const scriptsDirectory = "scripts";
 
 describe("alterSeedCode tests", () => {
-    beforeEach(() => {
-        modules.set({
-            path: `${scriptsDirectory}/seed.ts`,
-            code: initialSeedCode
-        });
-    })
-    it("should change the where arg from username to supertokensId", () => {
-        alterSeedCode(scriptsDirectory, modules);
-        const code = prettyCode(modules.get(`${scriptsDirectory}/seed.ts`).code);
-        const expectedCode = prettyCode(expectedSeedCode);
-        expect(code).toStrictEqual(expectedCode);
-    })
+  beforeEach(() => {
+    modules.set({
+      path: `${scriptsDirectory}/seed.ts`,
+      code: initialSeedCode
+    });
+  })
+  it("should change the where arg from username to supertokensId", () => {
+    alterSeedCode(scriptsDirectory, modules);
+    const code = prettyCode(modules.get(`${scriptsDirectory}/seed.ts`).code);
+    const expectedCode = prettyCode(expectedSeedCode);
+    expect(code).toStrictEqual(expectedCode);
+  })
 })
 
 const initialSeedCode = `async function seed(bcryptSalt: Salt) {

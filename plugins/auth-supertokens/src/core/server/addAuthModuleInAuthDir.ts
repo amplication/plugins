@@ -1,9 +1,9 @@
 import { CreateEntityModuleParams, ModuleMap } from "@amplication/code-gen-types";
 import { appendImports, print, readFile } from "@amplication/code-gen-utils";
 import { join, relative } from "path";
-import { templatesPath } from "../constants";
+import { templatesPath } from "../../constants";
 import { builders, namedTypes } from "ast-types";
-import { interpolate } from "../utils";
+import { interpolate } from "../../utils";
 import { camelCase } from "lodash";
 
 export const addAuthModuleInAuthDir = async (

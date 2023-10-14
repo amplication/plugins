@@ -15,12 +15,16 @@ import {
   CreateEntityControllerBaseParams,
   CreateEntityResolverParams,
   CreateEntityResolverBaseParams,
-  CreateSeedParams
+  CreateSeedParams,
+  CreateAdminUIPackageJsonParams,
+  CreateAdminDotEnvParams,
+  CreateAdminUIParams,
+  CreateAdminAppModuleParams
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
-import { appendImports } from "@amplication/code-gen-utils";
+import { appendImports, print, readFile } from "@amplication/code-gen-utils";
 import { camelCase, merge } from "lodash";
-import { join } from "path";
+import { join, resolve } from "path";
 import { builders, namedTypes } from "ast-types";
 import * as utils from "./utils";
 import * as constants from "./constants";
@@ -46,8 +50,16 @@ import {
   alterSeedData,
   replaceCustomSeedTemplate,
   alterSeedCode,
-  addPasswordPropertyToDTO
+  addPasswordPropertyToDTO,
+  addSupertokensConfigFile,
+  replaceLoginPage,
+  replaceTypesModule,
+  replaceDataProviderModule,
+  addSupertokensAuthProvider,
+  removeNonSupertokensAuthProviderImportsFromAppModule,
+  removeNonSupertokensAuthProviderModules
 } from "./core";
+import { EnumAuthProviderType } from "@amplication/code-gen-types/src/models";
 
 export const checks = {
   // Used to check if the auth module has been successfully added
@@ -105,8 +117,104 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       [EventNames.CreateSeed]: {
         before: this.beforeCreateSeed,
         after: this.afterCreateSeed
+      },
+      [EventNames.CreateAdminUIPackageJson]: {
+        before: this.beforeCreateAdminUIPackageJson
+      },
+      [EventNames.CreateAdminDotEnv]: {
+        before: this.beforeCreateAdminDotEnv
+      },
+      [EventNames.CreateAdminUI]: {
+        after: this.afterCreateAdminUI
+      },
+      [EventNames.CreateAdminAppModule]: {
+        before: this.beforeCreateAdminAppModule,
+        after: this.afterCreateAdminAppModule
       }
     };
+  }
+
+  async beforeCreateAdminAppModule(
+    context: DsgContext,
+    eventParams: CreateAdminAppModuleParams
+  ): Promise<CreateAdminAppModuleParams> {
+
+    const newTemplatePath = join(constants.templatesPath, "admin-ui", "App.template.tsx");
+    const newTemplate = await readFile(newTemplatePath);
+    eventParams.template = newTemplate;
+    // The resulting auth provider effects on the app module will still
+    // be removed in the afterCreateAdminAppModule
+    if(context.resourceInfo) {
+      context.resourceInfo.settings.authProvider = EnumAuthProviderType.Http;
+    }
+
+    return eventParams;
+  }
+
+  async afterCreateAdminAppModule(
+    context: DsgContext,
+    eventParams: CreateAdminAppModuleParams,
+    modules: ModuleMap
+  ): Promise<ModuleMap> {
+    const { srcDirectory } = context.clientDirectories;
+
+    removeNonSupertokensAuthProviderImportsFromAppModule(srcDirectory, modules);
+
+    return modules;
+  }
+
+  async afterCreateAdminUI(
+    context: DsgContext,
+    eventParams: CreateAdminUIParams,
+    modules: ModuleMap
+  ): Promise<ModuleMap> {
+
+    const { srcDirectory } = context.clientDirectories;
+    const settings = utils.getPluginSettings(context.pluginInstallations);
+    await addSupertokensConfigFile(srcDirectory, modules);
+    await replaceLoginPage(srcDirectory, modules, settings.recipe.name);
+    await replaceTypesModule(srcDirectory, modules, settings.recipe.name);
+    await replaceDataProviderModule(srcDirectory, modules);
+    await addSupertokensAuthProvider(srcDirectory, modules, settings.recipe.name);
+    removeNonSupertokensAuthProviderModules(srcDirectory, modules);
+
+    return modules;
+  }
+
+  beforeCreateAdminDotEnv(
+    context: DsgContext,
+    eventParams: CreateAdminDotEnvParams
+  ): CreateAdminDotEnvParams {
+
+    const { getPluginSettings, settingsToVarDict, varDictToReactEnvVars } = utils;
+    const settings = getPluginSettings(context.pluginInstallations);
+    const neededVars = [
+      "SUPERTOKENS_APP_NAME",
+      "SUPERTOKENS_API_DOMAIN",
+      "SUPERTOKENS_WEBSITE_DOMAIN",
+      "SUPERTOKENS_API_BASE_PATH"
+    ];
+    const varsForAdminUi = settingsToVarDict(settings)
+      .filter((val) => {
+        const varName = Object.keys(val)[0];
+        return neededVars.includes(varName);
+      })
+    eventParams.envVariables.push(...varDictToReactEnvVars(varsForAdminUi));
+
+    return eventParams;
+  }
+
+  beforeCreateAdminUIPackageJson(
+    context: DsgContext,
+    eventParams: CreateAdminUIPackageJsonParams
+  ): CreateAdminUIPackageJsonParams {
+    const deps = constants.adminUIDependencies
+
+    eventParams.updateProperties.forEach((updateProperty) => {
+      merge(updateProperty, deps);
+    });
+
+    return eventParams;
   }
 
   beforeCreateSeed(

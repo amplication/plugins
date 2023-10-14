@@ -10,4 +10,10 @@ export const dependencies = {
     }
 }
 
+export const adminUIDependencies = {
+    dependencies: {
+        "supertokens-web-js": "^0.8.0"
+    }
+}
+
 export const SUPERTOKENS_ID_FIELD_NAME = "supertokensId";

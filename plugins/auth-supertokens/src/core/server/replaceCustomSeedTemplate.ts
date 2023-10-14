@@ -1,9 +1,9 @@
 import { CreateSeedParams, Entity, ModuleMap } from "@amplication/code-gen-types";
-import { SUPERTOKENS_ID_FIELD_NAME, templatesPath } from "../constants";
+import { SUPERTOKENS_ID_FIELD_NAME, templatesPath } from "../../constants";
 import { resolve } from "path";
 import { print, readFile } from "@amplication/code-gen-utils";
 import { builders } from "ast-types";
-import { interpolate } from "../utils";
+import { interpolate } from "../../utils";
 
 export const replaceCustomSeedTemplate = async (
     scriptsDirectory: string,
@@ -17,7 +17,7 @@ export const replaceCustomSeedTemplate = async (
         SUPERTOKENS_ID_FIELD_NAME: builders.stringLiteral(SUPERTOKENS_ID_FIELD_NAME)
     };
     interpolate(template, templateMapping);
-    
+
     const filePath = `${scriptsDirectory}/customSeed.ts`;
     modules.set({
         path: filePath,

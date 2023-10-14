@@ -1,28 +1,28 @@
 import { BuildLogger, ModuleMap, NamedClassDeclaration } from "@amplication/code-gen-types";
 import { parse } from "@amplication/code-gen-utils";
 import { mock } from "jest-mock-extended";
-import { Settings } from "../types";
-import { prettyCode } from "../utils";
+import { Settings } from "../../types";
+import { prettyCode } from "../../utils";
 import { createSupertokensService } from "./createSupertokensService";
 
 const thirdPartyRecipeSettings: Settings["recipe"] = {
-    name: "thirdparty",
-    google: {
-        clientId: "googleClientId",
-        clientSecret: "googleClientSecret"
-    },
-    github: {
-        clientId: "githubClientId",
-        clientSecret: "githubClientSecret"
-    },
-    apple: {
-      clientId: "appleClientId",
-      additionalConfig:  {
-        keyId: "appleKeyId",
-        privateKey: "applePrivateKey",
-        teamId: "appleTeamId"
-      }
+  name: "thirdparty",
+  google: {
+    clientId: "googleClientId",
+    clientSecret: "googleClientSecret"
+  },
+  github: {
+    clientId: "githubClientId",
+    clientSecret: "githubClientSecret"
+  },
+  apple: {
+    clientId: "appleClientId",
+    additionalConfig: {
+      keyId: "appleKeyId",
+      privateKey: "applePrivateKey",
+      teamId: "appleTeamId"
     }
+  }
 }
 
 const authDirectory = "src/auth";
@@ -61,25 +61,25 @@ class UserCreateInput {
 const authEntityCreateInput = parse(authEntityCreateInputRawCode).program.body[0] as NamedClassDeclaration;
 
 describe("createSupertokensService tests", () => {
-    let modules: ModuleMap;
+  let modules: ModuleMap;
 
-    beforeEach(() => {
-        modules = new ModuleMap(mock<BuildLogger>());
-    });
+  beforeEach(() => {
+    modules = new ModuleMap(mock<BuildLogger>());
+  });
 
-    it("should generate correct service when recipe is thirdparty", async () => {
-        await createSupertokensService(
-            thirdPartyRecipeSettings,
-            authDirectory,
-            srcDirectory,
-            authEntityName,
-            modules,
-            authEntityCreateInput
-        );
-        const code = prettyCode(modules.get(`${authDirectory}/supertokens/supertokens.service.ts`).code);
-        const expectedCode = prettyCode(expectedThirdPartySupertokensRawCode);
-        expect(code).toStrictEqual(expectedCode);
-    })
+  it("should generate correct service when recipe is thirdparty", async () => {
+    await createSupertokensService(
+      thirdPartyRecipeSettings,
+      authDirectory,
+      srcDirectory,
+      authEntityName,
+      modules,
+      authEntityCreateInput
+    );
+    const code = prettyCode(modules.get(`${authDirectory}/supertokens/supertokens.service.ts`).code);
+    const expectedCode = prettyCode(expectedThirdPartySupertokensRawCode);
+    expect(code).toStrictEqual(expectedCode);
+  })
 });
 
 const expectedThirdPartySupertokensRawCode = `

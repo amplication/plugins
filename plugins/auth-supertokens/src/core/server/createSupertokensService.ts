@@ -1,11 +1,11 @@
 import { DsgContext, ModuleMap, NamedClassDeclaration } from "@amplication/code-gen-types";
 import { resolve, join, relative } from "path";
 import { readFile, print, appendImports, parse } from "@amplication/code-gen-utils";
-import * as constants from "../constants";
-import { Settings, ThirdPartyProviderSettings, ThirdPartyProvider } from "../types";
-import { SUPERTOKENS_ID_FIELD_NAME } from "../constants";
+import * as constants from "../../constants";
+import { Settings, ThirdPartyProviderSettings, ThirdPartyProvider } from "../../types";
+import { SUPERTOKENS_ID_FIELD_NAME } from "../../constants";
 import { namedTypes, builders } from "ast-types";
-import { interpolate } from "../utils";
+import { interpolate } from "../../utils";
 import { camelCase } from "lodash";
 import { visit } from "recast";
 
@@ -25,7 +25,7 @@ export const createSupertokensService = async (
         modules,
         authEntityCreateInput
     );
-    if(recipeSettings.name === "emailpassword") {
+    if (recipeSettings.name === "emailpassword") {
         const { emailFieldName, passwordFieldName } = recipeSettings;
         await createFunc(
             resolve(constants.templatesPath, "emailpassword"),
@@ -35,7 +35,7 @@ export const createSupertokensService = async (
             },
             [emailFieldName, passwordFieldName]
         );
-    } else if(recipeSettings.name === "passwordless") {
+    } else if (recipeSettings.name === "passwordless") {
         await createFunc(
             resolve(constants.templatesPath, "passwordless"),
             {
@@ -43,21 +43,21 @@ export const createSupertokensService = async (
                 CONTACT_METHOD: builders.stringLiteral(recipeSettings.contactMethod)
             }
         );
-    } else if(recipeSettings.name === "thirdparty") {
+    } else if (recipeSettings.name === "thirdparty") {
         await createFunc(
             resolve(constants.templatesPath, "thirdparty"),
             {
                 THIRD_PARTY_PROVIDERS: thirdPartyProvidersArray(recipeSettings)
             }
         )
-    } else if(recipeSettings.name === "thirdpartyemailpassword") {
+    } else if (recipeSettings.name === "thirdpartyemailpassword") {
         await createFunc(
             resolve(constants.templatesPath, "thirdpartyemailpassword"),
             {
                 THIRD_PARTY_PROVIDERS: thirdPartyProvidersArray(recipeSettings)
             }
         )
-    } else if(recipeSettings.name === "thirdpartypasswordless") {
+    } else if (recipeSettings.name === "thirdpartypasswordless") {
         await createFunc(
             resolve(constants.templatesPath, "thirdpartypasswordless"),
             {
@@ -66,7 +66,7 @@ export const createSupertokensService = async (
                 THIRD_PARTY_PROVIDERS: thirdPartyProvidersArray(recipeSettings)
             }
         )
-    } else if(recipeSettings.name === "phonepassword") {
+    } else if (recipeSettings.name === "phonepassword") {
         await createFunc(
             resolve(constants.templatesPath, "phonepassword"),
             {}
@@ -92,7 +92,7 @@ const baseCreateSupertokensService = (
 ) => {
     return async (
         templateDir: string,
-        baseTemplateMapping: {[key: string]: namedTypes.ASTNode},
+        baseTemplateMapping: { [key: string]: namedTypes.ASTNode },
         skipDefaultCreation?: string[]
     ) => {
         const templatePath = resolve(templateDir, "supertokens.service.template.ts");
@@ -125,34 +125,34 @@ const getDefaultCreateValues = (
 ): namedTypes.ObjectExpression => {
     const defaultValues: namedTypes.ObjectProperty[] = [];
     visit(createInput, {
-        visitClassProperty: function(path) {
+        visitClassProperty: function (path) {
             const prop = path.node as namedTypes.ClassProperty & { optional: boolean };
-            if(prop.key.type !== "Identifier") {
+            if (prop.key.type !== "Identifier") {
                 return false;
             }
             const propName = prop.key.name;
-            if(propName !== SUPERTOKENS_ID_FIELD_NAME && 
+            if (propName !== SUPERTOKENS_ID_FIELD_NAME &&
                 (!skipDefaultCreation || !skipDefaultCreation.includes(propName))
                 && !prop.optional) {
-                    if(!prop.typeAnnotation) {
-                        throw new Error("Failed to find the type annotation of a property");
-                    }
-                    const propType = prop.typeAnnotation.typeAnnotation;
-                    if(!propType || !propType.type) {
-                        throw new Error(`Failed to find the type annotation of the auth entity create input property: ${propName}`)
-                    }
-                    if(propName === "roles") {
-                        defaultValues.push(builders.objectProperty(
-                            builders.identifier("roles"),
-                            builders.arrayExpression([])
-                        ));
-                    } else {
-                        defaultValues.push(builders.objectProperty(
-                            builders.identifier(propName),
-                            //@ts-ignore
-                            getDefaultValueForType(propType)
-                        ))
-                    }
+                if (!prop.typeAnnotation) {
+                    throw new Error("Failed to find the type annotation of a property");
+                }
+                const propType = prop.typeAnnotation.typeAnnotation;
+                if (!propType || !propType.type) {
+                    throw new Error(`Failed to find the type annotation of the auth entity create input property: ${propName}`)
+                }
+                if (propName === "roles") {
+                    defaultValues.push(builders.objectProperty(
+                        builders.identifier("roles"),
+                        builders.arrayExpression([])
+                    ));
+                } else {
+                    defaultValues.push(builders.objectProperty(
+                        builders.identifier(propName),
+                        //@ts-ignore
+                        getDefaultValueForType(propType)
+                    ))
+                }
             }
             return false;
         }
@@ -161,7 +161,7 @@ const getDefaultCreateValues = (
 }
 
 const getDefaultValueForType = (propType: namedTypes.TSTypeAnnotation["typeAnnotation"]): any => {
-    switch(propType.type) {
+    switch (propType.type) {
         case "TSArrayType":
             return builders.arrayExpression([])
         case "TSBigIntKeyword":
@@ -178,7 +178,7 @@ const getDefaultValueForType = (propType: namedTypes.TSTypeAnnotation["typeAnnot
             return builders.objectExpression([])
         case "TSLiteralType":
             const lit = propType.literal;
-            switch(lit.type) {
+            switch (lit.type) {
                 case "BooleanLiteral":
                     return builders.booleanLiteral(lit.value)
                 case "NumericLiteral":
@@ -195,10 +195,10 @@ const getDefaultValueForType = (propType: namedTypes.TSTypeAnnotation["typeAnnot
             }
         case "TSTypeReference":
             const name = propType.typeName;
-            if(name.type !== "Identifier") {
+            if (name.type !== "Identifier") {
                 throw new Error(`Can't figure out default value for property with type ${propType.type}: ${name}`);
             }
-            switch(name.name) {
+            switch (name.name) {
                 case "Date":
                     return builders.newExpression(builders.identifier("Date"), [])
                 case "InputJsonValue":
@@ -270,26 +270,26 @@ const phoneVerifiedClaimImport = () => {
 }
 
 const thirdPartyProvidersArray = (recipeSettings: Settings["recipe"]) => {
-    if(recipeSettings.name !== "thirdparty"
+    if (recipeSettings.name !== "thirdparty"
         && recipeSettings.name !== "thirdpartyemailpassword"
         && recipeSettings.name !== "thirdpartypasswordless") {
         throw new Error("Not a third party recipe");
     }
     const { apple, twitter, google, github } = recipeSettings;
-    if(!apple && !twitter && !google && !github) {
+    if (!apple && !twitter && !google && !github) {
         throw new Error("At least one provider's configuration must be provided");
     }
     const providerNames: (keyof ThirdPartyProvider)[] = ["apple", "twitter", "google", "github"];
     const providerSettings = Object.keys(recipeSettings).map((sk) => {
         const settingKey = sk as keyof ThirdPartyProvider;
-        if(providerNames.includes(settingKey)) {
+        if (providerNames.includes(settingKey)) {
             const providerSetting = recipeSettings[settingKey] as ThirdPartyProviderSettings
             return { name: settingKey, ...providerSetting }
         }
     }).filter((setting) => setting);
     const providersArray = [];
-    for(const providerSetting of providerSettings) {
-        if(!providerSetting) {
+    for (const providerSetting of providerSettings) {
+        if (!providerSetting) {
             continue;
         }
         const configObj = parse(`obj = {
@@ -297,12 +297,12 @@ const thirdPartyProvidersArray = (recipeSettings: Settings["recipe"]) => {
                 thirdPartyId: "${providerSetting.name}",
                 clients: [{
                     clientId: "${providerSetting.clientId}",
-                    ${providerSetting.clientSecret ? 
-                        `clientSecret: "${providerSetting.clientSecret}",`
-                        : ""}
+                    ${providerSetting.clientSecret ?
+                `clientSecret: "${providerSetting.clientSecret}",`
+                : ""}
                     ${providerSetting.additionalConfig ?
-                        `additionalConfig: ${JSON.stringify(providerSetting.additionalConfig)}`
-                        : ""}
+                `additionalConfig: ${JSON.stringify(providerSetting.additionalConfig)}`
+                : ""}
                 }]
             }
         }`);

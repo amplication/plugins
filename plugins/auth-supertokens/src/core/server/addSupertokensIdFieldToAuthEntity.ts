@@ -1,6 +1,6 @@
 import { DsgContext, EntityField, EnumDataType } from "@amplication/code-gen-types";
 import cuid from "cuid";
-import { SUPERTOKENS_ID_FIELD_NAME } from "../constants";
+import { SUPERTOKENS_ID_FIELD_NAME } from "../../constants";
 
 const createSupertokensField = (): EntityField => ({
     id: cuid(),

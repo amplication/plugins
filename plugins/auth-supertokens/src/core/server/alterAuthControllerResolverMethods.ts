@@ -1,8 +1,8 @@
 import { CreateEntityControllerBaseParams, CreateEntityResolverBaseParams } from "@amplication/code-gen-types";
 import { appendImports, parse } from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
-import { SUPERTOKENS_ID_FIELD_NAME } from "../constants";
-import { Settings } from "../types";
+import { SUPERTOKENS_ID_FIELD_NAME } from "../../constants";
+import { Settings } from "../../types";
 import { ExpressionKind } from "ast-types/gen/kinds";
 import { visit } from "recast";
 

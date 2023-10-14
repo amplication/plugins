@@ -2,9 +2,9 @@ import { ModuleMap } from "@amplication/code-gen-types";
 import { appendImports, print, readFile } from "@amplication/code-gen-utils";
 import { join, resolve, relative } from "path";
 import { builders, namedTypes } from "ast-types";
-import { templatesPath } from "../constants";
+import { templatesPath } from "../../constants";
 import { camelCase } from "lodash";
-import { interpolate } from "../utils";
+import { interpolate } from "../../utils";
 
 export const createAuthService = async (
     modules: ModuleMap,
