@@ -17,7 +17,7 @@ import {
   getClassDeclarationById,
   importNames,
   interpolate,
-} from "../util/ast"
+} from "../util/ast";
 
 const keycloakStrategyBasePath = join(
   templatesPath,
