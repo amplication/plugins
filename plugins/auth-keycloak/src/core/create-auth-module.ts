@@ -11,7 +11,7 @@ import {
   removeTSClassDeclares,
 } from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
-import { addImports, importNames, interpolate } from "@utils/ast";
+import { addImports, importNames, interpolate } from "../util/ast";
 
 const authModulePath = join(templatesPath, "auth.module.template.ts");
 

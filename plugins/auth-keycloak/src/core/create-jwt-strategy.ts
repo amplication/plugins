@@ -17,7 +17,7 @@ import {
   getClassDeclarationById,
   importNames,
   interpolate,
-} from "@utils/ast";
+} from "../util/ast";
 
 const jwtStrategyPath = join(templatesPath, "jwt.strategy.template.ts");
 
