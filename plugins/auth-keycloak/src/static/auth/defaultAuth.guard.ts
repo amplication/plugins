@@ -2,10 +2,10 @@ import { Observable } from "rxjs";
 import { ExecutionContext, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { IS_PUBLIC_KEY } from "../decorators/public.decorator";
-import { JwtAuthGuard } from "./keycloak/keycloakAuth.guard";
+import { KeycloakAuthGuard } from "./keycloak/keycloakAuth.guard";
 
 @Injectable()
-export class DefaultAuthGuard extends JwtAuthGuard {
+export class DefaultAuthGuard extends KeycloakAuthGuard {
   constructor(private readonly reflector: Reflector) {
     super();
   }

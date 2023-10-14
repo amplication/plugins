@@ -80,13 +80,13 @@ const mapKeycloakStrategyTemplate = async (
       ENTITY: builders.identifier(entityNameToLower),
     };
 
-    const filePath = `${serverDirectories.authDirectory}/jwt/base/${fileName}`;
+    const filePath = `${serverDirectories.authDirectory}/keycloak/base/${fileName}`;
 
     interpolate(template, templateMapping);
 
     const classDeclaration = getClassDeclarationById(
       template,
-      builders.identifier("JwtStrategyBase"),
+      builders.identifier("KeycloakStrategyBase"),
     );
 
     addInjectableDependency(

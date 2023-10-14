@@ -1,6 +1,6 @@
 import { forwardRef, Module } from "@nestjs/common";
 import { PassportModule } from "@nestjs/passport";
-import { JwtStrategy } from "./jwt/jwt.strategy";
+import { KeycloakStrategy } from "./keycloak/keycloak.strategy";
 
 declare class ENTITY_MODULE {}
 
@@ -9,7 +9,7 @@ declare class ENTITY_MODULE {}
     forwardRef(() => ENTITY_MODULE),
     PassportModule.register({ defaultStrategy: "jwt" }),
   ],
-  providers: [JwtStrategy],
+  providers: [KeycloakStrategy],
   controllers: [],
   exports: [PassportModule],
 })
