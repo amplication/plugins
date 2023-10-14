@@ -1,4 +1,5 @@
 import { join } from "path";
+import { Settings } from "./types";
 
 export const staticsPath = join(__dirname, "static");
 
@@ -10,9 +11,24 @@ export const dependencies = {
     }
 }
 
-export const adminUIDependencies = {
-    dependencies: {
-        "supertokens-web-js": "^0.8.0"
+export const adminUIDependencies = (recipeName: Settings["recipe"]["name"]) => {
+    switch(recipeName) {
+        case "emailpassword":
+            return {
+                dependencies: {
+                    "supertokens-web-js": "^0.8.0"
+                }
+            }
+        case "passwordless":
+            return {
+                dependencies: {
+                    "supertokens-web-js": "^0.8.0",
+                    "libphonenumber-js": "^1.10.47"
+                },
+                devDependencies: {
+                    "@types/react-router-dom": "^5.3.3"
+                }
+            }
     }
 }
 

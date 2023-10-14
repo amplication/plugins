@@ -57,7 +57,8 @@ import {
   replaceDataProviderModule,
   addSupertokensAuthProvider,
   removeNonSupertokensAuthProviderImportsFromAppModule,
-  removeNonSupertokensAuthProviderModules
+  removeNonSupertokensAuthProviderModules,
+  addConsumeMagicLinkModule
 } from "./core";
 import { EnumAuthProviderType } from "@amplication/code-gen-types/src/models";
 
@@ -139,7 +140,8 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     eventParams: CreateAdminAppModuleParams
   ): Promise<CreateAdminAppModuleParams> {
 
-    const newTemplatePath = join(constants.templatesPath, "admin-ui", "App.template.tsx");
+    const settings = utils.getPluginSettings(context.pluginInstallations);
+    const newTemplatePath = join(constants.templatesPath, "admin-ui", settings.recipe.name, "App.template.tsx");
     const newTemplate = await readFile(newTemplatePath);
     eventParams.template = newTemplate;
     // The resulting auth provider effects on the app module will still
@@ -171,12 +173,17 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
 
     const { srcDirectory } = context.clientDirectories;
     const settings = utils.getPluginSettings(context.pluginInstallations);
-    await addSupertokensConfigFile(srcDirectory, modules);
-    await replaceLoginPage(srcDirectory, modules, settings.recipe.name);
-    await replaceTypesModule(srcDirectory, modules, settings.recipe.name);
+    await addSupertokensConfigFile(srcDirectory, modules, settings.recipe.name);
+    await replaceLoginPage(srcDirectory, modules, settings);
+    await replaceTypesModule(srcDirectory, modules, settings);
     await replaceDataProviderModule(srcDirectory, modules);
-    await addSupertokensAuthProvider(srcDirectory, modules, settings.recipe.name);
+    await addSupertokensAuthProvider(srcDirectory, modules, settings);
     removeNonSupertokensAuthProviderModules(srcDirectory, modules);
+    if(settings.recipe.name === "passwordless"
+      && (settings.recipe.flowType === "MAGIC_LINK"
+        || settings.recipe.flowType === "USER_INPUT_CODE_AND_MAGIC_LINK")) {
+      await addConsumeMagicLinkModule(srcDirectory, modules);
+    }
 
     return modules;
   }
@@ -208,7 +215,8 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateAdminUIPackageJsonParams
   ): CreateAdminUIPackageJsonParams {
-    const deps = constants.adminUIDependencies
+    const settings = utils.getPluginSettings(context.pluginInstallations);
+    const deps = constants.adminUIDependencies(settings.recipe.name);
 
     eventParams.updateProperties.forEach((updateProperty) => {
       merge(updateProperty, deps);

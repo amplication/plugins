@@ -31,10 +31,10 @@ export interface Settings {
   }
 }
 
-type PasswordlessFlowType = "USER_INPUT_CODE_AND_MAGIC_LINK"
+export type PasswordlessFlowType = "USER_INPUT_CODE_AND_MAGIC_LINK"
   | "USER_INPUT_CODE" | "MAGIC_LINK";
 
-type PasswordlessContactMethod = "EMAIL" | "PHONE" | "EMAIL_OR_PHONE";
+export type PasswordlessContactMethod = "EMAIL" | "PHONE" | "EMAIL_OR_PHONE";
 
 export type ThirdPartyProvider = {
   google?: ThirdPartyProviderSettings,

@@ -5,9 +5,10 @@ import { staticsPath } from "../../constants";
 
 export const addSupertokensConfigFile = async (
     srcDirectory: string,
-    modules: ModuleMap
+    modules: ModuleMap,
+    recipeName: string
 ) => {
-    const supertokensConfigPath = resolve(staticsPath, "admin-ui", "config.tsx");
+    const supertokensConfigPath = resolve(staticsPath, "admin-ui", recipeName, "config.tsx");
     const file = await readFile(supertokensConfigPath);
     modules.set({
       path: join(srcDirectory, "config.tsx"),
