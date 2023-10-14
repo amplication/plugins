@@ -14,9 +14,9 @@ import { EnumAuthProviderType } from "@amplication/code-gen-types/src/models";
 import { resolve } from "path";
 import {
   createAuthModule,
-  createJwtStrategy,
+  createKeycloakStrategy,
   createAuthResolver,
-  createJwtStrategyBase,
+  createKeycloakStrategyBase,
 } from "./core";
 import {
   updateDockerComposeDevProperties,
@@ -76,13 +76,13 @@ class KeycloakAuthPlugin implements AmplicationPlugin {
       context.serverDirectories.srcDirectory,
     );
 
-    // 1. Create JWT strategy
-    const jwtStrategy = await createJwtStrategy(context);
-    modules.set(jwtStrategy);
+    // 1. Create Keycloak strategy
+    const keycloakStrategy = await createKeycloakStrategy(context);
+    modules.set(keycloakStrategy);
 
-    // 2. Create JWT strategy base
-    const jwtStrategyBase = await createJwtStrategyBase(context);
-    modules.set(jwtStrategyBase);
+    // 2. Create Keycloak strategy base
+    const keycloakStrategyBase = await createKeycloakStrategyBase(context);
+    modules.set(keycloakStrategyBase);
 
     // 3. Create auth module
     const authModule = await createAuthModule(context);

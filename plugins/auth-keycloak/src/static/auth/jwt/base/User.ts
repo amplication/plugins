@@ -1,9 +1,9 @@
-export interface Auth0User {
-  nickname: string;
-  username: string;
+export interface keyCloakUser {
   name: string;
   email: string;
-  picture: string;
+  username: string;
   given_name: string;
-  family_name: string;
+  preferred_username: string;
+  firstName: string;
+  lastName: string;
 }

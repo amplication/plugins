@@ -57,7 +57,7 @@ export const updateDockerComposeDevProperties: CreateServerDockerComposeParams["
           image: "quay.io/keycloak/keycloak",
           command: "start-dev",
           restart: "always",
-          ports: ["${KC_PORT}:8080"],
+          ports: ["8180:8080"],
           environment: {
             KEYCLOAK_ADMIN: KC_ADMIN_USER,
             KEYCLOAK_ADMIN_PASSWORD: KC_ADMIN_PASSWORD,

@@ -1,9 +1,9 @@
 {
-    "settings": {
-        "KEYCLOAK_HOST": "localhost",
-        "KEYCLOAK_REALM": "master",
-        "KEYCLOAK_CLIENT_ID": "master-realm",
-        "KEYCLOAK_CLIENT_SECRET": "secret",
-        "KEYCLOAK_CALLBACK_URL": "/api/keycloak_callback"
-    }
+  "settings": {
+    "KEYCLOAK_HOST": "localhost",
+    "KEYCLOAK_REALM": "test-realm",
+    "KEYCLOAK_CLIENT_ID": "test-client",
+    "KEYCLOAK_CLIENT_SECRET": "pryUAZxDplBlJmRfCZ8yxH2NT1Dcad5H",
+    "KEYCLOAK_CALLBACK_URL": "http://localhost:3000/api/callback"
+  }
 }

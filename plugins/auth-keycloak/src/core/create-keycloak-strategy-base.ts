@@ -17,15 +17,22 @@ import {
   getClassDeclarationById,
   importNames,
   interpolate,
-} from "../util/ast";
+} from "../util/ast"
 
-const jwtStrategyPath = join(templatesPath, "jwt.strategy.template.ts");
+const keycloakStrategyBasePath = join(
+  templatesPath,
+  "keycloak.strategy.base.template.ts",
+);
 
-export const createJwtStrategy = async (context: DsgContext) => {
-  return mapJwtStrategyTemplate(context, jwtStrategyPath, "jwt.strategy.ts");
+export const createKeycloakStrategyBase = async (context: DsgContext) => {
+  return mapKeycloakStrategyTemplate(
+    context,
+    keycloakStrategyBasePath,
+    "keycloak.strategy.base.ts",
+  );
 };
 
-const mapJwtStrategyTemplate = async (
+const mapKeycloakStrategyTemplate = async (
   context: DsgContext,
   templatePath: string,
   fileName: string,
@@ -51,14 +58,13 @@ const mapJwtStrategyTemplate = async (
     );
 
     const template = await readFile(templatePath);
-
     const entityNameId = builders.identifier(entityInfoName);
     const entityServiceNameId = builders.identifier(entityServiceName);
 
     // Making the imports for authetication entity
     const entityNameImport = importNames(
       [entityNameId],
-      `../${entityInfoName}`,
+      `../../${entityInfoName}`,
     );
 
     const entityServiceImport = importNames(
@@ -71,18 +77,16 @@ const mapJwtStrategyTemplate = async (
     const templateMapping = {
       ENTITY_NAME_INFO: entityNameId,
       ENTITY_SERVICE: entityServiceIdentifier,
-      ENTITY_FIELDS: builders.identifier(`${entityNameToLower}Fields`),
-      VALIDATED_ENTITY: builders.identifier(`validated${authEntity?.name}`),
-      NEW_ENTITY: builders.identifier(`new${authEntity?.name}`),
+      ENTITY: builders.identifier(entityNameToLower),
     };
 
-    const filePath = `${serverDirectories.authDirectory}/jwt/${fileName}`;
+    const filePath = `${serverDirectories.authDirectory}/jwt/base/${fileName}`;
 
     interpolate(template, templateMapping);
 
     const classDeclaration = getClassDeclarationById(
       template,
-      builders.identifier("JwtStrategy"),
+      builders.identifier("JwtStrategyBase"),
     );
 
     addInjectableDependency(
