@@ -1,0 +1,59 @@
+{
+    "family": "${{ SERVICE_NAME }}-family",
+    "containerDefinitions": [
+        {
+            "name": "${{ SERVICE_NAME }}",
+            "image": "${{ ACCOUNT_IDENTIFIER }}.dkr.ecr.${{ REGION_IDENTIFIER }}.amazonaws.com/${{ ECR_REPOSITORY }}:${{ IMAGE_TAG }}",
+            "essential": true,
+            "portMappings": [
+                {
+                    "name": "${{ SERVICE_NAME }}-3000-tcp",
+                    "containerPort": 3000,
+                    "hostPort": 3000,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "secrets": [
+                {
+                    "name": "BCRYPT_SALT",
+                    "valueFrom": "arn:aws:secretsmanager:${{ REGION_IDENTIFIER }}:${{ ACCOUNT_IDENTIFIER }}:secret:${{ SECRET_NAME }}:BCRYPT_SALT"
+                },
+                {
+                    "name": "JWT_EXPIRATION",
+                    "valueFrom": "arn:aws:secretsmanager:${{ REGION_IDENTIFIER }}:${{ ACCOUNT_IDENTIFIER }}:secret:${{ SECRET_NAME }}:JWT_EXPIRATION"
+                },
+                {
+                    "name": "JWT_SECRET_KEY",
+                    "valueFrom": "arn:aws:secretsmanager:${{ REGION_IDENTIFIER }}:${{ ACCOUNT_IDENTIFIER }}:secret:${{ SECRET_NAME }}:JWT_SECRET_KEY"
+                },
+                {
+                    "name": "DB_URL",
+                    "valueFrom": "arn:aws:secretsmanager:${{ REGION_IDENTIFIER }}:${{ ACCOUNT_IDENTIFIER }}:secret:${{ SECRET_NAME }}:DB_URL"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-create-group": "true",
+                    "awslogs-group": "/ecs/${{ SERVICE_NAME }}-family",
+                    "awslogs-region": "${{ REGION_IDENTIFIER }}",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            },
+            "mountPoints": [],
+            "volumesFrom": []
+        }
+    ],
+    "executionRoleArn": "arn:aws:iam::${{ ACCOUNT_ID }}:role/${{ ECS_ROLE_NAME }}",
+    "networkMode": "awsvpc",
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "1024",
+    "memory": "4096",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    }
+}

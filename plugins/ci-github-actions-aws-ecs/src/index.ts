@@ -45,9 +45,10 @@ class GithubActionsAwsEcsPlugin implements AmplicationPlugin {
     );
     
     const templateFileName: string = "workflow.yaml";
-    const workflowFileNamePrefix: string = "cd-";
-    const workflowFileNameSuffix: string = "-aws-ecs.yaml";
-    const outputDirectory: string = "./.github/workflows/";
+    const FileNamePrefix: string = "cd-";
+    const FileNameSuffix: string = "-aws-ecs.yaml";
+    const outputDirectoryWorkflowFile: string = "./.github/workflows/";
+    const outputDirectoryTaskDefinitionFile: string = "./.github/configuration/";
 
     // TODO: path to dockerfile, on 'build, tag and push image' step
 

@@ -1,3 +1,18 @@
 {
-    
+  "settings": {
+    "region": "eu-west-1",
+    "account_id": "",
+    "ecr_repository_name": "",
+    "ecs_cluster_name": "",
+    "iam_role_name": "",
+    "image_tag": "latest",
+    "resources": {
+      "cpu": 1,
+      "memory": 2048
+    },
+    "runtime_platform": {
+      "cpu_architecture": "X86_64",
+      "os_family": "LINUX"
+    }
+  }
 }
