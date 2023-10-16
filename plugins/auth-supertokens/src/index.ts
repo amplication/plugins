@@ -58,7 +58,9 @@ import {
   addSupertokensAuthProvider,
   removeNonSupertokensAuthProviderImportsFromAppModule,
   removeNonSupertokensAuthProviderModules,
-  addConsumeMagicLinkModule
+  addConsumeMagicLinkModule,
+  addAuthCallbackModule,
+  removeUnneededAdminUIFiles
 } from "./core";
 import { EnumAuthProviderType } from "@amplication/code-gen-types/src/models";
 
@@ -173,6 +175,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
 
     const { srcDirectory } = context.clientDirectories;
     const settings = utils.getPluginSettings(context.pluginInstallations);
+    removeUnneededAdminUIFiles(srcDirectory, modules);
     await addSupertokensConfigFile(srcDirectory, modules, settings.recipe.name);
     await replaceLoginPage(srcDirectory, modules, settings);
     await replaceTypesModule(srcDirectory, modules, settings);
@@ -183,6 +186,9 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       && (settings.recipe.flowType === "MAGIC_LINK"
         || settings.recipe.flowType === "USER_INPUT_CODE_AND_MAGIC_LINK")) {
       await addConsumeMagicLinkModule(srcDirectory, modules);
+    }
+    if(settings.recipe.name === "thirdparty") {
+      await addAuthCallbackModule(srcDirectory, modules);
     }
 
     return modules;

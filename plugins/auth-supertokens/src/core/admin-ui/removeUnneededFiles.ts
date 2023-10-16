@@ -1,7 +1,7 @@
 import { ModuleMap } from "@amplication/code-gen-types";
 import { join } from "lodash";
 
-export const removeUnneededFiles = (
+export const removeUnneededAdminUIFiles = (
     srcDirectory: string,
     modules: ModuleMap
 ) => {
@@ -12,6 +12,6 @@ export const removeUnneededFiles = (
         join("auth-provider", "ra-auth-jwt.ts")
     ];
     modules.removeMany(
-        unneededFilenames.map((filename) => join(srcDirectory, filename))
+        unneededFilenames.map((filename) => `${srcDirectory}/${filename}`)
     );
 }

@@ -12,23 +12,34 @@ export const dependencies = {
 }
 
 export const adminUIDependencies = (recipeName: Settings["recipe"]["name"]) => {
+    const base = {
+        dependencies: {
+            "supertokens-web-js": "^0.8.0"
+        }
+    }
     switch(recipeName) {
-        case "emailpassword":
-            return {
-                dependencies: {
-                    "supertokens-web-js": "^0.8.0"
-                }
-            }
         case "passwordless":
             return {
                 dependencies: {
-                    "supertokens-web-js": "^0.8.0",
+                    ...base.dependencies,
                     "libphonenumber-js": "^1.10.47"
                 },
                 devDependencies: {
                     "@types/react-router-dom": "^5.3.3"
                 }
             }
+        case "thirdparty":
+            return {
+                dependencies: {
+                    ...base.dependencies,
+                    "react-social-login-buttons": "^3.9.1",
+                },
+                devDependencies: {
+                    "@types/react-router-dom": "^5.3.3"
+                }
+            }
+        default:
+            return base;
     }
 }
 

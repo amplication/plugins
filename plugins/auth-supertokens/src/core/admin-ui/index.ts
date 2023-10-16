@@ -6,3 +6,5 @@ export { addSupertokensAuthProvider } from "./addSupertokensAuthProvider";
 export { removeNonSupertokensAuthProviderImportsFromAppModule } from "./removeNonSupertokensAuthProviderImportsFromAppModule";
 export { removeNonSupertokensAuthProviderModules } from "./removeNonSupertokensAuthProviderModules";
 export { addConsumeMagicLinkModule } from "./addConsumeMagicLinkModule";
+export { addAuthCallbackModule } from "./addAuthCallbackModule";
+export { removeUnneededAdminUIFiles } from "./removeUnneededFiles"
