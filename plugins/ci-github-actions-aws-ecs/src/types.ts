@@ -1,16 +1,16 @@
 export interface Settings {
-  region: string;
-  account_id: number;
+  region_identifier: string;
+  account_identifier: string;
   ecr_repository_name: string;
+  image_tag: string;
   ecs_cluster_name: string;
-  ecr_role_name: string;
   ecs_role_name: string;
   resources: {
-    cpu: number;
-    memory: number;
-  },
+    cpu: string;
+    memory: string;
+  };
   runtime_platform: {
     cpu_architecture: string;
     os_family: string;
-  }
+  };
 }

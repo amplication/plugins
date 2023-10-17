@@ -1,11 +1,24 @@
 import type {
   AmplicationPlugin,
-  CreateAdminUIParams,
   CreateServerParams,
   DsgContext,
   Events,
   ModuleMap,
 } from "@amplication/code-gen-types";
+import {
+  regionIdentifierKey,
+  accountIdentifierKey,
+  imageTagKey,
+  ecrRepositoryNameKey,
+  serviceNameKey,
+  ecsClusterNameKey,
+  ecsRoleNameKey,
+  ecsTaskDefinitionPath,
+  resourcesCpuKey,
+  resourcesMemoryKey,
+  runtimeCpuArchitectureKey,
+  runtimeOsFamilyKey,
+} from "./constants";
 import { getPluginSettings } from "./utils";
 import { EventNames } from "@amplication/code-gen-types";
 import { resolve } from "path";
@@ -25,7 +38,9 @@ class GithubActionsAwsEcsPlugin implements AmplicationPlugin {
     eventParams: CreateServerParams,
     modules: ModuleMap
   ): Promise<ModuleMap> {
-    context.logger.info("Generating Github Actions deploy to Amazon ECS workflow ...");
+    context.logger.info(
+      "Generating Github Actions deploy to Amazon ECS workflow ..."
+    );
 
     // determine the name of the service which will be used as the name for the workflow
     // workflow names must be lower case letters and numbers. words may be separated with dashes (-):
@@ -34,29 +49,72 @@ class GithubActionsAwsEcsPlugin implements AmplicationPlugin {
     if (!serviceName) {
       throw new Error("Service name is undefined");
     }
-    
+
+    // template file names
+    const templateWorkflowFileName: string = "workflow.yaml";
+    const templateTaskDefinitionFileName: string = "task-definition.json";
+
+    // output file name prefix & suffixes
+    const fileNamePrefix: string = "cd-";
+    const workflowFileNameSuffix: string = "-aws-ecs.yaml";
+    const taskDefinitionFileNameSuffix: string = "-aws-ecs.json";
+
+    // ouput directory base & file specific suffix
+    const outputDirectoryBase: string = "./.github/workflows/";
+    const outputDirectorySuffixTaskDefinitionFile: string =
+      "configuration/" +
+      fileNamePrefix +
+      serviceName +
+      taskDefinitionFileNameSuffix;
+
     // getPluginSettings: fetch user settings + merge with default settings
     const settings = getPluginSettings(context.pluginInstallations);
-
     const staticPath = resolve(__dirname, "./static");
-    const staticsFiles = await context.utils.importStaticModules(
+
+    const staticFiles = await context.utils.importStaticModules(
       staticPath,
-      context.serverDirectories.srcDirectory
+      outputDirectoryBase
     );
-    
-    const templateFileName: string = "workflow.yaml";
-    const FileNamePrefix: string = "cd-";
-    const FileNameSuffix: string = "-aws-ecs.yaml";
-    const outputDirectoryWorkflowFile: string = "./.github/workflows/";
-    const outputDirectoryTaskDefinitionFile: string = "./.github/configuration/";
 
-    // TODO: path to dockerfile, on 'build, tag and push image' step
+    staticFiles.replaceModulesPath((path) =>
+      path
+        .replace(
+          templateWorkflowFileName,
+          fileNamePrefix + serviceName + workflowFileNameSuffix
+        )
+        .replace(
+          templateTaskDefinitionFileName,
+          outputDirectorySuffixTaskDefinitionFile
+        )
+    );
 
+    staticFiles.replaceModulesCode((code) =>
+      code
+        .replaceAll(serviceNameKey, serviceName)
+        .replaceAll(regionIdentifierKey, settings.region_identifier)
+        .replaceAll(accountIdentifierKey, settings.account_identifier)
+        .replaceAll(ecrRepositoryNameKey, settings.ecr_repository_name)
+        .replaceAll(imageTagKey, settings.image_tag)
+        .replaceAll(ecsClusterNameKey, settings.ecs_cluster_name)
+        .replaceAll(ecsRoleNameKey, settings.ecs_role_name)
+        .replaceAll(
+          ecsTaskDefinitionPath,
+          "." + outputDirectorySuffixTaskDefinitionFile
+        )
+        .replaceAll(resourcesCpuKey, settings.resources.cpu)
+        .replaceAll(resourcesMemoryKey, settings.resources.memory)
+        .replaceAll(
+          runtimeCpuArchitectureKey,
+          settings.runtime_platform.cpu_architecture
+        )
+        .replaceAll(runtimeOsFamilyKey, settings.runtime_platform.os_family)
+    );
 
+    context.logger.info(
+      "Generated Github Actions deploy to Amazon ECS workflow..."
+    );
 
-
-    context.logger.info("Generated Github Actions deploy to Amazon ECS workflow...");
-    await modules.merge(staticsFiles);
+    await modules.merge(staticFiles);
     return modules;
   }
 }

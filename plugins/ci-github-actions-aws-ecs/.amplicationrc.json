@@ -1,18 +1,18 @@
 {
-  "settings": {
-    "region": "eu-west-1",
-    "account_id": "",
-    "ecr_repository_name": "",
-    "ecs_cluster_name": "",
-    "iam_role_name": "",
-    "image_tag": "latest",
-    "resources": {
-      "cpu": 1,
-      "memory": 2048
-    },
-    "runtime_platform": {
-      "cpu_architecture": "X86_64",
-      "os_family": "LINUX"
+    "settings": {
+      "region_identifier": "eu-west-1",
+      "account_identifier": "012345678901",
+      "ecr_repository_name": "generated-service-name",
+      "ecs_cluster_name": "development-cluster",
+      "ecs_role_name": "taskExecutionRole",
+      "image_tag": "latest",
+      "resources": {
+        "cpu": "1024",
+        "memory": "2048"
+      },
+      "runtime_platform": {
+        "cpu_architecture": "X86_64",
+        "os_family": "LINUX"
+      }
     }
-  }
 }

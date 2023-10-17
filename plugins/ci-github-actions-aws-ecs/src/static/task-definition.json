@@ -3,7 +3,7 @@
     "containerDefinitions": [
         {
             "name": "${{ SERVICE_NAME }}",
-            "image": "${{ ACCOUNT_IDENTIFIER }}.dkr.ecr.${{ REGION_IDENTIFIER }}.amazonaws.com/${{ ECR_REPOSITORY }}:${{ IMAGE_TAG }}",
+            "image": "${{ ACCOUNT_IDENTIFIER }}.dkr.ecr.${{ REGION_IDENTIFIER }}.amazonaws.com/${{ ECR_REPOSITORY_NAME }}:${{ IMAGE_TAG }}",
             "essential": true,
             "portMappings": [
                 {
@@ -45,15 +45,15 @@
             "volumesFrom": []
         }
     ],
-    "executionRoleArn": "arn:aws:iam::${{ ACCOUNT_ID }}:role/${{ ECS_ROLE_NAME }}",
+    "executionRoleArn": "arn:aws:iam::${{ ACCOUNT_IDENTIFIER }}:role/${{ ECS_ROLE_NAME }}",
     "networkMode": "awsvpc",
     "requiresCompatibilities": [
         "FARGATE"
     ],
-    "cpu": "1024",
-    "memory": "4096",
+    "cpu": "${{ RESOURCES_CPU }}",
+    "memory": "${{ RESOURCES_MEMORY }}",
     "runtimePlatform": {
-        "cpuArchitecture": "X86_64",
-        "operatingSystemFamily": "LINUX"
+        "cpuArchitecture": "${{ RUNTIME_CPU_ARCHITECTURE }}",
+        "operatingSystemFamily": "${{ RUNTIME_OS_FAMILY }}"
     }
 }
