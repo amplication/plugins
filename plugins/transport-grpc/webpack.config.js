@@ -7,10 +7,7 @@ module.exports = {
   mode: "production",
   target: "node",
   entry: "./src/index.ts",
-  externals: {
-    "@amplication/code-gen-types": "@amplication/code-gen-types",
-    "@amplication/code-gen-utils": "@amplication/code-gen-utils"
-  },
+  externals: ["@amplication/code-gen-utils", "@amplication/code-gen-types"],
   plugins: [
     new webpack.SourceMapDevToolPlugin({
       filename: "[name].js.map",
@@ -32,7 +29,7 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: [".ts", ".js"],
+    extensions: [".ts", ".js", ".json",".proto"],
   },
   optimization: {
     minimize: false,

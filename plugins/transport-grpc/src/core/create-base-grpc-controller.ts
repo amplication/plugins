@@ -45,7 +45,8 @@ export async function createGrpcControllerBase(
 
     relatedEntities &&
       relatedEntities.forEach((entity) => {
-        controllerToManyMethodsIdsActionPairs(pascalCase(entity.name)).forEach(
+        const {relatedEntity} = entity.properties; 
+        controllerToManyMethodsIdsActionPairs(relatedEntity).forEach(
           ({ methodId, methodName }) => {
             const classMethod = getClassMethodByIdName(
               classDeclaration,

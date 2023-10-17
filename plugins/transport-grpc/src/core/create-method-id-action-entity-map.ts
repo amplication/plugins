@@ -10,9 +10,15 @@ type MethodsIdsActionEntityTriplet = {
   outputObjectName: string;
 };
 
+type methodMessage = {
+  name: string;
+};
+
 type MethodsIdsActionEntity = {
   methodId: namedTypes.Identifier;
   methodName: string;
+  inputObjectName: string;
+  outputObjectName: string;
 };
 
 export const enum EnumTemplateType {
@@ -42,8 +48,8 @@ export const controllerMethodsIdsActionPairs = (
     ] as namedTypes.Identifier,
     entity: entity,
     methodName: "findMany",
-    inputObjectName: ``,
-    outputObjectName: `${pascalCase(entity.name)}[]`,
+    inputObjectName: "findManyParams",
+    outputObjectName: `stream ${pascalCase(entity.name)}`,
   },
   {
     methodId: templateMapping[
@@ -74,24 +80,68 @@ export const controllerMethodsIdsActionPairs = (
   },
 ];
 
+export const methodMessages = (entityName: string): methodMessage[] => [
+  {
+    name: `${pascalCase(entityName)}CreateInput`,
+  },
+  {
+    name: pascalCase(entityName),
+  },
+  {
+    name: `${pascalCase(entityName)}WhereUniqueInput`,
+  },
+  {
+    name: `${pascalCase(entityName)}UpdateInput`,
+  },
+];
+
+export const manyRelationMethodMessages = (
+  entityName: string
+): methodMessage[] => [
+  {
+    name: pascalCase(entityName),
+  },
+  {
+    name: `${pascalCase(entityName)}WhereUniqueInput`,
+  },
+
+  //add here the empty message and findMany 
+];
+
 export const controllerToManyMethodsIdsActionPairs = (
-  relatedEntityName: string
+  relatedEntity: Entity,
+  entityName?: string
 ): MethodsIdsActionEntity[] => [
   {
-    methodId: builders.identifier(`findMany${relatedEntityName}`),
-
-    methodName: `findMany${relatedEntityName}`,
+    methodId: builders.identifier(
+      `findMany${pascalCase(relatedEntity.pluralName)}`
+    ),
+    methodName: `findMany${pascalCase(relatedEntity.pluralName)}`,
+    inputObjectName: `${entityName}WhereUniqueInput`,
+    outputObjectName: `stream ${relatedEntity.name}`,
   },
   {
-    methodId: builders.identifier(`update${relatedEntityName}`),
-    methodName: `update${relatedEntityName}`,
+    methodId: builders.identifier(
+      `update${pascalCase(relatedEntity.pluralName)}`
+    ),
+    methodName: `update${pascalCase(relatedEntity.pluralName)}`,
+    inputObjectName: `${relatedEntity.name}Params`,
+    outputObjectName: `stream ${pascalCase(relatedEntity.name)}`,
   },
   {
-    methodId: builders.identifier(`connect${relatedEntityName}`),
-    methodName: `connect${relatedEntityName}`,
+    methodId: builders.identifier(
+      `connect${pascalCase(relatedEntity.pluralName)}`
+    ),
+    methodName: `connect${pascalCase(relatedEntity.pluralName)}`,
+    inputObjectName:`${relatedEntity.name}Params`,
+    outputObjectName: relatedEntity.name,
   },
   {
-    methodId: builders.identifier(`disconnect${relatedEntityName}`),
-    methodName: `disconnect${relatedEntityName}`,
+    methodId: builders.identifier(
+      `disconnect${pascalCase(relatedEntity.pluralName)}`
+    ),
+    methodName: `disconnect${pascalCase(relatedEntity.pluralName)}`,
+    inputObjectName: `${relatedEntity.name}Params`,
+    outputObjectName: relatedEntity.name,
   },
 ];

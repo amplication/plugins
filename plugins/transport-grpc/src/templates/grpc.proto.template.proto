@@ -4,10 +4,12 @@ syntax = "proto3";
 package auth;
 
 service auth {
-  rpc Create (RegisterRequest) returns (RegisterResponse) {}
+  rpc Create (RegisterRequest ) returns (RegisterResponse) {}
   rpc FindMany (LoginRequest) returns (LoginResponse) {}
   rpc FindOne (ValidateRequest) returns (ValidateResponse) {}
   rpc Delete (ValidateRequest) returns (ValidateResponse) {}
+  rpc Delete (ValidateRequest) returns (ValidateResponse) {}
+
 }
 
 // Register

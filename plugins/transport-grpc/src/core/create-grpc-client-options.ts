@@ -31,14 +31,12 @@ export async function createGrpcClientOptionsFile(
   };
 
   entities?.forEach((entity) => {
-    packages.elements.push(builders.stringLiteral(entity.name));
-    const entityProtoPath = builders.callExpression(
-      builders.identifier("join"),
-      [
-        builders.identifier("__dirname"),
-        builders.stringLiteral(`${entity.name}/${entity.name}.proto`),
-      ]
+    const entityNameLowerCase = entity.name.toLowerCase();
+    packages.elements.push(builders.stringLiteral(entityNameLowerCase));
+    const entityProtoPath = builders.stringLiteral(
+      `src/${entityNameLowerCase}/${entityNameLowerCase}.proto`
     );
+
     protoPaths.elements.push(entityProtoPath);
   });
 
