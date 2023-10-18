@@ -69,7 +69,40 @@ export class SupertokensService {
             },
           }
         }),
-        Session.init(),
+        Session.init({
+          override: {
+            functions: (originalImplementation) => {
+              return {
+                ...originalImplementation,
+                createNewSession: async function(input) {
+                  const user = await userService.findOne({
+                    where: {
+                      supertokensId: input.userId
+                    },
+                    select: {
+                      id: true
+                    }
+                  });
+                  if(!user) {
+                    throw new Error("Failed to find a user with the corresponding supertokens ID");
+                  }
+                  const userInfo = await supertokens.getUser(
+                    input.userId,
+                    input.userContext
+                  );
+                  return originalImplementation.createNewSession({
+                    ...input,
+                    accessTokenPayload: {
+                      ...input.accessTokenPayload,
+                      email: userInfo?.emails[0],
+                      userId: user.id
+                    }
+                  })
+                }
+              }
+            }
+          }
+        }),
         Dashboard.init(),
       ],
     });

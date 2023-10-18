@@ -29,10 +29,22 @@ export const adminUIDependencies = (recipeName: Settings["recipe"]["name"]) => {
                 }
             }
         case "thirdparty":
+        case "thirdpartyemailpassword":
             return {
                 dependencies: {
                     ...base.dependencies,
                     "react-social-login-buttons": "^3.9.1",
+                },
+                devDependencies: {
+                    "@types/react-router-dom": "^5.3.3"
+                }
+            }
+        case "thirdpartypasswordless":
+            return {
+                dependencies: {
+                    ...base.dependencies,
+                    "react-social-login-buttons": "^3.9.1",
+                    "libphonenumber-js": "^1.10.47"
                 },
                 devDependencies: {
                     "@types/react-router-dom": "^5.3.3"

@@ -17,7 +17,8 @@ export const addSupertokensAuthProvider = async (
 }
 
 const getSupertokensAuthProviderCode = async (settings: Settings) => {
-  if(settings.recipe.name === "passwordless") {
+  if(settings.recipe.name === "passwordless"
+    || settings.recipe.name === "thirdpartypasswordless") {
     return await getPasswordlessAuthProviderCode(settings);
   }
   const path = resolve(staticsPath, "admin-ui", settings.recipe.name, "ra-auth-supertokens.ts");
@@ -25,7 +26,8 @@ const getSupertokensAuthProviderCode = async (settings: Settings) => {
 }
 
 const getPasswordlessAuthProviderCode = async (settings: Settings) => {
-  if(settings.recipe.name !== "passwordless") {
+  if(settings.recipe.name !== "passwordless"
+    && settings.recipe.name !== "thirdpartypasswordless") {
     throw new Error("Expected only passwordless recipe");
   }
   const { flowType, name } = settings.recipe;

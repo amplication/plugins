@@ -1,14 +1,20 @@
 import { ModuleMap } from "@amplication/code-gen-types";
 import { print, readFile } from "@amplication/code-gen-utils";
-import { resolve, join } from "path";
+import { resolve } from "path";
 import { staticsPath } from "../../constants";
+import { Settings } from "../../types";
 
 export const addAuthCallbackModule = async (
     srcDirectory: string,
-    modules: ModuleMap
+    modules: ModuleMap,
+    recipeName: Settings["recipe"]["name"]
 ) => {
     const filename = "AuthCallback.tsx";
-    const path = resolve(staticsPath, "admin-ui", "thirdparty", filename);
+    if(recipeName !== "thirdparty" && recipeName !== "thirdpartyemailpassword"
+        && recipeName !== "thirdpartypasswordless") {
+            throw new Error("Unexpected recipe while adding the auth callback module");
+        }
+    const path = resolve(staticsPath, "admin-ui", recipeName, filename);
     modules.set({
         path: `${srcDirectory}/${filename}`,
         code: print(await readFile(path)).code

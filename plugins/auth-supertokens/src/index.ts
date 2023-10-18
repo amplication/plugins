@@ -22,9 +22,9 @@ import {
   CreateAdminAppModuleParams
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
-import { appendImports, print, readFile } from "@amplication/code-gen-utils";
+import { appendImports, readFile } from "@amplication/code-gen-utils";
 import { camelCase, merge } from "lodash";
-import { join, resolve } from "path";
+import { join } from "path";
 import { builders, namedTypes } from "ast-types";
 import * as utils from "./utils";
 import * as constants from "./constants";
@@ -182,13 +182,16 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     await replaceDataProviderModule(srcDirectory, modules);
     await addSupertokensAuthProvider(srcDirectory, modules, settings);
     removeNonSupertokensAuthProviderModules(srcDirectory, modules);
-    if(settings.recipe.name === "passwordless"
+    if((settings.recipe.name === "passwordless"
+      || settings.recipe.name === "thirdpartypasswordless")
       && (settings.recipe.flowType === "MAGIC_LINK"
         || settings.recipe.flowType === "USER_INPUT_CODE_AND_MAGIC_LINK")) {
-      await addConsumeMagicLinkModule(srcDirectory, modules);
+      await addConsumeMagicLinkModule(srcDirectory, modules, settings.recipe.name);
     }
-    if(settings.recipe.name === "thirdparty") {
-      await addAuthCallbackModule(srcDirectory, modules);
+    if(settings.recipe.name === "thirdparty" ||
+      settings.recipe.name === "thirdpartyemailpassword" ||
+      settings.recipe.name === "thirdpartypasswordless") {
+      await addAuthCallbackModule(srcDirectory, modules, settings.recipe.name);
     }
 
     return modules;

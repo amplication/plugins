@@ -18,7 +18,8 @@ export const replaceTypesModule = async (
 }
 
 const getTypesCode = async (settings: Settings) => {
-  if(settings.recipe.name === "passwordless") {
+  if(settings.recipe.name === "passwordless"
+    || settings.recipe.name === "thirdpartypasswordless") {
     return await getPasswordlessTypesCode(settings);
   }
   const path = resolve(staticsPath, "admin-ui", settings.recipe.name, "types.ts"); 
@@ -26,8 +27,9 @@ const getTypesCode = async (settings: Settings) => {
 }
 
 const getPasswordlessTypesCode = async (settings: Settings) => {
-  if(settings.recipe.name !== "passwordless") {
-    throw new Error("Expected only passwordless recipe");
+  if(settings.recipe.name !== "passwordless"
+    && settings.recipe.name !== "thirdpartypasswordless") {
+    throw new Error("Expected only passwordless recipes");
   }
   const { flowType, name } = settings.recipe;
   const flowTypeToSubDir: {[key in PasswordlessFlowType]: string} = {

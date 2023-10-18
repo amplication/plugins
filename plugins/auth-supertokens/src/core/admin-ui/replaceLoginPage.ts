@@ -23,15 +23,19 @@ export const replaceLoginPage = async (
 const getLoginCode = async (settings: Settings) => {
     if (settings.recipe.name === "passwordless") {
         return await getPasswordlessLoginCode(settings);
-    } else if(settings.recipe.name === "thirdparty") {
+    } else if(settings.recipe.name === "thirdparty"
+        || settings.recipe.name === "thirdpartyemailpassword") {
         return await getThirdPartyLoginCode(settings);
+    } else if(settings.recipe.name === "thirdpartypasswordless") {
+        return await getThirdPartyPasswordlessLoginCode(settings);
     }
     const path = resolve(staticsPath, "admin-ui", settings.recipe.name, "Login.tsx");
     return print(await readFile(path)).code;
 }
 
 const getPasswordlessLoginCode = async (settings: Settings) => {
-    if(settings.recipe.name !== "passwordless") {
+    if(settings.recipe.name !== "passwordless"
+        && settings.recipe.name !== "thirdpartypasswordless") {
         throw new Error("Expected only passwordless recipe");
     }
     const { flowType, contactMethod, name } = settings.recipe;
@@ -55,16 +59,31 @@ const getPasswordlessLoginCode = async (settings: Settings) => {
 }
 
 const getThirdPartyLoginCode = async (settings: Settings) => {
-    if(settings.recipe.name !== "thirdparty") {
-        throw new Error("Expected ony thirdparty recipe");
+    if(settings.recipe.name !== "thirdparty"
+        && settings.recipe.name !== "thirdpartyemailpassword"
+        && settings.recipe.name !== "thirdpartypasswordless") {
+        throw new Error("Expected only third party recipes");
     }
-    const selectedProviders = Object.keys(settings.recipe)
-        .filter((key) => key !== "name") as (keyof ThirdPartyProvider)[]; 
-    const loginPath = resolve(templatesPath, "admin-ui", "thirdparty", "Login.tsx");
+    const selectedProviders = getSelectedThirdPartyProviders(settings);
+    const loginPath = resolve(templatesPath, "admin-ui", settings.recipe.name, "Login.tsx");
     const loginPage = await readFile(loginPath);
     addThirdPartyLoginButtonImports(loginPage, selectedProviders);
     addThirdPartyLoginButtonExpressions(loginPage, selectedProviders);
     return print(loginPage).code;
+}
+
+const getThirdPartyPasswordlessLoginCode = async (settings: Settings) => {
+    const code = parse(await getPasswordlessLoginCode(settings));
+    const selectedProviders = getSelectedThirdPartyProviders(settings);
+    addThirdPartyLoginButtonImports(code, selectedProviders);
+    addThirdPartyLoginButtonExpressions(code, selectedProviders);
+    return print(code).code;
+}
+
+const getSelectedThirdPartyProviders = (settings: Settings) => {
+    const allProviders: (keyof ThirdPartyProvider)[] = ["google", "apple", "github", "twitter"];
+    return Object.keys(settings.recipe)
+        .filter((key) => allProviders.includes(key as any)) as (keyof ThirdPartyProvider)[];   
 }
 
 const addThirdPartyLoginButtonExpressions = (
