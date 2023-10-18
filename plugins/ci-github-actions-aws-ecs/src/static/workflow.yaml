@@ -53,9 +53,8 @@ name: ${{ SERVICE_NAME }}-deploy-to-aws-ecs
 concurrency: ${{ github.ref }}
 
 on:
-  push:
-    branches:
-      - $default-branch
+  pull_request:
+    types: [closed]
 
 env:
   AWS_REGION: ${{ REGION_IDENTIFIER }}
@@ -88,7 +87,7 @@ jobs:
         id: image
         env:
           ECR_REGISTRY: ${{ steps.registry.outputs.registry }}
-          IMAGE_TAG: ${{ IMAGE_TAG }}
+          IMAGE_TAG: ${{ ECR_IMAGE_TAG }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

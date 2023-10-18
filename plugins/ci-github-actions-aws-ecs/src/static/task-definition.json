@@ -3,7 +3,7 @@
     "containerDefinitions": [
         {
             "name": "${{ SERVICE_NAME }}",
-            "image": "${{ ACCOUNT_IDENTIFIER }}.dkr.ecr.${{ REGION_IDENTIFIER }}.amazonaws.com/${{ ECR_REPOSITORY_NAME }}:${{ IMAGE_TAG }}",
+            "image": "${{ ACCOUNT_IDENTIFIER }}.dkr.ecr.${{ REGION_IDENTIFIER }}.amazonaws.com/${{ ECR_REPOSITORY_NAME }}:${{ ECR_IMAGE_TAG }}",
             "essential": true,
             "portMappings": [
                 {
@@ -17,19 +17,19 @@
             "secrets": [
                 {
                     "name": "BCRYPT_SALT",
-                    "valueFrom": "arn:aws:secretsmanager:${{ REGION_IDENTIFIER }}:${{ ACCOUNT_IDENTIFIER }}:secret:${{ SECRET_NAME }}:BCRYPT_SALT"
+                    "valueFrom": "arn:aws:secretsmanager:${{ REGION_IDENTIFIER }}:${{ ACCOUNT_IDENTIFIER }}:secret:${{ SM_SECRET_NAME }}:BCRYPT_SALT"
                 },
                 {
                     "name": "JWT_EXPIRATION",
-                    "valueFrom": "arn:aws:secretsmanager:${{ REGION_IDENTIFIER }}:${{ ACCOUNT_IDENTIFIER }}:secret:${{ SECRET_NAME }}:JWT_EXPIRATION"
+                    "valueFrom": "arn:aws:secretsmanager:${{ REGION_IDENTIFIER }}:${{ ACCOUNT_IDENTIFIER }}:secret:${{ SM_SECRET_NAME }}:JWT_EXPIRATION"
                 },
                 {
                     "name": "JWT_SECRET_KEY",
-                    "valueFrom": "arn:aws:secretsmanager:${{ REGION_IDENTIFIER }}:${{ ACCOUNT_IDENTIFIER }}:secret:${{ SECRET_NAME }}:JWT_SECRET_KEY"
+                    "valueFrom": "arn:aws:secretsmanager:${{ REGION_IDENTIFIER }}:${{ ACCOUNT_IDENTIFIER }}:secret:${{ SM_SECRET_NAME }}:JWT_SECRET_KEY"
                 },
                 {
                     "name": "DB_URL",
-                    "valueFrom": "arn:aws:secretsmanager:${{ REGION_IDENTIFIER }}:${{ ACCOUNT_IDENTIFIER }}:secret:${{ SECRET_NAME }}:DB_URL"
+                    "valueFrom": "arn:aws:secretsmanager:${{ REGION_IDENTIFIER }}:${{ ACCOUNT_IDENTIFIER }}:secret:${{ SM_SECRET_NAME }}:DB_URL"
                 }
             ],
             "logConfiguration": {

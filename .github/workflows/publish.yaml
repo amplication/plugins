@@ -17,6 +17,7 @@ on:
           - "broker-redis"
           - "cache-redis"
           - "ci-github-actions"
+          - "ci-github-actions-aws-ecs"
           - "db-mongo"
           - "db-mysql"
           - "db-postgres"

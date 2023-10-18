@@ -8,12 +8,13 @@ import type {
 import {
   regionIdentifierKey,
   accountIdentifierKey,
-  imageTagKey,
+  ecrImageTagKey,
   ecrRepositoryNameKey,
   serviceNameKey,
   ecsClusterNameKey,
   ecsRoleNameKey,
-  ecsTaskDefinitionPath,
+  ecsTaskDefinitionPathKey,
+  smSecretNameKey,
   resourcesCpuKey,
   resourcesMemoryKey,
   runtimeCpuArchitectureKey,
@@ -60,9 +61,11 @@ class GithubActionsAwsEcsPlugin implements AmplicationPlugin {
     const taskDefinitionFileNameSuffix: string = "-aws-ecs.json";
 
     // ouput directory base & file specific suffix
-    const outputDirectoryBase: string = "./.github/workflows/";
-    const outputDirectorySuffixTaskDefinitionFile: string =
-      "configuration/" +
+    const outputDirectoryBase: string = "./.github/workflows";
+    const outputSuffixWorkflow: string =
+      "/" + fileNamePrefix + serviceName + workflowFileNameSuffix;
+    const outputSuffixTaskDefinition: string =
+      "/configuration/" +
       fileNamePrefix +
       serviceName +
       taskDefinitionFileNameSuffix;
@@ -78,14 +81,8 @@ class GithubActionsAwsEcsPlugin implements AmplicationPlugin {
 
     staticFiles.replaceModulesPath((path) =>
       path
-        .replace(
-          templateWorkflowFileName,
-          fileNamePrefix + serviceName + workflowFileNameSuffix
-        )
-        .replace(
-          templateTaskDefinitionFileName,
-          outputDirectorySuffixTaskDefinitionFile
-        )
+        .replace(templateWorkflowFileName, outputSuffixWorkflow)
+        .replace(templateTaskDefinitionFileName, outputSuffixTaskDefinition)
     );
 
     staticFiles.replaceModulesCode((code) =>
@@ -94,20 +91,18 @@ class GithubActionsAwsEcsPlugin implements AmplicationPlugin {
         .replaceAll(regionIdentifierKey, settings.region_identifier)
         .replaceAll(accountIdentifierKey, settings.account_identifier)
         .replaceAll(ecrRepositoryNameKey, settings.ecr_repository_name)
-        .replaceAll(imageTagKey, settings.image_tag)
+        .replaceAll(ecrImageTagKey, settings.ecr_image_tag)
         .replaceAll(ecsClusterNameKey, settings.ecs_cluster_name)
         .replaceAll(ecsRoleNameKey, settings.ecs_role_name)
-        .replaceAll(
-          ecsTaskDefinitionPath,
-          "." + outputDirectorySuffixTaskDefinitionFile
-        )
+        .replaceAll(ecsTaskDefinitionPathKey, "." + outputSuffixTaskDefinition)
+        .replaceAll(smSecretNameKey, settings.sm_secret_name)
         .replaceAll(resourcesCpuKey, settings.resources.cpu)
         .replaceAll(resourcesMemoryKey, settings.resources.memory)
+        .replaceAll(runtimeOsFamilyKey, settings.runtime.os_family)
         .replaceAll(
           runtimeCpuArchitectureKey,
-          settings.runtime_platform.cpu_architecture
+          settings.runtime.cpu_architecture
         )
-        .replaceAll(runtimeOsFamilyKey, settings.runtime_platform.os_family)
     );
 
     context.logger.info(
