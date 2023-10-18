@@ -6,9 +6,6 @@ export const removeNonSupertokensAuthProviderModules = (
 ) => {
     modules.removeMany(
         ["ra-auth-http.ts", "ra-auth-jwt.ts"]
-        .map((filename) => {
-console.log("DESDEWSSDDXW Removing!", `${srcDirectory}/auth-provider/${filename}`);
-    return `${srcDirectory}/auth-provider/${filename}`
-        })
+        .map((filename) => `${srcDirectory}/auth-provider/${filename}`)
     )
 }

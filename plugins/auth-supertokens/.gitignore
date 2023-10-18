@@ -34,3 +34,6 @@ creds.js
 *.dat
 *password*
 *.httr-oauth*
+
+!**/static/**
+!**/templates/**

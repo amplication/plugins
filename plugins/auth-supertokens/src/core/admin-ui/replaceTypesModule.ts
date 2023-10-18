@@ -39,4 +39,3 @@ const getPasswordlessTypesCode = async (settings: Settings) => {
     flowTypeToSubDir[flowType], "types.ts");
   return print(await readFile(path)).code;
 }
-
