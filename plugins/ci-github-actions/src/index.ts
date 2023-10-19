@@ -33,7 +33,7 @@ class GithubActionsPlugin implements AmplicationPlugin {
     eventParams: CreateServerParams,
     modules: ModuleMap
   ): Promise<ModuleMap> {
-    context.logger.info(`Generating Github Actions workflow...`);
+    context.logger.info(`Generating GitHub Actions workflow...`);
 
     // determine the name of the service which will be used as the name for the workflow
     // workflow names must be lower case letters and numbers. words may be separated with dashes (-):
@@ -69,7 +69,7 @@ class GithubActionsPlugin implements AmplicationPlugin {
     const outputDirectory: string = "./.github/workflows/";
 
     const succesfullPluginCodeGeneration: string =
-      "Generated Github Actions workflow...";
+      "Generated GitHub Actions workflow...";
 
     if (settings.registry == RegistryProviders.GitHub) {
       const githubStaticFiles: string = "./static/github/";
