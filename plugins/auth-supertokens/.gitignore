@@ -37,3 +37,4 @@ creds.js
 
 !**/static/**
 !**/templates/**
+!**/tests/**

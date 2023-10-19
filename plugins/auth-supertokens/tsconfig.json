@@ -1,12 +1,5 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": [
-    "src/index.ts",
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "src/static",
-    "src/templates"
-  ],
+  "include": ["src/index.ts", "src/**/*.ts"],
+  "exclude": ["node_modules", "src/static", "src/templates"]
 }

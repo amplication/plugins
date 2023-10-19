@@ -1,4 +1,7 @@
-import { PluginInstallation, VariableDictionary } from "@amplication/code-gen-types";
+import {
+  PluginInstallation,
+  VariableDictionary,
+} from "@amplication/code-gen-types";
 import { namedTypes, ASTNode } from "ast-types";
 import * as recast from "recast";
 import { parse } from "@amplication/code-gen-utils";
@@ -52,12 +55,14 @@ export function getFunctionDeclarationById(
 }
 
 export const prettyCode = (code: string): string => {
-    return recast.prettyPrint(parse(code)).code
-}
+  return recast.prettyPrint(parse(code)).code;
+};
 
-export const settingToEnvVar = (settingKey: keyof Settings): string | undefined => {
+export const settingToEnvVar = (
+  settingKey: keyof Settings
+): string | undefined => {
   const prefix = "SUPERTOKENS";
-  const mapping: {[key in keyof Settings]?: string} = {
+  const mapping: { [key in keyof Settings]?: string } = {
     apiBasePath: `${prefix}_API_BASE_PATH`,
     apiDomain: `${prefix}_API_DOMAIN`,
     appName: `${prefix}_APP_NAME`,
@@ -65,31 +70,33 @@ export const settingToEnvVar = (settingKey: keyof Settings): string | undefined 
     connectionUri: `${prefix}_CONNECTION_URI`,
     websiteBasePath: `${prefix}_WEBSITE_BASE_PATH`,
     websiteDomain: `${prefix}_WEBSITE_DOMAIN`,
-    apiKey: `${prefix}_API_KEY`
-  }
-  return mapping[settingKey]
-}
+    apiKey: `${prefix}_API_KEY`,
+  };
+  return mapping[settingKey];
+};
 
 export const settingsToVarDict = (settings: Settings): VariableDictionary => {
   return Object.keys(settings)
-      .map((settingKey) => {
-        const envVar = settingToEnvVar(settingKey as keyof Settings);
-        if(envVar) {
-          return {
-              [envVar]: settings[settingKey as keyof Settings]!.toString()
-          }
-        }
-        return {};
-      })
-      .filter((envVar) => Object.keys(envVar).length !== 0)
-}
+    .map((settingKey) => {
+      const envVar = settingToEnvVar(settingKey as keyof Settings);
+      if (envVar) {
+        return {
+          [envVar]: settings[settingKey as keyof Settings]!.toString(),
+        };
+      }
+      return {};
+    })
+    .filter((envVar) => Object.keys(envVar).length !== 0);
+};
 
-export const varDictToReactEnvVars = (varDict: VariableDictionary): VariableDictionary => {
+export const varDictToReactEnvVars = (
+  varDict: VariableDictionary
+): VariableDictionary => {
   return varDict.map((val) => {
     const envName = Object.keys(val)[0];
-    return { [`REACT_APP_${envName}`]: val[envName] }
-  })
-}
+    return { [`REACT_APP_${envName}`]: val[envName] };
+  });
+};
 
 /**
  * In given AST replaces identifiers with AST nodes according to given mapping

@@ -19,13 +19,12 @@ const Login = ({ theme }: any) => {
   const BASE_URI = process.env.REACT_APP_SERVER_URL;
   const submit = async (otp: string) => {
     login({ otp }).catch((err) =>
-      err ? notify(err)
-        : notify("Failed to login")
+      err ? notify(err) : notify("Failed to login")
     );
   };
   const moveToNextStep = () => {
     setShouldEnterOTP(true);
-  }
+  };
 
   return (
     <ThemeProvider theme={createTheme(defaultTheme)}>
@@ -43,10 +42,11 @@ const Login = ({ theme }: any) => {
             </div>
             {SIGN_IN_BUTTONS}
             <p>or</p>
-            {shouldEnterOTP ?
+            {shouldEnterOTP ? (
               <EnterOTPForm submit={submit} />
-              : <CreateOTPForm notify={notify} moveToNextStep={moveToNextStep} />
-              }
+            ) : (
+              <CreateOTPForm notify={notify} moveToNextStep={moveToNextStep} />
+            )}
           </div>
           <div className={`${CLASS_NAME}__box`}>
             <img
@@ -89,35 +89,40 @@ const CreateOTPForm = ({ notify, moveToNextStep }: any) => {
     let input: any = { email: emailOrPhoneNumber };
     try {
       const parsedPhoneNumber = parsePhoneNumber(emailOrPhoneNumber);
-      if(parsedPhoneNumber && parsedPhoneNumber.isValid()) {
+      if (parsedPhoneNumber && parsedPhoneNumber.isValid()) {
         input = { phoneNumber: parsedPhoneNumber };
       }
     } catch (e) {}
-    if(input.email) {
-      const resp = await PasswordlessThirdParty.doesPasswordlessUserEmailExist({ email: input.email });
-      if(resp.status !== "OK" || !resp.doesExist) {
+    if (input.email) {
+      const resp = await PasswordlessThirdParty.doesPasswordlessUserEmailExist({
+        email: input.email,
+      });
+      if (resp.status !== "OK" || !resp.doesExist) {
         notify("Failed to login");
         return;
       }
     } else {
-      const resp = await PasswordlessThirdParty.doesPasswordlessUserPhoneNumberExist ({ phoneNumber: input.phoneNumber });
-      if(resp.status !== "OK" || !resp.doesExist) {
+      const resp =
+        await PasswordlessThirdParty.doesPasswordlessUserPhoneNumberExist({
+          phoneNumber: input.phoneNumber,
+        });
+      if (resp.status !== "OK" || !resp.doesExist) {
         notify("Failed to login");
         return;
       }
     }
     const resp = await PasswordlessThirdParty.createPasswordlessCode(input);
-    if(resp.status === "OK") {
+    if (resp.status === "OK") {
       moveToNextStep();
     } else {
       notify("Failed to login");
     }
-  }
+  };
 
-  return(
+  return (
     <form onSubmit={submit}>
       <label>
-      <span>{CONTACT_METHOD_FIELD_LABEL}</span>
+        <span>{CONTACT_METHOD_FIELD_LABEL}</span>
 
         <input
           name="emailOrPhoneNumber"
@@ -130,19 +135,21 @@ const CreateOTPForm = ({ notify, moveToNextStep }: any) => {
         Continue
       </Button>
     </form>
-  )
-}
+  );
+};
 
 const EnterOTPForm = ({ submit }: any) => {
   const [otp, setOTP] = useState("");
 
-  return(
-    <form onSubmit={(e) => {
-      e.preventDefault();
-      submit(otp);
-    }}>
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        submit(otp);
+      }}
+    >
       <label>
-      <span>Enter OTP</span>
+        <span>Enter OTP</span>
         <input
           name="OTP"
           type="text"
@@ -154,39 +161,39 @@ const EnterOTPForm = ({ submit }: any) => {
         Continue
       </Button>
     </form>
-  )
-}
+  );
+};
 
 const signInClicked = (thirdPartyId: string) => {
   return async () => {
     try {
-        const authUrl = await getAuthorisationURLWithQueryParamsAndSetState({
-            thirdPartyId: thirdPartyId,
+      const authUrl = await getAuthorisationURLWithQueryParamsAndSetState({
+        thirdPartyId: thirdPartyId,
 
-            // This is where the provider should redirect the user back after login or error.
-            // This URL goes on the provider's dashboard as well.
-            frontendRedirectURI: `${SuperTokensConfig.appInfo.websiteDomain}/auth/callback/`,
-            // Only needed with Apple
-            // Apple sends a POST request here which is handled by the SuperTokens middleware
-            // SuperTokens then redirects the user to frontendRedirectURI
-            redirectURIOnProviderDashboard: `${SuperTokensConfig.appInfo.apiDomain}/auth/callback/${thirdPartyId}`
-        });
+        // This is where the provider should redirect the user back after login or error.
+        // This URL goes on the provider's dashboard as well.
+        frontendRedirectURI: `${SuperTokensConfig.appInfo.websiteDomain}/auth/callback/`,
+        // Only needed with Apple
+        // Apple sends a POST request here which is handled by the SuperTokens middleware
+        // SuperTokens then redirects the user to frontendRedirectURI
+        redirectURIOnProviderDashboard: `${SuperTokensConfig.appInfo.apiDomain}/auth/callback/${thirdPartyId}`,
+      });
 
-        /*
+      /*
         Example value of authUrl: https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&access_type=offline&include_granted_scopes=true&response_type=code&client_id=1060725074195-kmeum4crr01uirfl2op9kd5acmi9jutn.apps.googleusercontent.com&state=5a489996a28cafc83ddff&redirect_uri=https%3A%2F%2Fsupertokens.io%2Fdev%2Foauth%2Fredirect-to-app&flowName=GeneralOAuthFlow
         */
 
-        // we redirect the user to google for auth.
-        window.location.assign(authUrl);
+      // we redirect the user to google for auth.
+      window.location.assign(authUrl);
     } catch (err: any) {
-        if (err.isSuperTokensGeneralError === true) {
-            // this may be a custom error message sent from the API by you.
-            window.alert(err.message);
-        } else {
-            window.alert("Oops! Something went wrong.");
-        }
+      if (err.isSuperTokensGeneralError === true) {
+        // this may be a custom error message sent from the API by you.
+        window.alert(err.message);
+      } else {
+        window.alert("Oops! Something went wrong.");
+      }
     }
-  }
-}
+  };
+};
 
 export default Login;

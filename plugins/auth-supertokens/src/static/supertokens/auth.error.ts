@@ -10,9 +10,9 @@ export type AuthErrorCause =
   | "SIGN_IN_UP_NOT_ALLOWED";
 
 export class AuthError {
-    cause: AuthErrorCause;
+  cause: AuthErrorCause;
 
-    constructor(cause: AuthErrorCause) {
-        this.cause = cause;
-    }
+  constructor(cause: AuthErrorCause) {
+    this.cause = cause;
+  }
 }

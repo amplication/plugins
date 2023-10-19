@@ -15,42 +15,27 @@ import {
   CreateEntityControllerBaseParams,
   CreateEntityResolverParams,
   CreateEntityResolverBaseParams,
-  CreateSeedParams,
   CreateAdminUIPackageJsonParams,
   CreateAdminDotEnvParams,
   CreateAdminUIParams,
-  CreateAdminAppModuleParams
+  CreateAdminAppModuleParams,
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
-import { appendImports, readFile } from "@amplication/code-gen-utils";
+import { readFile } from "@amplication/code-gen-utils";
 import { camelCase, merge } from "lodash";
 import { join } from "path";
-import { builders, namedTypes } from "ast-types";
+import { builders } from "ast-types";
 import * as utils from "./utils";
 import * as constants from "./constants";
 import {
   addRemoveAuthFiles,
   alterGraphqlSettingsInAppModule,
   removeRemoveDefaultCorsSettingInMain,
-  addSupertokensIdFieldToAuthEntity,
   addAuthModuleInAuthDir,
-  makeSTIdFieldOptionalInCreation,
-  removeSTIdFromUpdateInput,
   injectAuthService,
   createSupertokensService,
   createAuthService,
   verifyAuthCorePluginIsInstalled,
-  verifyEmailAndPasswordFieldsExist,
-  alterAuthControllerBaseMethods,
-  alterAuthResolverBaseMethods,
-  removeEmailUsernamePhoneNumberPasswordField,
-  addEmailPropertyToDTO,
-  addPhoneNumberPropertyToDTO,
-  addThirdPartyIdPropertyToDTO,
-  alterSeedData,
-  replaceCustomSeedTemplate,
-  alterSeedCode,
-  addPasswordPropertyToDTO,
   addSupertokensConfigFile,
   replaceLoginPage,
   replaceTypesModule,
@@ -60,80 +45,80 @@ import {
   removeNonSupertokensAuthProviderModules,
   addConsumeMagicLinkModule,
   addAuthCallbackModule,
-  removeUnneededAdminUIFiles
+  removeUnneededAdminUIFiles,
+  addAuthFilter,
+  addAppCorsSettings,
+  addGenSupertokensOptionsImport,
+  verifySupertokensIdFieldExists
 } from "./core";
 import { EnumAuthProviderType } from "@amplication/code-gen-types/src/models";
 
+/**
+ * These values are used to check if various things that ought to be
+ * done have been done after the creation of the server files
+ */
 export const checks = {
-  // Used to check if the auth module has been successfully added
-  // after the server creation
   addedAuthModuleInAuthDir: false,
-  replacedEntityController: false,
-  replacedEntityControllerBase: false,
-  replacedEntityResolver: false,
-  replacedEntityResolverBase: false
-}
+  alteredAuthEntityController: false,
+  alteredAuthEntityControllerBase: false,
+  alteredAuthEntityResolver: false,
+  alteredAuthEntityResolverBase: false,
+};
 
 class SupertokensAuthPlugin implements AmplicationPlugin {
-  
   register(): Events {
     return {
       [EventNames.CreateServerAuth]: {
-        after: this.afterCreateServerAuth
+        after: this.afterCreateServerAuth,
       },
       [EventNames.CreateServerPackageJson]: {
-        before: this.beforeCreateServerPackageJson
+        before: this.beforeCreateServerPackageJson,
       },
       [EventNames.CreateConnectMicroservices]: {
-        before: this.beforeCreateConnectMicroservices
+        before: this.beforeCreateConnectMicroservices,
       },
       [EventNames.CreateServerAppModule]: {
         before: this.beforeCreateServerAppModule,
         after: this.afterCreateServerAppModule,
       },
       [EventNames.CreateServerDotEnv]: {
-        before: this.beforeCreateServerDotEnv
+        before: this.beforeCreateServerDotEnv,
       },
       [EventNames.CreateServer]: {
         before: this.beforeCreateServer,
-        after: this.afterCreateServer
+        after: this.afterCreateServer,
       },
       [EventNames.CreateEntityModule]: {
-        after: this.afterCreateEntityModule
+        after: this.afterCreateEntityModule,
       },
       [EventNames.CreateDTOs]: {
-        before: this.beforeCreateDTOs,
-        after: this.afterCreateDTOs
+        after: this.afterCreateDTOs,
       },
       [EventNames.CreateEntityController]: {
-        before: this.beforeCreateEntityController
+        before: this.beforeCreateEntityController,
       },
       [EventNames.CreateEntityControllerBase]: {
-        before: this.beforeCreateEntityControllerBase
+        before: this.beforeCreateEntityControllerBase,
       },
       [EventNames.CreateEntityResolver]: {
-        before: this.beforeCreateEntityResolver
+        before: this.beforeCreateEntityResolver,
       },
       [EventNames.CreateEntityResolverBase]: {
-        before: this.beforeCreateEntityResolverBase
-      },
-      [EventNames.CreateSeed]: {
-        before: this.beforeCreateSeed,
-        after: this.afterCreateSeed
+        before: this.beforeCreateEntityResolverBase,
       },
       [EventNames.CreateAdminUIPackageJson]: {
-        before: this.beforeCreateAdminUIPackageJson
+        before: this.beforeCreateAdminUIPackageJson,
       },
       [EventNames.CreateAdminDotEnv]: {
-        before: this.beforeCreateAdminDotEnv
+        before: this.beforeCreateAdminDotEnv,
       },
       [EventNames.CreateAdminUI]: {
-        after: this.afterCreateAdminUI
+        after: this.afterCreateAdminUI,
       },
       [EventNames.CreateAdminAppModule]: {
         before: this.beforeCreateAdminAppModule,
-        after: this.afterCreateAdminAppModule
-      }
+        after: this.afterCreateAdminAppModule,
+      },
     };
   }
 
@@ -141,14 +126,19 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateAdminAppModuleParams
   ): Promise<CreateAdminAppModuleParams> {
-
     const settings = utils.getPluginSettings(context.pluginInstallations);
-    const newTemplatePath = join(constants.templatesPath, "admin-ui", settings.recipe.name, "App.template.tsx");
+    const newTemplatePath = join(
+      constants.templatesPath,
+      "admin-ui",
+      settings.recipe.name,
+      "App.template.tsx"
+    );
     const newTemplate = await readFile(newTemplatePath);
+    context.logger.info("Replacing the admin UI app template");
     eventParams.template = newTemplate;
     // The resulting auth provider effects on the app module will still
     // be removed in the afterCreateAdminAppModule
-    if(context.resourceInfo) {
+    if (context.resourceInfo) {
       context.resourceInfo.settings.authProvider = EnumAuthProviderType.Http;
     }
 
@@ -162,7 +152,11 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
   ): Promise<ModuleMap> {
     const { srcDirectory } = context.clientDirectories;
 
-    removeNonSupertokensAuthProviderImportsFromAppModule(srcDirectory, modules);
+    removeNonSupertokensAuthProviderImportsFromAppModule(
+      srcDirectory,
+      modules,
+      context.logger
+    );
 
     return modules;
   }
@@ -172,26 +166,53 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     eventParams: CreateAdminUIParams,
     modules: ModuleMap
   ): Promise<ModuleMap> {
-
     const { srcDirectory } = context.clientDirectories;
     const settings = utils.getPluginSettings(context.pluginInstallations);
-    removeUnneededAdminUIFiles(srcDirectory, modules);
-    await addSupertokensConfigFile(srcDirectory, modules, settings.recipe.name);
-    await replaceLoginPage(srcDirectory, modules, settings);
-    await replaceTypesModule(srcDirectory, modules, settings);
-    await replaceDataProviderModule(srcDirectory, modules);
-    await addSupertokensAuthProvider(srcDirectory, modules, settings);
-    removeNonSupertokensAuthProviderModules(srcDirectory, modules);
-    if((settings.recipe.name === "passwordless"
-      || settings.recipe.name === "thirdpartypasswordless")
-      && (settings.recipe.flowType === "MAGIC_LINK"
-        || settings.recipe.flowType === "USER_INPUT_CODE_AND_MAGIC_LINK")) {
-      await addConsumeMagicLinkModule(srcDirectory, modules, settings.recipe.name);
+    removeUnneededAdminUIFiles(srcDirectory, modules, context.logger);
+    await addSupertokensConfigFile(
+      srcDirectory,
+      modules,
+      settings.recipe.name,
+      context.logger
+    );
+    await replaceLoginPage(srcDirectory, modules, settings, context.logger);
+    await replaceTypesModule(srcDirectory, modules, settings, context.logger);
+    await replaceDataProviderModule(srcDirectory, modules, context.logger);
+    await addSupertokensAuthProvider(
+      srcDirectory,
+      modules,
+      settings,
+      context.logger
+    );
+    removeNonSupertokensAuthProviderModules(
+      srcDirectory,
+      modules,
+      context.logger
+    );
+    if (
+      (settings.recipe.name === "passwordless" ||
+        settings.recipe.name === "thirdpartypasswordless") &&
+      (settings.recipe.flowType === "MAGIC_LINK" ||
+        settings.recipe.flowType === "USER_INPUT_CODE_AND_MAGIC_LINK")
+    ) {
+      await addConsumeMagicLinkModule(
+        srcDirectory,
+        modules,
+        settings.recipe.name,
+        context.logger
+      );
     }
-    if(settings.recipe.name === "thirdparty" ||
+    if (
+      settings.recipe.name === "thirdparty" ||
       settings.recipe.name === "thirdpartyemailpassword" ||
-      settings.recipe.name === "thirdpartypasswordless") {
-      await addAuthCallbackModule(srcDirectory, modules, settings.recipe.name);
+      settings.recipe.name === "thirdpartypasswordless"
+    ) {
+      await addAuthCallbackModule(
+        srcDirectory,
+        modules,
+        settings.recipe.name,
+        context.logger
+      );
     }
 
     return modules;
@@ -201,20 +222,22 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateAdminDotEnvParams
   ): CreateAdminDotEnvParams {
-
-    const { getPluginSettings, settingsToVarDict, varDictToReactEnvVars } = utils;
+    const { getPluginSettings, settingsToVarDict, varDictToReactEnvVars } =
+      utils;
     const settings = getPluginSettings(context.pluginInstallations);
     const neededVars = [
       "SUPERTOKENS_APP_NAME",
       "SUPERTOKENS_API_DOMAIN",
       "SUPERTOKENS_WEBSITE_DOMAIN",
-      "SUPERTOKENS_API_BASE_PATH"
+      "SUPERTOKENS_API_BASE_PATH",
     ];
-    const varsForAdminUi = settingsToVarDict(settings)
-      .filter((val) => {
-        const varName = Object.keys(val)[0];
-        return neededVars.includes(varName);
-      })
+    const varsForAdminUi = settingsToVarDict(settings).filter((val) => {
+      const varName = Object.keys(val)[0];
+      return neededVars.includes(varName);
+    });
+    context.logger.info(
+      "Adding react environment variables in admin UI .env file"
+    );
     eventParams.envVariables.push(...varDictToReactEnvVars(varsForAdminUi));
 
     return eventParams;
@@ -227,6 +250,9 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     const settings = utils.getPluginSettings(context.pluginInstallations);
     const deps = constants.adminUIDependencies(settings.recipe.name);
 
+    context.logger.info(
+      "Adding dependencies to the admin UI's package.json file"
+    );
     eventParams.updateProperties.forEach((updateProperty) => {
       merge(updateProperty, deps);
     });
@@ -234,146 +260,56 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     return eventParams;
   }
 
-  beforeCreateSeed(
-    context: DsgContext,
-    eventParams: CreateSeedParams
-  ): CreateSeedParams {
-
-    const settings = utils.getPluginSettings(context.pluginInstallations);
-    switch(settings.recipe.name) {
-      case "passwordless":
-      case "thirdparty":
-      case "thirdpartyemailpassword":
-      case "thirdpartypasswordless":
-      case "phonepassword":
-        alterSeedData(eventParams);
-    }
-
-    return eventParams;
-  }
-
-  async afterCreateSeed(
-    context: DsgContext,
-    eventParams: CreateSeedParams,
-    modules: ModuleMap
-  ): Promise<ModuleMap> {
-    const { scriptsDirectory } = context.serverDirectories;
-    const settings = utils.getPluginSettings(context.pluginInstallations);
-    switch(settings.recipe.name) {
-      case "passwordless":
-      case "thirdparty":
-      case "thirdpartyemailpassword":
-      case "thirdpartypasswordless":
-      case "phonepassword":
-        alterSeedCode(scriptsDirectory, modules);
-    }
-
-    return modules;
-  }
-
-  async beforeCreateEntityResolver(
+  beforeCreateEntityResolver(
     context: DsgContext,
     eventParams: CreateEntityResolverParams
-  ): Promise<CreateEntityResolverParams> {
-
+  ): CreateEntityResolverParams {
     const authEntityName = context.resourceInfo?.settings.authEntityName;
-    if(camelCase(authEntityName ?? "") === eventParams.entityName) {
-      await injectAuthService(eventParams.template, 1);
-      checks.replacedEntityResolver = true;
+    if (camelCase(authEntityName ?? "") === eventParams.entityName) {
+      injectAuthService(eventParams.template, 1, context.logger);
+      checks.alteredAuthEntityResolver = true;
     }
     return eventParams;
   }
 
-  async beforeCreateEntityResolverBase(
+  beforeCreateEntityResolverBase(
     context: DsgContext,
     eventParams: CreateEntityResolverBaseParams
-  ): Promise<CreateEntityResolverBaseParams> {
-
-    const settings = utils.getPluginSettings(context.pluginInstallations);
+  ): CreateEntityResolverBaseParams {
     const authEntityName = context.resourceInfo?.settings.authEntityName;
-    if(camelCase(authEntityName ?? "") === eventParams.entityName) {
-      await injectAuthService(eventParams.template, 2);
-      alterAuthResolverBaseMethods(eventParams, settings);
-      checks.replacedEntityResolverBase = true;
-    }
-    return eventParams
-  }
-
-  async beforeCreateEntityController(
-    context: DsgContext,
-    eventParams: CreateEntityControllerParams
-  ): Promise<CreateEntityControllerParams> {
-
-    const authEntityName = context.resourceInfo?.settings.authEntityName;
-    if(camelCase(authEntityName ?? "") === eventParams.entityName) {
-      await injectAuthService(eventParams.template, 1);
-      checks.replacedEntityController = true;
+    if (camelCase(authEntityName ?? "") === eventParams.entityName) {
+      injectAuthService(eventParams.template, 2, context.logger);
+      checks.alteredAuthEntityResolverBase = true;
     }
     return eventParams;
   }
 
-  async beforeCreateEntityControllerBase(
+  beforeCreateEntityController(
     context: DsgContext,
-    eventParams: CreateEntityControllerBaseParams
-  ): Promise<CreateEntityControllerBaseParams> {
-
-    const settings = utils.getPluginSettings(context.pluginInstallations);
+    eventParams: CreateEntityControllerParams
+  ): CreateEntityControllerParams {
     const authEntityName = context.resourceInfo?.settings.authEntityName;
-    if(!authEntityName) {
-      throw new Error("Failed to find the auth entity name");
+    if (camelCase(authEntityName ?? "") === eventParams.entityName) {
+      injectAuthService(eventParams.template, 1, context.logger);
+      checks.alteredAuthEntityController = true;
     }
-    if(camelCase(authEntityName ?? "") === eventParams.entityName) {
-      injectAuthService(eventParams.template, 2);
-      alterAuthControllerBaseMethods(eventParams, settings);
-      checks.replacedEntityControllerBase = true;
-    }
-    return eventParams
+    return eventParams;
   }
 
-  beforeCreateDTOs(
+  beforeCreateEntityControllerBase(
     context: DsgContext,
-    eventParams: CreateDTOsParams
-  ): CreateDTOsParams {
-
+    eventParams: CreateEntityControllerBaseParams
+  ): CreateEntityControllerBaseParams {
+    const settings = utils.getPluginSettings(context.pluginInstallations);
     const authEntityName = context.resourceInfo?.settings.authEntityName;
-    if(!authEntityName) {
+    if (!authEntityName) {
+      context.logger.error("Failed to find the auth entity");
       throw new Error("Failed to find the auth entity name");
     }
-    const settings = utils.getPluginSettings(context.pluginInstallations);
-    const dtos = eventParams.dtos[authEntityName];
-    makeSTIdFieldOptionalInCreation(dtos.createInput);
-    removeSTIdFromUpdateInput(dtos.updateInput);
-    if(settings.recipe.name === "passwordless") {
-      addEmailPropertyToDTO(dtos.createInput);
-      addEmailPropertyToDTO(dtos.updateInput);
-      addPhoneNumberPropertyToDTO(dtos.createInput)
-      addPhoneNumberPropertyToDTO(dtos.updateInput);
-    } else if(settings.recipe.name === "thirdparty") {
-      addEmailPropertyToDTO(dtos.createInput);
-      addEmailPropertyToDTO(dtos.updateInput);
-      addThirdPartyIdPropertyToDTO(dtos.createInput);
-      addThirdPartyIdPropertyToDTO(dtos.updateInput);
-    } else if(settings.recipe.name === "thirdpartyemailpassword") {
-      addEmailPropertyToDTO(dtos.createInput);
-      addEmailPropertyToDTO(dtos.updateInput);
-      addThirdPartyIdPropertyToDTO(dtos.createInput);
-      addThirdPartyIdPropertyToDTO(dtos.updateInput);
-      addPasswordPropertyToDTO(dtos.createInput);
-      addPasswordPropertyToDTO(dtos.updateInput);
-    } else if(settings.recipe.name === "thirdpartypasswordless") {
-      addEmailPropertyToDTO(dtos.createInput);
-      addEmailPropertyToDTO(dtos.updateInput);
-      addThirdPartyIdPropertyToDTO(dtos.createInput);
-      addThirdPartyIdPropertyToDTO(dtos.updateInput);
-      addPhoneNumberPropertyToDTO(dtos.createInput);
-      addPhoneNumberPropertyToDTO(dtos.updateInput);
-    } else if(settings.recipe.name === "phonepassword") {
-      addPhoneNumberPropertyToDTO(dtos.createInput);
-      addPhoneNumberPropertyToDTO(dtos.updateInput);
-      addPasswordPropertyToDTO(dtos.createInput);
-      addPasswordPropertyToDTO(dtos.updateInput);
+    if (camelCase(authEntityName ?? "") === eventParams.entityName) {
+      injectAuthService(eventParams.template, 2, context.logger);
+      checks.alteredAuthEntityControllerBase = true;
     }
-
     return eventParams;
   }
 
@@ -382,16 +318,30 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     eventParams: CreateDTOsParams,
     modules: ModuleMap
   ): Promise<ModuleMap> {
-
     const { authDirectory, srcDirectory } = context.serverDirectories;
     const authEntityName = context.resourceInfo?.settings.authEntityName;
-    if(!authEntityName) {
+    if (!authEntityName) {
+      context.logger.error("Failed to find the auth entity");
       throw new Error("The auth entity name has not been set");
     }
     const settings = utils.getPluginSettings(context.pluginInstallations);
-    await createSupertokensService(settings.recipe, authDirectory, srcDirectory, authEntityName, modules, 
-      eventParams.dtos[authEntityName].createInput);
-    await createAuthService(modules, srcDirectory, authDirectory, authEntityName);
+    await createSupertokensService(
+      settings.recipe,
+      authDirectory,
+      srcDirectory,
+      authEntityName,
+      modules,
+      eventParams.dtos[authEntityName].createInput,
+      settings.supertokensIdFieldName,
+      context.logger
+    );
+    await createAuthService(
+      modules,
+      srcDirectory,
+      authDirectory,
+      authEntityName,
+      context.logger
+    );
 
     return modules;
   }
@@ -401,15 +351,21 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     eventParams: CreateEntityModuleParams,
     modules: ModuleMap
   ): Promise<ModuleMap> {
-
     const { srcDirectory, authDirectory } = context.serverDirectories;
     const authEntityName = context.resourceInfo?.settings.authEntityName;
-    if(!authEntityName) {
+    if (!authEntityName) {
+      context.logger.error("Failed to find the auth entity");
       throw new Error("Failed to find the authEntityName in the settings");
     }
 
-    if(eventParams.entityName === camelCase(authEntityName)) {
-      await addAuthModuleInAuthDir(eventParams, modules, srcDirectory, authDirectory);
+    if (eventParams.entityName === camelCase(authEntityName)) {
+      await addAuthModuleInAuthDir(
+        eventParams,
+        modules,
+        srcDirectory,
+        authDirectory,
+        context.logger
+      );
       checks.addedAuthModuleInAuthDir = true;
     }
 
@@ -420,24 +376,17 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerParams
   ): CreateServerParams {
-
     const authEntityName = context.resourceInfo?.settings.authEntityName;
     const settings = utils.getPluginSettings(context.pluginInstallations);
-    verifyAuthCorePluginIsInstalled(context.pluginInstallations);
-    if(settings.recipe.name === "emailpassword") {
-      verifyEmailAndPasswordFieldsExist(
-        context.entities?.find((e) => e.name === authEntityName),
-        settings.recipe.emailFieldName,
-        settings.recipe.passwordFieldName
-      );
-    } else if(settings.recipe.name === "passwordless"
-      || settings.recipe.name === "thirdparty"
-      || settings.recipe.name === "thirdpartyemailpassword"
-      || settings.recipe.name === "thirdpartypasswordless"
-      || settings.recipe.name === "phonepassword") {
-      removeEmailUsernamePhoneNumberPasswordField(context)
-    }
-    addSupertokensIdFieldToAuthEntity(context);
+    verifyAuthCorePluginIsInstalled(
+      context.pluginInstallations,
+      context.logger
+    );
+    verifySupertokensIdFieldExists(
+      context.entities ?? [],
+      authEntityName ?? "",
+      settings.supertokensIdFieldName
+    );
 
     return eventParams;
   }
@@ -450,23 +399,25 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     const { srcDirectory } = context.serverDirectories;
     // Because the default cors setting doesn't work with the supertokens
     // cors setting
-    removeRemoveDefaultCorsSettingInMain(srcDirectory, modules);
+    removeRemoveDefaultCorsSettingInMain(srcDirectory, modules, context.logger);
 
-    if(!checks.addedAuthModuleInAuthDir) {
+    if (!checks.addedAuthModuleInAuthDir) {
       throw new Error("Failed to add the auth module to the auth directory");
     }
-    if(!checks.replacedEntityController) {
-      throw new Error("Failed to replace the entity controller template");
+    if (!checks.alteredAuthEntityController) {
+      throw new Error("Failed to alter the entity controller template");
     }
-    if(!checks.replacedEntityControllerBase) {
-      throw new Error("Failed to replace the entity controller base template");
+    if (!checks.alteredAuthEntityControllerBase) {
+      throw new Error("Failed to alter the entity controller base template");
     }
-    if(context.resourceInfo?.settings.serverSettings.generateGraphQL) {
-      if(!checks.replacedEntityResolver) {
+    if (context.resourceInfo?.settings.serverSettings.generateGraphQL) {
+      if (!checks.alteredAuthEntityResolver) {
         throw new Error("Failed to replace the auth entity resolver template");
       }
-      if(!checks.replacedEntityResolverBase) {
-        throw new Error("Failed to replace the auth entity resolver base template");
+      if (!checks.alteredAuthEntityResolverBase) {
+        throw new Error(
+          "Failed to replace the auth entity resolver base template"
+        );
       }
     }
 
@@ -477,11 +428,11 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDotEnvParams
   ): CreateServerDotEnvParams {
-
     const settings = utils.getPluginSettings(context.pluginInstallations);
+    context.logger.info("Adding environment variables");
     eventParams.envVariables.push(...utils.settingsToVarDict(settings));
 
-    return eventParams
+    return eventParams;
   }
 
   beforeCreateServerAppModule(
@@ -490,11 +441,12 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
   ): CreateServerAppModuleParams {
     const { template } = eventParams;
 
-    appendImports(template, [
-      genSupertokensOptionsImport()
-    ])
+    context.logger.info(
+      "Adding the generateSupertokensOptions import to the app module"
+    );
+    addGenSupertokensOptionsImport(template);
 
-    return eventParams
+    return eventParams;
   }
 
   async afterCreateServerAppModule(
@@ -502,28 +454,27 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     eventParams: CreateServerAppModuleParams,
     modules: ModuleMap
   ): Promise<ModuleMap> {
-    
     const { srcDirectory } = context.serverDirectories;
     const appModulePath = `${srcDirectory}/app.module.ts`;
     const appModule = modules.get(appModulePath);
-    
-    if(!appModule) {
+
+    if (!appModule) {
       throw new Error("Failed to find the app module");
     }
 
     const newModules = new ModuleMap(context.logger);
     const unneededInSrc = [
       join("tests", "auth", "constants.ts"),
-      "constants.ts"
+      "constants.ts",
     ];
-    for(const module of modules.modules()) {
-      if(unneededInSrc.includes(join(srcDirectory, module.path))) {
+    for (const module of modules.modules()) {
+      if (unneededInSrc.includes(join(srcDirectory, module.path))) {
         continue;
       }
       newModules.set(module);
     }
 
-    alterGraphqlSettingsInAppModule(newModules, appModule);
+    alterGraphqlSettingsInAppModule(newModules, appModule, context.logger);
 
     return newModules;
   }
@@ -534,17 +485,15 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
   ): CreateConnectMicroservicesParams {
     const { template } = eventParams;
 
-    appendImports(template, [
-      supertokensImport(),
-      authFilterImport(),
-      genSupertokensOptionsImport()
-    ]);
-
     const connectFunc = utils.getFunctionDeclarationById(
       template,
       builders.identifier("connectMicroservices")
     );
-    connectFunc.body.body.push(enableCorsStatement(), globalFiltersStatement());
+    context.logger.info(
+      "Adding the cors and auth filter settings in the connectMicroservices function"
+    );
+    addAppCorsSettings(template, connectFunc);
+    addAuthFilter(template, connectFunc);
 
     return eventParams;
   }
@@ -553,8 +502,11 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerPackageJsonParams
   ): CreateServerPackageJsonParams {
-    const supertokensDeps = constants.dependencies
+    const supertokensDeps = constants.dependencies;
 
+    context.logger.info(
+      "Adding dependencies to the server's package.json file"
+    );
     eventParams.updateProperties.forEach((updateProperty) => {
       merge(updateProperty, supertokensDeps);
     });
@@ -568,121 +520,8 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     modules: ModuleMap
   ): Promise<ModuleMap> {
     const newModules = await addRemoveAuthFiles(context, modules);
-
-    const settings = utils.getPluginSettings(context.pluginInstallations);
-    const { scriptsDirectory } = context.serverDirectories;
-    const authEntity = context.entities?.find(
-      (x) => x.name === context.resourceInfo?.settings.authEntityName
-    );
-    if(!authEntity) {
-      throw new Error("Failed to find the auth entity");
-    }
-    switch(settings.recipe.name) {
-      case "passwordless":
-      case "thirdparty":
-      case "thirdpartyemailpassword":
-      case "thirdpartypasswordless":
-      case "phonepassword":
-        await replaceCustomSeedTemplate(
-          scriptsDirectory,
-          authEntity,
-          newModules
-        );
-    }
     return newModules;
   }
-}
-
-const supertokensImport = (): namedTypes.ImportDeclaration => {
-  return builders.importDeclaration(
-    [builders.importDefaultSpecifier(builders.identifier("supertokens"))],
-    builders.stringLiteral("supertokens-node")
-  )
-}
-
-const authFilterImport = (): namedTypes.ImportDeclaration => {
-  return builders.importDeclaration(
-    [builders.importSpecifier(builders.identifier("STAuthFilter"))],
-    builders.stringLiteral("./auth/supertokens/auth.filter")
-  )
-}
-
-const genSupertokensOptionsImport = (): namedTypes.ImportDeclaration => {
-  return builders.importDeclaration(
-    [builders.importSpecifier(builders.identifier("generateSupertokensOptions"))],
-    builders.stringLiteral("./auth/supertokens/generateSupertokensOptions")
-  )
-}
-
-const globalFiltersStatement = (): namedTypes.ExpressionStatement => {
-  return builders.expressionStatement(
-    appCallExpression("useGlobalFilters", [
-      builders.newExpression(builders.identifier("STAuthFilter"), [])
-    ])
-  );
-}
-
-const enableCorsStatement = (): namedTypes.ExpressionStatement => {
-  return builders.expressionStatement(appCallExpression(
-    "enableCors",
-    [
-      builders.objectExpression([
-        allowOriginWebsiteDomainProp(),
-        allowedSupertokenHeadersProp(),
-        builders.objectProperty(
-          builders.identifier("credentials"),
-          builders.booleanLiteral(true)
-        )
-      ])
-    ]
-  ))
-}
-
-const allowedSupertokenHeadersProp = (): namedTypes.ObjectProperty => {
-  return builders.objectProperty(
-    builders.identifier("allowedHeaders"),
-    builders.arrayExpression([
-      builders.stringLiteral("content-type"),
-      builders.spreadElement(builders.callExpression(
-        builders.memberExpression(
-          builders.identifier("supertokens"),
-          builders.identifier("getAllCORSHeaders")
-        ),
-        []
-      ))
-    ])
-  )
-}
-
-const allowOriginWebsiteDomainProp = (): namedTypes.ObjectProperty => {
-  return builders.objectProperty(
-    builders.identifier("origin"),
-    builders.arrayExpression([
-      builders.memberExpression(
-        builders.memberExpression(
-          builders.callExpression(
-            builders.identifier("generateSupertokensOptions"),
-            [builders.identifier("configService")]
-          ),
-          builders.identifier("appInfo")
-        ),
-        builders.identifier("websiteDomain")
-      )
-    ])
-  )
-}
-
-const appCallExpression = (
-  funcName: string,
-  params: namedTypes.CallExpression["arguments"]
-): namedTypes.CallExpression => {
-  return builders.callExpression(
-    builders.memberExpression(
-      builders.identifier("app"),
-      builders.identifier(funcName)
-    ),
-    params
-  )
 }
 
 export default SupertokensAuthPlugin;

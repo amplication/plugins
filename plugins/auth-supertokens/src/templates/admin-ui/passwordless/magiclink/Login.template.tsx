@@ -16,7 +16,7 @@ const Login = ({ theme }: any) => {
   const BASE_URI = process.env.REACT_APP_SERVER_URL;
   const moveToNextStep = () => {
     setShouldClickMagicLink(true);
-  }
+  };
 
   return (
     <ThemeProvider theme={createTheme(defaultTheme)}>
@@ -32,10 +32,11 @@ const Login = ({ theme }: any) => {
               Sign in to a React-Admin client with ready-made forms for creating
               and editing all the data models of your application
             </div>
-            {shouldClickMagicLink ?
+            {shouldClickMagicLink ? (
               <h3>A link has been sent</h3>
-              : <CreateOTPForm notify={notify} moveToNextStep={moveToNextStep} />
-              }
+            ) : (
+              <CreateOTPForm notify={notify} moveToNextStep={moveToNextStep} />
+            )}
           </div>
           <div className={`${CLASS_NAME}__box`}>
             <img
@@ -78,35 +79,37 @@ const CreateOTPForm = ({ notify, moveToNextStep }: any) => {
     let input: any = { email: emailOrPhoneNumber };
     try {
       const parsedPhoneNumber = parsePhoneNumber(emailOrPhoneNumber);
-      if(parsedPhoneNumber && parsedPhoneNumber.isValid()) {
+      if (parsedPhoneNumber && parsedPhoneNumber.isValid()) {
         input = { phoneNumber: parsedPhoneNumber };
       }
     } catch (e) {}
-    if(input.email) {
+    if (input.email) {
       const resp = await Passwordless.doesEmailExist({ email: input.email });
-      if(resp.status !== "OK" || !resp.doesExist) {
+      if (resp.status !== "OK" || !resp.doesExist) {
         notify("Failed to login");
         return;
       }
     } else {
-      const resp = await Passwordless.doesPhoneNumberExist({ phoneNumber: input.phoneNumber });
-      if(resp.status !== "OK" || !resp.doesExist) {
+      const resp = await Passwordless.doesPhoneNumberExist({
+        phoneNumber: input.phoneNumber,
+      });
+      if (resp.status !== "OK" || !resp.doesExist) {
         notify("Failed to login");
         return;
       }
     }
     const resp = await Passwordless.createCode(input);
-    if(resp.status === "OK") {
+    if (resp.status === "OK") {
       moveToNextStep();
     } else {
       notify("Failed to login");
     }
-  }
+  };
 
-  return(
+  return (
     <form onSubmit={submit}>
       <label>
-      <span>{CONTACT_METHOD_FIELD_LABEL}</span>
+        <span>{CONTACT_METHOD_FIELD_LABEL}</span>
 
         <input
           name="emailOrPhoneNumber"
@@ -119,7 +122,7 @@ const CreateOTPForm = ({ notify, moveToNextStep }: any) => {
         Continue
       </Button>
     </form>
-  )
-}
+  );
+};
 
 export default Login;

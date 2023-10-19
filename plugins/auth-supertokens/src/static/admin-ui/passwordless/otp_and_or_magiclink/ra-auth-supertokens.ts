@@ -7,11 +7,11 @@ export const supertokensAuthProvider: AuthProvider = {
   login: async (credentials: Credentials) => {
     const { otp } = credentials;
     const resp = await Passwordless.consumeCode({ userInputCode: otp });
-    if(resp.status === "OK") {
+    if (resp.status === "OK") {
       return Promise.resolve();
-    } else if(resp.status === "INCORRECT_USER_INPUT_CODE_ERROR") {
+    } else if (resp.status === "INCORRECT_USER_INPUT_CODE_ERROR") {
       return Promise.reject("Incorrect OTP");
-    } else if(resp.status === "EXPIRED_USER_INPUT_CODE_ERROR") {
+    } else if (resp.status === "EXPIRED_USER_INPUT_CODE_ERROR") {
       return Promise.reject("OTP has expired");
     }
     return Promise.reject();
@@ -27,7 +27,7 @@ export const supertokensAuthProvider: AuthProvider = {
     return Promise.resolve();
   },
   checkAuth: async () => {
-    if(await Session.doesSessionExist()) {
+    if (await Session.doesSessionExist()) {
       return Promise.resolve();
     }
     return Promise.reject();
@@ -35,7 +35,7 @@ export const supertokensAuthProvider: AuthProvider = {
   getPermissions: () => Promise.reject("Unknown method"),
   getIdentity: async () => {
     const payload = await Session.getAccessTokenPayloadSecurely();
-    
+
     return Promise.resolve({
       id: payload.userId,
       fullName: payload.email ?? payload.phoneNumber ?? payload.userId,

@@ -1,9 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import supertokens, { deleteUser, RecipeUserId, User as STUser } from "supertokens-node";
+import supertokens, {
+  deleteUser,
+  RecipeUserId,
+  User as STUser,
+} from "supertokens-node";
 import Session from "supertokens-node/recipe/session";
 import Dashboard from "supertokens-node/recipe/dashboard";
-import ThirdPartyEmailPassword from 'supertokens-node/recipe/thirdpartyemailpassword';
+import ThirdPartyEmailPassword from "supertokens-node/recipe/thirdpartyemailpassword";
 import { generateSupertokensOptions } from "./generateSupertokensOptions";
 import { AuthError } from "./auth.error";
 
@@ -20,64 +24,70 @@ export class SupertokensService {
           providers: THIRD_PARTY_PROVIDERS,
           override: {
             functions: (originalImplementation) => {
-                return {
-                  ...originalImplementation,
-                  emailPasswordSignUp: async function(input) {
-                    const resp = await originalImplementation.emailPasswordSignUp(input);
-                    if (
-                      resp.status === "OK" &&
-                      resp.user.loginMethods.length === 1 &&
-                      (!input.userContext ||
-                        !input.userContext.skipDefaultPostUserSignUp)
-                    ) {
-                      userService.create({
-                        data: {
-                          SUPERTOKENS_ID_FIELD_NAME: resp.user.id,
-                          ...DEFAULT_FIELD_VALUES,
-                        },
-                      });
-                    }
-                    return resp;
-                  },
-                  thirdPartySignInUp: async function (input) {
-                    let resp = await originalImplementation.thirdPartySignInUp(input);
+              return {
+                ...originalImplementation,
+                emailPasswordSignUp: async function (input) {
+                  const resp = await originalImplementation.emailPasswordSignUp(
+                    input
+                  );
+                  if (
+                    resp.status === "OK" &&
+                    resp.user.loginMethods.length === 1 &&
+                    (!input.userContext ||
+                      !input.userContext.skipDefaultPostUserSignUp)
+                  ) {
+                    userService.create({
+                      data: {
+                        SUPERTOKENS_ID_FIELD_NAME: resp.user.id,
+                        ...DEFAULT_FIELD_VALUES,
+                      },
+                    });
+                  }
+                  return resp;
+                },
+                thirdPartySignInUp: async function (input) {
+                  let resp = await originalImplementation.thirdPartySignInUp(
+                    input
+                  );
 
-                    if (
-                      resp.status === "OK" &&
-                      resp.createdNewRecipeUser &&
-                      resp.user.loginMethods.length === 1 &&
-                      (!input.userContext ||
-                        !input.userContext.skipDefaultPostUserSignUp)
-                    ) {
-                      userService.create({
-                        data: {
-                          SUPERTOKENS_ID_FIELD_NAME: resp.user.id,
-                          ...DEFAULT_FIELD_VALUES,
-                        },
-                      });
-                    }
-                    return resp;
-                  },
-                };
-              }
-          }
+                  if (
+                    resp.status === "OK" &&
+                    resp.createdNewRecipeUser &&
+                    resp.user.loginMethods.length === 1 &&
+                    (!input.userContext ||
+                      !input.userContext.skipDefaultPostUserSignUp)
+                  ) {
+                    userService.create({
+                      data: {
+                        SUPERTOKENS_ID_FIELD_NAME: resp.user.id,
+                        ...DEFAULT_FIELD_VALUES,
+                      },
+                    });
+                  }
+                  return resp;
+                },
+              };
+            },
+          },
         }),
         Session.init({
           override: {
             functions: (originalImplementation) => {
               return {
                 ...originalImplementation,
-                createNewSession: async function(input) {
+                createNewSession: async function (input) {
                   const user = await userService.findOne({
                     where: {
-                      supertokensId: input.userId
+                      SUPERTOKENS_ID_FIELD_NAME: input.userId,
                     },
                     select: {
-                      id: true
-                    }
+                      id: true,
+                    },
                   });
-                  if(!user) {
-                    throw new Error("Failed to find a user with the corresponding supertokens ID");
+                  if (!user) {
+                    throw new Error(
+                      "Failed to find a user with the corresponding supertokens ID"
+                    );
                   }
                   const userInfo = await supertokens.getUser(
                     input.userId,
@@ -88,25 +98,27 @@ export class SupertokensService {
                     accessTokenPayload: {
                       ...input.accessTokenPayload,
                       email: userInfo?.emails[0],
-                      userId: user.id
-                    }
-                  })
-                }
-              }
-            }
-          }
+                      userId: user.id,
+                    },
+                  });
+                },
+              };
+            },
+          },
         }),
         Dashboard.init(),
       ],
     });
   }
 
-  async getUserBySupertokensId(supertokensId: string): Promise<AUTH_ENTITY_ID | null> {
+  async getUserBySupertokensId(
+    supertokensId: string
+  ): Promise<AUTH_ENTITY_ID | null> {
     return await this.userService.findOne({
       where: {
-        SUPERTOKENS_ID_FIELD_NAME: supertokensId
-      }
-    })
+        SUPERTOKENS_ID_FIELD_NAME: supertokensId,
+      },
+    });
   }
 
   async createSupertokensUser(
@@ -115,11 +127,16 @@ export class SupertokensService {
     thirdPartyId: string | undefined
   ): Promise<string> {
     let resp;
-    if(password) {
-      resp = await ThirdPartyEmailPassword.emailPasswordSignUp("public", email, password, {
-        skipDefaultPostUserSignUp: true,
-      })
-    } else if(thirdPartyId) {
+    if (password) {
+      resp = await ThirdPartyEmailPassword.emailPasswordSignUp(
+        "public",
+        email,
+        password,
+        {
+          skipDefaultPostUserSignUp: true,
+        }
+      );
+    } else if (thirdPartyId) {
       resp = await ThirdPartyEmailPassword.thirdPartyManuallyCreateOrUpdateUser(
         "public",
         thirdPartyId,
@@ -129,9 +146,11 @@ export class SupertokensService {
         {
           skipDefaultPostUserSignUp: true,
         }
-      )
+      );
     } else {
-      throw new Error("Either a password or a third party ID must be provided with the email to create a user");
+      throw new Error(
+        "Either a password or a third party ID must be provided with the email to create a user"
+      );
     }
     switch (resp.status) {
       case "EMAIL_CHANGE_NOT_ALLOWED_ERROR":
@@ -147,7 +166,7 @@ export class SupertokensService {
 
   async deleteSupertokensUser(supertokensId: string): Promise<void> {
     const resp = await deleteUser(supertokensId);
-    if(resp.status !== "OK") {
+    if (resp.status !== "OK") {
       throw new AuthError("UNKNOWN_ERROR");
     }
   }
@@ -159,20 +178,20 @@ export class SupertokensService {
     supertokensId: string
   ): Promise<void> {
     if (!email) {
-      throw new Error(
-        "An email must be supplied to update a user"
-      );
+      throw new Error("An email must be supplied to update a user");
     }
     let resp;
-    if(password) {
+    if (password) {
       resp = await ThirdPartyEmailPassword.updateEmailOrPassword({
         recipeUserId: await this.getRecipeUserId(supertokensId),
         email,
-        password
-      })
-    } else if(thirdPartyId) {
+        password,
+      });
+    } else if (thirdPartyId) {
       const user = await this.getSupertokensUserInfo(supertokensId);
-      const thirdPartyData = user.thirdParty.find((tp) => tp.id === thirdPartyId);
+      const thirdPartyData = user.thirdParty.find(
+        (tp) => tp.id === thirdPartyId
+      );
       if (!thirdPartyData) {
         throw new Error(
           `The user doesn't have a third party login with ${thirdPartyId}`
@@ -194,7 +213,9 @@ export class SupertokensService {
         thirdPartyMethod.verified
       );
     } else {
-      throw new Error("Password or third party ID must be supplied to update the SuperTokens user");
+      throw new Error(
+        "Password or third party ID must be supplied to update the SuperTokens user"
+      );
     }
     switch (resp.status) {
       case "EMAIL_CHANGE_NOT_ALLOWED_ERROR":
@@ -209,16 +230,20 @@ export class SupertokensService {
 
   async getSupertokensUserInfo(supertokensId: string): Promise<STUser> {
     const user = await supertokens.getUser(supertokensId);
-    if(!user) {
-      throw new AuthError("SUPERTOKENS_ID_WITH_NO_CORRESPONDING_SUPERTOKENS_USER");
+    if (!user) {
+      throw new AuthError(
+        "SUPERTOKENS_ID_WITH_NO_CORRESPONDING_SUPERTOKENS_USER"
+      );
     }
     return user;
   }
 
   async getRecipeUserId(supertokensId: string): Promise<RecipeUserId> {
     const user = await this.getSupertokensUserInfo(supertokensId);
-    const loginMethod = user.loginMethods.find((lm) => lm.recipeId === "emailpassword");
-    if(!loginMethod) {
+    const loginMethod = user.loginMethods.find(
+      (lm) => lm.recipeId === "emailpassword"
+    );
+    if (!loginMethod) {
       throw new Error("Failed to find the login method");
     }
     return loginMethod.recipeUserId;

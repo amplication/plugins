@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Admin, DataProvider, Resource } from "react-admin";
 //@ts-ignore
 import buildGraphQLProvider from "./data-provider/graphqlDataProvider";
-import createHistory from 'history/createBrowserHistory';
+import createHistory from "history/createBrowserHistory";
 import { Route } from "react-router-dom";
 //@ts-ignore
 import { theme } from "./theme/theme";
@@ -50,7 +50,7 @@ const App = (): React.ReactElement => {
         loginPage={Login}
         history={history}
         customRoutes={[
-          <Route exact path="/auth/callback" component={AuthCallback} />
+          <Route exact path="/auth/callback" component={AuthCallback} />,
         ]}
       >
         {RESOURCES}

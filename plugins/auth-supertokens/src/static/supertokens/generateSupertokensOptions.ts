@@ -56,7 +56,7 @@ export const generateSupertokensOptions = (
   return {
     supertokens: {
       connectionURI,
-      apiKey
+      apiKey,
     },
     appInfo: {
       appName,
@@ -65,6 +65,6 @@ export const generateSupertokensOptions = (
       apiBasePath,
       websiteBasePath,
       apiGatewayPath,
-    }
+    },
   };
 };

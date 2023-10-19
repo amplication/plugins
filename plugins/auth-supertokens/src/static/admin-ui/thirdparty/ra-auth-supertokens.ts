@@ -16,7 +16,7 @@ export const supertokensAuthProvider: AuthProvider = {
     return Promise.resolve();
   },
   checkAuth: async () => {
-    if(await Session.doesSessionExist()) {
+    if (await Session.doesSessionExist()) {
       return Promise.resolve();
     }
     return Promise.reject();
@@ -24,7 +24,7 @@ export const supertokensAuthProvider: AuthProvider = {
   getPermissions: () => Promise.reject("Unknown method"),
   getIdentity: async () => {
     const payload = await Session.getAccessTokenPayloadSecurely();
-    
+
     return Promise.resolve({
       id: payload.userId,
       fullName: payload.email,

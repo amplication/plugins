@@ -7,4 +7,4 @@ export { removeNonSupertokensAuthProviderImportsFromAppModule } from "./removeNo
 export { removeNonSupertokensAuthProviderModules } from "./removeNonSupertokensAuthProviderModules";
 export { addConsumeMagicLinkModule } from "./addConsumeMagicLinkModule";
 export { addAuthCallbackModule } from "./addAuthCallbackModule";
-export { removeUnneededAdminUIFiles } from "./removeUnneededFiles"
+export { removeUnneededAdminUIFiles } from "./removeUnneededFiles";

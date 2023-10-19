@@ -6,15 +6,11 @@ import { STAuthGuard } from "./supertokens/auth.guard";
 
 @Injectable()
 export class DefaultAuthGuard extends STAuthGuard {
-  constructor(
-      private readonly reflector: Reflector,
-      authService: AuthService) {
+  constructor(private readonly reflector: Reflector, authService: AuthService) {
     super(authService);
   }
 
-  async canActivate(
-    context: ExecutionContext
-  ): Promise<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.get<boolean>(
       IS_PUBLIC_KEY,
       context.getHandler()

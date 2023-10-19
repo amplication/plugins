@@ -10,7 +10,7 @@ const httpLink = createHttpLink({
 const authLink = setContext((_, { headers }) => {
   return {
     headers: {
-      ...headers
+      ...headers,
     },
   };
 });

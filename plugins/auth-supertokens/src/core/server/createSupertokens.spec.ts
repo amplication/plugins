@@ -1,4 +1,8 @@
-import { BuildLogger, ModuleMap, NamedClassDeclaration } from "@amplication/code-gen-types";
+import {
+  BuildLogger,
+  ModuleMap,
+  NamedClassDeclaration,
+} from "@amplication/code-gen-types";
 import { parse } from "@amplication/code-gen-utils";
 import { mock } from "jest-mock-extended";
 import { Settings } from "../../types";
@@ -9,25 +13,25 @@ const thirdPartyRecipeSettings: Settings["recipe"] = {
   name: "thirdparty",
   google: {
     clientId: "googleClientId",
-    clientSecret: "googleClientSecret"
+    clientSecret: "googleClientSecret",
   },
   github: {
     clientId: "githubClientId",
-    clientSecret: "githubClientSecret"
+    clientSecret: "githubClientSecret",
   },
   apple: {
     clientId: "appleClientId",
     additionalConfig: {
       keyId: "appleKeyId",
       privateKey: "applePrivateKey",
-      teamId: "appleTeamId"
-    }
-  }
-}
+      teamId: "appleTeamId",
+    },
+  },
+};
 
 const authDirectory = "src/auth";
 const srcDirectory = "src";
-const authEntityName = "User"
+const authEntityName = "User";
 const authEntityCreateInputRawCode = `
 @InputType()
 class UserCreateInput {
@@ -57,8 +61,9 @@ class UserCreateInput {
   @Field(() => GraphQLJSON)
   roles!: InputJsonValue;
 }
-`
-const authEntityCreateInput = parse(authEntityCreateInputRawCode).program.body[0] as NamedClassDeclaration;
+`;
+const authEntityCreateInput = parse(authEntityCreateInputRawCode).program
+  .body[0] as NamedClassDeclaration;
 
 describe("createSupertokensService tests", () => {
   let modules: ModuleMap;
@@ -74,12 +79,16 @@ describe("createSupertokensService tests", () => {
       srcDirectory,
       authEntityName,
       modules,
-      authEntityCreateInput
+      authEntityCreateInput,
+      "SuperTokensId",
+      mock<BuildLogger>()
     );
-    const code = prettyCode(modules.get(`${authDirectory}/supertokens/supertokens.service.ts`).code);
+    const code = prettyCode(
+      modules.get(`${authDirectory}/supertokens/supertokens.service.ts`).code
+    );
     const expectedCode = prettyCode(expectedThirdPartySupertokensRawCode);
     expect(code).toStrictEqual(expectedCode);
-  })
+  });
 });
 
 const expectedThirdPartySupertokensRawCode = `
@@ -155,7 +164,7 @@ export class SupertokensService {
                       ) {
                         userService.create({
                           data: {
-                            supertokensId: resp.user.id,
+                            SuperTokensId: resp.user.id,
                             ...{
                               lastName: "",
                               roles: []
@@ -169,7 +178,40 @@ export class SupertokensService {
               }
           }
         }),
-        Session.init(),
+        Session.init({
+          override: {
+            functions: (originalImplementation) => {
+              return {
+                ...originalImplementation,
+                createNewSession: async function(input) {
+                  const user = await userService.findOne({
+                    where: {
+                      SuperTokensId: input.userId
+                    },
+                    select: {
+                      id: true
+                    }
+                  });
+                  if(!user) {
+                    throw new Error("Failed to find a user with the corresponding supertokens ID");
+                  }
+                  const userInfo = await supertokens.getUser(
+                    input.userId,
+                    input.userContext
+                  );
+                  return originalImplementation.createNewSession({
+                    ...input,
+                    accessTokenPayload: {
+                      ...input.accessTokenPayload,
+                      email: userInfo?.emails[0],
+                      userId: user.id
+                    }
+                  })
+                }
+              }
+            }
+          }
+        }),
         Dashboard.init(),
       ],
     });
@@ -178,7 +220,7 @@ export class SupertokensService {
   async getUserBySupertokensId(supertokensId: string): Promise<User | null> {
     return await this.userService.findOne({
       where: {
-        supertokensId: supertokensId,
+        SuperTokensId: supertokensId,
       },
     });
   }
@@ -260,4 +302,4 @@ export class SupertokensService {
   }
 }
 
-`
+`;

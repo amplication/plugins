@@ -16,9 +16,7 @@ const Login = ({ theme }: any) => {
   const BASE_URI = process.env.REACT_APP_SERVER_URL;
   const submit = async (e: any) => {
     e.preventDefault();
-    login({ email, password }).catch(() =>
-      notify("Invalid email or password")
-    );
+    login({ email, password }).catch(() => notify("Invalid email or password"));
   };
 
   return (

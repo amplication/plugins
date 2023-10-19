@@ -1,9 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import supertokens, { deleteUser, RecipeUserId, User as STUser } from "supertokens-node";
+import supertokens, {
+  deleteUser,
+  RecipeUserId,
+  User as STUser,
+} from "supertokens-node";
 import Session from "supertokens-node/recipe/session";
 import Dashboard from "supertokens-node/recipe/dashboard";
-import ThirdPartyPasswordless from 'supertokens-node/recipe/thirdpartypasswordless';
+import ThirdPartyPasswordless from "supertokens-node/recipe/thirdpartypasswordless";
 import { generateSupertokensOptions } from "./generateSupertokensOptions";
 import { AuthError } from "./auth.error";
 
@@ -25,9 +29,7 @@ export class SupertokensService {
               return {
                 ...originalImplementation,
                 consumeCode: async function (input) {
-                  const resp = await originalImplementation.consumeCode(
-                    input
-                  );
+                  const resp = await originalImplementation.consumeCode(input);
                   if (
                     resp.status === "OK" &&
                     resp.createdNewRecipeUser &&
@@ -67,24 +69,26 @@ export class SupertokensService {
                 },
               };
             },
-          }
+          },
         }),
         Session.init({
           override: {
             functions: (originalImplementation) => {
               return {
                 ...originalImplementation,
-                createNewSession: async function(input) {
+                createNewSession: async function (input) {
                   const user = await userService.findOne({
                     where: {
-                      supertokensId: input.userId
+                      SUPERTOKENS_ID_FIELD_NAME: input.userId,
                     },
                     select: {
-                      id: true
-                    }
+                      id: true,
+                    },
                   });
-                  if(!user) {
-                    throw new Error("Failed to find a user with the corresponding supertokens ID");
+                  if (!user) {
+                    throw new Error(
+                      "Failed to find a user with the corresponding supertokens ID"
+                    );
                   }
                   const userInfo = await supertokens.getUser(
                     input.userId,
@@ -95,25 +99,27 @@ export class SupertokensService {
                     accessTokenPayload: {
                       ...input.accessTokenPayload,
                       email: userInfo?.emails[0],
-                      userId: user.id
-                    }
-                  })
-                }
-              }
-            }
-          }
+                      userId: user.id,
+                    },
+                  });
+                },
+              };
+            },
+          },
         }),
         Dashboard.init(),
       ],
     });
   }
 
-  async getUserBySupertokensId(supertokensId: string): Promise<AUTH_ENTITY_ID | null> {
+  async getUserBySupertokensId(
+    supertokensId: string
+  ): Promise<AUTH_ENTITY_ID | null> {
     return await this.userService.findOne({
       where: {
-        SUPERTOKENS_ID_FIELD_NAME: supertokensId
-      }
-    })
+        SUPERTOKENS_ID_FIELD_NAME: supertokensId,
+      },
+    });
   }
 
   async createSupertokensUser(
@@ -123,9 +129,9 @@ export class SupertokensService {
   ): Promise<string> {
     let resp;
     const userContext = {
-      skipDefaultPostUserSignUp: true
+      skipDefaultPostUserSignUp: true,
     };
-    if(thirdPartyId && email) {
+    if (thirdPartyId && email) {
       resp = await ThirdPartyPasswordless.thirdPartyManuallyCreateOrUpdateUser(
         "public",
         thirdPartyId,
@@ -135,9 +141,17 @@ export class SupertokensService {
         userContext
       );
     } else if (email) {
-      resp = await ThirdPartyPasswordless.passwordlessSignInUp({ email, tenantId: "public", userContext });
-    } else if(phoneNumber) {
-      resp = await ThirdPartyPasswordless.passwordlessSignInUp({ phoneNumber, tenantId: "public", userContext });
+      resp = await ThirdPartyPasswordless.passwordlessSignInUp({
+        email,
+        tenantId: "public",
+        userContext,
+      });
+    } else if (phoneNumber) {
+      resp = await ThirdPartyPasswordless.passwordlessSignInUp({
+        phoneNumber,
+        tenantId: "public",
+        userContext,
+      });
     } else {
       throw new Error(
         "Either a third party ID and email or an email or a phone number must be provided with the email to create a user"
@@ -156,7 +170,7 @@ export class SupertokensService {
 
   async deleteSupertokensUser(supertokensId: string): Promise<void> {
     const resp = await deleteUser(supertokensId);
-    if(resp.status !== "OK") {
+    if (resp.status !== "OK") {
       throw new AuthError("UNKNOWN_ERROR");
     }
   }
@@ -196,12 +210,12 @@ export class SupertokensService {
         email,
         thirdPartyMethod.verified
       );
-    } else if(email || phoneNumber) {
+    } else if (email || phoneNumber) {
       resp = await ThirdPartyPasswordless.updatePasswordlessUser({
         recipeUserId: await this.getRecipeUserId(supertokensId),
         email,
-        phoneNumber
-      })
+        phoneNumber,
+      });
     } else {
       throw new Error(
         "Either a third party ID and email or an email or a phone number must be supplied to update the SuperTokens user"
@@ -215,7 +229,9 @@ export class SupertokensService {
       case "SIGN_IN_UP_NOT_ALLOWED":
         throw new AuthError(resp.status);
       case "UNKNOWN_USER_ID_ERROR":
-        throw new AuthError("SUPERTOKENS_ID_WITH_NO_CORRESPONDING_SUPERTOKENS_USER");
+        throw new AuthError(
+          "SUPERTOKENS_ID_WITH_NO_CORRESPONDING_SUPERTOKENS_USER"
+        );
       case "OK":
         return;
       default:
@@ -225,16 +241,20 @@ export class SupertokensService {
 
   async getSupertokensUserInfo(supertokensId: string): Promise<STUser> {
     const user = await supertokens.getUser(supertokensId);
-    if(!user) {
-      throw new AuthError("SUPERTOKENS_ID_WITH_NO_CORRESPONDING_SUPERTOKENS_USER");
+    if (!user) {
+      throw new AuthError(
+        "SUPERTOKENS_ID_WITH_NO_CORRESPONDING_SUPERTOKENS_USER"
+      );
     }
     return user;
   }
 
   async getRecipeUserId(supertokensId: string): Promise<RecipeUserId> {
     const user = await this.getSupertokensUserInfo(supertokensId);
-    const loginMethod = user.loginMethods.find((lm) => lm.recipeId === "passwordless");
-    if(!loginMethod) {
+    const loginMethod = user.loginMethods.find(
+      (lm) => lm.recipeId === "passwordless"
+    );
+    if (!loginMethod) {
       throw new Error("Failed to find the login method");
     }
     return loginMethod.recipeUserId;
