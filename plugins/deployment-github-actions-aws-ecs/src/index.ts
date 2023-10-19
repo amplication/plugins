@@ -19,6 +19,7 @@ import {
   resourcesMemoryKey,
   runtimeCpuArchitectureKey,
   runtimeOsFamilyKey,
+  dockerFilePathKey,
 } from "./constants";
 import { getPluginSettings } from "./utils";
 import { EventNames } from "@amplication/code-gen-types";
@@ -103,6 +104,7 @@ class GithubActionsAwsEcsPlugin implements AmplicationPlugin {
           runtimeCpuArchitectureKey,
           settings.runtime.cpu_architecture
         )
+        .replaceAll(dockerFilePathKey, context.serverDirectories.baseDirectory)
     );
 
     context.logger.info(

@@ -1,6 +1,6 @@
-# @amplication/plugin-ci-github-actions-aws-ecs
+# @amplication/plugin-deployment-github-actions-aws-ecs
 
-[![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-ci-github-actions-aws-ecs)](https://www.npmjs.com/package/@amplication/plugin-ci-github-actions-aws-ecs)
+[![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-deployment-github-actions-aws-ecs)](https://www.npmjs.com/package/@amplication/plugin-deployment-github-actions-aws-ecs)
 
 A short description of the plugin and its actions.
 

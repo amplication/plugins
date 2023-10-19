@@ -17,3 +17,5 @@ export const resourcesMemoryKey = "${{ RESOURCES_MEMORY }}";
 
 export const runtimeCpuArchitectureKey = "${{ RUNTIME_CPU_ARCHITECTURE }}";
 export const runtimeOsFamilyKey = "${{ RUNTIME_OS_FAMILY }}";
+
+export const dockerFilePathKey = "${{ DOCKERFILE_PATH }}";
