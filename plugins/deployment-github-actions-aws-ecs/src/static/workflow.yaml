@@ -5,50 +5,6 @@
 # Elastic Container Service (ECS) cluster. Lastly the execution of a task definition requires as IAM role which
 # can be consumed.
 
-# Pre-requisites:
-#
-# This workflow provides the user with the capability to deploy on to existing infrastructure. This workflow then
-# uses both the parameters which can be found under the 'env:' part aswell as secrets on the github repository where
-# the workflow resides.
-#
-# 1. Creating the Amazon ECR:
-#    Via the console: Navigate to 'Amazon ECR' > 'Repositories' and press 'Create repository', put in the name
-#    of the generated service, select any addition options desired and press 'Create repository' again. Pass this as
-#    configuration in the amplication plugin settings.
-#
-# 2. Creating the Amazon ECS cluster:
-#    Via the console: Navigate to 'Amazon ECS' and press 'Create cluster'. Specify a cluster name, this is also passed
-#    as an environment variable below through the use of amplication plugin settings. Make sure that the checkbow for
-#    'AWS Fargate (serverless)' is checked. Optionally enable the monitoring & press 'Create' to create the cluster.
-#
-# 3. Creating the environment variables in AWS Secret Manager:
-#    Via the consoel: Navigate to 'AWS Secret Manager' > 'Secrets' and press 'Store a new secret'. After this choose
-#    the option 'Other type of secret' and store the required variables to run the generated service; 'BCRYPT_SALT',
-#    'JWT_EXPIRATION', 'JWT_SECRET_KEY' & 'DB_URL'
-#
-# 4. Creating the Identity Acces Management - Role (Amazon Elastic Container Service task execution):
-#    We need to create an Identity Access Managment role with attached permissions to use when executing a task
-#    definition. The permissions needed can be attached throught the managed policy 'AmazonECSTaskExecutionRolePolicyInfo'.
-#    When using secrets in secrets manager we need the action "secretsmanager:GetSecretValue" attached to the role aswell,
-#    this should probably be scoped by the resource field. The role name should be passed through the amplication settings.
-#
-# 5. Creating the Identity Acces Management - Role + User (GitHub Actions push to Amazon Elastic Container Registry):
-#    In addition to a task execution role, another role/policy and a user should be created for being able to push
-#    the container to the container registry created in step 1. The json definition of the permission required can be found
-#    in the documentaiton below - [a]. After which a user can be creat to which these permissions can be assigned either directly
-#    or through a role. The last part is to create credentials and propagate these through the GitHub repository secrets by
-#    passing them in step 6.
-#
-#       a. https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-push.html
-#
-# 6. Store AWS credentials in GitHub repository secrets:
-#    In the workflow below some the the configuration are passed through the use of GitHub repository secrets. These
-#    are AWS_ACCESS_KEY_ID & AWS_SECRET_ACCESS_KEY, these are the credentials that are generated in step 5. The instructions
-#    on how to create a secret can be found below - [a]
-#
-#       a. https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repositorys
-#
-
 name: ${{ SERVICE_NAME }}-deploy-to-aws-ecs
 concurrency: ${{ github.ref }}
 
