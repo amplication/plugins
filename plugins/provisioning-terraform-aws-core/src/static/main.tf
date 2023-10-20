@@ -3,9 +3,9 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Terraform     = "true"
-      Amplication   = "true"
-      Environment   = local.environment
+      Terraform   = "true"
+      Amplication = "true"
+      Environment = local.environment
     }
   }
 }
@@ -13,8 +13,10 @@ provider "aws" {
 data "aws_availability_zones" "available" {}
 
 locals {
-  name       = "${{ SERVICE_NAME }}"
-  region     = "${{ REGION }}"
-  cidr_block = "${{ CIDR_BLOCK }}"
-  azs        = slice(data.aws_availability_zones.available.names, 0, 3)
+  name        = "${{ NAME }}"
+  region      = "${{ REGION_IDENTIFIER }}"
+  environment = "${{ ENVIRONMENT }}"
+  
+  vpc_cidr_block  = "${{ CIDR_BLOCK }}"
+  vpc_azs         = slice(data.aws_availability_zones.available.names, 0, 3)
 }

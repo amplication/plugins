@@ -1,9 +1,14 @@
-export const serviceName = "${{ SERVICE_NAME }}";
-
 // global constants
-export const region = "${{ REGION }}";
+export const nameKey = "${{ NAME }}";
+export const regionIdentifierKey = "${{ REGION_IDENTIFIER }}";
+export const environmentKey = "${{ ENVIRONMENT }}";
 
-// vpc related constants
-export const vpcCidrBlock = "${{ CIDR_BLOCK }}";
+// vpc constants
+export const vpcCidrBlockKey = "${{ CIDR_BLOCK }}";
+export const enableDnsHostnamesKey = "${{ ENABLE_DNS_HOSTNAMES }}";
+export const enableDnsSupportKey = "${{ ENABLE_DNS_SUPPORT }}";
+export const enableNatGatewayKey = "${{ ENABLE_NAT_GATEWAY }}";
+export const singleNatGatewayKey = "${{ SINGLE_NAT_GATEWAY }}";
 
-// ecs related constants
+// backend constants
+export const backendKey = "${{ BACKEND }}";

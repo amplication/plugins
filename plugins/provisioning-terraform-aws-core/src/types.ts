@@ -2,13 +2,26 @@ export interface Settings {
   root_level: boolean;
   directory_name: string;
   global: {
+    name: string;
     region: string;
-  }
+    environment: string;
+  };
   vpc: {
     cidr_block: string;
-
+    enable_dns_hostnames: boolean;
+    enable_dns_support: boolean;
+    enable_nat_gateway: boolean;
+    single_nat_gateway: boolean;
   };
-  ecs: {
-
+  backend: {
+    type: string;
+    local?: {
+      path: string;
+    };
+    s3?: {
+      bucket_name: string;
+      key: string;
+      region: string;
+    };
   };
 }

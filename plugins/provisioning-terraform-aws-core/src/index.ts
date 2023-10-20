@@ -1,37 +1,37 @@
 import type {
   AmplicationPlugin,
-  CreateAdminUIParams,
   CreateServerParams,
   DsgContext,
   Events,
   ModuleMap,
 } from "@amplication/code-gen-types";
+import {
+  nameKey,
+  regionIdentifierKey,
+  vpcCidrBlockKey,
+  enableDnsHostnamesKey,
+  enableDnsSupportKey,
+  enableNatGatewayKey,
+  singleNatGatewayKey,
+  environmentKey,
+  backendKey,
+} from "./constants";
+import { join } from "node:path";
+import { getPluginSettings } from "./utils";
 import { EventNames } from "@amplication/code-gen-types";
 import { resolve } from "path";
+import { kebabCase } from "lodash";
 
-class ExamplePlugin implements AmplicationPlugin {
+class TerraformAwsCorePlugin implements AmplicationPlugin {
   /**
    * This is mandatory function that returns an object with the event name. Each event can have before or/and after
    */
   register(): Events {
     return {
       [EventNames.CreateServer]: {
-        before: this.beforeCreateServer,
         after: this.afterCreateServer,
       },
-      [EventNames.CreateAdminUI]: {
-        before: this.beforeCreateAdminUI,
-      },
     };
-  }
-  // You can combine many events in one plugin in order to change the related files.
-
-  beforeCreateServer(context: DsgContext, eventParams: CreateServerParams) {
-    // Here you can manipulate the context or save any context variable for your after function.
-    // You can also manipulate the eventParams so it will change the result of Amplication function.
-    // context.utils.skipDefaultBehavior = true; this will prevent the default behavior and skip our handler.
-
-    return eventParams; // eventParams must return from before function. It will be used for the builder function.
   }
 
   async afterCreateServer(
@@ -39,22 +39,96 @@ class ExamplePlugin implements AmplicationPlugin {
     eventParams: CreateServerParams,
     modules: ModuleMap
   ): Promise<ModuleMap> {
-    // Here you can get the context, eventParams and the modules that Amplication created.
-    // Then you can manipulate the modules, add new ones, or create your own.
+    context.logger.info("Generating Terraform Amazon Web Services Core ...");
+
+    // determine the name of the service which will be used as the name for the workflow
+    // workflow names must be lower case letters and numbers. words may be separated with dashes (-):
+    const serviceName = kebabCase(context.resourceInfo?.name);
+
+    if (!serviceName) {
+      throw new Error("Service name is undefined");
+    }
+
+    // fetch the plugin specific settings and merge them with the defaults
+    const settings = getPluginSettings(context.pluginInstallations);
+
+    /**
+     * save the renderedOutput to the desired directory the options are on the root of the repository
+     * and within the directory of the services itself setting "root_directory":
+     *
+     *    option 1 (value: true):  /<directory_name_value>/<directory_name_value>
+     *    option 2 (value: false): /[optional: mono_prefix]/<service_name>/<directory_name_value>
+     */
+
+    let terraformDirectoryPath: string = "";
+    const rootDirectoryPath: string = "./";
+
+    if (settings.root_level === true) {
+      terraformDirectoryPath = join(rootDirectoryPath, settings.directory_name);
+    } else if (settings.root_level === false) {
+      terraformDirectoryPath = join(
+        context.serverDirectories.baseDirectory,
+        settings.directory_name
+      );
+    } else {
+      throw new Error(
+        "TerraformAwsCorePlugin: Specify true or false for the root_level setting"
+      );
+    }
+
+    // define some configuration based on input/defaults
+    const name: string =
+      settings.global.name === "" ? serviceName : settings.global.name;
+
+    let backendConfiguration: string;
+
+    if (settings.backend.type === "local") {
+      backendConfiguration = `terraform {\n\tbackend "local" {\n\t\tpath = "${settings.backend?.local?.path}"\n\t}\n}`;
+    } else if (settings.backend.type === "s3") {
+      backendConfiguration = `terraform {\n\tbackend "s3" {\n\t\tbucket = "${settings.backend?.s3?.bucket_name}"\n\t\tkey = "${settings.backend?.s3?.key}"\n\t\tregion = "${settings.backend?.s3?.region}"\n\t}\n}`;
+    } else {
+      throw new Error(
+        "TerraformAwsCorePlugin: Specify a backend type and applicable subconfiguration"
+      );
+    }
+
+    // set the path to the static files and fetch them for manipulation
     const staticPath = resolve(__dirname, "./static");
-    const staticsFiles = await context.utils.importStaticModules(
+    const staticFiles = await context.utils.importStaticModules(
       staticPath,
-      context.serverDirectories.srcDirectory
+      terraformDirectoryPath
     );
-    await modules.merge(staticsFiles);
-    return modules; // You must return the generated modules you want to generate at this part of the build.
-  }
 
-  beforeCreateAdminUI(context: DsgContext, eventParams: CreateAdminUIParams) {
-    // Same as beforeCreateExample but for a different event.
+    staticFiles.replaceModulesCode((code) =>
+      code
+        .replaceAll(nameKey, name)
+        .replaceAll(regionIdentifierKey, settings.global.region)
+        .replaceAll(environmentKey, settings.global.environment)
+        .replaceAll(vpcCidrBlockKey, settings.vpc.cidr_block)
+        .replaceAll(
+          enableDnsHostnamesKey,
+          String(settings.vpc.enable_dns_hostnames)
+        )
+        .replaceAll(
+          enableDnsSupportKey,
+          String(settings.vpc.enable_dns_support)
+        )
+        .replaceAll(
+          enableNatGatewayKey,
+          String(settings.vpc.enable_nat_gateway)
+        )
+        .replaceAll(
+          singleNatGatewayKey,
+          String(settings.vpc.single_nat_gateway)
+        )
+        .replaceAll(backendKey, backendConfiguration)
+    );
 
-    return eventParams;
+    context.logger.info("Generated Terraform Amazon Web Services Core ...");
+
+    await modules.merge(staticFiles);
+    return modules;
   }
 }
 
-export default ExamplePlugin;
+export default TerraformAwsCorePlugin;
