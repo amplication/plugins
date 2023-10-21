@@ -29,6 +29,7 @@ import {
   interpolate,
 } from "./util/ast";
 import { pascalCase } from "pascal-case";
+import { getPluginSettings } from "./utils";
 
 class RabbitMQPlugin implements AmplicationPlugin {
   static moduleFile: Module | undefined;
@@ -139,8 +140,12 @@ class RabbitMQPlugin implements AmplicationPlugin {
   ): CreateServerDotEnvParams {
     const resourceName = context.resourceInfo?.name;
 
+    const { host, port } = getPluginSettings(
+      context.pluginInstallations
+    );
+
     const vars = {
-      RABBITMQ_URLS: "amqp://localhost:5672",
+      RABBITMQ_URLS: `amqp://${host}:${port}`,
       RABBITMQ_QUEUE: kebabCase(resourceName),
     };
     const newEnvParams = [
@@ -221,6 +226,10 @@ class RabbitMQPlugin implements AmplicationPlugin {
     dsgContext: DsgContext,
     eventParams: CreateServerDockerComposeDevParams
   ): CreateServerDockerComposeDevParams {
+
+    const { password, user } = getPluginSettings(
+      dsgContext.pluginInstallations
+    );
     const RABBITMQ_NAME = "rabbitmq";
     const RABBITMQ_PORT = "5672";
     const RABBITMQ_UI_PORT = "15672";
@@ -230,8 +239,8 @@ class RabbitMQPlugin implements AmplicationPlugin {
         [RABBITMQ_NAME]: {
           image: "rabbitmq:3-management",
           environment: {
-            RABBITMQ_DEFAULT_USER: "user",
-            RABBITMQ_DEFAULT_PASS: "password",
+            RABBITMQ_DEFAULT_USER: user,
+            RABBITMQ_DEFAULT_PASS: password,
           },
           ports: [
             `${RABBITMQ_PORT}:${RABBITMQ_PORT}`,
@@ -250,7 +259,7 @@ class RabbitMQPlugin implements AmplicationPlugin {
   ) {
     const file = RabbitMQPlugin.moduleFile;
     if (!file) {
-       throw new Error("RabbitMQ module file not found");
+      throw new Error("RabbitMQ module file not found");
     }
     const rabbitMQModuleName = "RabbitMQModule";
     appendImports(eventParams.template, [rabbitModuleImport(rabbitMQModuleName)]);
