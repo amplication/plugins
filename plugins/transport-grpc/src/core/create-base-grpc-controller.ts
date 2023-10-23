@@ -1,38 +1,39 @@
 import {
   CreateEntityControllerBaseParams,
   DsgContext,
-  EntityField,
-  Module,
-  ModuleMap,
 } from "@amplication/code-gen-types";
-import { print, parse } from "@amplication/code-gen-utils";
+import { readFile } from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
 import {
-  addImports,
   getClassDeclarationById,
   getClassMethodByIdName,
-  importNames,
+  interpolate,
 } from "../util/ast";
 import {
   controllerMethodsIdsActionPairs,
-  controllerToManyMethodsIdsActionPairs,
 } from "./create-method-id-action-entity-map";
-import { pascalCase } from "pascal-case";
+import { join } from "path";
+import { templatesPath } from "../constants";
+
+const controllerBaseGrpcPath = join(
+  templatesPath,
+  "controller.grpc.base.template.ts"
+);
 
 export async function createGrpcControllerBase(
   context: DsgContext,
-  eventParams: CreateEntityControllerBaseParams,
-  relatedEntities: EntityField[],
-  modules: ModuleMap
-): Promise<Module> {
+  eventParams: CreateEntityControllerBaseParams
+): Promise<void> {
   try {
-    const { entityName, controllerBaseId, templateMapping, entity } =
-      eventParams;
-    const { serverDirectories } = context;
-    const [controllerBaseModule] = modules.modules();
-    const file = parse(controllerBaseModule.code);
+    const { controllerBaseId, templateMapping, entity } = eventParams;
 
-    const classDeclaration = getClassDeclarationById(file, controllerBaseId);
+    const controllerBaseGrpcTemplate = await readFile(controllerBaseGrpcPath);
+    interpolate(controllerBaseGrpcTemplate, templateMapping);
+
+    const classDeclaration = getClassDeclarationById(
+      controllerBaseGrpcTemplate,
+      controllerBaseId
+    );
 
     controllerMethodsIdsActionPairs(templateMapping, entity).forEach(
       ({ methodId, entity, methodName }) => {
@@ -42,53 +43,12 @@ export async function createGrpcControllerBase(
         );
       }
     );
-
-    relatedEntities &&
-      relatedEntities.forEach((entity) => {
-        const {relatedEntity} = entity.properties; 
-        controllerToManyMethodsIdsActionPairs(relatedEntity).forEach(
-          ({ methodId, methodName }) => {
-            const classMethod = getClassMethodByIdName(
-              classDeclaration,
-              methodId
-            );
-            classMethod?.decorators?.push(
-              buildGrpcMethodDecorator(entity.name, methodName)
-            );
-          }
-        );
-      });
-
-    const grpcMethodImport = importNames(
-      [builders.identifier("GrpcMethod")],
-      "@nestjs/microservices"
-    );
-    addImports(
-      file,
-      [grpcMethodImport].filter(
-        (x) => x //remove nulls and undefined
-      ) as namedTypes.ImportDeclaration[]
-    );
-
-    classDeclaration.id = builders.identifier(
-      `${pascalCase(entity.name)}ControllerGrpcBase`
-    );
-
-    const fileName = `${entityName}.controller.grpc.base.ts`;
-
-    const filePath = `${serverDirectories.srcDirectory}/${entityName}/base/${fileName}`;
-
-    return {
-      code: print(file).code,
-      path: filePath,
-    };
+    eventParams.template = controllerBaseGrpcTemplate;
   } catch (error) {
     console.error(error);
-    return { code: "", path: "" };
   }
 }
-
-function buildGrpcMethodDecorator(
+export function buildGrpcMethodDecorator(
   entityName: string,
   methodName: string
 ): namedTypes.Decorator {

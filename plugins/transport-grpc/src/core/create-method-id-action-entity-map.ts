@@ -12,6 +12,7 @@ type MethodsIdsActionEntityTriplet = {
 
 type methodMessage = {
   name: string;
+  enumMessageType: EnumMessageType;
 };
 
 type MethodsIdsActionEntity = {
@@ -21,12 +22,20 @@ type MethodsIdsActionEntity = {
   outputObjectName: string;
 };
 
-export const enum EnumTemplateType {
-  ControllerBase = "ControllerBase",
-  ResolverBase = "ResolverBase",
-  controllerToManyMethods = "ControllerToManyMethods",
-  ResolverToManyMethods = "ResolverToManyMethods",
-  ResolverFindOne = "ResolverFindOne",
+type ControllersIdsActionEntity = {
+  methodId: namedTypes.Identifier;
+  methodName: string;
+};
+
+export enum EnumMessageType {
+  Empty = "empty",
+  Create = "create",
+  EntityObject = "entityObject",
+  EntityWhereInput = "entityWhereInput",
+  EntityUpdateInput = "entityUpdateInput",
+  RelatedEntityObject = "relatedEntityObject",
+  RelatedEntityWhereInputObject = "relatedEntityWhereInputObject",
+  CombineWhereUniqInput = "combineWhereUniqInput",
 }
 
 export const controllerMethodsIdsActionPairs = (
@@ -83,15 +92,23 @@ export const controllerMethodsIdsActionPairs = (
 export const methodMessages = (entityName: string): methodMessage[] => [
   {
     name: `${pascalCase(entityName)}CreateInput`,
+    enumMessageType: EnumMessageType.Create,
   },
   {
     name: pascalCase(entityName),
+    enumMessageType: EnumMessageType.EntityObject,
   },
   {
     name: `${pascalCase(entityName)}WhereUniqueInput`,
+    enumMessageType: EnumMessageType.EntityWhereInput,
   },
   {
     name: `${pascalCase(entityName)}UpdateInput`,
+    enumMessageType: EnumMessageType.EntityUpdateInput,
+  },
+  {
+    name: "findManyParams",
+    enumMessageType: EnumMessageType.Empty, //an empty message
   },
 ];
 
@@ -100,12 +117,16 @@ export const manyRelationMethodMessages = (
 ): methodMessage[] => [
   {
     name: pascalCase(entityName),
+    enumMessageType: EnumMessageType.RelatedEntityObject,
   },
   {
     name: `${pascalCase(entityName)}WhereUniqueInput`,
+    enumMessageType: EnumMessageType.RelatedEntityWhereInputObject,
   },
-
-  //add here the empty message and findMany 
+  {
+    name: `${pascalCase(entityName)}Params`,
+    enumMessageType: EnumMessageType.CombineWhereUniqInput,
+  },
 ];
 
 export const controllerToManyMethodsIdsActionPairs = (
@@ -133,7 +154,7 @@ export const controllerToManyMethodsIdsActionPairs = (
       `connect${pascalCase(relatedEntity.pluralName)}`
     ),
     methodName: `connect${pascalCase(relatedEntity.pluralName)}`,
-    inputObjectName:`${relatedEntity.name}Params`,
+    inputObjectName: `${relatedEntity.name}Params`,
     outputObjectName: relatedEntity.name,
   },
   {
@@ -143,5 +164,27 @@ export const controllerToManyMethodsIdsActionPairs = (
     methodName: `disconnect${pascalCase(relatedEntity.pluralName)}`,
     inputObjectName: `${relatedEntity.name}Params`,
     outputObjectName: relatedEntity.name,
+  },
+];
+
+export const controllerToManyIdsActionPairs = (
+  toManyMapping: { [key: string]: any },
+  fieldName: string
+): ControllersIdsActionEntity[] => [
+  {
+    methodId: toManyMapping["FIND_MANY"],
+    methodName: `findMany${pascalCase(fieldName)}`,
+  },
+  {
+    methodId: toManyMapping["UPDATE"],
+    methodName: `update${pascalCase(fieldName)}`,
+  },
+  {
+    methodId: toManyMapping["CONNECT"],
+    methodName: `connect${pascalCase(fieldName)}`,
+  },
+  {
+    methodId: toManyMapping["DISCONNECT"],
+    methodName: `disconnect${pascalCase(fieldName)}`,
   },
 ];

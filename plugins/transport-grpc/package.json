@@ -1,6 +1,6 @@
 {
   "name": "@amplication/transport-grpc",
-  "version": "0.0.1-beta.93",
+  "version": "0.0.1-beta.120",
   "description": "set grpc as protocol for Amplication build",
   "main": "dist/index.js",
   "scripts": {
@@ -12,7 +12,7 @@
   "author": "Mor Hagbi",
   "license": "ISC",
   "devDependencies": {
-    "@amplication/code-gen-types": "^2.0.12",
+    "@amplication/code-gen-types": "2.0.13-beta.1",
     "@babel/parser": "^7.23.0",
     "@babel/types": "^7.23.0",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
@@ -33,6 +33,6 @@
     "@amplication/code-gen-utils": "^0.0.6",
     "pascal-case": "^3.1.2",
     "prisma-schema-dsl-types": "^1.1.2",
-    "protobuf-dsl": "^0.0.1-beta.19"
+    "protobuf-dsl": "^0.0.1-beta.20"
   }
 }

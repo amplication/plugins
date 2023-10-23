@@ -2,7 +2,9 @@ import {
   AmplicationPlugin,
   CreateConnectMicroservicesParams,
   CreateEntityControllerBaseParams,
-  CreateEntityControllerParams,
+  CreateEntityControllerGrpcBaseParams,
+  CreateEntityControllerGrpcParams,
+  CreateEntityControllerGrpcToManyRelationMethodsParams,
   CreateServerPackageJsonParams,
   DsgContext,
   EnumDataType,
@@ -14,6 +16,7 @@ import {
   createGrpcClientOptionsFile,
   createGrpcController,
   createGrpcControllerBase,
+  createGrpcControllerToManyRelationMethods,
   createGrpcProtoFile,
 } from "./core";
 import { merge } from "lodash";
@@ -21,11 +24,15 @@ import { merge } from "lodash";
 class JwtAuthPlugin implements AmplicationPlugin {
   register(): Events {
     return {
-      CreateEntityControllerBase: {
-        after: this.afterCreateControllerBaseModules,
+      CreateEntityControllerGrpcBase: {
+        before: this.beforeCreateEntityControllerBaseGrpc,
       },
-      CreateEntityController: {
-        after: this.afterCreateControllerModules,
+      createEntityControllerGrpcToManyRelationMethods: {
+        before: this.beforeCreateEntityGrpcControllerToManyRelationMethods,
+      },
+
+      CreateEntityControllerGrpc: {
+        before: this.beforeCreateEntityControllerGrpc,
       },
       CreateServerPackageJson: {
         before: this.beforeCreateServerPackageJson,
@@ -53,6 +60,31 @@ class JwtAuthPlugin implements AmplicationPlugin {
       merge(updateProperty, myValues)
     );
 
+    return eventParams;
+  }
+
+  async beforeCreateEntityControllerGrpc(
+    context: DsgContext,
+    eventParams: CreateEntityControllerGrpcParams
+  ) {
+    await createGrpcController(context, eventParams);
+
+    return eventParams;
+  }
+
+  async beforeCreateEntityControllerBaseGrpc(
+    context: DsgContext,
+    eventParams: CreateEntityControllerGrpcBaseParams
+  ) {
+    await createGrpcControllerBase(context, eventParams);
+    return eventParams;
+  }
+
+  async beforeCreateEntityGrpcControllerToManyRelationMethods(
+    context: DsgContext,
+    eventParams: CreateEntityControllerGrpcToManyRelationMethodsParams
+  ) {
+    await createGrpcControllerToManyRelationMethods(context, eventParams);
     return eventParams;
   }
 
@@ -89,14 +121,6 @@ class JwtAuthPlugin implements AmplicationPlugin {
         field.properties?.allowMultipleSelection
     );
 
-    const controllerGrpcBase = await createGrpcControllerBase(
-      context,
-      eventParams,
-      relatedEntities,
-      modules
-    );
-    await modules.set(controllerGrpcBase);
-
     // create proto file
     const protoFile = await createGrpcProtoFile(
       context,
@@ -109,20 +133,6 @@ class JwtAuthPlugin implements AmplicationPlugin {
     return modules;
   }
 
-  async afterCreateControllerModules(
-    context: DsgContext,
-    eventParams: CreateEntityControllerParams,
-    modules: ModuleMap
-  ): Promise<ModuleMap> {
-    const controllerGrpc = await createGrpcController(
-      context,
-      eventParams,
-      modules
-    );
-    await modules.set(controllerGrpc);
-
-    return modules;
-  }
 }
 
 export default JwtAuthPlugin;
