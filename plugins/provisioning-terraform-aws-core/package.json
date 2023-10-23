@@ -1,7 +1,7 @@
 {
   "name": "@amplication/plugin-provisioning-terraform-aws-core",
   "version": "0.0.1",
-  "description": "Adds terraform code for provisioning Amazon Web Services core infrastructure",
+  "description": "Adds terraform code for provisioning Amazon Web Services core network infrastructure",
   "main": "dist/index.js",
   "scripts": {
     "prepublishOnly": "npm run build",
