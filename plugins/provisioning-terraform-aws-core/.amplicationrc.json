@@ -1,6 +1,6 @@
 {
   "settings" : {
-    "root_level": true,
+    "root_level": false,
     "directory_name": "terraform",
     "global": {
       "name": "",
@@ -15,9 +15,11 @@
       "single_nat_gateway": true
     },
     "backend": {
-      "type": "local",
-      "local": {
-        "path": "terraform.tfstate"
+      "type": "s3",
+      "s3": {
+        "bucket_name": "bucket-name",
+        "key": "path/to/key",
+        "region": "eu-west-1"
       }
     }
   }

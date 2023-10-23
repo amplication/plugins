@@ -1,27 +1,49 @@
-# @amplication/plugin-<name>
+# @amplication/plugin-provisioning-terraform-aws-core
 
-[![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-auth-basic)](https://www.npmjs.com/package/@amplication/plugin-auth-basic)
+[![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-provisioning-terraform-aws-corec)](https://www.npmjs.com/package/@amplication/plugin-provisioning-terraform-aws-core)
 
-A short description of the plugin and its actions.
+Adds a core networking setup of terraform for Amazon Web Services to the generated service.
 
 ## Purpose
 
-What is the purpose of this plugin and what exactly does it do.
+Adds a core networking setup of terraform for Amazon Web Services to the generated service. This will serve as a basis for adding additional resources for provisioning, e.g. database, deployment, et cetera.
 
 ## Configuration
 
-If a configuration is required, add it here.
+`root_level` determines whether the directory where the terraform code will exists, lives under the root of the repository or on the level of the generated service.
 
-## Scripts
+`directory_name` determines the name for the directory where the generated code will live under, defaults to 'terraform'.
 
-### `build`
+`global.name` determines the name to use across the resources, if the string will be left empty, the name of the generated service will be passed.
 
-Running `npm run build` will bundle your plugin with Webpack for production.
+`global.region` determines the amazon web services region used across the resources.
 
-### `dev`
+`global.environment` determines the value that will be passsed to the environment key of the resource tags which is propagated via the providers default tags.
 
-Running `npm run dev` will watch your plugin's source code and automatically bundle it with every change.
+`vpc` block of settings specific to the vpc resource.
+
+`vpc.cidr_block` determines the cidr block passed to the vpc setup.
+
+`vpc.enable_dns_hostnames` determines whether to enable dns hostnames on the vpc.
+
+`vpc.enable_dns_support` determines whether to enable dns support on the vpc.
+
+`vpc.enable_nat_gateway` determines whether to enable nat gateway on the vpc.
+
+`vpc.single_nat_gateway` determines whether to create a single nat gateway or a nat gateway in every availability zone.
+
+`backend` block of settings specific to the backend configuration, defaults to s3 type as this is best practices, if desired it could be set to 'local' - to write backend state to a file.
+
+`backend.local.path` path to the terraform state file for a local type backend.
+
+`backend.s3.bucket_name` name for the bucket - which should exist already and is not part of this 'core' setup - to store the state in.
+
+`backend.s3.key` the key under which to store the state, within the aforementioned bucket.
+
+`backend.s3.region` the region in which the aforementioned bucket exists - is detached from the `global.region`.
+
 
 ## Usage
 
-Explain the usage of this plugin and its effect on the final build.
+As this is an addition to the code base, where non of the other code is touched, using the plugin won't impact the final build.
+
