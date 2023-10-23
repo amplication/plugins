@@ -16,7 +16,6 @@ type methodMessage = {
 };
 
 type MethodsIdsActionEntity = {
-  methodId: namedTypes.Identifier;
   methodName: string;
   inputObjectName: string;
   outputObjectName: string;
@@ -131,37 +130,26 @@ export const manyRelationMethodMessages = (
 
 export const controllerToManyMethodsIdsActionPairs = (
   relatedEntity: Entity,
+  fieldName: string,
   entityName?: string
 ): MethodsIdsActionEntity[] => [
   {
-    methodId: builders.identifier(
-      `findMany${pascalCase(relatedEntity.pluralName)}`
-    ),
-    methodName: `findMany${pascalCase(relatedEntity.pluralName)}`,
+    methodName: `findMany${pascalCase(fieldName)}`,
     inputObjectName: `${entityName}WhereUniqueInput`,
     outputObjectName: `stream ${relatedEntity.name}`,
   },
   {
-    methodId: builders.identifier(
-      `update${pascalCase(relatedEntity.pluralName)}`
-    ),
-    methodName: `update${pascalCase(relatedEntity.pluralName)}`,
+    methodName: `update${pascalCase(fieldName)}`,
     inputObjectName: `${relatedEntity.name}Params`,
     outputObjectName: `stream ${pascalCase(relatedEntity.name)}`,
   },
   {
-    methodId: builders.identifier(
-      `connect${pascalCase(relatedEntity.pluralName)}`
-    ),
-    methodName: `connect${pascalCase(relatedEntity.pluralName)}`,
+    methodName: `connect${pascalCase(fieldName)}`,
     inputObjectName: `${relatedEntity.name}Params`,
     outputObjectName: relatedEntity.name,
   },
   {
-    methodId: builders.identifier(
-      `disconnect${pascalCase(relatedEntity.pluralName)}`
-    ),
-    methodName: `disconnect${pascalCase(relatedEntity.pluralName)}`,
+    methodName: `disconnect${pascalCase(fieldName)}`,
     inputObjectName: `${relatedEntity.name}Params`,
     outputObjectName: relatedEntity.name,
   },

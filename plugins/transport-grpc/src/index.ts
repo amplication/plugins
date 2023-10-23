@@ -26,6 +26,7 @@ class JwtAuthPlugin implements AmplicationPlugin {
     return {
       CreateEntityControllerGrpcBase: {
         before: this.beforeCreateEntityControllerBaseGrpc,
+        after: this.afterCreateControllerGrpcBaseModules
       },
       createEntityControllerGrpcToManyRelationMethods: {
         before: this.beforeCreateEntityGrpcControllerToManyRelationMethods,
@@ -110,9 +111,9 @@ class JwtAuthPlugin implements AmplicationPlugin {
     return modules;
   }
 
-  async afterCreateControllerBaseModules(
+  async afterCreateControllerGrpcBaseModules(
     context: DsgContext,
-    eventParams: CreateEntityControllerBaseParams,
+    eventParams: CreateEntityControllerGrpcBaseParams,
     modules: ModuleMap
   ): Promise<ModuleMap> {
     const relatedEntities = eventParams.entity.fields.filter(

@@ -1,6 +1,7 @@
 import {
   CreateEntityControllerBaseParams,
   DsgContext,
+  Entity,
   EntityField,
   EnumDataType,
   LookupResolvedProperties,
@@ -10,6 +11,7 @@ import {
 import {
   controllerMethodsIdsActionPairs,
   controllerToManyMethodsIdsActionPairs,
+  EnumMessageType,
   manyRelationMethodMessages,
   methodMessages,
 } from "./create-method-id-action-entity-map";
@@ -20,6 +22,7 @@ import {
   ObjectField,
   createScalarField,
   createObjectField,
+  createMessage,
 } from "protobuf-dsl";
 import * as ProtobufSchemaDSL from "protobuf-dsl";
 import { pascalCase } from "pascal-case";
@@ -29,13 +32,12 @@ export async function createGrpcProtoFile(
   eventParams: CreateEntityControllerBaseParams,
   relatedEntities: EntityField[]
 ): Promise<Module> {
-  const { entityName, controllerBaseId, templateMapping, entity } = eventParams;
+  const { entityName, templateMapping, entity } = eventParams;
   const { serverDirectories } = context;
 
   try {
     const methods: Method[] = [];
     const fields: Array<ScalarField | ObjectField> = [];
-    const manyRelationFields: Array<ScalarField | ObjectField> = [];
 
     const messages: Message[] = [];
 
@@ -58,35 +60,50 @@ export async function createGrpcProtoFile(
           inputObjectName,
           outputObjectName
         );
-
         methods.push(currentMethod);
       }
     );
 
-    methodMessages(entityName).forEach(({ name }) => {
-      messages.push(ProtobufSchemaDSL.createMessage(name, fields));
+    methodMessages(entityName).forEach(({ name, enumMessageType }) => {
+      const currentMessage = createProtobufMessagesHandler[enumMessageType](
+        name,
+        entityName,
+        fields
+      );
+      if (!currentMessage) return;
+      messages.push(currentMessage);
     });
 
     relatedEntities &&
       relatedEntities.forEach((entity) => {
-        const { relatedEntity } = entity.properties;
+        const manyRelationFields: Array<ScalarField | ObjectField> = [];
+        const { relatedEntity, relatedField } = entity.properties as LookupResolvedProperties;
+        
+        if (relatedEntity.name.toLowerCase() === entityName.toLowerCase())
+          return;
+
         let countField = 1;
         relatedEntity.fields.forEach((field: EntityField) => {
           const currentField = createProtobufSchemaFieldsHandler[
             field.dataType
-          ](field.name, countField, field);
+          ](field?.name, countField, field);
           if (!currentField) return;
           manyRelationFields.push(currentField);
           countField = countField + 1;
         });
 
-        manyRelationMethodMessages(relatedEntity?.name).forEach(({ name }) => {
-          messages.push(
-            ProtobufSchemaDSL.createMessage(name, manyRelationFields)
-          );
-        });
+        manyRelationMethodMessages(relatedEntity.name).forEach(
+          ({ name, enumMessageType }) => {
+            const currentMessage = createProtobufMessagesHandler[
+              enumMessageType
+            ](name, entityName, manyRelationFields, relatedEntity);
+            if (!currentMessage) return;
+            messages.push(currentMessage);
+          }
+        );
         controllerToManyMethodsIdsActionPairs(
           relatedEntity,
+          relatedField.name,
           pascalCase(entityName)
         ).forEach(({ methodName, inputObjectName, outputObjectName }) => {
           const currentMethod = ProtobufSchemaDSL.createMethod(
@@ -127,6 +144,82 @@ export type CreateSchemaFieldHandler = (
   field: EntityField
 ) => ScalarField | ObjectField | null;
 
+export type CreateMessageHandler = (
+  messageName: string,
+  entityName: string,
+  fields: Array<ScalarField | ObjectField>,
+  relatedEntity?: Entity
+) => Message | null;
+
+export const createProtobufMessagesHandler: {
+  [key in EnumMessageType]: CreateMessageHandler;
+} = {
+  [EnumMessageType.Empty]: (
+    messageName: string,
+    entityName,
+    fields: Array<ScalarField | ObjectField>
+  ) => createMessage(messageName, []),
+
+  [EnumMessageType.Create]: (
+    messageName: string,
+    entityName,
+    fields: Array<ScalarField | ObjectField>
+  ) => createMessage(messageName, fields),
+
+  [EnumMessageType.EntityObject]: (
+    messageName: string,
+    entityName,
+    fields: Array<ScalarField | ObjectField>
+  ) => createMessage(messageName, fields),
+
+  [EnumMessageType.EntityUpdateInput]: (
+    messageName: string,
+    entityName,
+    fields: Array<ScalarField | ObjectField>
+  ) => createMessage(messageName, fields),
+
+  [EnumMessageType.EntityWhereInput]: (
+    messageName: string,
+    entityName,
+    fields: Array<ScalarField | ObjectField>
+  ) => createMessage(messageName, fields),
+
+  [EnumMessageType.RelatedEntityObject]: (
+    messageName: string,
+    entityName,
+    fields: Array<ScalarField | ObjectField>
+  ) => createMessage(messageName, fields),
+
+  [EnumMessageType.RelatedEntityWhereInputObject]: (
+    messageName: string,
+    entityName,
+    fields: Array<ScalarField | ObjectField>
+  ) => createMessage(messageName, fields),
+
+  [EnumMessageType.CombineWhereUniqInput]: (
+    messageName: string,
+    entityName,
+    fields: Array<ScalarField | ObjectField>,
+    relatedEntity?: Entity
+  ) => {
+    if (!relatedEntity) return null;
+    return createMessage(messageName, [
+      createObjectField(
+        `${entityName}WhereUniqueInput`,
+        `${pascalCase(entityName)}WhereUniqueInput`,
+        1,
+        false
+      ),
+      createObjectField(
+        `${relatedEntity.name.toLowerCase()}WhereUniqueInput`,
+        `${relatedEntity.name}WhereUniqueInput`,
+        2,
+        false
+      ),
+    ]);
+  },
+};
+
 export const createProtobufSchemaFieldsHandler: {
   [key in EnumDataType]: CreateSchemaFieldHandler;
 } = {
@@ -149,7 +242,7 @@ export const createProtobufSchemaFieldsHandler: {
     fieldName: string,
     countField: number,
     field: EntityField
-  ) => createScalarField(fieldName, "Int", countField, false),
+  ) => createScalarField(fieldName, "int32", countField, false),
   [EnumDataType.DateTime]: (
     fieldName: string,
     countField: number,
@@ -188,7 +281,10 @@ export const createProtobufSchemaFieldsHandler: {
       isOneToOneWithoutForeignKey,
     } = properties as LookupResolvedProperties;
 
-    if (allowMultipleSelection || isOneToOneWithoutForeignKey) {
+    if (
+      (allowMultipleSelection || isOneToOneWithoutForeignKey) &&
+      relatedEntity != null
+    ) {
       return createObjectField(
         fieldName,
         relatedEntity.name,
@@ -228,12 +324,12 @@ export const createProtobufSchemaFieldsHandler: {
     fieldName: string,
     countField: number,
     field: EntityField
-  ) => createScalarField(fieldName, "dateTime", countField, false),
+  ) => createScalarField(fieldName, "string", countField, false),
   [EnumDataType.UpdatedAt]: (
     fieldName: string,
     countField: number,
     field: EntityField
-  ) => createScalarField(fieldName, "dateTime", countField, false),
+  ) => createScalarField(fieldName, "string", countField, false),
   [EnumDataType.Roles]: (
     fieldName: string,
     countField: number,
@@ -255,8 +351,8 @@ export const createProtobufSchemaFieldsHandler: {
 export const idTypeToProtobufScalarType: {
   [key in types.Id["idType"]]: string;
 } = {
-  AUTO_INCREMENT: "int",
-  AUTO_INCREMENT_BIG_INT: "int",
+  AUTO_INCREMENT: "int32",
+  AUTO_INCREMENT_BIG_INT: "int32",
   CUID: "string",
   UUID: "string",
 };

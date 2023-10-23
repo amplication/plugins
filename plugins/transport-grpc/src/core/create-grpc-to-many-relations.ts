@@ -27,8 +27,6 @@ export async function createGrpcControllerToManyRelationMethods(
 ): Promise<void> {
   try {
     const { toManyMapping, field, entity } = eventParams;
-    const { relatedEntity } = field.properties;
-    field.name
 
     const toManyRelationMethodsGrpcPathTemplate = await readFile(
       toManyRelationMethodsGrpcPath
