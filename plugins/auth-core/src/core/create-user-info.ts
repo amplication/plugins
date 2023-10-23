@@ -6,7 +6,7 @@ import {
   interpolate,
   removeTSClassDeclares,
 } from "../util/ast";
-import { idTypClassOptions, idTypeTSOptions } from "../util/idTypeMapper";
+import { idTypeClassOptions, idTypeTSOptions } from "../util/idTypeMapper";
 import { builders, namedTypes } from "ast-types";
 import { getUserIdType } from "../util/get-user-id-type";
 import { join } from "path";
@@ -61,7 +61,7 @@ function prepareTemplateMapping(
 ) {
   return {
     USER_ID_TYPE_ANNOTATION: idTypeTSOptions[idType],
-    USER_ID_CLASS: idTypClassOptions[idType],
+    USER_ID_CLASS: idTypeClassOptions[idType],
     ENTITY_NAME: builders.identifier(authEntity.name),
     ENTITY_NAME_INFO: builders.identifier(`${authEntity.name}Info`),
   };

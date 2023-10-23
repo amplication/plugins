@@ -11,7 +11,7 @@ const string = {
   type: "string",
 };
 
-export const idTypClassOptions: {
+export const idTypeClassOptions: {
   [key in types.Id["idType"]]: namedTypes.Identifier;
 } = {
   AUTO_INCREMENT: builders.identifier(number.class),
