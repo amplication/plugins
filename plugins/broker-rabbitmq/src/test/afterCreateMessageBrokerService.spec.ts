@@ -50,14 +50,14 @@ const expectedRabbitMQMessageHeaders = `export interface RabbitMQMessageHeaders 
 const expectedProducerService = `import { Inject, Injectable } from "@nestjs/common";
 import { ClientRMQ } from "@nestjs/microservices";
 import { RabbitMQMessage } from "./RabbitMQMessage";
-import { MyMessageBrokerTopics } from "./topics";
+import { AllMessageBrokerTopics } from "./topics";
 
 @Injectable()
 export class RabbitMQProducerService {
   constructor(@Inject("RABBITMQ_CLIENT") private rabbitMQClient: ClientRMQ) { }
 
   async emitMessage(
-    topic: MyMessageBrokerTopics,
+    topic: AllMessageBrokerTopics,
     message: RabbitMQMessage
   ): Promise<void> {
     return await new Promise((resolve, reject) => {
