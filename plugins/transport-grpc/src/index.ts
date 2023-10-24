@@ -1,10 +1,10 @@
 import {
   AmplicationPlugin,
   CreateConnectMicroservicesParams,
-  CreateEntityControllerBaseParams,
   CreateEntityControllerGrpcBaseParams,
   CreateEntityControllerGrpcParams,
   CreateEntityControllerGrpcToManyRelationMethodsParams,
+  CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
   DsgContext,
   EnumDataType,
@@ -20,10 +20,14 @@ import {
   createGrpcProtoFile,
 } from "./core";
 import { merge } from "lodash";
+import { envVariables } from "./constants";
 
 class JwtAuthPlugin implements AmplicationPlugin {
   register(): Events {
     return {
+      CreateServerDotEnv: {
+        before: this.beforeCreateServerDotEnv,
+      },
       CreateEntityControllerGrpcBase: {
         before: this.beforeCreateEntityControllerBaseGrpc,
         after: this.afterCreateControllerGrpcBaseModules
@@ -43,6 +47,15 @@ class JwtAuthPlugin implements AmplicationPlugin {
         after: this.afterCreateConnectMicroservices,
       },
     };
+  }
+
+  beforeCreateServerDotEnv(
+    context: DsgContext,
+    eventParams: CreateServerDotEnvParams
+  ) {
+    eventParams.envVariables = [...eventParams.envVariables, ...envVariables];
+
+    return eventParams;
   }
 
   beforeCreateServerPackageJson(

@@ -1,8 +1,9 @@
+import { VariableDictionary } from "@amplication/code-gen-types";
 import { join } from "path";
+
+export const envVariables: VariableDictionary = [
+  { GRPC_CLIENT_URL_PATH: "localhost:9090" },
+];
 
 export const staticsPath = join(__dirname, "static");
 export const templatesPath = join(__dirname, "templates");
-
-export const AUTH_ENTITY_ERROR = "Authentication entity does not exist";
-export const AUTH_ENTITY_LOG_ERROR =
-  "Authentication entity does not exist. Have you configured the authentication entity in the Resource Settings?";
