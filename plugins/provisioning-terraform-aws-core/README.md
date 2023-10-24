@@ -42,7 +42,6 @@ Adds a core networking setup of terraform for Amazon Web Services to the generat
 
 `backend.s3.region` the region in which the aforementioned bucket exists - it is detached from the `global.region`.
 
-
 ## Usage
 
 As this is an addition to the code base, where non of the other code is touched, using the plugin won't impact the final build.

@@ -23,6 +23,7 @@ on:
           - "deployment-helm-chart"
           - "formatter-prettier"
           - "observability-opentelemetry"
+          - "provisioning-terraform-aws-core"
           - "swagger-apibody"
           - "linter-eslint"
       publish:
