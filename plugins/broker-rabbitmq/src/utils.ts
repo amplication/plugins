@@ -6,6 +6,9 @@ import defaultSettings from "../.amplicationrc.json";
 export const getPluginSettings = (
     pluginInstallations: PluginInstallation[]
 ): Settings => {
+    if (!Array.isArray(pluginInstallations)) {
+        return defaultSettings.settings
+    }
     const plugin = pluginInstallations.find(
         (plugin) => plugin.npm === PackageName
     );
