@@ -57,7 +57,8 @@ Running `npm run test` will run the plugin's test suite.
 
 ## Usage
 
-This plugin provides you with a Redis cache module that you can use in your service.
+This plugin provides you with a Redis cache module that you can use in your service as described here: https://docs.nestjs.com/techniques/caching#interacting-with-the-cache-store.
+
 To configure, set the following environment variables:
 
 REDIS_HOST - The host on which the Redis server is running.
