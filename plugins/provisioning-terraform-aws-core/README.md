@@ -40,7 +40,7 @@ Adds a core networking setup of terraform for Amazon Web Services to the generat
 
 `backend.s3.key` the key under which to store the state, within the aforementioned bucket.
 
-`backend.s3.region` the region in which the aforementioned bucket exists - is detached from the `global.region`.
+`backend.s3.region` the region in which the aforementioned bucket exists - it is detached from the `global.region`.
 
 
 ## Usage
