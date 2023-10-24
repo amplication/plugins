@@ -1,7 +1,7 @@
 {
   "name": "@amplication/plugin-provisioning-terraform-aws-repository-ecr",
   "version": "0.0.1",
-  "description": "Description of your plugin",
+  "description": "Adds a container registry setup based on terraform for Amazon Web Services to the generated service.",
   "main": "dist/index.js",
   "scripts": {
     "prepublishOnly": "npm run build",
@@ -10,7 +10,7 @@
     "prebuild": "rimraf dist",
     "format:write": "prettier --write \"**/*.{js,ts}\""
   },
-  "author": "Amplication Contributor",
+  "author": "Levi van Noort <levi@amplication.com>",
   "license": "Apache-2.0",
   "devDependencies": {
     "@amplication/code-gen-types": "^2.0.12",
