@@ -1,3 +1,8 @@
+export enum BackendTypes {
+  S3 = "s3",
+  Local = "local"
+}
+
 export interface Settings {
   root_level: boolean;
   directory_name: string;

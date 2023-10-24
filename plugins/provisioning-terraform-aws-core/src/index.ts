@@ -18,6 +18,7 @@ import {
 } from "./constants";
 import { join } from "node:path";
 import { getPluginSettings } from "./utils";
+import { BackendTypes } from "./types";
 import { EventNames } from "@amplication/code-gen-types";
 import { resolve } from "path";
 import { kebabCase } from "lodash";
@@ -60,36 +61,27 @@ class TerraformAwsCorePlugin implements AmplicationPlugin {
      *    option 2 (value: false): /[optional: mono_prefix]/<service_name>/<directory_name_value>
      */
 
-    let terraformDirectoryPath: string = "";
     const rootDirectoryPath: string = "./";
-
-    if (settings.root_level === true) {
-      terraformDirectoryPath = join(rootDirectoryPath, settings.directory_name);
-    } else if (settings.root_level === false) {
-      terraformDirectoryPath = join(
-        context.serverDirectories.baseDirectory,
-        settings.directory_name
-      );
-    } else {
-      throw new Error(
-        "TerraformAwsCorePlugin: Specify true or false for the root_level setting"
-      );
-    }
+    const terraformDirectoryPath: string =
+      settings.root_level ?
+        terraformDirectoryPath = join(rootDirectoryPath, settings.directory_name) :
+        terraformDirectoryPath = join(context.serverDirectories.baseDirectory, settings.directory_name)
 
     // define some configuration based on input/defaults
     const name: string =
-      settings.global.name === "" ? serviceName : settings.global.name;
+      settings.global.name ? serviceName : settings.global.name;
 
     let backendConfiguration: string;
 
-    if (settings.backend.type === "local") {
-      backendConfiguration = `terraform {\n\tbackend "local" {\n\t\tpath = "${settings.backend?.local?.path}"\n\t}\n}`;
-    } else if (settings.backend.type === "s3") {
-      backendConfiguration = `terraform {\n\tbackend "s3" {\n\t\tbucket = "${settings.backend?.s3?.bucket_name}"\n\t\tkey    = "${settings.backend?.s3?.key}"\n\t\tregion = "${settings.backend?.s3?.region}"\n\t}\n}`;
-    } else {
-      throw new Error(
-        "TerraformAwsCorePlugin: Specify a backend type and applicable subconfiguration"
-      );
+    switch (settings.backend.type) {
+      case BackendTypes.Local:
+        backendConfiguration = `terraform {\n\tbackend "local" {\n\t\tpath = "${settings.backend?.local?.path}"\n\t}\n}`;
+      case BackendTypes.S3:
+        backendConfiguration = `terraform {\n\tbackend "s3" {\n\t\tbucket = "${settings.backend?.s3?.bucket_name}"\n\t\tkey    = "${settings.backend?.s3?.key}"\n\t\tregion = "${settings.backend?.s3?.region}"\n\t}\n}`;
+      default:
+        throw new Error(
+          "TerraformAwsCorePlugin: Specify a backend type and applicable subconfiguration"
+        );
     }
 
     // set the path to the static files and fetch them for manipulation
