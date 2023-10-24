@@ -37,7 +37,7 @@ describe("Testing beforeCreateServerAppModule hook", () => {
         import { Module, Scope } from "@nestjs/common";
         import { APP_INTERCEPTOR } from "@nestjs/core";
         import { MorganInterceptor } from "nest-morgan";
-        import { CacheModule } from "@nestjs/common";
+        import { CacheModule } from "@nestjs/cache-manager";
         import * as redisStore from "cache-manager-redis-store"
 
         declare const MODULES: any;
@@ -52,7 +52,7 @@ describe("Testing beforeCreateServerAppModule hook", () => {
         [CacheModule.registerAsync({
             isGlobal: true,
             imports: [ConfigModule],
-            useFactory: (configService) => {
+            useFactory: (configService: ConfigService) => {
                 const host = configService.get("REDIS_HOST");
                 const port = configService.get("REDIS_PORT");
                 const username = configService.get("REDIS_USERNAME");

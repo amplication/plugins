@@ -2,11 +2,12 @@ import { CreateServerDockerComposeParams, CreateServerDockerComposeDevParams } f
 
 export const dependencies = {
     dependencies: {
-        "cache-manager": "3.6.3",
+        "@nestjs/cache-manager": "^2.1.0",
+        "cache-manager": "5.2.4",
         "cache-manager-redis-store": "2.0.0"
     },
     devDependencies: {
-        "@types/cache-manager": "3.4.3",
+        "@types/cache-manager": "4.0.4",
         "@types/cache-manager-redis-store": "2.0.1"
     }
 }

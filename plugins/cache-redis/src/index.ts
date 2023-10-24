@@ -106,7 +106,7 @@ class RedisCachePlugin implements AmplicationPlugin {
 const cacheModuleImport = (): namedTypes.ImportDeclaration => {
   return builders.importDeclaration(
     [builders.importSpecifier(builders.identifier("CacheModule"))],
-    builders.stringLiteral("@nestjs/common")
+    builders.stringLiteral("@nestjs/cache-manager")
   )
 }
 
@@ -135,7 +135,10 @@ const cacheModuleInstantiation = () => {
 }
 
 const useFactoryConfigFunc = (): namedTypes.ArrowFunctionExpression => {
-  return builders.arrowFunctionExpression([builders.identifier("configService")],
+  return builders.arrowFunctionExpression([builders.identifier.from({
+    name: "configService",
+    typeAnnotation: builders.tsTypeAnnotation(builders.tsTypeReference(builders.identifier("ConfigService")))
+  })],
     builders.blockStatement([
       configAssign("host", "REDIS_HOST"),
       configAssign("port", "REDIS_PORT"),
