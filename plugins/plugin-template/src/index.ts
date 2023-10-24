@@ -42,11 +42,11 @@ class ExamplePlugin implements AmplicationPlugin {
     // Here you can get the context, eventParams and the modules that Amplication created.
     // Then you can manipulate the modules, add new ones, or create your own.
     const staticPath = resolve(__dirname, "./static");
-    const staticsFiles = await context.utils.importStaticModules(
+    const staticFiles = await context.utils.importStaticModules(
       staticPath,
       context.serverDirectories.srcDirectory
     );
-    await modules.merge(staticsFiles);
+    await modules.merge(staticFiles);
     return modules; // You must return the generated modules you want to generate at this part of the build.
   }
 
