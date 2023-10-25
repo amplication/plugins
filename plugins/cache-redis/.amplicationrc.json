@@ -3,7 +3,6 @@
     "host": "localhost",
     "port": 6379,
     "ttl": 5000,
-    "max": 100,
     "username": "",
     "password": ""
   }
