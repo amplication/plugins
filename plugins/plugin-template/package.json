@@ -12,8 +12,11 @@
   },
   "author": "Amplication Contributor",
   "license": "Apache-2.0",
-  "devDependencies": {
+  "dependencies": {
     "@amplication/code-gen-types": "^2.0.12",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
     "@babel/parser": "^7.23.0",
     "@babel/types": "^7.23.0",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
@@ -21,12 +24,27 @@
     "copy-webpack-plugin": "^11.0.0",
     "eslint": "^8.52.0",
     "jest-mock-extended": "^3.0.5",
-    "lodash": "^4.17.21",
     "prettier": "^3.0.3",
     "rimraf": "^5.0.5",
     "ts-loader": "^9.5.0",
     "typescript": "^5.2.2",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src/tests",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "testEnvironment": "node"
   }
 }
