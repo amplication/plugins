@@ -147,14 +147,12 @@ class KafkaPlugin implements AmplicationPlugin {
   ): CreateServerPackageJsonParams {
     const myValues = {
       dependencies: {
-        "@nestjs/microservices": "8.2.3",
-        kafkajs: "2.2.0",
+        "@nestjs/microservices": "10.2.7",
+        kafkajs: "^2.2.4",
       },
     };
 
-    eventParams.updateProperties.forEach((updateProperty) =>
-      merge(updateProperty, myValues)
-    );
+    eventParams.updateProperties.push(myValues);
 
     return eventParams;
   }
@@ -314,24 +312,48 @@ class KafkaPlugin implements AmplicationPlugin {
           builders.callExpression(builders.identifier("Payload"), [])
         );
 
-        const messageId = builders.identifier.from({
-          name: "message",
+        const kafkaValue = builders.identifier.from({
+          name: "value",
           typeAnnotation: builders.tsTypeAnnotation(
-            builders.tsTypeReference(builders.identifier("KafkaMessage"))
+            builders.tsTypeReference(
+              builders.identifier("string | Record<string, any> | null")
+            )
           ),
         });
 
-        const decorators: namedTypes.Decorator[] = [payloadDecorator];
-
         //@ts-ignore
-        messageId.decorators = decorators;
+        kafkaValue.decorators = [payloadDecorator];
+
+        const kafkaContextDecorator = builders.decorator(
+          builders.callExpression(builders.identifier("Ctx"), [])
+        );
+        const kafkaContext = builders.identifier.from({
+          name: "context",
+          typeAnnotation: builders.tsTypeAnnotation(
+            builders.tsTypeReference(builders.identifier("KafkaContext"))
+          ),
+        });
+        //@ts-ignore
+        kafkaContext.decorators = [kafkaContextDecorator];
 
         const currentClassMethod = builders.classMethod.from({
-          body: builders.blockStatement([]),
+          body: builders.blockStatement([
+            builders.variableDeclaration("const", [
+              builders.variableDeclarator(
+                builders.identifier("message"),
+                builders.callExpression(
+                  builders.memberExpression(
+                    builders.identifier("context"),
+                    builders.identifier("getMessage")
+                  ),
+                  []
+                )
+              ),
+            ]),
+          ]),
           async: true,
           key: builders.identifier(`on${pascalCase(topic.topicName)}`),
-
-          params: [messageId],
+          params: [kafkaValue, kafkaContext],
           returnType: builders.tsTypeAnnotation(
             builders.tsTypeReference(
               builders.identifier("Promise"),
