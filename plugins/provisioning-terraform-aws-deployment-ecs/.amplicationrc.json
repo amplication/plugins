@@ -1,0 +1,23 @@
+{
+  "settings": {
+    "global": {
+      "name": ""
+    },
+    "cluster": {
+      "capacity_provider": {
+        "type": "fargate",
+        "fargate": {
+          "fargate_weight": 100,
+          "fargate_base": 0,
+          "fargate_spot_weight": 0
+        }
+      }
+    },
+    "service": {
+      
+    }
+  },
+  "systemSettings": {
+    "requireAuthenticationEntity": "false"
+  }
+}
