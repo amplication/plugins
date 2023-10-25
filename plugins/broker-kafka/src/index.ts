@@ -17,7 +17,7 @@ import {
   ModuleMap,
 } from "@amplication/code-gen-types";
 import { readFile, print } from "@amplication/code-gen-utils";
-import { kebabCase, merge } from "lodash";
+import { kebabCase } from "lodash";
 import { join, resolve } from "path";
 import { staticDirectory, templatesPath } from "./constants";
 import { builders, namedTypes } from "ast-types";
@@ -29,6 +29,7 @@ import {
   interpolate,
 } from "./util/ast";
 import { pascalCase } from "pascal-case";
+import { EnumResourceType } from "@amplication/code-gen-types/src/models";
 
 class KafkaPlugin implements AmplicationPlugin {
   static moduleFile: Module | undefined;
@@ -164,15 +165,32 @@ class KafkaPlugin implements AmplicationPlugin {
     const { serverDirectories, utils } = context;
     const { messageBrokerDirectory } = serverDirectories;
 
-    const serviceFilePath = resolve(
-      staticDirectory,
-      `kafka.producer.service.ts`
-    );
-    const serviceFile = await readFile(serviceFilePath);
     const servicePath = join(
       messageBrokerDirectory,
       `kafka.producer.service.ts`
     );
+
+    const messageBrokerName =
+      context.otherResources?.find(
+        (resource) => resource.resourceType === EnumResourceType.MessageBroker
+      )?.resourceInfo?.name ?? null;
+
+    if (!messageBrokerName) {
+      throw new Error("Message broker name not found");
+    }
+
+    const templatePath = join(
+      templatesPath,
+      "kafka.producer.service.template.ts"
+    );
+    const template = await readFile(templatePath);
+    const templateMapping = {
+      BROKER_TOPICS: builders.identifier(
+        pascalCase(messageBrokerName) + "Topics"
+      ),
+    };
+
+    interpolate(template, templateMapping);
 
     const kafkaMessageFilePath = resolve(
       `${staticDirectory}/contracts`,
@@ -192,7 +210,7 @@ class KafkaPlugin implements AmplicationPlugin {
     );
 
     const modules = new ModuleMap(context.logger);
-    await modules.set({ code: print(serviceFile).code, path: servicePath });
+    await modules.set({ code: print(template).code, path: servicePath });
     await modules.set({
       code: print(kafkaMessageFile).code,
       path: kafkaMessagePath,
