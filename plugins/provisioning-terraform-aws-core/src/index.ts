@@ -64,8 +64,8 @@ class TerraformAwsCorePlugin implements AmplicationPlugin {
     const rootDirectoryPath: string = "./";
     const terraformDirectoryPath: string =
       settings.root_level ?
-        terraformDirectoryPath = join(rootDirectoryPath, settings.directory_name) :
-        terraformDirectoryPath = join(context.serverDirectories.baseDirectory, settings.directory_name)
+        join(rootDirectoryPath, settings.directory_name) :
+        join(context.serverDirectories.baseDirectory, settings.directory_name)
 
     // define some configuration based on input/defaults
     const name: string =
