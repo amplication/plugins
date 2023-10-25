@@ -30,7 +30,7 @@ class JwtAuthPlugin implements AmplicationPlugin {
       },
       CreateEntityControllerGrpcBase: {
         before: this.beforeCreateEntityControllerBaseGrpc,
-        after: this.afterCreateControllerGrpcBaseModules
+        after: this.afterCreateControllerGrpcBaseModules,
       },
       createEntityControllerGrpcToManyRelationMethods: {
         before: this.beforeCreateEntityGrpcControllerToManyRelationMethods,
@@ -66,7 +66,7 @@ class JwtAuthPlugin implements AmplicationPlugin {
       dependencies: {
         "@grpc/grpc-js": "^1.9.3",
         "@grpc/proto-loader": "^0.7.10",
-        "@nestjs/microservices": "^9.3.9",
+        "@nestjs/microservices": "^10.0.2",
       },
     };
 
@@ -146,7 +146,6 @@ class JwtAuthPlugin implements AmplicationPlugin {
 
     return modules;
   }
-
 }
 
 export default JwtAuthPlugin;

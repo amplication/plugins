@@ -77,8 +77,9 @@ export async function createGrpcProtoFile(
     relatedEntities &&
       relatedEntities.forEach((entity) => {
         const manyRelationFields: Array<ScalarField | ObjectField> = [];
-        const { relatedEntity, relatedField } = entity.properties as LookupResolvedProperties;
-        
+        const { relatedEntity, relatedField } =
+          entity.properties as LookupResolvedProperties;
+
         if (relatedEntity.name.toLowerCase() === entityName.toLowerCase())
           return;
 
@@ -97,7 +98,11 @@ export async function createGrpcProtoFile(
             const currentMessage = createProtobufMessagesHandler[
               enumMessageType
             ](name, entityName, manyRelationFields, relatedEntity);
-            if (!currentMessage) return;
+            if (
+              !currentMessage ||
+              messages.find((m) => m.name === currentMessage.name)
+            )
+              return;
             messages.push(currentMessage);
           }
         );
