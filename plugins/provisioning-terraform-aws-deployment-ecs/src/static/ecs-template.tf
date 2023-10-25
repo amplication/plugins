@@ -18,14 +18,11 @@ module "${{ ECS_SERVICE_MODULE_NAME }}" {
   memory = 4096
 
   container_definitions = {
-    ("${{ NAME }}") = {
-
+    ${{ NAME }} = {
       essential = true
-
       cpu       = 512
       memory    = 1024
-
-      image     = ${{ SERVICE_CONTAINER_IMAGE }}
+      image     = "${{ SERVICE_CONTAINER_IMAGE }}"
 
       port_mappings = [
         {
@@ -136,7 +133,7 @@ module "${{ ECS_ALB_MODULE_NAME }}" {
     {
       name             = "${{ NAME }}-${{ NAME }}"
       backend_protocol = "HTTP"
-      backend_port     = "${{ PORT }}"
+      backend_port     = ${{ SERVICE_CONTAINER_PORT }}
       target_type      = "ip"
     },
   ]

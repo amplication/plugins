@@ -77,23 +77,23 @@ class TerraformAwsDeploymentEcsPlugin implements AmplicationPlugin {
     switch (settings.cluster.capacity_provider.type) {
       default: {
         capacityProvider = `fargate_capacity_providers = {
-  FARGATE = {
-    default_capacity_provider_strategy = {
-      weight = ${settings.cluster.capacity_provider.fargate?.fargate_weight}
-      base   = ${settings.cluster.capacity_provider.fargate?.fargate_base}
+    FARGATE = {
+      default_capacity_provider_strategy = {
+        weight = ${settings.cluster.capacity_provider.fargate?.fargate_weight}
+        base   = ${settings.cluster.capacity_provider.fargate?.fargate_base}
+      }
     }
-  }
-  FARGATE_SPOT = {
-    default_capacity_provider_strategy = {
-      weight = ${settings.cluster.capacity_provider.fargate?.fargate_spot_weight}
+    FARGATE_SPOT = {
+      default_capacity_provider_strategy = {
+        weight = ${settings.cluster.capacity_provider.fargate?.fargate_spot_weight}
+      }
     }
-  }
-}`;
+  }`;
       }
     }
 
     const underscoreName: string = snakeCase(name);
-    const hyphenName: string = snakeCase(name);
+    const hyphenName: string = kebabCase(name);
 
     staticFiles.replaceModulesPath((path) =>
       path.replace(templateFileName, fileNamePrefix + name + fileNameSuffix)
@@ -106,7 +106,7 @@ class TerraformAwsDeploymentEcsPlugin implements AmplicationPlugin {
         .replaceAll(moduleNameEcsClusterKey, "ecs_cluster_" + underscoreName)
         .replaceAll(moduleNameEcsServiceKey, "ecs_service_" + underscoreName)
         .replaceAll(moduleNameEcsAlbKey, "ecs_alb_" + underscoreName)
-        .replaceAll(moduleNameEcsSgKey, "ecs_sg_" + underscoreName)
+        .replaceAll(moduleNameEcsSgKey, "ecs_alb_sg_" + underscoreName)
         .replaceAll(clusterCapacityProviderKey, capacityProvider)
         .replaceAll(
           serviceContainerImage,
