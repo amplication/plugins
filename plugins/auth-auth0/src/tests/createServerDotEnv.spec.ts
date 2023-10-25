@@ -1,4 +1,7 @@
-import { CreateServerDotEnvParams, DsgContext } from "@amplication/code-gen-types";
+import {
+  CreateServerDotEnvParams,
+  DsgContext,
+} from "@amplication/code-gen-types";
 import { beforeCreateServerDotEnv } from "@events/createServerDotEnv";
 import { mock } from "jest-mock-extended";
 
@@ -8,9 +11,11 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
 
   beforeEach(() => {
     context = mock<DsgContext>({
-      pluginInstallations: [{
-        npm: "@amplication/plugin-auth-auth0",
-      }],
+      pluginInstallations: [
+        {
+          npm: "@amplication/plugin-auth-auth0",
+        },
+      ],
     });
     eventParams = mock<CreateServerDotEnvParams>({
       envVariables: [],
@@ -44,4 +49,3 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
     expect(eventParams.envVariables).toEqual(expectedEnvVariables);
   });
 });
-

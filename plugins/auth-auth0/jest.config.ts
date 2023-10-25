@@ -16,7 +16,7 @@ const jestConfig: JestConfigWithTsJest = {
   },
   collectCoverage: true,
   collectCoverageFrom: ["src/**/*.ts"],
-  coveragePathIgnorePatterns: ["src/static", "src/tests", "src/templates"], 
+  coveragePathIgnorePatterns: ["src/static", "src/tests", "src/templates"],
 };
 
 export default jestConfig;

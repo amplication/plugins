@@ -7,10 +7,10 @@ import { getPluginSettings } from "@utils/getPluginSettings";
 
 export const beforeCreateServerDotEnv = (
   context: DsgContext,
-  eventParams: CreateServerDotEnvParams
+  eventParams: CreateServerDotEnvParams,
 ): CreateServerDotEnvParams => {
   const { AUTH0_AUDIENCE, AUTH0_ISSUER_URL } = getPluginSettings(
-    context.pluginInstallations
+    context.pluginInstallations,
   );
 
   const envVariables = {
@@ -20,7 +20,7 @@ export const beforeCreateServerDotEnv = (
   };
 
   eventParams.envVariables = eventParams.envVariables.concat(
-    convertToVarDict(envVariables)
+    convertToVarDict(envVariables),
   );
 
   return eventParams;

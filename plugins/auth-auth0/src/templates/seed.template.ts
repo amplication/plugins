@@ -25,8 +25,8 @@ async function seed() {
   const client = new PrismaClient();
   const data = DATA;
   await client.user.upsert({
-    where: { 
-      username: data.username 
+    where: {
+      username: data.username,
     },
     update: {},
     create: data,

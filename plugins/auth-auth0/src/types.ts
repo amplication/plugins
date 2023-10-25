@@ -7,6 +7,6 @@ export interface Settings {
     type: "password" | "passwordless";
     method: "email" | "sms" | "magic-link";
     emailField: string;
-  }
+  };
   defaultUser: Record<string, unknown>;
 }

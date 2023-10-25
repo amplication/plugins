@@ -1,4 +1,7 @@
-import { CreateAdminDotEnvParams, DsgContext } from "@amplication/code-gen-types";
+import {
+  CreateAdminDotEnvParams,
+  DsgContext,
+} from "@amplication/code-gen-types";
 import { beforeCreateAdminDotEnv } from "@events/index";
 import { mock } from "jest-mock-extended";
 
@@ -8,9 +11,11 @@ describe("Testing beforeCreateAdminDotEnv hook", () => {
 
   beforeEach(() => {
     context = mock<DsgContext>({
-      pluginInstallations: [{
-        npm: "@amplication/plugin-auth-auth0",
-      }],
+      pluginInstallations: [
+        {
+          npm: "@amplication/plugin-auth-auth0",
+        },
+      ],
     });
     eventParams = mock<CreateAdminDotEnvParams>({
       envVariables: [],

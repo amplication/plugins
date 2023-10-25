@@ -8,7 +8,7 @@ import { join } from "path";
 
 export const beforeCreateAdminAppModule = async (
   context: DsgContext,
-  eventParams: CreateAdminAppModuleParams
+  eventParams: CreateAdminAppModuleParams,
 ): Promise<CreateAdminAppModuleParams> => {
   const _appTemplate = await readFile(join(templatesPath, "App.template.tsx"));
 

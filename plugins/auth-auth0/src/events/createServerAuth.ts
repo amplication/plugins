@@ -13,7 +13,7 @@ import {
 
 export const beforeCreateAuthModules = (
   context: DsgContext,
-  eventParams: CreateServerAuthParams
+  eventParams: CreateServerAuthParams,
 ) => {
   context.utils.skipDefaultBehavior = true;
   return eventParams;
@@ -22,11 +22,11 @@ export const beforeCreateAuthModules = (
 export const afterCreateAuthModules = async (
   context: DsgContext,
   eventParams: CreateServerAuthParams,
-  modules: ModuleMap
+  modules: ModuleMap,
 ) => {
   const staticFiles = await context.utils.importStaticModules(
     serverStaticPath,
-    context.serverDirectories.srcDirectory
+    context.serverDirectories.srcDirectory,
   );
 
   // 1. Create JWT strategy
@@ -61,8 +61,8 @@ export const afterCreateAuthModules = async (
   ];
   modules.removeMany(
     filesToRemove.map(
-      (file) => `${context.serverDirectories.authDirectory}/${file}`
-    )
+      (file) => `${context.serverDirectories.authDirectory}/${file}`,
+    ),
   );
   return modules;
 };

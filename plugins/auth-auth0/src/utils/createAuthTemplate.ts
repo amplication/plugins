@@ -14,11 +14,11 @@ import { AUTH_ENTITY_ERROR, AUTH_ENTITY_LOG_ERROR } from "../constants";
 export async function mapAuthTemplate(
   context: DsgContext,
   templatePath: string,
-  fileName: string
+  fileName: string,
 ): Promise<Module> {
   const { entities, resourceInfo, serverDirectories } = context;
   const authEntity = entities?.find(
-    (x) => x.name === resourceInfo?.settings.authEntityName
+    (x) => x.name === resourceInfo?.settings.authEntityName,
   );
   if (!authEntity) {
     context.logger.error(AUTH_ENTITY_LOG_ERROR);
@@ -32,20 +32,20 @@ export async function mapAuthTemplate(
 
     const entityNamImport = importNames(
       [authEntityNameId],
-      `./${entityInfoName}`
+      `./${entityInfoName}`,
     );
 
     addImports(
       template,
       [entityNamImport].filter(
-        (x) => x //remove nulls and undefined
-      ) as namedTypes.ImportDeclaration[]
+        (x) => x, //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[],
     );
 
     const templateMapping = {
       ENTITY_NAME_INFO: builders.identifier(`${authEntity.name}Info`),
       ENTITY_NAME: builders.identifier(
-        `${authEntity.name.toLocaleLowerCase()}Info`
+        `${authEntity.name.toLocaleLowerCase()}Info`,
       ),
     };
 

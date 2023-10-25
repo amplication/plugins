@@ -21,25 +21,25 @@ import {
 
 const jwtStrategyBasePath = join(
   templatesPath,
-  "jwt.strategy.base.template.ts"
+  "jwt.strategy.base.template.ts",
 );
 
 export const createJwtStrategyBase = async (context: DsgContext) => {
   return mapJwtStrategyTemplate(
     context,
     jwtStrategyBasePath,
-    "jwt.strategy.base.ts"
+    "jwt.strategy.base.ts",
   );
 };
 
 const mapJwtStrategyTemplate = async (
   context: DsgContext,
   templatePath: string,
-  fileName: string
+  fileName: string,
 ): Promise<Module> => {
   const { entities, resourceInfo, serverDirectories } = context;
   const authEntity = entities?.find(
-    (x) => x.name === resourceInfo?.settings.authEntityName
+    (x) => x.name === resourceInfo?.settings.authEntityName,
   );
 
   context.logger.info(`Creating ${fileName} file...`);
@@ -54,7 +54,7 @@ const mapJwtStrategyTemplate = async (
     const entityServiceName = `${authEntity?.name}Service`;
     const entityNameToLower = `${authEntity?.name.toLowerCase()}`;
     const entityServiceIdentifier = builders.identifier(
-      `${entityNameToLower}Service`
+      `${entityNameToLower}Service`,
     );
 
     const template = await readFile(templatePath);
@@ -64,12 +64,12 @@ const mapJwtStrategyTemplate = async (
     // Making the imports for authetication entity
     const entityNameImport = importNames(
       [entityNameId],
-      `../../${entityInfoName}`
+      `../../${entityInfoName}`,
     );
 
     const entityServiceImport = importNames(
       [entityServiceNameId],
-      `src/${entityNameToLower}/${entityNameToLower}.service`
+      `src/${entityNameToLower}/${entityNameToLower}.service`,
     );
 
     addImports(template, [entityNameImport, entityServiceImport]);
@@ -86,14 +86,14 @@ const mapJwtStrategyTemplate = async (
 
     const classDeclaration = getClassDeclarationById(
       template,
-      builders.identifier("JwtStrategyBase")
+      builders.identifier("JwtStrategyBase"),
     );
 
     addInjectableDependency(
       classDeclaration,
       entityServiceIdentifier.name,
       builders.identifier(`${authEntity?.name}Service`),
-      "protected"
+      "protected",
     );
 
     removeTSClassDeclares(template);

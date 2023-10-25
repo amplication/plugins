@@ -38,11 +38,11 @@ export class ParseError extends SyntaxError {
  * @returns consolidated array of import declarations
  */
 function consolidateImports(
-  declarations: namedTypes.ImportDeclaration[]
+  declarations: namedTypes.ImportDeclaration[],
 ): namedTypes.ImportDeclaration[] {
   const moduleToDeclarations = groupBy(
     declarations,
-    (declaration) => declaration.source.value
+    (declaration) => declaration.source.value,
   );
   const moduleToDeclaration = mapValues(
     moduleToDeclarations,
@@ -54,13 +54,13 @@ function consolidateImports(
             return specifier.imported.name;
           }
           return specifier.type;
-        }
+        },
       );
       return builders.importDeclaration(
         specifiers,
-        builders.stringLiteral(module)
+        builders.stringLiteral(module),
       );
-    }
+    },
   );
   return Object.values(moduleToDeclaration);
 }
@@ -71,7 +71,7 @@ function consolidateImports(
  * @returns array of import declarations ast nodes
  */
 export function extractImportDeclarations(
-  file: namedTypes.File
+  file: namedTypes.File,
 ): namedTypes.ImportDeclaration[] {
   const newBody = [];
   const imports = [];
@@ -91,7 +91,7 @@ export function extractImportDeclarations(
  * @returns exported names
  */
 export function getExportedNames(
-  code: string
+  code: string,
 ): Array<
   namedTypes.Identifier | namedTypes.JSXIdentifier | namedTypes.TSTypeParameter
 > {
@@ -140,7 +140,7 @@ export function getExportedNames(
  */
 export function interpolate(
   ast: ASTNode,
-  mapping: { [key: string]: ASTNode | undefined }
+  mapping: { [key: string]: ASTNode | undefined },
 ): void {
   return recast.visit(ast, {
     visitIdentifier(path) {
@@ -192,7 +192,7 @@ export function interpolate(
         (expression) =>
           namedTypes.Identifier.check(expression) &&
           expression.name in mapping &&
-          namedTypes.StringLiteral.check(mapping[expression.name])
+          namedTypes.StringLiteral.check(mapping[expression.name]),
       );
       if (canTransformToStringLiteral) {
         path.node.expressions = path.node.expressions.map((expression) => {
@@ -216,7 +216,7 @@ export function interpolate(
 
 export function evaluateJSX(
   path: NodePath,
-  mapping: { [key: string]: ASTNode | undefined }
+  mapping: { [key: string]: ASTNode | undefined },
 ): void {
   const childrenPath = path.get("children");
   childrenPath.each(
@@ -228,7 +228,7 @@ export function evaluateJSX(
         | K.JSXElementKind
         | K.JSXFragmentKind
         | K.LiteralKind
-      >
+      >,
     ) => {
       const { node } = childPath;
       if (
@@ -245,12 +245,12 @@ export function evaluateJSX(
           childPath.replace(...mapped.children);
         }
       }
-    }
+    },
   );
 }
 
 export function transformTemplateLiteralToStringLiteral(
-  templateLiteral: namedTypes.TemplateLiteral
+  templateLiteral: namedTypes.TemplateLiteral,
 ): namedTypes.StringLiteral {
   const value = templateLiteral.quasis
     .map((quasie, i) => {
@@ -370,17 +370,17 @@ export function addAutoGenerationComment(file: namedTypes.File): void {
 
 export function importNames(
   names: namedTypes.Identifier[],
-  source: string
+  source: string,
 ): namedTypes.ImportDeclaration {
   return builders.importDeclaration(
     names.map((name) => builders.importSpecifier(name)),
-    builders.stringLiteral(source)
+    builders.stringLiteral(source),
   );
 }
 
 export function addImports(
   file: namedTypes.File,
-  imports: namedTypes.ImportDeclaration[]
+  imports: namedTypes.ImportDeclaration[],
 ): void {
   const existingImports = extractImportDeclarations(file);
   const consolidatedImports = consolidateImports([
@@ -391,7 +391,7 @@ export function addImports(
 }
 
 export function exportNames(
-  names: namedTypes.Identifier[]
+  names: namedTypes.Identifier[],
 ): namedTypes.ExportNamedDeclaration {
   return builders.exportNamedDeclaration(
     null,
@@ -400,8 +400,8 @@ export function exportNames(
         exported: name,
         id: name,
         name,
-      })
-    )
+      }),
+    ),
   );
 }
 
@@ -409,7 +409,7 @@ export function classDeclaration(
   id: K.IdentifierKind | null,
   body: K.ClassBodyKind,
   superClass: K.ExpressionKind | null = null,
-  decorators: namedTypes.Decorator[] = []
+  decorators: namedTypes.Decorator[] = [],
 ): namedTypes.ClassDeclaration {
   const declaration = builders.classDeclaration(id, body, superClass);
   if (!decorators.length) {
@@ -430,18 +430,18 @@ export function classProperty(
   definitive = false,
   optional = false,
   defaultValue: namedTypes.Expression | null = null,
-  decorators: namedTypes.Decorator[] = []
+  decorators: namedTypes.Decorator[] = [],
 ): namedTypes.ClassProperty {
   if (optional && definitive) {
     throw new Error(
-      "Must either provide definitive: true, optional: true or none of them"
+      "Must either provide definitive: true, optional: true or none of them",
     );
   }
   const code = `class A {
     ${decorators.map((decorator) => print(decorator).code).join("\n")}
     ${print(key).code}${definitive ? "!" : ""}${optional ? "?" : ""}${
-    print(typeAnnotation).code
-  }${defaultValue ? `= ${recast.print(defaultValue).code}` : ""}
+      print(typeAnnotation).code
+    }${defaultValue ? `= ${recast.print(defaultValue).code}` : ""}
   
   }`;
   const ast = parse(code);
@@ -452,10 +452,10 @@ export function classProperty(
 
 export function findContainedIdentifiers(
   node: ASTNode,
-  identifiers: Iterable<namedTypes.Identifier>
+  identifiers: Iterable<namedTypes.Identifier>,
 ): namedTypes.Identifier[] {
   const nameToIdentifier = Object.fromEntries(
-    Array.from(identifiers, (identifier) => [identifier.name, identifier])
+    Array.from(identifiers, (identifier) => [identifier.name, identifier]),
   );
   const contained: namedTypes.Identifier[] = [];
   recast.visit(node, {
@@ -495,7 +495,7 @@ export function findContainedIdentifiers(
  */
 export function getClassDeclarationById(
   node: ASTNode,
-  id: namedTypes.Identifier
+  id: namedTypes.Identifier,
 ): namedTypes.ClassDeclaration {
   let classDeclaration: namedTypes.ClassDeclaration | null = null;
   recast.visit(node, {
@@ -510,7 +510,7 @@ export function getClassDeclarationById(
 
   if (!classDeclaration) {
     throw new Error(
-      `Could not find class declaration with the identifier ${id.name} in provided AST node`
+      `Could not find class declaration with the identifier ${id.name} in provided AST node`,
     );
   }
 
@@ -519,7 +519,7 @@ export function getClassDeclarationById(
 
 export function deleteClassMemberByKey(
   declaration: namedTypes.ClassDeclaration,
-  id: namedTypes.Identifier
+  id: namedTypes.Identifier,
 ): void {
   for (const [index, member] of declaration.body.body.entries()) {
     if (
@@ -536,15 +536,18 @@ export function deleteClassMemberByKey(
 
 export function importContainedIdentifiers(
   node: ASTNode,
-  moduleToIdentifiers: Record<string, namedTypes.Identifier[]>
+  moduleToIdentifiers: Record<string, namedTypes.Identifier[]>,
 ): namedTypes.ImportDeclaration[] {
   const idToModule = new Map(
     Object.entries(moduleToIdentifiers).flatMap(([key, values]) =>
-      values.map((value) => [value, key])
-    )
+      values.map((value) => [value, key]),
+    ),
   );
   const nameToId = Object.fromEntries(
-    Array.from(idToModule.keys(), (identifier) => [identifier.name, identifier])
+    Array.from(idToModule.keys(), (identifier) => [
+      identifier.name,
+      identifier,
+    ]),
   );
   const containedIds = findContainedIdentifiers(node, idToModule.keys());
   const moduleToContainedIds = groupBy(containedIds, (id) => {
@@ -553,7 +556,7 @@ export function importContainedIdentifiers(
     return module;
   });
   return Object.entries(moduleToContainedIds).map(([module, containedIds]) =>
-    importNames(containedIds, module)
+    importNames(containedIds, module),
   );
 }
 
@@ -569,11 +572,11 @@ export function isConstructor(method: namedTypes.ClassMethod): boolean {
  * @param classDeclaration
  */
 export function findConstructor(
-  classDeclaration: namedTypes.ClassDeclaration
+  classDeclaration: namedTypes.ClassDeclaration,
 ): namedTypes.ClassMethod | undefined {
   return classDeclaration.body.body.find(
     (member): member is namedTypes.ClassMethod =>
-      namedTypes.ClassMethod.check(member) && isConstructor(member)
+      namedTypes.ClassMethod.check(member) && isConstructor(member),
   );
 }
 
@@ -583,7 +586,7 @@ export function findConstructor(
  */
 export function addIdentifierToConstructorSuperCall(
   ast: ASTNode,
-  identifier: namedTypes.Identifier
+  identifier: namedTypes.Identifier,
 ): void {
   recast.visit(ast, {
     visitClassMethod(path) {
@@ -607,16 +610,16 @@ export function addIdentifierToConstructorSuperCall(
 }
 
 export function getMethods(
-  classDeclaration: namedTypes.ClassDeclaration
+  classDeclaration: namedTypes.ClassDeclaration,
 ): namedTypes.ClassMethod[] {
   return classDeclaration.body.body.filter(
     (member): member is namedTypes.ClassMethod =>
-      namedTypes.ClassMethod.check(member) && !isConstructor(member)
+      namedTypes.ClassMethod.check(member) && !isConstructor(member),
   );
 }
 export function getClassMethodById(
   classDeclaration: namedTypes.ClassDeclaration,
-  methodId: namedTypes.Identifier
+  methodId: namedTypes.Identifier,
 ): namedTypes.ClassMethod | null {
   const allMethodWithoutConstructor = getMethods(classDeclaration);
   return (
@@ -626,12 +629,12 @@ export function getClassMethodById(
 }
 
 export function getNamedProperties(
-  declaration: namedTypes.ClassDeclaration
+  declaration: namedTypes.ClassDeclaration,
 ): NamedClassProperty[] {
   return declaration.body.body.filter(
     (member): member is NamedClassProperty =>
       namedTypes.ClassProperty.check(member) &&
-      namedTypes.Identifier.check(member.key)
+      namedTypes.Identifier.check(member.key),
   );
 }
 
@@ -641,7 +644,7 @@ export const memberExpression = typedExpression(namedTypes.MemberExpression);
 export const awaitExpression = typedExpression(namedTypes.AwaitExpression);
 export const logicalExpression = typedExpression(namedTypes.LogicalExpression);
 export const expressionStatement = typedStatement(
-  namedTypes.ExpressionStatement
+  namedTypes.ExpressionStatement,
 );
 
 export function typedExpression<T>(type: { check(v: any): v is T }) {
@@ -677,7 +680,7 @@ export function expression(
   const stat = statement(strings, ...values);
   if (!namedTypes.ExpressionStatement.check(stat)) {
     throw new Error(
-      "Code must define a single statement expression at the top level"
+      "Code must define a single statement expression at the top level",
     );
   }
   return stat.expression;
@@ -715,11 +718,11 @@ function codeTemplate(
 }
 
 export function createGenericArray(
-  itemType: K.TSTypeKind
+  itemType: K.TSTypeKind,
 ): namedTypes.TSTypeReference {
   return builders.tsTypeReference(
     ARRAY_ID,
-    builders.tsTypeParameterInstantiation([itemType])
+    builders.tsTypeParameterInstantiation([itemType]),
   );
 }
 
@@ -727,7 +730,7 @@ export function createGenericArray(
 // in case the same decorator exists multiple times, it will be removed from all locations
 export function removeDecoratorByName(
   node: ASTNode,
-  decoratorName: string
+  decoratorName: string,
 ): boolean {
   let decorator: namedTypes.ClassDeclaration | null = null;
   recast.visit(node, {
@@ -772,7 +775,7 @@ export function removeDecoratorByName(
  */
 export function findFirstDecoratorByName(
   node: ASTNode,
-  decoratorName: string
+  decoratorName: string,
 ): namedTypes.Decorator {
   let decorator: namedTypes.ClassDeclaration | null = null;
   recast.visit(node, {
@@ -806,7 +809,7 @@ export function findFirstDecoratorByName(
 
   if (!decorator) {
     throw new Error(
-      `Could not find class decorator with the name ${decoratorName} in provided AST node`
+      `Could not find class decorator with the name ${decoratorName} in provided AST node`,
     );
   }
 
@@ -815,7 +818,7 @@ export function findFirstDecoratorByName(
 
 export function addDecoratorsToClassDeclaration(
   declaration: namedTypes.ClassDeclaration,
-  decorators: namedTypes.Decorator[] = []
+  decorators: namedTypes.Decorator[] = [],
 ): namedTypes.ClassDeclaration {
   if (!decorators.length) {
     return declaration;
@@ -839,7 +842,7 @@ export function addInjectableDependency(
   name: string,
   typeId: namedTypes.Identifier,
   accessibility: "public" | "private" | "protected",
-  decorators?: namedTypes.Decorator[]
+  decorators?: namedTypes.Decorator[],
 ): void {
   const constructor = findConstructor(classDeclaration);
 
@@ -853,7 +856,7 @@ export function addInjectableDependency(
     parameter: builders.identifier.from({
       name: name,
       typeAnnotation: builders.tsTypeAnnotation(
-        builders.tsTypeReference(typeId)
+        builders.tsTypeReference(typeId),
       ),
     }),
   });

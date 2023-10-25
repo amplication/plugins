@@ -7,10 +7,10 @@ import { getPluginSettings } from "@utils/getPluginSettings";
 
 export const beforeCreateAdminDotEnv = (
   context: DsgContext,
-  eventParams: CreateAdminDotEnvParams
+  eventParams: CreateAdminDotEnvParams,
 ): CreateAdminDotEnvParams => {
   const { AUTH0_AUDIENCE, AUTH0_CLIENT_ID, AUTH0_DOMAIN } = getPluginSettings(
-    context.pluginInstallations
+    context.pluginInstallations,
   );
 
   const envVariables = {
@@ -24,7 +24,7 @@ export const beforeCreateAdminDotEnv = (
   };
 
   eventParams.envVariables = eventParams.envVariables.concat(
-    convertToVarDict(envVariables)
+    convertToVarDict(envVariables),
   );
 
   return eventParams;
