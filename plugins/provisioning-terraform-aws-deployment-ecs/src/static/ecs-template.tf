@@ -4,7 +4,7 @@ module "${{ ECS_CLUSTER_MODULE_NAME }}" {
 
   cluster_name = "${{ NAME }}"
 
-  ${{ CAPACITY_PROVIDER }}
+  ${{ CLUSTER_CAPACITY_PROVIDER }}
 }
 
 module "${{ ECS_SERVICE_MODULE_NAME }}" {
@@ -140,4 +140,59 @@ module "${{ ECS_ALB_MODULE_NAME }}" {
       target_type      = "ip"
     },
   ]
+}
+
+output "cluster_arn" {
+  description = "ARN that identifies the cluster"
+  value       = module.${{ ECS_CLUSTER_MODULE_NAME }}.arn
+}
+
+output "cluster_id" {
+  description = "ID that identifies the cluster"
+  value       = module.${{ ECS_CLUSTER_MODULE_NAME }}.id
+}
+
+output "cluster_name" {
+  description = "Name that identifies the cluster"
+  value       = module.${{ ECS_CLUSTER_MODULE_NAME }}.name
+}
+
+output "cluster_capacity_providers" {
+  description = "Map of cluster capacity providers attributes"
+  value       = module.${{ ECS_CLUSTER_MODULE_NAME }}.cluster_capacity_providers
+}
+
+output "service_id" {
+  description = "ARN that identifies the service"
+  value       = module.${{ ECS_SERVICE_MODULE_NAME }}.id
+}
+
+output "service_name" {
+  description = "Name of the service"
+  value       = module.${{ ECS_SERVICE_MODULE_NAME }}.name
+}
+
+output "service_iam_role_name" {
+  description = "Service IAM role name"
+  value       = module.${{ ECS_SERVICE_MODULE_NAME }}.iam_role_name
+}
+
+output "service_iam_role_arn" {
+  description = "Service IAM role ARN"
+  value       = module.${{ ECS_SERVICE_MODULE_NAME }}.iam_role_arn
+}
+
+output "service_iam_role_unique_id" {
+  description = "Stable and unique string identifying the service IAM role"
+  value       = module.${{ ECS_SERVICE_MODULE_NAME }}.iam_role_unique_id
+}
+
+output "service_container_definitions" {
+  description = "Container definitions"
+  value       = module.${{ ECS_SERVICE_MODULE_NAME }}.container_definitions
+}
+
+output "service_task_definition_arn" {
+  description = "Full ARN of the Task Definition (including both `family` and `revision`)"
+  value       = module.${{ ECS_SERVICE_MODULE_NAME }}.task_definition_arn
 }

@@ -9,6 +9,8 @@ export const globalNameKey = "${{ NAME }}";
 export const globalNameUnderscoreKey = "${{ NAME_UNDERSCORE }}";
 
 // settings cluster constants
-export const capacityProviderKey = "${{ CAPACITY_PROVIDER }}";
+export const clusterCapacityProviderKey = "${{ CLUSTER_CAPACITY_PROVIDER }}";
 
 // settings service constants
+export const serviceContainerImage = "${{ SERVICE_CONTAINER_IMAGE }}";
+export const serviceContainerPort = "${{ SERVICE_CONTAINER_PORT }}";

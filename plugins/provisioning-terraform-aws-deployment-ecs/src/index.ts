@@ -7,10 +7,14 @@ import type {
 } from "@amplication/code-gen-types";
 import {
   globalNameKey,
+  globalNameUnderscoreKey,
   moduleNameEcsClusterKey,
   moduleNameEcsServiceKey,
   moduleNameEcsAlbKey,
   moduleNameEcsSgKey,
+  clusterCapacityProviderKey,
+  serviceContainerImage,
+  serviceContainerPort,
 } from "./constants";
 import { EventNames } from "@amplication/code-gen-types";
 import { resolve } from "path";
@@ -97,11 +101,21 @@ class TerraformAwsDeploymentEcsPlugin implements AmplicationPlugin {
 
     staticFiles.replaceModulesCode((code) =>
       code
+        .replaceAll(globalNameKey, hyphenName)
+        .replaceAll(globalNameUnderscoreKey, underscoreName)
         .replaceAll(moduleNameEcsClusterKey, "ecs_cluster_" + underscoreName)
         .replaceAll(moduleNameEcsServiceKey, "ecs_service_" + underscoreName)
         .replaceAll(moduleNameEcsAlbKey, "ecs_alb_" + underscoreName)
         .replaceAll(moduleNameEcsSgKey, "ecs_sg_" + underscoreName)
-        .replaceAll(globalNameKey, hyphenName)
+        .replaceAll(clusterCapacityProviderKey, capacityProvider)
+        .replaceAll(
+          serviceContainerImage,
+          settings.service.container_definitions.image
+        )
+        .replaceAll(
+          serviceContainerPort,
+          String(settings.service.container_definitions.port)
+        )
     );
 
     context.logger.info(`Generated Terraform AWS Deployment ECS...`);
