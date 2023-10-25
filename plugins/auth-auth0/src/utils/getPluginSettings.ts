@@ -17,12 +17,5 @@ export const getPluginSettings = (
     ...userSettings,
   };
 
-  // Convert numbers to strings
-  Object.entries(settings).forEach(([key, value]) => {
-    if (typeof value === "number") {
-      settings[key as keyof typeof settings] = value.toString();
-    }
-  });
-
   return settings;
 };
