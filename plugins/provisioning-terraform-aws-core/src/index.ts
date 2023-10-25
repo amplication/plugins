@@ -78,10 +78,6 @@ class TerraformAwsCorePlugin implements AmplicationPlugin {
         backendConfiguration = `terraform {\n\tbackend "local" {\n\t\tpath = "${settings.backend?.local?.path}"\n\t}\n}`;
       case BackendTypes.S3:
         backendConfiguration = `terraform {\n\tbackend "s3" {\n\t\tbucket = "${settings.backend?.s3?.bucket_name}"\n\t\tkey    = "${settings.backend?.s3?.key}"\n\t\tregion = "${settings.backend?.s3?.region}"\n\t}\n}`;
-      default:
-        throw new Error(
-          "TerraformAwsCorePlugin: Specify a backend type and applicable subconfiguration"
-        );
     }
 
     // set the path to the static files and fetch them for manipulation
