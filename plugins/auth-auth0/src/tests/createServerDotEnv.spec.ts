@@ -35,8 +35,8 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
 
   it("should use plugin settings if defined", () => {
     context.pluginInstallations[0].settings = {
-      AUTH0_AUDIENCE: "CUSTOM_AUTH0_AUDIENCE",
-      AUTH0_ISSUER_URL: "CUSTOM_AUTH0_ISSUER_URL",
+      audience: "CUSTOM_AUTH0_AUDIENCE",
+      issuerURL: "CUSTOM_AUTH0_ISSUER_URL",
     };
 
     eventParams = beforeCreateServerDotEnv(context, eventParams);

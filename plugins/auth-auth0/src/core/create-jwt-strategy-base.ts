@@ -9,9 +9,11 @@ import {
   print,
   readFile,
   removeTSClassDeclares,
+  removeTSIgnoreComments,
 } from "@amplication/code-gen-utils";
 import { builders } from "ast-types";
 import {
+  addAutoGenerationComment,
   addImports,
   addInjectableDependency,
   getClassDeclarationById,
@@ -97,6 +99,8 @@ const mapJwtStrategyTemplate = async (
     );
 
     removeTSClassDeclares(template);
+    removeTSIgnoreComments(template);
+    addAutoGenerationComment(template);
 
     return {
       code: print(template).code,

@@ -1,6 +1,7 @@
 import { Module, DsgContext } from "@amplication/code-gen-types";
-import { readFile } from "@amplication/code-gen-utils";
+import { readFile, removeTSIgnoreComments } from "@amplication/code-gen-utils";
 import {
+  addAutoGenerationComment,
   addImports,
   importNames,
   interpolate,
@@ -54,6 +55,8 @@ export async function mapAuthTemplate(
     interpolate(template, templateMapping);
     removeTSClassDeclares(template);
     removeTSInterfaceDeclares(template);
+    removeTSIgnoreComments(template);
+    addAutoGenerationComment(template);
 
     return {
       code: print(template).code,

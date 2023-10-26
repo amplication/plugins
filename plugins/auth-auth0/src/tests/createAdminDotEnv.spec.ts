@@ -39,9 +39,9 @@ describe("Testing beforeCreateAdminDotEnv hook", () => {
 
   it("should use plugin settings if defined", () => {
     context.pluginInstallations[0].settings = {
-      AUTH0_DOMAIN: "CUSTOM_AUTH0_DOMAIN",
-      AUTH0_CLIENT_ID: "CUSTOM_AUTH0_CLIENT_ID",
-      AUTH0_AUDIENCE: "CUSTOM_AUTH0_AUDIENCE",
+      domain: "CUSTOM_AUTH0_DOMAIN",
+      clientId: "CUSTOM_AUTH0_CLIENT_ID",
+      audience: "CUSTOM_AUTH0_AUDIENCE",
     };
 
     eventParams = beforeCreateAdminDotEnv(context, eventParams);

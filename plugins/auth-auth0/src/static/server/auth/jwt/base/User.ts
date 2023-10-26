@@ -3,7 +3,6 @@ export interface Auth0User {
   username: string;
   name: string;
   email: string;
+  email_verified: boolean;
   picture: string;
-  given_name: string;
-  family_name: string;
 }

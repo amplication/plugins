@@ -9,14 +9,14 @@ export const beforeCreateServerDotEnv = (
   context: DsgContext,
   eventParams: CreateServerDotEnvParams,
 ): CreateServerDotEnvParams => {
-  const { AUTH0_AUDIENCE, AUTH0_ISSUER_URL } = getPluginSettings(
+  const { audience, issuerURL } = getPluginSettings(
     context.pluginInstallations,
   );
 
   const envVariables = {
     // Auth0
-    AUTH0_AUDIENCE,
-    AUTH0_ISSUER_URL,
+    AUTH0_AUDIENCE: audience,
+    AUTH0_ISSUER_URL: issuerURL,
   };
 
   eventParams.envVariables = eventParams.envVariables.concat(

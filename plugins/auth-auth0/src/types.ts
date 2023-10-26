@@ -1,12 +1,13 @@
 export interface Settings {
-  AUTH0_DOMAIN: string;
-  AUTH0_CLIENT_ID: string;
-  AUTH0_AUDIENCE: string;
-  AUTH0_ISSUER_URL: string;
+  domain: string;
+  clientId: string;
+  audience: string;
+  issuerURL: string;
   recipe: {
     type: "password" | "passwordless";
     method: "email" | "sms" | "magic-link";
     emailField: string;
+    payloadFieldMapping: Record<string, string>;
   };
   defaultUser: Record<string, unknown>;
 }
