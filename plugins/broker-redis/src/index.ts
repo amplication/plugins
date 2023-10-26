@@ -24,7 +24,6 @@ import { readFile, print } from "@amplication/code-gen-utils";
 import { pascalCase } from "pascal-case";
 import * as utils from "./utils";
 import * as constants from "./constants";
-import { TSType } from "@babel/types";
 
 class RedisBrokerPlugin implements AmplicationPlugin {
   register(): Events {
@@ -87,18 +86,15 @@ class RedisBrokerPlugin implements AmplicationPlugin {
     topicsFile.program.body.forEach((stmt) => {
       if (stmt.type === "ExportNamedDeclaration") {
         if (
-          !stmt.declaration ||
-          //@ts-ignore
-          !stmt.declaration.id ||
-          //@ts-ignore
-          !stmt.declaration.id.name
+          stmt.declaration?.type === "TSEnumDeclaration" &&
+          stmt.declaration?.id?.name
         ) {
+          topicEnumNames.push(stmt.declaration.id.name);
+        } else {
           throw new Error(
             "Couldn't find the name of an enum in the message broker topics file"
           );
         }
-        //@ts-ignore
-        topicEnumNames.push(stmt.declaration.id.name);
       }
     });
     const umbrellaTypeDeclaration =
