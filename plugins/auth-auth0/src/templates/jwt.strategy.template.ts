@@ -23,15 +23,10 @@ export class JwtStrategy extends JwtStrategyBase implements IAuthStrategy {
 
     // Otherwise, make a new entity and return it
     const ENTITY_FIELDS = payload.user;
-    const { name, email } = ENTITY_FIELDS;
+    const defaultData = DATA;
 
     const NEW_ENTITY = await this.ENTITY_SERVICE.create({
-      data: {
-        name,
-        email,
-        ...ENTITY_FIELDS,
-        // TODO: Add the rest of the fields here according to your authEntity schema
-      },
+      data: defaultData,
     });
 
     return { ...NEW_ENTITY, roles: NEW_ENTITY?.roles as string[] };

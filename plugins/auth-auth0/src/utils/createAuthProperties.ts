@@ -55,8 +55,6 @@ export function createDefaultValue(
   entity: Entity,
   defaultValue: unknown,
 ): namedTypes.Expression | null {
-  console.log("field", field);
-  console.log("defaultValue", defaultValue);
   switch (field.dataType) {
     case EnumDataType.SingleLineText:
     case EnumDataType.MultiLineText: {

@@ -3,11 +3,13 @@ export interface Settings {
   clientId: string;
   audience: string;
   issuerURL: string;
-  recipe: {
-    type: "password" | "passwordless";
-    method: "email" | "sms" | "magic-link";
-    emailField: string;
-    payloadFieldMapping: Record<string, string>;
-  };
+  recipe: IRecipe;
   defaultUser: Record<string, unknown>;
+}
+
+export interface IRecipe {
+  type: "password" | "passwordless";
+  method?: "email" | "sms" | "magic-link";
+  emailField: string;
+  payloadFieldMapping: Record<string, string>;
 }
