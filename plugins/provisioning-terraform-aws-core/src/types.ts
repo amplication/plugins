@@ -1,6 +1,6 @@
 export enum BackendTypes {
   S3 = "s3",
-  Local = "local"
+  Local = "local",
 }
 
 export interface Settings {
@@ -13,6 +13,7 @@ export interface Settings {
   };
   vpc: {
     cidr_block: string;
+    create_database_subnet_group: boolean;
     enable_dns_hostnames: boolean;
     enable_dns_support: boolean;
     enable_nat_gateway: boolean;

@@ -12,6 +12,8 @@ module "vpc" {
   public_subnets   = [for k, v in local.vpc_azs : cidrsubnet(local.vpc_cidr_block, 8, k + 4)]
   database_subnets = [for k, v in local.vpc_azs : cidrsubnet(local.vpc_cidr_block, 8, k + 8)]
 
+  create_database_subnet_group = ${{ CREATE_DATABASE_SUBNET_GROUP }}
+
   enable_dns_hostnames = ${{ ENABLE_DNS_HOSTNAMES }}
   enable_dns_support   = ${{ ENABLE_DNS_SUPPORT }}
 

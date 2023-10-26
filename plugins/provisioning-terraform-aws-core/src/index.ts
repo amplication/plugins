@@ -15,6 +15,7 @@ import {
   singleNatGatewayKey,
   environmentKey,
   backendKey,
+  createDatabaseSubnetGroupKey,
 } from "./constants";
 import { join } from "node:path";
 import { getPluginSettings } from "./utils";
@@ -62,14 +63,14 @@ class TerraformAwsCorePlugin implements AmplicationPlugin {
      */
 
     const rootDirectoryPath: string = "./";
-    const terraformDirectoryPath: string =
-      settings.root_level ?
-        join(rootDirectoryPath, settings.directory_name) :
-        join(context.serverDirectories.baseDirectory, settings.directory_name)
+    const terraformDirectoryPath: string = settings.root_level
+      ? join(rootDirectoryPath, settings.directory_name)
+      : join(context.serverDirectories.baseDirectory, settings.directory_name);
 
     // define some configuration based on input/defaults
-    const name: string =
-      settings.global.name ? serviceName : settings.global.name;
+    const name: string = settings.global.name
+      ? serviceName
+      : settings.global.name;
 
     let backendConfiguration: string;
 
@@ -93,6 +94,10 @@ class TerraformAwsCorePlugin implements AmplicationPlugin {
         .replaceAll(regionIdentifierKey, settings.global.region)
         .replaceAll(environmentKey, settings.global.environment)
         .replaceAll(vpcCidrBlockKey, settings.vpc.cidr_block)
+        .replaceAll(
+          createDatabaseSubnetGroupKey,
+          String(settings.vpc.create_database_subnet_group)
+        )
         .replaceAll(
           enableDnsHostnamesKey,
           String(settings.vpc.enable_dns_hostnames)
