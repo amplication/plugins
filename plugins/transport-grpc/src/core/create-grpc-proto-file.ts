@@ -123,7 +123,7 @@ export async function createGrpcProtoFile(
 
     const protobufSchema = ProtobufSchemaDSL.createSchema(
       entityName,
-      { name: entityName, methods: methods },
+      { name: `${pascalCase(entityName)}Service`, methods: methods },
       messages
     );
 
