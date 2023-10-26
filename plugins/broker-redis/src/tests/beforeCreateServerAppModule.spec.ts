@@ -21,9 +21,7 @@ describe("Testing beforeCreateServerAppModule hook", () => {
     params = {
       ...mock<CreateServerAppModuleParams>(),
       template: utils.parse(`
-            import { Module, Scope } from "@nestjs/common";
-            import { APP_INTERCEPTOR } from "@nestjs/core";
-            import { MorganInterceptor } from "nest-morgan";
+            import { Module } from "@nestjs/common";
 
             declare const MODULES: any;
             `),
@@ -35,10 +33,8 @@ describe("Testing beforeCreateServerAppModule hook", () => {
   it("should add the necessary imports to the file", () => {
     const { template } = plugin.beforeCreateServerAppModule(context, params);
     const expectedCode = utils.prettyCode(`
-        import { Module, Scope } from "@nestjs/common";
-        import { APP_INTERCEPTOR } from "@nestjs/core";
-        import { MorganInterceptor } from "nest-morgan";
         import { RedisModule } from "./redis/redis.module";
+        import { Module } from "@nestjs/common";
 
         declare const MODULES: any;
         `);

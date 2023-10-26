@@ -16,7 +16,6 @@ export const generateRedisClientOptions = (
   const redisPort = configService.get(REDIS_BROKER_PORT);
   const redisRetryAttempts = configService.get(REDIS_BROKER_RETRY_ATTEMPTS);
   const redisRetryDelay = configService.get(REDIS_BROKER_RETRY_DELAY);
-  const redisUrl = `redis://${redisHost}:${redisPort}`;
 
   if (!redisHost) {
     throw new Error("REDIS_BROKER_HOST environment variable must be defined");
@@ -38,13 +37,19 @@ export const generateRedisClientOptions = (
     );
   }
 
-  return {
+  const redisOptions: RedisOptions = {
     transport: Transport.REDIS,
     options: {
-      url: redisUrl,
+      host: redisHost,
+      port: redisPort,
       retryAttempts: redisRetryAttempts,
       retryDelay: redisRetryDelay,
-      tls: redisEnableTLS,
     },
   };
+
+  if (redisEnableTLS) {
+    redisOptions.options!.tls = {};
+  }
+
+  return redisOptions;
 };
