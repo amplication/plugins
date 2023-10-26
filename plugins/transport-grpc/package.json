@@ -1,6 +1,6 @@
 {
-  "name": "@amplication/transport-grpc",
-  "version": "0.0.1-beta.123",
+  "name": "@amplication/plugin-transport-grpc",
+  "version": "0.0.1",
   "description": "set grpc as protocol for Amplication build",
   "main": "dist/index.js",
   "scripts": {
