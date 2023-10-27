@@ -1,0 +1,34 @@
+{
+  "name": "@amplication/provisioning-terraform-aws-database-rds",
+  "version": "0.0.1",
+  "description": "Description of your plugin",
+  "main": "dist/index.js",
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "dev": "webpack --watch",
+    "build": "webpack",
+    "prebuild": "rimraf dist",
+    "format:write": "prettier --write \"**/*.{js,ts}\""
+  },
+  "author": "Levi van Noort <levi@amplication.com>",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@amplication/code-gen-types": "^2.0.12",
+    "@babel/parser": "^7.23.0",
+    "@babel/types": "^7.23.0",
+    "@types/lodash": "^4.14.200",
+    "@typescript-eslint/eslint-plugin": "^6.7.5",
+    "@typescript-eslint/parser": "^6.7.5",
+    "copy-webpack-plugin": "^11.0.0",
+    "eslint": "^8.51.0",
+    "jest-mock-extended": "^3.0.5",
+    "lodash": "^4.17.21",
+    "prettier": "^3.0.3",
+    "rimraf": "^5.0.5",
+    "ts-loader": "^9.5.0",
+    "typescript": "^5.2.2",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "webpack-node-externals": "^3.0.0"
+  }
+}
