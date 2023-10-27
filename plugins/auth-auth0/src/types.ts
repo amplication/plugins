@@ -10,6 +10,6 @@ export interface Settings {
 export interface IRecipe {
   type: "password" | "passwordless";
   method?: "email" | "sms" | "magic-link";
-  emailField: string;
+  emailFieldName: string;
   payloadFieldMapping: Record<string, string>;
 }

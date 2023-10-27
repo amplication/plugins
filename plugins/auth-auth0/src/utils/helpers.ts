@@ -16,7 +16,7 @@ export const getSearchableAuthField = (
   entity: Entity,
   recipe: IRecipe,
 ): EntityField => {
-  const { emailField, payloadFieldMapping } = recipe;
+  const { emailFieldName, payloadFieldMapping } = recipe;
   const payloadEmailField = Object.keys(payloadFieldMapping).find(
     (key) => payloadFieldMapping[key] === "email",
   );
@@ -25,15 +25,15 @@ export const getSearchableAuthField = (
   );
 
   if (
-    emailField &&
+    emailFieldName &&
     !entity.fields.find(
       (field) =>
-        field.name === emailField && field.dataType === EnumDataType.Email,
+        field.name === emailFieldName && field.dataType === EnumDataType.Email,
     )
   ) {
-    throw new Error(EmailError(entity.name, emailField, "emailField"));
+    throw new Error(EmailError(entity.name, emailFieldName, "emailFieldName"));
   } else if (
-    !emailField &&
+    !emailFieldName &&
     payloadEmailField &&
     !entity.fields.find(
       (field) =>
@@ -44,7 +44,7 @@ export const getSearchableAuthField = (
     throw new Error(
       EmailError(entity.name, payloadEmailField || "", "payloadFieldMapping"),
     );
-  } else if (!emailField && !payloadFieldMapping && !fallbackEmailField) {
+  } else if (!emailFieldName && !payloadFieldMapping && !fallbackEmailField) {
     throw new Error(
       `The entity ${entity.name} does not have a field with the data type ${EnumDataType.Email}`,
     );
@@ -53,13 +53,13 @@ export const getSearchableAuthField = (
   const authEmailField = entity.fields.find(
     (field) =>
       field.name ===
-      (emailField || payloadEmailField || fallbackEmailField?.name),
+      (emailFieldName || payloadEmailField || fallbackEmailField?.name),
   );
 
   if (!authEmailField) {
     throw new Error(
       `The entity ${entity.name} does not have a field named ${
-        emailField || payloadEmailField || fallbackEmailField?.name
+        emailFieldName || payloadEmailField || fallbackEmailField?.name
       }`,
     );
   }
