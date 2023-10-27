@@ -26,7 +26,10 @@ const jwtStrategyBasePath = join(
   "jwt.strategy.base.template.ts",
 );
 
-export const createJwtStrategyBase = async (context: DsgContext, searchableAuthField: EntityField): Promise<Module> => {
+export const createJwtStrategyBase = async (
+  context: DsgContext,
+  searchableAuthField: EntityField,
+): Promise<Module> => {
   return mapJwtStrategyTemplate(
     context,
     searchableAuthField,

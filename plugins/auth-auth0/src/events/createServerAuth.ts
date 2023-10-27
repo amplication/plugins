@@ -30,11 +30,11 @@ export const afterCreateAuthModules = async (
   );
 
   // 1. Create JWT strategy
-  const jwtStrategy = await createJwtStrategy(context);
+  const {module: jwtStrategy, searchableAuthField} = await createJwtStrategy(context);
   modules.set(jwtStrategy);
 
   // 2. Create JWT strategy base
-  const jwtStrategyBase = await createJwtStrategyBase(context);
+  const jwtStrategyBase = await createJwtStrategyBase(context, searchableAuthField);
   modules.set(jwtStrategyBase);
 
   // 3. Create auth module
