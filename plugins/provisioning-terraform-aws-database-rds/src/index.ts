@@ -18,12 +18,13 @@ import {
   pgBackupWindowKey,
   pgBackupRetentionPeriodKey,
   pgSgIdentifierKey,
+  pgDatabaseInstanceClassKey,
 } from "./constants";
 import { getPluginSettings, getTerraformDirectory } from "./utils";
 import { EventNames } from "@amplication/code-gen-types";
 import { resolve } from "path";
-import { join, kebabCase, snakeCase } from "lodash";
-import { DatabaseTypes } from "./types";
+import { kebabCase, set, snakeCase } from "lodash";
+import { isPostgresSettings } from "./types";
 
 class TerraformAwsDatabaseRdsPlugin implements AmplicationPlugin {
   register(): Events {
@@ -59,6 +60,7 @@ class TerraformAwsDatabaseRdsPlugin implements AmplicationPlugin {
       context.serverDirectories.baseDirectory
     );
 
+    // import the settings, which are merged default settings & user inputs
     const settings = getPluginSettings(context.pluginInstallations);
 
     const underscoreName: string = snakeCase(serviceName);
@@ -72,11 +74,25 @@ class TerraformAwsDatabaseRdsPlugin implements AmplicationPlugin {
     // database types are added the template for these
     // can be fetched seperately below.
     let staticPath: string;
+    let databaseIdentifier: string;
+    let databaseName: string;
+    let securityGroupName: string;
 
-    switch (settings.database.type) {
-      default: {
-        staticPath = resolve(__dirname, "./static/postgres");
-      }
+    if (isPostgresSettings(settings)) {
+      staticPath = resolve(__dirname, "./static/postgres");
+      databaseIdentifier = settings.postgres.identifier
+        ? settings.postgres.identifier
+        : hyphenName;
+      databaseName = settings.postgres.database_name
+        ? settings.postgres.database_name
+        : hyphenName;
+      securityGroupName = settings.postgres.security_group.name
+        ? settings.postgres.security_group.name
+        : hyphenName;
+    } else {
+      throw new Error(
+        "TerraformAwsDatabaseRdsPlugin: is dependent on 'Terraform - AWS Core' plugin"
+      );
     }
 
     const staticFiles = await context.utils.importStaticModules(
@@ -91,51 +107,37 @@ class TerraformAwsDatabaseRdsPlugin implements AmplicationPlugin {
       )
     );
 
-    if (settings.database.type == DatabaseTypes.Postgres) {
+    if (isPostgresSettings(settings)) {
       staticFiles.replaceModulesCode((code) =>
         code
           .replaceAll(moduleNameRdsKey, "rds_" + underscoreName)
           .replaceAll(moduleNameSgKey, "sg_" + underscoreName)
-          .replaceAll(
-            pgDatabaseIdentifierKey,
-            settings.database.postgres?.identifier
-          )
+          .replaceAll(pgDatabaseIdentifierKey, databaseIdentifier)
           .replaceAll(
             pgAllocatedStorageKey,
-            String(settings.database.postgres?.storage?.allocated)
+            String(settings.postgres.storage.allocated)
           )
           .replaceAll(
             pgMaximumStorageKey,
-            String(settings.database.postgres?.storage.maximum)
+            String(settings.postgres.storage.maximum)
           )
+          .replaceAll(pgDatabaseNameKey, databaseName)
+          .replaceAll(pgDatabaseUsernameKey, settings.postgres.username)
+          .replaceAll(pgDatabasePortKey, String(settings.postgres.port))
           .replaceAll(
-            pgDatabaseNameKey,
-            settings.database.postgres?.database_name
-          )
-          .replaceAll(
-            pgDatabaseUsernameKey,
-            settings.database.postgres?.username
-          )
-          .replaceAll(
-            pgDatabasePortKey,
-            String(settings.database.postgres?.port)
+            pgDatabaseInstanceClassKey,
+            settings.postgres.instance_class
           )
           .replaceAll(
             pgMaintenanceWindowKey,
-            settings.database.postgres?.maintainance?.window
+            settings.postgres.maintenance.window
           )
-          .replaceAll(
-            pgBackupWindowKey,
-            settings.database.postgres?.backup.window
-          )
+          .replaceAll(pgBackupWindowKey, settings.postgres.backup.window)
           .replaceAll(
             pgBackupRetentionPeriodKey,
-            String(settings.database.postgres?.backup.retention_period)
+            String(settings.postgres.backup.retention_period)
           )
-          .replaceAll(
-            pgSgIdentifierKey,
-            join("-", "rds", settings.database.postgres?.security_group.name)
-          )
+          .replaceAll(pgSgIdentifierKey, "rds-" + securityGroupName)
       );
     } else {
       throw new Error(

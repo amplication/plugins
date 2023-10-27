@@ -1,12 +1,11 @@
 {
     "settings": {
-        "type": "postgres",
         "postgres" : {
             "identifier": "",
             "instance_class": "db.t4g.medium",
             "database_name": "",
             "username": "postgres",
-            "post": 5432,
+            "port": 5432,
             "storage": {
                 "allocated": 20,
                 "maximum": 100

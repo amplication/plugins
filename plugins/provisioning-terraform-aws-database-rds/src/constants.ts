@@ -6,6 +6,7 @@ export const moduleNameSgKey = "${{ SG_MODULE_NAME }}";
 export const pgDatabaseIdentifierKey = "${{ DATABASE_IDENTIFIER }}";
 export const pgAllocatedStorageKey = "${{ ALLOCATED_STORAGE }}";
 export const pgMaximumStorageKey = "${{ MAXIMUM_STORAGE }}";
+export const pgDatabaseInstanceClassKey = "${{ INSTANCE_CLASS }}";
 export const pgDatabaseNameKey = "${{ DATABASE_NAME }}";
 export const pgDatabaseUsernameKey = "${{ DATABASE_USERNAME }}";
 export const pgDatabasePortKey = "${{ DATABASE_PORT }}";
