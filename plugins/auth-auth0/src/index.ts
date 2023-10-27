@@ -8,6 +8,7 @@ import {
   beforeCreateAuthModules,
   beforeCreatePackageJson,
   beforeCreateSeed,
+  beforeCreateServer,
   beforeCreateServerDotEnv,
 } from "./events";
 
@@ -38,6 +39,9 @@ class Auth0Plugin implements AmplicationPlugin {
       },
       [EventNames.CreateSeed]: {
         before: beforeCreateSeed,
+      },
+      [EventNames.CreateServer]: {
+        before: beforeCreateServer,
       },
     };
   }

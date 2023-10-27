@@ -5,3 +5,4 @@ export * from "./createPackageJson";
 export * from "./createServerDotEnv";
 export * from "./createServerAuth";
 export * from "./createSeed";
+export * from "./createServer";
