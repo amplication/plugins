@@ -1,4 +1,4 @@
-import { DsgContext, Entity, Module } from "@amplication/code-gen-types";
+import { DsgContext, Entity, EnumDataType, Module } from "@amplication/code-gen-types";
 import {
   AUTH_ENTITY_ERROR,
   AUTH_ENTITY_LOG_ERROR,
@@ -26,6 +26,9 @@ import { createAuthEntityObjectCustomProperties } from "@utils/createAuthPropert
 
 const jwtStrategyPath = join(templatesPath, "jwt.strategy.template.ts");
 
+const EmailError = (entityName: string, fieldName: string, propertyName: string) => 
+  `The entity ${entityName} does not have a field named ${fieldName} specified in the ${propertyName} property or the field is not of type Email. Please add a field named ${fieldName} of type Email to the entity ${entityName} or change the ${propertyName} property in the recipe`;
+
 const Auth0Fields = new Set([
   "email",
   "email_verified",
@@ -37,13 +40,24 @@ const Auth0Fields = new Set([
 
 const createDefaultAuth0UserFields = (entity: Entity, recipe: IRecipe, defaultUser: Record<string, unknown>, entityFields: namedTypes.Identifier) => { 
   const { emailField, payloadFieldMapping } = recipe;
+  const payloadEmailField = Object.keys(payloadFieldMapping).find((key) => payloadFieldMapping[key] === "email");
+  const fallbackEmailField = entity.fields.find((field) => field.dataType === EnumDataType.Email);
 
-  if(!emailField && Object.values(payloadFieldMapping || {}).includes("email") && !entity.fields.find((field) => field.name === "email")) {
-    throw new Error(`The entity ${entity.name} does not have an email field, and the email field is not mapped to any other field in the payloadFieldMapping`);
+  if(emailField && !entity.fields.find((field) => field.name === emailField && field.dataType === EnumDataType.Email)) {
+    throw new Error(EmailError(entity.name, emailField, "emailField"));
+  } else if(!emailField && payloadEmailField && !entity.fields.find((field) => field.name === payloadEmailField && field.dataType === EnumDataType.Email)) {
+    throw new Error(EmailError(entity.name, payloadEmailField || "", "payloadFieldMapping"));
+  } else if(!emailField && !payloadFieldMapping && !fallbackEmailField) {
+    throw new Error(`The entity ${entity.name} does not have a field with the data type ${EnumDataType.Email}`);
   }
-  
+
+  const authEmailField = entity.fields.find((field) => field.name === (emailField || payloadEmailField || fallbackEmailField?.name));
+
+  if(authEmailField?.unique === false) throw new Error(`The field ${authEmailField.name} in the entity ${entity.name} must be unique`);
+  else if(authEmailField?.searchable === false) throw new Error(`The field ${authEmailField.name} in the entity ${entity.name} must be searchable`);
+
   const emailProperty = builders.objectProperty(
-    builders.identifier(emailField || Object.keys(payloadFieldMapping || {}).find((key) => payloadFieldMapping[key] === "email") || "email"),
+    builders.identifier(authEmailField?.name || "email"),
     memberExpression`${entityFields}.${builders.identifier("email")}`,
   );
 
@@ -53,7 +67,7 @@ const createDefaultAuth0UserFields = (entity: Entity, recipe: IRecipe, defaultUs
     }
 
     if(!entity.fields.find((field) => field.name === key)) {
-      throw new Error(`The entity ${entity.name} does not have a field named ${key}`);
+      throw new Error(`The entity ${entity.name} does not have a field named ${key} which is mapped to ${value} in the payloadFieldMapping property`);
     }
 
     return builders.objectProperty(
@@ -152,6 +166,7 @@ const mapJwtStrategyTemplate = async (
   } catch (error) {
     context.logger.error(`Failed to create ${fileName} file`);
     context.logger.error((error as Error).message, undefined, undefined, error as Error);
+    context.utils.abortGeneration((error as Error).message);
     throw error;
   }
 };
