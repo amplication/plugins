@@ -1,4 +1,4 @@
-import { DsgContext, Entity, EnumDataType, Module } from "@amplication/code-gen-types";
+import { DsgContext, Entity, EntityField, Module } from "@amplication/code-gen-types";
 import {
   AUTH_ENTITY_ERROR,
   AUTH_ENTITY_LOG_ERROR,
@@ -23,11 +23,9 @@ import {
 import { getPluginSettings } from "@utils/getPluginSettings";
 import { IRecipe } from "../types";
 import { createAuthEntityObjectCustomProperties } from "@utils/createAuthProperties";
+import { getSearchableAuthField } from "@utils/helpers";
 
 const jwtStrategyPath = join(templatesPath, "jwt.strategy.template.ts");
-
-const EmailError = (entityName: string, fieldName: string, propertyName: string) => 
-  `The entity ${entityName} does not have a field named ${fieldName} specified in the ${propertyName} property or the field is not of type Email. Please add a field named ${fieldName} of type Email to the entity ${entityName} or change the ${propertyName} property in the recipe`;
 
 const Auth0Fields = new Set([
   "email",
@@ -38,20 +36,8 @@ const Auth0Fields = new Set([
   "username",
 ]);
 
-const createDefaultAuth0UserFields = (entity: Entity, recipe: IRecipe, defaultUser: Record<string, unknown>, entityFields: namedTypes.Identifier) => { 
-  const { emailField, payloadFieldMapping } = recipe;
-  const payloadEmailField = Object.keys(payloadFieldMapping).find((key) => payloadFieldMapping[key] === "email");
-  const fallbackEmailField = entity.fields.find((field) => field.dataType === EnumDataType.Email);
-
-  if(emailField && !entity.fields.find((field) => field.name === emailField && field.dataType === EnumDataType.Email)) {
-    throw new Error(EmailError(entity.name, emailField, "emailField"));
-  } else if(!emailField && payloadEmailField && !entity.fields.find((field) => field.name === payloadEmailField && field.dataType === EnumDataType.Email)) {
-    throw new Error(EmailError(entity.name, payloadEmailField || "", "payloadFieldMapping"));
-  } else if(!emailField && !payloadFieldMapping && !fallbackEmailField) {
-    throw new Error(`The entity ${entity.name} does not have a field with the data type ${EnumDataType.Email}`);
-  }
-
-  const authEmailField = entity.fields.find((field) => field.name === (emailField || payloadEmailField || fallbackEmailField?.name));
+const createDefaultAuth0UserFields = (entity: Entity, recipe: IRecipe, defaultUser: Record<string, unknown>, entityFields: namedTypes.Identifier, authEmailField: EntityField) => { 
+  const { payloadFieldMapping } = recipe;
 
   if(authEmailField?.unique === false) throw new Error(`The field ${authEmailField.name} in the entity ${entity.name} must be unique`);
   else if(authEmailField?.searchable === false) throw new Error(`The field ${authEmailField.name} in the entity ${entity.name} must be searchable`);
@@ -90,7 +76,10 @@ const mapJwtStrategyTemplate = async (
   context: DsgContext,
   templatePath: string,
   fileName: string,
-): Promise<Module> => {
+): Promise<{
+  module: Module;
+  searchableAuthField: EntityField;
+}> => {
   const { entities, resourceInfo, serverDirectories } = context;
   const { recipe, defaultUser } = getPluginSettings(context.pluginInstallations);
   const authEntity = entities?.find(
@@ -129,6 +118,8 @@ const mapJwtStrategyTemplate = async (
       `src/${entityNameToLower}/${entityNameToLower}.service`,
     );
 
+    const searchableAuthField = getSearchableAuthField(authEntity, recipe);
+
     addImports(template, [entityNameImport, entityServiceImport]);
 
     const templateMapping = {
@@ -137,7 +128,7 @@ const mapJwtStrategyTemplate = async (
       ENTITY_FIELDS: entityFields,
       VALIDATED_ENTITY: builders.identifier(`validated${authEntity?.name}`),
       NEW_ENTITY: builders.identifier(`new${authEntity?.name}`),
-      DATA: builders.objectExpression(createDefaultAuth0UserFields(authEntity, recipe, defaultUser, entityFields)),
+      DATA: builders.objectExpression(createDefaultAuth0UserFields(authEntity, recipe, defaultUser, entityFields, searchableAuthField)),
     };
 
     const filePath = `${serverDirectories.authDirectory}/jwt/${fileName}`;
@@ -160,8 +151,11 @@ const mapJwtStrategyTemplate = async (
     removeTSIgnoreComments(template);
 
     return {
-      code: print(template).code,
-      path: filePath,
+      module: {
+        code: print(template).code,
+        path: filePath,
+      },
+      searchableAuthField
     };
   } catch (error) {
     context.logger.error(`Failed to create ${fileName} file`);

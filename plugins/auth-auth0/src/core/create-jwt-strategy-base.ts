@@ -1,4 +1,4 @@
-import { DsgContext, Module } from "@amplication/code-gen-types";
+import { DsgContext, EntityField, Module } from "@amplication/code-gen-types";
 import {
   AUTH_ENTITY_ERROR,
   AUTH_ENTITY_LOG_ERROR,
@@ -26,9 +26,10 @@ const jwtStrategyBasePath = join(
   "jwt.strategy.base.template.ts",
 );
 
-export const createJwtStrategyBase = async (context: DsgContext) => {
+export const createJwtStrategyBase = async (context: DsgContext, searchableAuthField: EntityField): Promise<Module> => {
   return mapJwtStrategyTemplate(
     context,
+    searchableAuthField,
     jwtStrategyBasePath,
     "jwt.strategy.base.ts",
   );
@@ -36,6 +37,7 @@ export const createJwtStrategyBase = async (context: DsgContext) => {
 
 const mapJwtStrategyTemplate = async (
   context: DsgContext,
+  searchableAuthField: EntityField,
   templatePath: string,
   fileName: string,
 ): Promise<Module> => {
@@ -80,6 +82,7 @@ const mapJwtStrategyTemplate = async (
       ENTITY_NAME_INFO: entityNameId,
       ENTITY_SERVICE: entityServiceIdentifier,
       ENTITY: builders.identifier(entityNameToLower),
+      SEARCHABLE_AUTH_FIELD: builders.identifier(searchableAuthField.name),
     };
 
     const filePath = `${serverDirectories.authDirectory}/jwt/base/${fileName}`;
