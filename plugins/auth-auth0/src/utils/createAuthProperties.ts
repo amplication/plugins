@@ -92,7 +92,9 @@ export function createDefaultValue(
       const { options } = field.properties as types.OptionSet;
       const [firstOption] = options;
       return defaultValue
-        ? builders.stringLiteral(defaultValue as string)
+        ? memberExpression`${createEnumName(field, entity)}.${pascalCase(
+            defaultValue as string,
+          )}`
         : memberExpression`${createEnumName(field, entity)}.${pascalCase(
             firstOption.label,
           )}`;
