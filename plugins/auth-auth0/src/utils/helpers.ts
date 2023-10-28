@@ -8,6 +8,10 @@ export function pascalCase(str: string): string {
     .replace(/-([a-z])/g, (m) => m[1].toUpperCase());
 }
 
+export function camelCase(str: string): string {
+  return str.replace(/^[A-Z]/, (m) => m.toLowerCase());
+}
+
 export function createEnumName(field: EntityField, entity: Entity): string {
   return `Enum${pascalCase(entity.name)}${pascalCase(field.name)}`;
 }

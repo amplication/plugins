@@ -21,6 +21,7 @@ import {
   addImports,
   addInjectableDependency,
   getClassDeclarationById,
+  importContainedIdentifiers,
   importNames,
   interpolate,
   memberExpression,
@@ -29,6 +30,7 @@ import { getPluginSettings } from "@utils/getPluginSettings";
 import { IRecipe } from "../types";
 import { createAuthEntityObjectCustomProperties } from "@utils/createAuthProperties";
 import { getSearchableAuthField } from "@utils/helpers";
+import { getDTONameToPath, getImportableDTOs } from "@utils/addDTOImports";
 
 const jwtStrategyPath = join(templatesPath, "jwt.strategy.template.ts");
 
@@ -110,7 +112,7 @@ const mapJwtStrategyTemplate = async (
   module: Module;
   searchableAuthField: EntityField;
 }> => {
-  const { entities, resourceInfo, serverDirectories } = context;
+  const { entities, resourceInfo, serverDirectories, DTOs } = context;
   const { recipe, defaultUser } = getPluginSettings(
     context.pluginInstallations,
   );
@@ -189,6 +191,14 @@ const mapJwtStrategyTemplate = async (
 
     removeTSClassDeclares(template);
     removeTSIgnoreComments(template);
+
+    const dtoNameToPath = getDTONameToPath(context, DTOs);
+    const dtoImports = importContainedIdentifiers(
+      template,
+      getImportableDTOs(filePath, dtoNameToPath),
+    );
+
+    addImports(template, dtoImports);
 
     return {
       module: {

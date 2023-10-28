@@ -22,6 +22,7 @@
     "@babel/types": "^7.23.0",
     "@types/jest": "^29.5.3",
     "@types/lodash": "^4.14.197",
+    "@types/normalize-path": "^3.0.1",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
     "@typescript-eslint/parser": "^6.7.5",
     "copy-webpack-plugin": "^11.0.0",
@@ -37,6 +38,7 @@
     "typescript": "^5.2.2",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
-    "webpack-node-externals": "^3.0.0"
+    "webpack-node-externals": "^3.0.0",
+    "normalize-path": "^3.0.0"
   }
 }
