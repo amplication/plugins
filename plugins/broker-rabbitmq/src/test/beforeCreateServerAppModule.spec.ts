@@ -4,6 +4,7 @@ import { name } from "../../package.json";
 import { builders } from "ast-types"
 import * as utils from "../util/ast"
 import RabbitMQPlugin from "../index";
+import path from "path";
 
 
 describe("Testing beforeCreateServerAppModule hook", () => {
@@ -30,7 +31,7 @@ describe("Testing beforeCreateServerAppModule hook", () => {
             }, 
             modulesFiles: new ModuleMap(context.logger) 
         }
-        RabbitMQPlugin.moduleFile = { code: "", path:"./rabbitmq/rabbitmq.module" }
+        RabbitMQPlugin.moduleFile = { code: "", path: path.join(".", "rabbitmq", "rabbitmq.module") }
     });
     it("should add the necessary imports to the file", () => {
         const { template } = plugin.beforeCreateServerAppModule(context, params)

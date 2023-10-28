@@ -2,6 +2,7 @@ import { CreateServerAuthParams, DsgContext, EnumMessagePatternConnectionOptions
 import RabbitMQPlugin from "../index";
 import { mock } from "jest-mock-extended"
 import * as utils from "../util/ast"
+import path from "path";
 
 describe("Testing afterCreateServerAuth", () => {
     let plugin: RabbitMQPlugin
@@ -19,7 +20,7 @@ describe("Testing afterCreateServerAuth", () => {
     it("should correctly add the code for generating rabbitmq controller", async () => {
         const modules = await plugin.afterCreateServerAuth(context, params, moduleMap);
 
-        const controllerModule = modules.get("/rabbitmq/rabbitmq.controller.ts");
+        const controllerModule = modules.get(path.join("/","rabbitmq","rabbitmq.controller.ts"));
         const controllerCode = utils.print(utils.parse(controllerModule.code)).code;
         const expectedControllerCode = utils.print(utils.parse(expectedController)).code;
         expect(controllerCode).toStrictEqual(expectedControllerCode);

@@ -1,6 +1,7 @@
 import { CreateMessageBrokerParams, DsgContext } from "@amplication/code-gen-types";
 import RabbitMQPlugin from "../index";
 import { mock } from "jest-mock-extended"
+import path from "path";
 
 describe("Testing beforeCreateBroker", () => {
     let plugin: RabbitMQPlugin
@@ -12,7 +13,7 @@ describe("Testing beforeCreateBroker", () => {
         plugin = new RabbitMQPlugin();
         context = fakeContext()
         params = mock<CreateMessageBrokerParams>()
-        expectedMessageBrokerDirectory = "/rabbitmq"
+        expectedMessageBrokerDirectory = path.join("/","rabbitmq")
     })
 
     it("should correctly change the messageBrokerDirectory", async () => {

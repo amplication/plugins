@@ -2,6 +2,7 @@ import { CreateMessageBrokerClientOptionsFactoryParams, CreateServerAuthParams, 
 import RabbitMQPlugin from "../index";
 import { mock } from "jest-mock-extended"
 import * as utils from "../util/ast"
+import path from "path";
 
 describe("Testing afterCreateMessageBrokerNestJSModule", () => {
     let plugin: RabbitMQPlugin
@@ -17,7 +18,7 @@ describe("Testing afterCreateMessageBrokerNestJSModule", () => {
     it("should correctly add the code for generating rabbitmq module", async () => {
         const modules = await plugin.afterCreateMessageBrokerNestJSModule(context, params);
 
-        const rabbitMqModule = modules.get("/rabbitmq.module.ts");
+        const rabbitMqModule = modules.get(path.join("/","rabbitmq.module.ts"));
         const rabbitMqCode = utils.print(utils.parse(rabbitMqModule.code)).code;
         const expectedRabbitMqCode = utils.print(utils.parse(expectedRabbitMq)).code;
 
