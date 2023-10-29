@@ -147,5 +147,3 @@ class JwtAuthPlugin implements AmplicationPlugin {
     return modules;
   }
 }
-
-export default JwtAuthPlugin;
