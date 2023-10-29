@@ -5,6 +5,7 @@ import {
   CreateMessageBrokerNestJSModuleParams,
   CreateMessageBrokerParams,
   CreateMessageBrokerServiceParams,
+  CreateMessageBrokerTopicsEnumParams,
   CreateServerAppModuleParams,
   CreateServerAuthParams,
   CreateServerDockerComposeDevParams,
@@ -27,6 +28,7 @@ import {
   getFunctionDeclarationById,
   importNames,
   interpolate,
+  parse
 } from "./util/ast";
 import { pascalCase } from "pascal-case";
 import { getPluginSettings } from "./utils";
@@ -70,7 +72,44 @@ class RabbitMQPlugin implements AmplicationPlugin {
       CreateConnectMicroservices: {
         before: this.beforeCreateConnectMicroservices,
       },
+      CreateMessageBrokerTopicsEnum: {
+        after: this.afterCreateMessageBrokerTopicsEnum
+      }
     };
+  }
+
+  async afterCreateMessageBrokerTopicsEnum(
+    context: DsgContext,
+    eventParams: CreateMessageBrokerTopicsEnumParams,
+    modules: ModuleMap
+  ): Promise<ModuleMap> {
+    const { serverDirectories } = context;
+    const topicsPath = join(serverDirectories.messageBrokerDirectory, "topics.ts");
+    const topicsModule = modules.get(topicsPath);
+    if(!topicsModule) {
+      throw new Error("Failed to find the topics.ts file for the message broker topics enum");
+    }
+
+    const topicsFile = parse(topicsModule.code);
+    const topicEnumNames: string[] = [];
+    topicsFile.program.body.forEach((stmt) => {
+      if(stmt.type === "ExportNamedDeclaration") {
+        //@ts-ignore
+        if(!stmt.declaration || !stmt.declaration.id || !stmt.declaration.id.name) {
+          throw new Error("Couldn't find the name of an enum in the message broker topics file");
+        }
+        //@ts-ignore
+        topicEnumNames.push(stmt.declaration.id.name);
+      }
+    })
+    const umbrellaTypeDeclaration = allMessageBrokerTopicsTypeDeclaration(topicEnumNames);
+    topicsFile.program.body.push(builders.emptyStatement(), umbrellaTypeDeclaration);
+
+    await modules.set({
+      code: print(topicsFile).code,
+      path: topicsPath
+    });
+    return modules;
   }
 
   async afterCreateMessageBrokerClientOptionsFactory(
@@ -140,12 +179,12 @@ class RabbitMQPlugin implements AmplicationPlugin {
   ): CreateServerDotEnvParams {
     const resourceName = context.resourceInfo?.name;
 
-    const { host, port } = getPluginSettings(
+    const { host, port, user, password } = getPluginSettings(
       context.pluginInstallations
     );
 
     const vars = {
-      RABBITMQ_URLS: `amqp://${host}:${port}`,
+      RABBITMQ_URLS: `amqp://${user}:${password}@${host}:${port}`,
       RABBITMQ_QUEUE: kebabCase(resourceName),
     };
     const newEnvParams = [
@@ -413,6 +452,23 @@ const rabbitModuleImport = (rabbitMqModuleName: string): namedTypes.ImportDeclar
     [builders.importSpecifier(builders.identifier(rabbitMqModuleName))],
     builders.stringLiteral("./rabbitmq/rabbitmq.module")
   );
+}
+
+const allMessageBrokerTopicsTypeDeclaration = (topicEnumNames: string[]) => {
+  const enumTypes: namedTypes.TSTypeReference[] = topicEnumNames.map((enumName) =>
+    builders.tsTypeReference(builders.identifier(enumName))
+  )
+  const declaration = (rightSide: any) => {
+    return builders.exportDeclaration(false, builders.tsTypeAliasDeclaration(
+      builders.identifier("AllMessageBrokerTopics"),
+      rightSide
+    ))
+  }
+  if(enumTypes.length === 0) {
+    return declaration(builders.tsNeverKeyword())
+  } else {
+    return declaration(builders.tsUnionType(enumTypes))
+  }
 }
 
 export default RabbitMQPlugin;
