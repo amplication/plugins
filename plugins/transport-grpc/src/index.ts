@@ -22,7 +22,7 @@ import {
 import { merge } from "lodash";
 import { envVariables } from "./constants";
 
-class JwtAuthPlugin implements AmplicationPlugin {
+class TransportGrpcPlugin implements AmplicationPlugin {
   register(): Events {
     return {
       CreateServerDotEnv: {
@@ -147,3 +147,4 @@ class JwtAuthPlugin implements AmplicationPlugin {
     return modules;
   }
 }
+export default TransportGrpcPlugin;
