@@ -14,12 +14,11 @@ import {
   Module,
   ModuleMap,
 } from "@amplication/code-gen-types";
-import { parse, removeTSVariableDeclares } from "@amplication/code-gen-utils";
 import { readFile } from "fs/promises";
 import { merge } from "lodash";
 import { join, resolve } from "path";
-import { print } from "recast";
 import { NATS_PORT, staticsPath, templatesPath } from "./constants";
+import { builders } from "ast-types";
 
 class NatsPlugin implements AmplicationPlugin {
   static moduleFile: Module | undefined;
@@ -129,13 +128,10 @@ class NatsPlugin implements AmplicationPlugin {
     const filePath = resolve(templatesPath, fileName);
     const file = await readFile(filePath, "utf8");
 
-    const astFile = parse(file.replaceAll("SERVICE_NAME", name));
-    removeTSVariableDeclares(astFile);
-
     const path = join(serverDirectories.messageBrokerDirectory, fileName);
 
     const modules = new ModuleMap(context.logger);
-    await modules.set({ code: print(astFile).code, path });
+    await modules.set({ code: file.replaceAll("SERVICE_NAME", name), path });
     return modules;
   }
   async beforeCreateServerAppModule(
@@ -146,7 +142,17 @@ class NatsPlugin implements AmplicationPlugin {
     if (!file) {
       throw new Error("Nats module file not found");
     }
-    await eventParams.modulesFiles.set(file);
+
+    const natsModuleId = builders.identifier("NatsModule");
+
+    const importArray = builders.arrayExpression([
+      natsModuleId,
+      ...eventParams.templateMapping["MODULES"].elements,
+    ]);
+
+    eventParams.templateMapping["MODULES"] = importArray;
+
+    eventParams.modulesFiles.set(file);
     return eventParams;
   }
 
