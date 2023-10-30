@@ -27,6 +27,7 @@ on:
           - "observability-opentelemetry"
           - "swagger-apibody"
           - "linter-eslint"
+          - "transport-grpc"
       publish:
         description: "Publish package"
         type: boolean

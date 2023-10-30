@@ -1,0 +1,38 @@
+{
+  "name": "@amplication/plugin-transport-grpc",
+  "version": "0.0.1",
+  "description": "add gRPC endpoints to your generated services",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "webpack --watch",
+    "build": "webpack",
+    "prebuild": "rimraf dist",
+    "format:write": "prettier --write \"**/*.{js,ts}\""
+  },
+  "author": "Mor Hagbi",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@amplication/code-gen-types": "2.0.16",
+    "@babel/parser": "^7.23.0",
+    "@babel/types": "^7.23.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.5",
+    "@typescript-eslint/parser": "^6.7.5",
+    "copy-webpack-plugin": "^11.0.0",
+    "eslint": "^8.51.0",
+    "jest-mock-extended": "^3.0.5",
+    "lodash": "^4.17.21",
+    "prettier": "^3.0.3",
+    "rimraf": "^5.0.5",
+    "ts-loader": "^9.5.0",
+    "typescript": "^5.2.2",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "webpack-node-externals": "^3.0.0"
+  },
+  "dependencies": {
+    "@amplication/code-gen-utils": "^0.0.6",
+    "pascal-case": "^3.1.2",
+    "prisma-schema-dsl-types": "^1.1.2",
+    "protobuf-dsl": "^0.0.1"
+  }
+}
