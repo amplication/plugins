@@ -8,12 +8,13 @@
     "dev": "webpack --watch",
     "build": "webpack",
     "prebuild": "rimraf dist",
+    "test": "jest",
     "format:write": "prettier --write \"**/*.{js,ts}\""
   },
   "author": "Amplication Contributor",
   "license": "Apache-2.0",
   "dependencies": {
-    "@amplication/code-gen-types": "^2.0.13",
+    "@amplication/code-gen-types": "^2.0.15",
     "@amplication/code-gen-utils": "^0.0.7",
     "lodash": "^4.17.21"
   },
