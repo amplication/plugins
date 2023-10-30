@@ -23,7 +23,7 @@ import {
 import { getPluginSettings, getTerraformDirectory } from "./utils";
 import { EventNames } from "@amplication/code-gen-types";
 import { resolve } from "path";
-import { kebabCase, set, snakeCase } from "lodash";
+import { camelCase, kebabCase, set, snakeCase } from "lodash";
 import { isPostgresSettings } from "./types";
 
 class TerraformAwsDatabaseRdsPlugin implements AmplicationPlugin {
@@ -121,7 +121,7 @@ class TerraformAwsDatabaseRdsPlugin implements AmplicationPlugin {
             pgMaximumStorageKey,
             String(settings.postgres.storage.maximum)
           )
-          .replaceAll(pgDatabaseNameKey, databaseName)
+          .replaceAll(pgDatabaseNameKey, camelCase(databaseName))
           .replaceAll(pgDatabaseUsernameKey, settings.postgres.username)
           .replaceAll(pgDatabasePortKey, String(settings.postgres.port))
           .replaceAll(
