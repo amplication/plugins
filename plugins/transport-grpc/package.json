@@ -1,7 +1,7 @@
 {
   "name": "@amplication/plugin-transport-grpc",
   "version": "0.0.1",
-  "description": "set grpc as protocol for Amplication build",
+  "description": "add gRPC endpoints to your generated services",
   "main": "dist/index.js",
   "scripts": {
     "dev": "webpack --watch",
@@ -10,9 +10,9 @@
     "format:write": "prettier --write \"**/*.{js,ts}\""
   },
   "author": "Mor Hagbi",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "devDependencies": {
-    "@amplication/code-gen-types": "2.0.13-beta.1",
+    "@amplication/code-gen-types": "2.0.14",
     "@babel/parser": "^7.23.0",
     "@babel/types": "^7.23.0",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
@@ -33,6 +33,6 @@
     "@amplication/code-gen-utils": "^0.0.6",
     "pascal-case": "^3.1.2",
     "prisma-schema-dsl-types": "^1.1.2",
-    "protobuf-dsl": "^0.0.1-beta.20"
+    "protobuf-dsl": "^0.0.1"
   }
 }
