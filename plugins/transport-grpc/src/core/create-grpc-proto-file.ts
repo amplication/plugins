@@ -1,5 +1,5 @@
 import {
-  CreateEntityControllerBaseParams,
+  CreateEntityGrpcControllerBaseParams,
   DsgContext,
   Entity,
   EntityField,
@@ -29,7 +29,7 @@ import { pascalCase } from "pascal-case";
 
 export async function createGrpcProtoFile(
   context: DsgContext,
-  eventParams: CreateEntityControllerBaseParams,
+  eventParams: CreateEntityGrpcControllerBaseParams,
   relatedEntities: EntityField[]
 ): Promise<Module> {
   const { entityName, templateMapping, entity } = eventParams;

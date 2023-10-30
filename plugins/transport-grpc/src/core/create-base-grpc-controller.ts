@@ -1,5 +1,5 @@
 import {
-  CreateEntityControllerBaseParams,
+  CreateEntityGrpcControllerBaseParams,
   DsgContext,
 } from "@amplication/code-gen-types";
 import { readFile } from "@amplication/code-gen-utils";
@@ -9,9 +9,7 @@ import {
   getClassMethodByIdName,
   interpolate,
 } from "../util/ast";
-import {
-  controllerMethodsIdsActionPairs,
-} from "./create-method-id-action-entity-map";
+import { controllerMethodsIdsActionPairs } from "./create-method-id-action-entity-map";
 import { join } from "path";
 import { templatesPath } from "../constants";
 
@@ -22,7 +20,7 @@ const controllerBaseGrpcPath = join(
 
 export async function createGrpcControllerBase(
   context: DsgContext,
-  eventParams: CreateEntityControllerBaseParams
+  eventParams: CreateEntityGrpcControllerBaseParams
 ): Promise<void> {
   try {
     const { controllerBaseId, templateMapping, entity } = eventParams;

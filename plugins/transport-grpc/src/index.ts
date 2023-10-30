@@ -1,9 +1,9 @@
 import {
   AmplicationPlugin,
   CreateConnectMicroservicesParams,
-  CreateEntityControllerGrpcBaseParams,
-  CreateEntityControllerGrpcParams,
-  CreateEntityControllerGrpcToManyRelationMethodsParams,
+  CreateEntityGrpcControllerBaseParams,
+  CreateEntityGrpcControllerParams,
+  CreateEntityGrpcControllerToManyRelationMethodsParams,
   CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
   DsgContext,
@@ -28,16 +28,16 @@ class TransportGrpcPlugin implements AmplicationPlugin {
       CreateServerDotEnv: {
         before: this.beforeCreateServerDotEnv,
       },
-      CreateEntityControllerGrpcBase: {
-        before: this.beforeCreateEntityControllerBaseGrpc,
-        after: this.afterCreateControllerGrpcBaseModules,
+      CreateEntityGrpcControllerBase: {
+        before: this.beforeCreateEntityGrpcControllerBase,
+        after: this.afterCreateGrpcControllerBaseModules,
       },
-      createEntityControllerGrpcToManyRelationMethods: {
+      createEntityGrpcControllerToManyRelationMethods: {
         before: this.beforeCreateEntityGrpcControllerToManyRelationMethods,
       },
 
-      CreateEntityControllerGrpc: {
-        before: this.beforeCreateEntityControllerGrpc,
+      CreateEntityGrpcController: {
+        before: this.beforeCreateEntityGrpcController,
       },
       CreateServerPackageJson: {
         before: this.beforeCreateServerPackageJson,
@@ -77,18 +77,18 @@ class TransportGrpcPlugin implements AmplicationPlugin {
     return eventParams;
   }
 
-  async beforeCreateEntityControllerGrpc(
+  async beforeCreateEntityGrpcController(
     context: DsgContext,
-    eventParams: CreateEntityControllerGrpcParams
+    eventParams: CreateEntityGrpcControllerParams
   ) {
     await createGrpcController(context, eventParams);
 
     return eventParams;
   }
 
-  async beforeCreateEntityControllerBaseGrpc(
+  async beforeCreateEntityGrpcControllerBase(
     context: DsgContext,
-    eventParams: CreateEntityControllerGrpcBaseParams
+    eventParams: CreateEntityGrpcControllerBaseParams
   ) {
     await createGrpcControllerBase(context, eventParams);
     return eventParams;
@@ -96,7 +96,7 @@ class TransportGrpcPlugin implements AmplicationPlugin {
 
   async beforeCreateEntityGrpcControllerToManyRelationMethods(
     context: DsgContext,
-    eventParams: CreateEntityControllerGrpcToManyRelationMethodsParams
+    eventParams: CreateEntityGrpcControllerToManyRelationMethodsParams
   ) {
     await createGrpcControllerToManyRelationMethods(context, eventParams);
     return eventParams;
@@ -124,9 +124,9 @@ class TransportGrpcPlugin implements AmplicationPlugin {
     return modules;
   }
 
-  async afterCreateControllerGrpcBaseModules(
+  async afterCreateGrpcControllerBaseModules(
     context: DsgContext,
-    eventParams: CreateEntityControllerGrpcBaseParams,
+    eventParams: CreateEntityGrpcControllerBaseParams,
     modules: ModuleMap
   ): Promise<ModuleMap> {
     const relatedEntities = eventParams.entity.fields.filter(
