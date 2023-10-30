@@ -3,7 +3,7 @@ import { mock } from "jest-mock-extended";
 import { name } from "../../package.json";
 import * as utils from "../utils"
 import RedisBrokerPlugin from "../index";
-
+import path from "path";
 
 describe("Testing afterCreateMessageBrokerService hook", () => {
     let plugin: RedisBrokerPlugin;
@@ -17,16 +17,16 @@ describe("Testing afterCreateMessageBrokerService hook", () => {
     });
     it("should correctly add the code for generating message broker module", async () => {
         const modules = await plugin.afterCreateMessageBrokerService(context, params);
-        const serviceModule = modules.get("/redis.producer.service.ts");
+        const serviceModule = modules.get(path.join("/","redis.producer.service.ts"));
         const serviceCode = utils.print(utils.parse(serviceModule.code)).code;
         const expectedServiceCode = utils.print(utils.parse(expectedService)).code;
-        const controllerModule = modules.get("/redis.controller.ts");
+        const controllerModule = modules.get(path.join("/","redis.controller.ts"));
         const controllerCode = utils.print(utils.parse(controllerModule.code)).code;
         const expectedControllerCode = utils.print(utils.parse(expectedController)).code;
-        const constsModule = modules.get("/constants.ts");
+        const constsModule = modules.get(path.join("/","constants.ts"));
         const constsCode = utils.print(utils.parse(constsModule.code)).code;
         const expectedConstsCode = utils.print(utils.parse(expectedConsts)).code;
-        const redisMessageModule = modules.get("/redisMessage.ts");
+        const redisMessageModule = modules.get(path.join("/","redisMessage.ts"));
         const redisMessageCode = utils.print(utils.parse(redisMessageModule.code)).code;
         expect(serviceCode).toStrictEqual(expectedServiceCode);
         expect(controllerCode).toStrictEqual(expectedControllerCode);
