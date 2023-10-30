@@ -37,7 +37,6 @@ class NatsPlugin implements AmplicationPlugin {
       CreateServerPackageJson: {
         before: this.beforeCreateServerPackageJson,
       },
-
       CreateMessageBroker: {
         before: this.beforeCreateBroker,
       },
@@ -104,8 +103,8 @@ class NatsPlugin implements AmplicationPlugin {
   ): CreateServerPackageJsonParams {
     const myValues = {
       dependencies: {
-        "@nestjs/microservices": "^9.3.10",
-        nats: "^2.13.1",
+        "@nestjs/microservices": "10.2.7",
+        nats: "2.17.0",
       },
     };
     eventParams.updateProperties.forEach((updateProperty) =>
