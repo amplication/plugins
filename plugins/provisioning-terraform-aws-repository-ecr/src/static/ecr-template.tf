@@ -7,6 +7,8 @@ module "${{ MODULE_NAME }}" {
 
   repository_force_delete = ${{ CONFIGURATION_FORCE_DELETE }}
 
+  create_lifecycle_policy = false
+
   repository_read_access_arns       = []
   repository_read_write_access_arns = []
 }
