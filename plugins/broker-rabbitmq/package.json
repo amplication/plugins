@@ -25,7 +25,6 @@
     "prettier": "^2.8.7",
     "rimraf": "^5.0.5",
     "ts-loader": "^9.5.0",
-    "@nestjs/microservices": "^8.2.3",
     "@types/jest": "^26.0.19",
     "@types/lodash": "^4.14.185",
     "@types/mocha": "^10.0.2",
