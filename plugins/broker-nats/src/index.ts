@@ -179,11 +179,11 @@ class NatsPlugin implements AmplicationPlugin {
   ): Promise<ModuleMap> {
     const { serverDirectories } = context;
     const { messageBrokerDirectory } = serverDirectories;
-    const fileName = "nats.service.ts";
-    const filePath = resolve(staticsPath, fileName);
+    const serviceFileName = "nats.service.ts";
+    const serviceFilePath = resolve(staticsPath, serviceFileName);
 
-    const file = await readFile(filePath, "utf8");
-    const path = join(messageBrokerDirectory, fileName);
+    const serviceFile = await readFile(serviceFilePath, "utf8");
+    const servicePath = join(messageBrokerDirectory, serviceFileName);
     const controllerFileName = "nats.controller.ts";
     const controllerFilePath = resolve(staticsPath, controllerFileName);
 
@@ -191,7 +191,7 @@ class NatsPlugin implements AmplicationPlugin {
     const controllerPath = join(messageBrokerDirectory, controllerFileName);
 
     const modules = new ModuleMap(context.logger);
-    await modules.set({ code: file, path });
+    await modules.set({ code: serviceFile, path: servicePath });
     await modules.set({
       code: controllerFile,
       path: controllerPath,
