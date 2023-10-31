@@ -9,6 +9,7 @@ name: ${{ SERVICE_NAME }}-deploy-to-aws-ecs
 concurrency: ${{ github.ref }}
 
 on:
+  workflow_dispatch: {}
   pull_request:
     types: [closed]
 
