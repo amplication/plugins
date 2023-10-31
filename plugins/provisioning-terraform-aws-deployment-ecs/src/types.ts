@@ -1,8 +1,6 @@
 export interface Settings {
-  global: {
-    name: string;
-  };
   cluster: {
+    name: string;
     capacity_provider: {
       type: string;
       fargate?: {
@@ -13,6 +11,7 @@ export interface Settings {
     };
   };
   service: {
+    name: string;
     container_definitions: {
       image: string;
       port: number;

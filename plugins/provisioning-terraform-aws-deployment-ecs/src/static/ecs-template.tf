@@ -2,7 +2,7 @@ module "${{ ECS_CLUSTER_MODULE_NAME }}" {
   source  = "terraform-aws-modules/ecs/aws//modules/cluster"
   version = "5.2.2"
 
-  cluster_name = "${{ NAME }}"
+  cluster_name = "${{ CLUSTER_NAME }}"
 
   ${{ CLUSTER_CAPACITY_PROVIDER }}
 }
@@ -11,14 +11,14 @@ module "${{ ECS_SERVICE_MODULE_NAME }}" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
   version = "5.2.2"
 
-  name        = "${{ NAME }}"
+  name        = "${{ SERVICE_NAME }}"
   cluster_arn = module.${{ ECS_CLUSTER_MODULE_NAME }}.arn
 
   cpu    = 1024
   memory = 4096
 
   container_definitions = {
-    ${{ NAME }} = {
+    ${{ SERVICE_NAME_UNDERSCORE }} = {
       essential = true
       cpu       = 512
       memory    = 1024
@@ -26,7 +26,7 @@ module "${{ ECS_SERVICE_MODULE_NAME }}" {
 
       port_mappings = [
         {
-          name          = "${{ NAME }}"
+          name          = "${{ SERVICE_NAME }}"
           containerPort = ${{ SERVICE_CONTAINER_PORT }}
           hostPort      = ${{ SERVICE_CONTAINER_PORT }}
           protocol      = "tcp"
@@ -41,7 +41,7 @@ module "${{ ECS_SERVICE_MODULE_NAME }}" {
         logDriver = "awslogs"
         options = {
           awslogs-create-group = "true"
-          awslogs-group = "/ecs/${{ NAME }}-family"
+          awslogs-group = "/ecs/${{ SERVICE_NAME }}"
           awslogs-region = local.region
           awslogs-stream-prefix = "ecs"
         }
@@ -51,22 +51,10 @@ module "${{ ECS_SERVICE_MODULE_NAME }}" {
     }
   }
 
-  service_connect_configuration = {
-    namespace = aws_service_discovery_http_namespace.${{ NAME_UNDERSCORE }}.arn
-    service = {
-      client_alias = {
-        port     = ${{ SERVICE_CONTAINER_PORT }}
-        dns_name = "${{ NAME }}"
-      }
-      port_name      = "${{ NAME }}"
-      discovery_name = "${{ NAME }}"
-    }
-  }
-
   load_balancer = {
     service = {
       target_group_arn = element(module.${{ ECS_ALB_MODULE_NAME }}.target_group_arns, 0)
-      container_name   = "${{ NAME }}"
+      container_name   = "${{ SERVICE_NAME }}"
       container_port   = ${{ SERVICE_CONTAINER_PORT }}
     }
   }
@@ -91,15 +79,15 @@ module "${{ ECS_SERVICE_MODULE_NAME }}" {
   }
 }
 
-resource "aws_service_discovery_http_namespace" "${{ NAME_UNDERSCORE }}" {
-  name = "${{ NAME }}"
+resource "aws_service_discovery_http_namespace" "${{ CLUSTER_NAME_UNDERSCORE }}" {
+  name = "${{ CLUSTER_NAME }}"
 }
 
 module "${{ ECS_SG_MODULE_NAME }}" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "5.1.0"
 
-  name        = "${{ NAME }}"
+  name        = "${{ SERVICE_NAME }}"
   vpc_id      = module.vpc.vpc_id
 
   ingress_rules       = ["http-80-tcp"]
@@ -113,7 +101,7 @@ module "${{ ECS_ALB_MODULE_NAME }}" {
   source  = "terraform-aws-modules/alb/aws"
   version = "8.7.0"
 
-  name = "${{ NAME }}"
+  name = "${{ SERVICE_NAME }}"
 
   load_balancer_type = "application"
 
@@ -131,10 +119,22 @@ module "${{ ECS_ALB_MODULE_NAME }}" {
 
   target_groups = [
     {
-      name             = "${{ NAME }}-${{ NAME }}"
+      name             = "${{ SERVICE_NAME }}"
       backend_protocol = "HTTP"
       backend_port     = ${{ SERVICE_CONTAINER_PORT }}
       target_type      = "ip"
+
+      health_check = {
+        enabled             = true
+        interval            = 30
+        path                = "/api/_health/live"
+        port                = "traffic-port"
+        healthy_threshold   = 3
+        unhealthy_threshold = 3
+        timeout             = 6
+        protocol            = "HTTP"
+        matcher             = "200-299"
+      }
     },
   ]
 }

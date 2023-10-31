@@ -6,8 +6,8 @@ import type {
   ModuleMap,
 } from "@amplication/code-gen-types";
 import {
-  globalNameKey,
-  globalNameUnderscoreKey,
+  clusterHyphenNameKey,
+  clusterUnderscoreNameKey,
   moduleNameEcsClusterKey,
   moduleNameEcsServiceKey,
   moduleNameEcsAlbKey,
@@ -15,6 +15,8 @@ import {
   clusterCapacityProviderKey,
   serviceContainerImage,
   serviceContainerPort,
+  serviceHyphenNameKey,
+  serviceUnderscoreNameKey,
 } from "./constants";
 import { EventNames } from "@amplication/code-gen-types";
 import { resolve } from "path";
@@ -61,9 +63,12 @@ class TerraformAwsDeploymentEcsPlugin implements AmplicationPlugin {
     const templateFileName: string = "ecs-template.tf";
     const fileNamePrefix: string = "ecs-";
     const fileNameSuffix: string = ".tf";
-    const name: string = settings.global.name
-      ? settings.global.name
+    const ecsServiceName: string = settings.service.name
+      ? settings.service.name
       : serviceName;
+    const ecsClusterName: string = settings.service.name
+    ? settings.cluster.name
+    : serviceName;
 
     const staticPath = resolve(__dirname, "./static");
     const staticFiles = await context.utils.importStaticModules(
@@ -92,21 +97,25 @@ class TerraformAwsDeploymentEcsPlugin implements AmplicationPlugin {
       }
     }
 
-    const underscoreName: string = snakeCase(name);
-    const hyphenName: string = kebabCase(name);
+    const hyphenServiceName: string = kebabCase(ecsServiceName);
+    const underscoreServiceName: string = snakeCase(ecsServiceName);
+    const hyphenClusterName: string = kebabCase(ecsClusterName);
+    const underscoreClusterName: string = snakeCase(ecsClusterName);
 
     staticFiles.replaceModulesPath((path) =>
-      path.replace(templateFileName, fileNamePrefix + name + fileNameSuffix)
+      path.replace(templateFileName, fileNamePrefix + kebabCase(serviceName) + fileNameSuffix)
     );
 
     staticFiles.replaceModulesCode((code) =>
       code
-        .replaceAll(globalNameKey, hyphenName)
-        .replaceAll(globalNameUnderscoreKey, underscoreName)
-        .replaceAll(moduleNameEcsClusterKey, "ecs_cluster_" + underscoreName)
-        .replaceAll(moduleNameEcsServiceKey, "ecs_service_" + underscoreName)
-        .replaceAll(moduleNameEcsAlbKey, "ecs_alb_" + underscoreName)
-        .replaceAll(moduleNameEcsSgKey, "ecs_alb_sg_" + underscoreName)
+        .replaceAll(clusterHyphenNameKey, hyphenClusterName)
+        .replaceAll(clusterUnderscoreNameKey, underscoreClusterName)
+        .replaceAll(serviceHyphenNameKey, hyphenServiceName)
+        .replaceAll(serviceUnderscoreNameKey, underscoreServiceName)
+        .replaceAll(moduleNameEcsClusterKey, "ecs_cluster_" + underscoreClusterName)
+        .replaceAll(moduleNameEcsServiceKey, "ecs_service_" + underscoreServiceName)
+        .replaceAll(moduleNameEcsAlbKey, "ecs_alb_" + underscoreServiceName)
+        .replaceAll(moduleNameEcsSgKey, "ecs_alb_sg_" + underscoreServiceName)
         .replaceAll(clusterCapacityProviderKey, capacityProvider)
         .replaceAll(
           serviceContainerImage,
