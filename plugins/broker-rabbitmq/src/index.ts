@@ -28,7 +28,7 @@ import {
   getFunctionDeclarationById,
   importNames,
   interpolate,
-  parse
+  parse,
 } from "./util/ast";
 import { pascalCase } from "pascal-case";
 import { getPluginSettings } from "./utils";
@@ -73,8 +73,8 @@ class RabbitMQPlugin implements AmplicationPlugin {
         before: this.beforeCreateConnectMicroservices,
       },
       CreateMessageBrokerTopicsEnum: {
-        after: this.afterCreateMessageBrokerTopicsEnum
-      }
+        after: this.afterCreateMessageBrokerTopicsEnum,
+      },
     };
   }
 
@@ -84,30 +84,45 @@ class RabbitMQPlugin implements AmplicationPlugin {
     modules: ModuleMap
   ): Promise<ModuleMap> {
     const { serverDirectories } = context;
-    const topicsPath = join(serverDirectories.messageBrokerDirectory, "topics.ts");
+    const topicsPath = join(
+      serverDirectories.messageBrokerDirectory,
+      "topics.ts"
+    );
     const topicsModule = modules.get(topicsPath);
-    if(!topicsModule) {
-      throw new Error("Failed to find the topics.ts file for the message broker topics enum");
+    if (!topicsModule) {
+      throw new Error(
+        "Failed to find the topics.ts file for the message broker topics enum"
+      );
     }
 
     const topicsFile = parse(topicsModule.code);
     const topicEnumNames: string[] = [];
     topicsFile.program.body.forEach((stmt) => {
-      if(stmt.type === "ExportNamedDeclaration") {
+      if (stmt.type === "ExportNamedDeclaration") {
         //@ts-ignore
-        if(!stmt.declaration || !stmt.declaration.id || !stmt.declaration.id.name) {
-          throw new Error("Couldn't find the name of an enum in the message broker topics file");
+        if (
+          !stmt.declaration ||
+          !stmt.declaration.id ||
+          !stmt.declaration.id.name
+        ) {
+          throw new Error(
+            "Couldn't find the name of an enum in the message broker topics file"
+          );
         }
         //@ts-ignore
         topicEnumNames.push(stmt.declaration.id.name);
       }
-    })
-    const umbrellaTypeDeclaration = allMessageBrokerTopicsTypeDeclaration(topicEnumNames);
-    topicsFile.program.body.push(builders.emptyStatement(), umbrellaTypeDeclaration);
+    });
+    const umbrellaTypeDeclaration =
+      allMessageBrokerTopicsTypeDeclaration(topicEnumNames);
+    topicsFile.program.body.push(
+      builders.emptyStatement(),
+      umbrellaTypeDeclaration
+    );
 
     await modules.set({
       code: print(topicsFile).code,
-      path: topicsPath
+      path: topicsPath,
     });
     return modules;
   }
@@ -117,7 +132,10 @@ class RabbitMQPlugin implements AmplicationPlugin {
     eventParams: CreateMessageBrokerClientOptionsFactoryParams
   ): Promise<ModuleMap> {
     const { serverDirectories } = context;
-    const filePath = resolve(staticDirectory, "generateRabbitMQClientOptions.ts");
+    const filePath = resolve(
+      staticDirectory,
+      "generateRabbitMQClientOptions.ts"
+    );
     const file = await readFile(filePath);
     const generateFileName = "generateRabbitMQClientOptions.ts";
 
@@ -126,7 +144,10 @@ class RabbitMQPlugin implements AmplicationPlugin {
       generateFileName
     );
 
-    const testFilePath = resolve(staticDirectory, "generateRabbitMQClientOptions.testfile.ts");
+    const testFilePath = resolve(
+      staticDirectory,
+      "generateRabbitMQClientOptions.testfile.ts"
+    );
     const testFile = await readFile(testFilePath);
     const testGenerateFileName = "generateRabbitMQClientOptions.spec.ts";
 
@@ -200,9 +221,9 @@ class RabbitMQPlugin implements AmplicationPlugin {
   ): CreateServerPackageJsonParams {
     const myValues = {
       dependencies: {
-        "@nestjs/microservices": "8.2.3",
+        "@nestjs/microservices": "10.2.7",
         "amqp-connection-manager": "^4.1.14",
-        "amqplib": "^0.10.3"
+        amqplib: "^0.10.3",
       },
     };
 
@@ -235,13 +256,18 @@ class RabbitMQPlugin implements AmplicationPlugin {
       `RabbitMQMessage.ts`
     );
     const rabbitmqMessageFile = await readFile(rabbitmqMessageFilePath);
-    const rabbitmqMessagePath = join(messageBrokerDirectory, `RabbitMQMessage.ts`);
+    const rabbitmqMessagePath = join(
+      messageBrokerDirectory,
+      `RabbitMQMessage.ts`
+    );
 
     const rabbitmqMessageHeaderFilePath = resolve(
       `${staticDirectory}/contracts`,
       `RabbitMQMessageHeaders.ts`
     );
-    const rabbitmqMessageHeaderFile = await readFile(rabbitmqMessageHeaderFilePath);
+    const rabbitmqMessageHeaderFile = await readFile(
+      rabbitmqMessageHeaderFilePath
+    );
     const rabbitmqMessageHeaderPath = join(
       messageBrokerDirectory,
       `RabbitMQMessageHeaders.ts`
@@ -265,7 +291,6 @@ class RabbitMQPlugin implements AmplicationPlugin {
     dsgContext: DsgContext,
     eventParams: CreateServerDockerComposeDevParams
   ): CreateServerDockerComposeDevParams {
-
     const { password, user } = getPluginSettings(
       dsgContext.pluginInstallations
     );
@@ -283,7 +308,7 @@ class RabbitMQPlugin implements AmplicationPlugin {
           },
           ports: [
             `${RABBITMQ_PORT}:${RABBITMQ_PORT}`,
-            `${RABBITMQ_UI_PORT}:${RABBITMQ_UI_PORT}`
+            `${RABBITMQ_UI_PORT}:${RABBITMQ_UI_PORT}`,
           ],
         },
       },
@@ -301,7 +326,9 @@ class RabbitMQPlugin implements AmplicationPlugin {
       throw new Error("RabbitMQ module file not found");
     }
     const rabbitMQModuleName = "RabbitMQModule";
-    appendImports(eventParams.template, [rabbitModuleImport(rabbitMQModuleName)]);
+    appendImports(eventParams.template, [
+      rabbitModuleImport(rabbitMQModuleName),
+    ]);
 
     const rabbitmqModuleId = builders.identifier(rabbitMQModuleName);
 
@@ -434,7 +461,8 @@ class RabbitMQPlugin implements AmplicationPlugin {
     appExpression.typeArguments =
       typeArguments as unknown as namedTypes.TypeParameterInstantiation;
 
-    const rabbitmqServiceExpression = builders.expressionStatement(appExpression);
+    const rabbitmqServiceExpression =
+      builders.expressionStatement(appExpression);
 
     const functionDeclaration = getFunctionDeclarationById(
       template,
@@ -447,28 +475,33 @@ class RabbitMQPlugin implements AmplicationPlugin {
   }
 }
 
-const rabbitModuleImport = (rabbitMqModuleName: string): namedTypes.ImportDeclaration => {
+const rabbitModuleImport = (
+  rabbitMqModuleName: string
+): namedTypes.ImportDeclaration => {
   return builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(rabbitMqModuleName))],
     builders.stringLiteral("./rabbitmq/rabbitmq.module")
   );
-}
+};
 
 const allMessageBrokerTopicsTypeDeclaration = (topicEnumNames: string[]) => {
-  const enumTypes: namedTypes.TSTypeReference[] = topicEnumNames.map((enumName) =>
-    builders.tsTypeReference(builders.identifier(enumName))
-  )
+  const enumTypes: namedTypes.TSTypeReference[] = topicEnumNames.map(
+    (enumName) => builders.tsTypeReference(builders.identifier(enumName))
+  );
   const declaration = (rightSide: any) => {
-    return builders.exportDeclaration(false, builders.tsTypeAliasDeclaration(
-      builders.identifier("AllMessageBrokerTopics"),
-      rightSide
-    ))
-  }
-  if(enumTypes.length === 0) {
-    return declaration(builders.tsNeverKeyword())
+    return builders.exportDeclaration(
+      false,
+      builders.tsTypeAliasDeclaration(
+        builders.identifier("AllMessageBrokerTopics"),
+        rightSide
+      )
+    );
+  };
+  if (enumTypes.length === 0) {
+    return declaration(builders.tsNeverKeyword());
   } else {
-    return declaration(builders.tsUnionType(enumTypes))
+    return declaration(builders.tsUnionType(enumTypes));
   }
-}
+};
 
 export default RabbitMQPlugin;
