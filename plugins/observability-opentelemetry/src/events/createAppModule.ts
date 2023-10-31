@@ -68,7 +68,7 @@ const generateImports = (): namedTypes.ImportDeclaration[] => {
       [OTLP_TRACE_EXPORTER],
       "@opentelemetry/exporter-trace-otlp-grpc"
     ),
-    importNames([BATCH_SPAN_PROCESSOR], "@opentelemetry/sdk-trace-base"),
+    importNames([BATCH_SPAN_PROCESSOR], "@opentelemetry/sdk-trace-node"),
   ];
 };
 
