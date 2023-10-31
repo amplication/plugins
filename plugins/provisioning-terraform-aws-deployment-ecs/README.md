@@ -2,11 +2,10 @@
 
 [![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-provisioning-terraform-aws-deployment-ecs)](https://www.npmjs.com/package/@amplication/plugin-provisioning-terraform-aws-deployment-ecs)
 
-A short description of the plugin and its actions.
-
+Adds terraform code for provisioning Amazon Web Services Elastic Container Service (ECS) as an addition to the 'core' terraform code base.
 ## Purpose
 
-What is the purpose of this plugin and what exactly does it do.
+Adds terraform code for provisioning Amazon Web Services Elastic Container Service (ECS) as an addition to the 'core' terraform code base.
 
 ## Configuration
 
