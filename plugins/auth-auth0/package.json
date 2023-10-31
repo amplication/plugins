@@ -25,10 +25,12 @@
     "@types/normalize-path": "^3.0.1",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
     "@typescript-eslint/parser": "^6.7.5",
+    "auth0": "^4.1.0",
     "copy-webpack-plugin": "^11.0.0",
     "eslint": "^8.51.0",
     "jest-mock-extended": "^3.0.5",
     "lodash": "^4.17.21",
+    "normalize-path": "^3.0.0",
     "prettier": "^3.0.3",
     "rimraf": "^5.0.5",
     "ts-jest": "^29.1.1",
@@ -38,7 +40,6 @@
     "typescript": "^5.2.2",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
-    "webpack-node-externals": "^3.0.0",
-    "normalize-path": "^3.0.0"
+    "webpack-node-externals": "^3.0.0"
   }
 }
