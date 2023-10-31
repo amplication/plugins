@@ -18,7 +18,7 @@ module "${{ ECS_SERVICE_MODULE_NAME }}" {
   memory = 4096
 
   container_definitions = {
-    ${{ SERVICE_NAME_UNDERSCORE }} = {
+    ("${{ SERVICE_NAME }}") = {
       essential = true
       cpu       = 512
       memory    = 1024
