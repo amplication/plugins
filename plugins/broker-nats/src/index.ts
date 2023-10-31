@@ -188,7 +188,7 @@ class NatsPlugin implements AmplicationPlugin {
     const controllerFilePath = resolve(staticsPath, controllerFileName);
 
     const controllerFile = await readFile(controllerFilePath, "utf8");
-    const controllerPath = join(messageBrokerDirectory, fileName);
+    const controllerPath = join(messageBrokerDirectory, controllerFileName);
 
     const modules = new ModuleMap(context.logger);
     await modules.set({ code: file, path });
