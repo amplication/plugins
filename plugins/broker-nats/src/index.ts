@@ -59,7 +59,7 @@ class NatsPlugin implements AmplicationPlugin {
 
   beforeCrateServerDockerCompose(
     context: DsgContext,
-    eventParams: CreateServerDockerComposeParams,
+    eventParams: CreateServerDockerComposeParams
   ): CreateServerDockerComposeParams {
     const NATS_NAME = "nats";
     const NETWORK = "internal";
@@ -84,7 +84,7 @@ class NatsPlugin implements AmplicationPlugin {
 
   beforeCreateServerDotEnv(
     context: DsgContext,
-    eventParams: CreateServerDotEnvParams,
+    eventParams: CreateServerDotEnvParams
   ): CreateServerDotEnvParams {
     const vars = {
       NATS_SERVERS: `localhost:${NATS_PORT}`,
@@ -98,7 +98,7 @@ class NatsPlugin implements AmplicationPlugin {
 
   beforeCreateServerPackageJson(
     context: DsgContext,
-    eventParams: CreateServerPackageJsonParams,
+    eventParams: CreateServerPackageJsonParams
   ): CreateServerPackageJsonParams {
     const myValues = {
       dependencies: {
@@ -107,7 +107,7 @@ class NatsPlugin implements AmplicationPlugin {
       },
     };
     eventParams.updateProperties.forEach((updateProperty) =>
-      merge(updateProperty, myValues),
+      merge(updateProperty, myValues)
     );
 
     return eventParams;
@@ -115,7 +115,7 @@ class NatsPlugin implements AmplicationPlugin {
 
   async afterCreateMessageBrokerClientOptionsFactory(
     context: DsgContext,
-    eventParams: CreateMessageBrokerClientOptionsFactoryParams,
+    eventParams: CreateMessageBrokerClientOptionsFactoryParams
   ): Promise<ModuleMap> {
     const { serverDirectories, resourceInfo } = context;
 
@@ -136,7 +136,7 @@ class NatsPlugin implements AmplicationPlugin {
   }
   async beforeCreateServerAppModule(
     dsgContext: DsgContext,
-    eventParams: CreateServerAppModuleParams,
+    eventParams: CreateServerAppModuleParams
   ) {
     const file = NatsPlugin.moduleFile;
     if (!file) {
@@ -158,7 +158,7 @@ class NatsPlugin implements AmplicationPlugin {
 
   async afterCreateMessageBrokerServiceBase(
     context: DsgContext,
-    eventParams: CreateMessageBrokerServiceBaseParams,
+    eventParams: CreateMessageBrokerServiceBaseParams
   ): Promise<ModuleMap> {
     const { serverDirectories } = context;
     const { messageBrokerDirectory } = serverDirectories;
@@ -175,23 +175,23 @@ class NatsPlugin implements AmplicationPlugin {
 
   async afterCreateMessageBrokerService(
     context: DsgContext,
-    eventParams: CreateMessageBrokerServiceParams,
+    eventParams: CreateMessageBrokerServiceParams
   ): Promise<ModuleMap> {
     const { serverDirectories } = context;
     const { messageBrokerDirectory } = serverDirectories;
-    const fileName = "nats.service.ts";
-    const filePath = resolve(staticsPath, fileName);
+    const serviceFileName = "nats.service.ts";
+    const serviceFilePath = resolve(staticsPath, serviceFileName);
 
-    const file = await readFile(filePath, "utf8");
-    const path = join(messageBrokerDirectory, fileName);
+    const serviceFile = await readFile(serviceFilePath, "utf8");
+    const servicePath = join(messageBrokerDirectory, serviceFileName);
     const controllerFileName = "nats.controller.ts";
     const controllerFilePath = resolve(staticsPath, controllerFileName);
 
     const controllerFile = await readFile(controllerFilePath, "utf8");
-    const controllerPath = join(messageBrokerDirectory, fileName);
+    const controllerPath = join(messageBrokerDirectory, controllerFileName);
 
     const modules = new ModuleMap(context.logger);
-    await modules.set({ code: file, path });
+    await modules.set({ code: serviceFile, path: servicePath });
     await modules.set({
       code: controllerFile,
       path: controllerPath,
@@ -201,18 +201,18 @@ class NatsPlugin implements AmplicationPlugin {
 
   beforeCreateBroker(
     dsgContext: DsgContext,
-    eventParams: CreateMessageBrokerParams,
+    eventParams: CreateMessageBrokerParams
   ): CreateMessageBrokerParams {
     dsgContext.serverDirectories.messageBrokerDirectory = join(
       dsgContext.serverDirectories.srcDirectory,
-      "nats",
+      "nats"
     );
     return eventParams;
   }
 
   async afterCreateMessageBrokerNestJSModule(
     context: DsgContext,
-    eventParams: CreateMessageBrokerNestJSModuleParams,
+    eventParams: CreateMessageBrokerNestJSModuleParams
   ): Promise<ModuleMap> {
     const fileName = "nats.module.ts";
     const filePath = resolve(staticsPath, fileName);
