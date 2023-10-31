@@ -30,6 +30,9 @@ class NatsPlugin implements AmplicationPlugin {
       CreateServerDockerCompose: {
         before: this.beforeCrateServerDockerCompose,
       },
+      CreateServerDockerComposeDev: {
+        before: this.beforeCrateServerDockerCompose,
+      },
       CreateServerDotEnv: {
         before: this.beforeCreateServerDotEnv,
       },
