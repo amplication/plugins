@@ -99,18 +99,16 @@ class RabbitMQPlugin implements AmplicationPlugin {
     const topicEnumNames: string[] = [];
     topicsFile.program.body.forEach((stmt) => {
       if (stmt.type === "ExportNamedDeclaration") {
-        //@ts-ignore
         if (
-          !stmt.declaration ||
-          !stmt.declaration.id ||
-          !stmt.declaration.id.name
+          stmt.declaration?.type === "TSEnumDeclaration" &&
+          stmt.declaration.id.name
         ) {
+          topicEnumNames.push(stmt.declaration.id.name);
+        } else {
           throw new Error(
             "Couldn't find the name of an enum in the message broker topics file"
           );
         }
-        //@ts-ignore
-        topicEnumNames.push(stmt.declaration.id.name);
       }
     });
     const umbrellaTypeDeclaration =
