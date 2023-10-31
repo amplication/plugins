@@ -2,11 +2,11 @@
 
 [![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-provisioning-terraform-aws-database-rds)](https://www.npmjs.com/package/@amplication/plugin-provisioning-terraform-aws-database-rds)
 
-A short description of the plugin and its actions.
+Adds terraform code for provisioning Amazon Web Services Relational Database Service (RDS) as an addition to the 'core' terraform code base.
 
 ## Purpose
 
-What is the purpose of this plugin and what exactly does it do.
+Adds terraform code for provisioning Amazon Web Services Relational Database Service (RDS) as an addition to the 'core' terraform code base.
 
 ## Configuration
 
