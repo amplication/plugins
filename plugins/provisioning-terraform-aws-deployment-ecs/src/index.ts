@@ -66,7 +66,7 @@ class TerraformAwsDeploymentEcsPlugin implements AmplicationPlugin {
     const ecsServiceName: string = settings.service.name
       ? settings.service.name
       : serviceName;
-    const ecsClusterName: string = settings.service.name
+    const ecsClusterName: string = settings.cluster.name
     ? settings.cluster.name
     : serviceName;
 
