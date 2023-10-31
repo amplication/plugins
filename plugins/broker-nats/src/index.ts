@@ -14,12 +14,11 @@ import {
   Module,
   ModuleMap,
 } from "@amplication/code-gen-types";
-import { parse, removeTSVariableDeclares } from "@amplication/code-gen-utils";
 import { readFile } from "fs/promises";
 import { merge } from "lodash";
 import { join, resolve } from "path";
-import { print } from "recast";
 import { NATS_PORT, staticsPath, templatesPath } from "./constants";
+import { builders } from "ast-types";
 
 class NatsPlugin implements AmplicationPlugin {
   static moduleFile: Module | undefined;
@@ -37,7 +36,6 @@ class NatsPlugin implements AmplicationPlugin {
       CreateServerPackageJson: {
         before: this.beforeCreateServerPackageJson,
       },
-
       CreateMessageBroker: {
         before: this.beforeCreateBroker,
       },
@@ -61,7 +59,7 @@ class NatsPlugin implements AmplicationPlugin {
 
   beforeCrateServerDockerCompose(
     context: DsgContext,
-    eventParams: CreateServerDockerComposeParams
+    eventParams: CreateServerDockerComposeParams,
   ): CreateServerDockerComposeParams {
     const NATS_NAME = "nats";
     const NETWORK = "internal";
@@ -86,7 +84,7 @@ class NatsPlugin implements AmplicationPlugin {
 
   beforeCreateServerDotEnv(
     context: DsgContext,
-    eventParams: CreateServerDotEnvParams
+    eventParams: CreateServerDotEnvParams,
   ): CreateServerDotEnvParams {
     const vars = {
       NATS_SERVERS: `localhost:${NATS_PORT}`,
@@ -100,16 +98,16 @@ class NatsPlugin implements AmplicationPlugin {
 
   beforeCreateServerPackageJson(
     context: DsgContext,
-    eventParams: CreateServerPackageJsonParams
+    eventParams: CreateServerPackageJsonParams,
   ): CreateServerPackageJsonParams {
     const myValues = {
       dependencies: {
-        "@nestjs/microservices": "^9.3.10",
-        nats: "^2.13.1",
+        "@nestjs/microservices": "10.2.7",
+        nats: "2.17.0",
       },
     };
     eventParams.updateProperties.forEach((updateProperty) =>
-      merge(updateProperty, myValues)
+      merge(updateProperty, myValues),
     );
 
     return eventParams;
@@ -117,7 +115,7 @@ class NatsPlugin implements AmplicationPlugin {
 
   async afterCreateMessageBrokerClientOptionsFactory(
     context: DsgContext,
-    eventParams: CreateMessageBrokerClientOptionsFactoryParams
+    eventParams: CreateMessageBrokerClientOptionsFactoryParams,
   ): Promise<ModuleMap> {
     const { serverDirectories, resourceInfo } = context;
 
@@ -130,30 +128,37 @@ class NatsPlugin implements AmplicationPlugin {
     const filePath = resolve(templatesPath, fileName);
     const file = await readFile(filePath, "utf8");
 
-    const astFile = parse(file.replaceAll("SERVICE_NAME", name));
-    removeTSVariableDeclares(astFile);
-
     const path = join(serverDirectories.messageBrokerDirectory, fileName);
 
     const modules = new ModuleMap(context.logger);
-    await modules.set({ code: print(astFile).code, path });
+    await modules.set({ code: file.replaceAll("SERVICE_NAME", name), path });
     return modules;
   }
   async beforeCreateServerAppModule(
     dsgContext: DsgContext,
-    eventParams: CreateServerAppModuleParams
+    eventParams: CreateServerAppModuleParams,
   ) {
     const file = NatsPlugin.moduleFile;
     if (!file) {
       throw new Error("Nats module file not found");
     }
-    await eventParams.modulesFiles.set(file);
+
+    const natsModuleId = builders.identifier("NatsModule");
+
+    const importArray = builders.arrayExpression([
+      natsModuleId,
+      ...eventParams.templateMapping["MODULES"].elements,
+    ]);
+
+    eventParams.templateMapping["MODULES"] = importArray;
+
+    eventParams.modulesFiles.set(file);
     return eventParams;
   }
 
   async afterCreateMessageBrokerServiceBase(
     context: DsgContext,
-    eventParams: CreateMessageBrokerServiceBaseParams
+    eventParams: CreateMessageBrokerServiceBaseParams,
   ): Promise<ModuleMap> {
     const { serverDirectories } = context;
     const { messageBrokerDirectory } = serverDirectories;
@@ -170,7 +175,7 @@ class NatsPlugin implements AmplicationPlugin {
 
   async afterCreateMessageBrokerService(
     context: DsgContext,
-    eventParams: CreateMessageBrokerServiceParams
+    eventParams: CreateMessageBrokerServiceParams,
   ): Promise<ModuleMap> {
     const { serverDirectories } = context;
     const { messageBrokerDirectory } = serverDirectories;
@@ -196,18 +201,18 @@ class NatsPlugin implements AmplicationPlugin {
 
   beforeCreateBroker(
     dsgContext: DsgContext,
-    eventParams: CreateMessageBrokerParams
+    eventParams: CreateMessageBrokerParams,
   ): CreateMessageBrokerParams {
     dsgContext.serverDirectories.messageBrokerDirectory = join(
       dsgContext.serverDirectories.srcDirectory,
-      "nats"
+      "nats",
     );
     return eventParams;
   }
 
   async afterCreateMessageBrokerNestJSModule(
     context: DsgContext,
-    eventParams: CreateMessageBrokerNestJSModuleParams
+    eventParams: CreateMessageBrokerNestJSModuleParams,
   ): Promise<ModuleMap> {
     const fileName = "nats.module.ts";
     const filePath = resolve(staticsPath, fileName);
