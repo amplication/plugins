@@ -1,9 +1,10 @@
 {
   "name": "@amplication/plugin-broker-rabbitmq",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Use a RabbitMQ message broker to communicate between services generated with Amplication",
   "main": "dist/index.js",
   "scripts": {
+    "prepublishOnly": "npm run build",
     "dev": "webpack --watch",
     "build": "webpack",
     "prebuild": "rimraf dist",
@@ -13,39 +14,44 @@
   "keywords": [],
   "author": "Meyazhagan",
   "license": "Apache-2.0",
+  "dependencies": {
+    "@amplication/code-gen-types": "^2.0.15",
+    "@amplication/code-gen-utils": "^0.0.7",
+    "lodash": "^4.17.21",
+    "pascal-case": "^3.1.2"
+  },
   "devDependencies": {
-    "@amplication/code-gen-types": "^2.0.12",
-    "@amplication/code-gen-utils": "^0.0.4",
     "@babel/parser": "^7.23.0",
     "@babel/types": "^7.23.0",
-    "@typescript-eslint/eslint-plugin": "^6.7.5",
-    "@typescript-eslint/parser": "^6.7.5",
-    "eslint": "^8.51.0",
-    "lodash": "^4.17.21",
-    "prettier": "^2.8.7",
-    "rimraf": "^5.0.5",
-    "ts-loader": "^9.5.0",
-    "@types/jest": "^26.0.19",
-    "@types/lodash": "^4.14.185",
-    "@types/mocha": "^10.0.2",
-    "@types/node": "^18.7.18",
-    "babylon": "^6.18.0",
+    "@types/jest": "^29.5.6",
+    "@types/lodash": "^4.14.200",
+    "@typescript-eslint/eslint-plugin": "^6.9.0",
+    "@typescript-eslint/parser": "^6.9.0",
     "copy-webpack-plugin": "^11.0.0",
-    "jest": "27.0.6",
+    "eslint": "^8.52.0",
     "jest-mock-extended": "^3.0.5",
-    "pascal-case": "^3.1.2",
-    "recast": "^0.20.5",
-    "ts-jest": "27.0.3",
-    "typescript": "^4.9.3",
-    "webpack": "^5.88.2",
-    "webpack-cli": "^5.1.4",
-    "webpack-node-externals": "^3.0.0"
+    "prettier": "^3.0.3",
+    "rimraf": "^5.0.5",
+    "ts-jest": "^29.1.1",
+    "ts-loader": "^9.5.0",
+    "typescript": "^5.2.2",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
   },
   "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "modulePathIgnorePatterns": [
-      "<rootDir>/dist/"
-    ]
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src/tests",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "testEnvironment": "node"
   }
 }
