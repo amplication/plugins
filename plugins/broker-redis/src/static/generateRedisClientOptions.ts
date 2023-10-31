@@ -47,8 +47,8 @@ export const generateRedisClientOptions = (
     },
   };
 
-  if (redisEnableTLS) {
-    redisOptions.options!.tls = {};
+  if (redisEnableTLS && redisOptions.options) {
+    redisOptions.options.tls = {};
   }
 
   return redisOptions;
