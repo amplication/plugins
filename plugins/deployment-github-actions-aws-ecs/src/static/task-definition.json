@@ -1,9 +1,9 @@
 {
-    "family": "${{ SERVICE_NAME }}-family",
+    "family": "${{ SERVICE_NAME }}",
     "containerDefinitions": [
         {
             "name": "${{ SERVICE_NAME }}",
-            "image": "${{ ACCOUNT_IDENTIFIER }}.dkr.ecr.${{ REGION_IDENTIFIER }}.amazonaws.com/${{ ECR_REPOSITORY_NAME }}:${{ ECR_IMAGE_TAG }}",
+            "image": "${{ ACCOUNT_IDENTIFIER }}.dkr.ecr.${{ REGION_IDENTIFIER }}.amazonaws.com/${{ ECR_REPOSITORY_NAME }}:latest",
             "essential": true,
             "portMappings": [
                 {
@@ -35,7 +35,7 @@
                 "logDriver": "awslogs",
                 "options": {
                     "awslogs-create-group": "true",
-                    "awslogs-group": "/ecs/${{ SERVICE_NAME }}-family",
+                    "awslogs-group": "/ecs/${{ SERVICE_NAME }}",
                     "awslogs-region": "${{ REGION_IDENTIFIER }}",
                     "awslogs-stream-prefix": "ecs"
                 }
