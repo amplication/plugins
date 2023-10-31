@@ -2,7 +2,7 @@
 
 [![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-provisioning-terraform-aws-repository-ecrc)](https://www.npmjs.com/package/@amplication/plugin-provisioning-terraform-aws-repository-ecr)
 
-Adds a container registry setup based on terraform for Amazon Web Services to the generated service.
+Adds terraform code for provisioning Amazon Web Services Elastic Container Registry (ECR) as an addition to the 'core' terraform code base.
 
 ## Purpose
 
