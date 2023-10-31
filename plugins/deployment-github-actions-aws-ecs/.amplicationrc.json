@@ -3,7 +3,7 @@
     "region_identifier": "eu-west-1",
     "account_identifier": "012345678901",
     "ecr_repository_name": "repository-name",
-    "ecr_image_tag": "latest",
+    "ecr_image_tag": "${{ github.sha }}",
     "ecs_cluster_name": "development-cluster",
     "ecs_role_name": "task-execution-role-name",
     "sm_secret_name": "secret-name",
