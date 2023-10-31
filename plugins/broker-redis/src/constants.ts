@@ -10,9 +10,8 @@ export const templatesPath = join(__dirname, "templates");
 
 export const dependencies = {
   dependencies: {
-    redis: "3.1.2",
-    "@nestjs/microservices": "8.2.3",
-    rxjs: "^7.8.1",
+    ioredis: "^5.3.2",
+    "@nestjs/microservices": "10.2.7",
   },
 };
 
@@ -25,7 +24,7 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
         },
         redis_broker: {
           container_name: "${REDIS_BROKER_HOST}",
-          image: "redis:6",
+          image: "redis:7",
           ports: ["${REDIS_BROKER_PORT}:6379"],
           volumes: ["redis_broker:/redis-broker-data"],
         },
@@ -44,7 +43,7 @@ export const updateDockerComposeDevProperties: CreateServerDockerComposeDevParam
       services: {
         redis_broker: {
           container_name: "${REDIS_BROKER_HOST}",
-          image: "redis:6",
+          image: "redis:7",
           ports: ["${REDIS_BROKER_PORT}:6379"],
           volumes: ["redis_broker:/redis-broker-data"],
         },
