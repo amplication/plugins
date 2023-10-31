@@ -14,6 +14,7 @@ on:
           - "auth-jwt"
           - "broker-kafka"
           - "broker-nats"
+          - "broker-rabbitmq"
           - "broker-redis"
           - "cache-redis"
           - "ci-github-actions"
@@ -27,6 +28,7 @@ on:
           - "observability-opentelemetry"
           - "swagger-apibody"
           - "linter-eslint"
+          - "transport-grpc"
       publish:
         description: "Publish package"
         type: boolean

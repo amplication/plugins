@@ -1,31 +1,27 @@
 import { DsgContext } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
 import { name } from "../../package.json";
-import RedisCachePlugin from "../index";
+import RabbitMQBrokerPlugin from "../index";
 
-
-describe("Testing beforeServerPackageJson hook", () => {
-    let plugin: RedisCachePlugin;
+describe("Testing beforeServerPackageJson", () => {
+    let plugin: RabbitMQBrokerPlugin;
     let context: DsgContext;
     beforeEach(() => {
-        plugin = new RedisCachePlugin();
+        plugin = new RabbitMQBrokerPlugin();
         context = mock<DsgContext>({
             pluginInstallations: [{ npm: name }]
         });
     });
-    it("should add the dependencies required to use Redis to the package.json file", () => {
+    it("should add the dependencies required to use RabbitMQ to the package.json file", () => {
         const { updateProperties } = plugin.beforeCreateServerPackageJson(context, {
             fileContent: "",
             updateProperties: [{}]
         })
         expect(updateProperties).toStrictEqual([{
             dependencies: {
-                "@nestjs/cache-manager": "^2.1.0",
-                "cache-manager": "5.2.4",
-                "cache-manager-ioredis-yet": "^1.2.2",
-            },
-            devDependencies: {
-                "@types/cache-manager": "4.0.4",
+                "@nestjs/microservices": "8.2.3",
+                "amqp-connection-manager": "^4.1.14",
+                "amqplib": "^0.10.3"
             }
         }]);
     });
