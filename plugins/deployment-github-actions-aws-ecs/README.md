@@ -167,7 +167,7 @@ The `sm_secret_name` setting requires the name + automatically added suffix - e.
 
 The `resources` sub-category allows the user to specify the `cpu` and `memory` to be allocated to the task/service in question. As there are some constraints between the two it would be adviced to look at the different task sizes in the [documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#task_size).
 
-The `runime` sub-category, allows the user to specify the `os_family` with their applicable `cpu_architecture`. Examples for the `os_family` are `WINDOWS` & `LINUX`, as our generated service are almost always ran on the latter, this has been selected as the default. Examples for `cpu_architecture` within the `os_family` > `LINUX` are `X86_64` but also `ARM64` could be used if desired.
+The `runtime` sub-category allows the user to specify the `os_family` with their applicable `cpu_architecture`. Examples for the `os_family` are `WINDOWS` & `LINUX`. As our generated service is almost always ran on the latter, this has been selected as the default. Examples for `cpu_architecture` within the `os_family` > `LINUX` are `X86_64`, but also `ARM64` could be used if desired.
 
 ```json
 {
