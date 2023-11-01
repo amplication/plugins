@@ -88,7 +88,7 @@ class TerraformAwsCorePlugin implements AmplicationPlugin {
       terraformDirectoryPath
     );
 
-    staticFiles.replaceModulesCode((code) =>
+    staticFiles.replaceModulesCode((_path, code) =>
       code
         .replaceAll(nameKey, name)
         .replaceAll(regionIdentifierKey, settings.global.region)

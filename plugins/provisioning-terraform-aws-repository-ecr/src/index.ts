@@ -80,7 +80,7 @@ class TerraformAwsRepositoryEcrPlugin implements AmplicationPlugin {
       path.replace(templateFileName, fileNamePrefix + name + fileNameSuffix)
     );
 
-    staticFiles.replaceModulesCode((code) =>
+    staticFiles.replaceModulesCode((_path, code) =>
       code
         .replaceAll(moduleNameKey, "ecr_" + snakeCase(name))
         .replaceAll(nameKey, kebabCase(name))

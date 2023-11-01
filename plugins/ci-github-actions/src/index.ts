@@ -112,7 +112,7 @@ class GithubActionsPlugin implements AmplicationPlugin {
           workflowFileNamePrefix + serviceName + workflowFileNameSuffix
         )
       );
-      staticFiles.replaceModulesCode((code) =>
+      staticFiles.replaceModulesCode((_path, code) =>
         code
           .replaceAll(serviceNameKey, serviceName)
           .replaceAll(imageKey, image)
@@ -137,7 +137,7 @@ class GithubActionsPlugin implements AmplicationPlugin {
           workflowFileNamePrefix + serviceName + workflowFileNameSuffix
         )
       );
-      staticFiles.replaceModulesCode((code) =>
+      staticFiles.replaceModulesCode((_path, code) =>
         code
           .replaceAll(serviceNameKey, serviceName)
           .replaceAll(
