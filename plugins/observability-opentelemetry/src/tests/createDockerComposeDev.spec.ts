@@ -38,8 +38,8 @@ describe("Testing beforeCreateServerDockeCompose hook", () => {
               "13133:13133", // health check extension
               "55670:55679", // zpages debugging extension
             ],
-            volumes: ["./otel-config.yaml:/etc/otel-config.yaml"],
-            command: ["--config=/etc/otel-config.yaml"],
+            volumes: ["./otel-config.yml:/etc/otel-config.yml"],
+            command: ["--config=/etc/otel-config.yml"],
             depends_on: ["jaeger"],
           },
         },

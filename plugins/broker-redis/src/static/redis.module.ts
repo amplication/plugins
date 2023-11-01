@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { ClientProxyFactory } from "@nestjs/microservices";
 import { ConfigService } from "@nestjs/config";
 import { generateRedisClientOptions } from "./generateRedisClientOptions";
-import { RedisProducerService } from "./redis.producer.service"
+import { RedisProducerService } from "./redis.producer.service";
 import { RedisController } from "./redis.controller";
 import { REDIS_BROKER_CLIENT } from "./constants";
 
@@ -18,9 +18,9 @@ import { REDIS_BROKER_CLIENT } from "./constants";
       },
       inject: [ConfigService],
     },
-    RedisProducerService
+    RedisProducerService,
   ],
   controllers: [RedisController],
-  exports: [RedisProducerService]
+  exports: [RedisProducerService],
 })
 export class RedisModule {}
