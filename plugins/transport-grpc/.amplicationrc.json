@@ -1,0 +1,6 @@
+{
+  "settings": {},
+  "systemSettings": {
+    "generateGRPC": "true"
+  }
+}

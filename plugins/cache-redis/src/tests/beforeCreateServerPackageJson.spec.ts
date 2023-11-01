@@ -20,12 +20,12 @@ describe("Testing beforeServerPackageJson hook", () => {
         })
         expect(updateProperties).toStrictEqual([{
             dependencies: {
-                "cache-manager": "3.6.3",
-                "cache-manager-redis-store": "2.0.0"
+                "@nestjs/cache-manager": "^2.1.0",
+                "cache-manager": "5.2.4",
+                "cache-manager-ioredis-yet": "^1.2.2",
             },
             devDependencies: {
-                "@types/cache-manager": "3.4.3",
-                "@types/cache-manager-redis-store": "2.0.1"
+                "@types/cache-manager": "4.0.4",
             }
         }]);
     });

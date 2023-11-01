@@ -150,15 +150,16 @@ class AuthCorePlugin implements AmplicationPlugin {
   ) {
     const myValues = {
       dependencies: {
-        "@nestjs/jwt": "^10.0.2",
+        "@nestjs/jwt": "^10.1.1",
         "@nestjs/passport": "^10.0.2",
+        "nest-access-control": "^3.1.0",
         passport: "0.6.0",
         "passport-http": "0.3.0",
         "passport-jwt": "4.0.1",
       },
       devDependencies: {
         "@types/passport-http": "0.3.9",
-        "@types/passport-jwt": "3.0.8",
+        "@types/passport-jwt": "3.0.10",
       },
     };
 
@@ -911,7 +912,7 @@ class AuthCorePlugin implements AmplicationPlugin {
 
     return eventParams;
   }
-  
+
   async beforeCreateSeed(context: DsgContext, eventParams: CreateSeedParams) {
     interpolate(eventParams.template, eventParams.templateMapping);
 

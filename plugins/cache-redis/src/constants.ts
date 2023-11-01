@@ -2,12 +2,12 @@ import { CreateServerDockerComposeParams, CreateServerDockerComposeDevParams } f
 
 export const dependencies = {
     dependencies: {
-        "cache-manager": "3.6.3",
-        "cache-manager-redis-store": "2.0.0"
+        "@nestjs/cache-manager": "^2.1.0",
+        "cache-manager": "5.2.4",
+        "cache-manager-ioredis-yet": "^1.2.2",
     },
     devDependencies: {
-        "@types/cache-manager": "3.4.3",
-        "@types/cache-manager-redis-store": "2.0.1"
+        "@types/cache-manager": "4.0.4",
     }
 }
 
@@ -18,7 +18,7 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
         },
         redis: {
             container_name: "${REDIS_HOST}",
-            image: "redis:6",
+            image: "redis:7",
             ports: ["${REDIS_PORT}:6379"],
             volumes: ["redis:/data"]
         }
@@ -30,11 +30,11 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
     }
 }]
 
-export const updateDockerComposeDevProperties: CreateServerDockerComposeParams["updateProperties"] = [{
+export const updateDockerComposeDevProperties: CreateServerDockerComposeDevParams["updateProperties"] = [{
     services: {
         redis: {
             container_name: "${REDIS_HOST}",
-            image: "redis:6",
+            image: "redis:7",
             ports: ["${REDIS_PORT}:6379"],
             volumes: ["redis:/data"]
         }
