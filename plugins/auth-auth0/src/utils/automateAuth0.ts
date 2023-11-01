@@ -84,8 +84,9 @@ async function setupAuth0Environment({
           name: clientName,
           app_type: "spa",
           callbacks: ["http://localhost:3001/auth-callback"],
-          allowed_logout_urls: ["http://localhost:3001/logout"],
+          allowed_logout_urls: ["http://localhost:3001/login"],
           web_origins: ["http://localhost:3001"],
+          token_endpoint_auth_method: "none",
         })
         .then((response) => response.data);
 
@@ -108,6 +109,25 @@ async function setupAuth0Environment({
           signing_alg: "RS256",
         })
         .then((response) => response.data);
+
+      if (api) {
+        // Add read:email permission to API
+        await management.resourceServers.update(
+          {
+            id: api.id,
+          },
+          {
+            scopes: [
+              {
+                value: "read:email",
+                description: "Read email",
+              },
+            ],
+          }
+        );
+      } else {
+        throw new Error("Failed to create API");
+      }
     } else {
       logger.info("API already exists");
     }
