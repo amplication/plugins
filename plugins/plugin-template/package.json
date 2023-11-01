@@ -14,7 +14,7 @@
   "author": "Amplication Contributor",
   "license": "Apache-2.0",
   "dependencies": {
-    "@amplication/code-gen-types": "^2.0.15",
+    "@amplication/code-gen-types": "^2.0.17",
     "@amplication/code-gen-utils": "^0.0.7",
     "lodash": "^4.17.21"
   },
