@@ -75,7 +75,7 @@ As mentioned there are some pre-requisites to be able to starting using this plu
 }
 ```
 
-In addition a user need to be created on which the above permissions can be assigned. Also create access credentials for this user and store them in the repository secrets. These are ` AWS_ACCESS_KEY_ID`` &  `AWS_SECRET_ACCESS_KEY``.
+In addition a user need to be created on which the above permissions can be assigned. Also create access credentials for this user and store them in the repository secrets. These are ` AWS_ACCESS_KEY_ID` & `AWS_SECRET_ACCESS_KEY`.
 
 The second scope of permissions is related to the execution of the task. When running the generated service in the container on Amazon Elastic Container Service, permissions are assigned to the running task/service in the form of a role. The first policy to attach is the default Amazon managed `AmazonECSTaskExecutionRolePolicy`
 
