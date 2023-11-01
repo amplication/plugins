@@ -5,6 +5,7 @@ import {
   DsgContext,
   ModuleMap,
   BuildLogger,
+  EnumDataType,
 } from "@amplication/code-gen-types";
 import { afterCreateAuthModules } from "@events/createServerAuth";
 
@@ -16,6 +17,19 @@ describe("Testing afterCreateApp hook", () => {
   beforeEach(() => {
     logger = mock<BuildLogger>();
     context = mock<DsgContext>({
+      serverDirectories: {
+        srcDirectory: "src",
+        authDirectory: "src/auth",
+      },
+      DTOs: {
+        "User": {
+          "EnumUserPriority": {
+            id: {
+              name: "EnumUserPriority",
+            }
+          },
+        }
+      },
       resourceInfo: {
         settings: {
           authEntityName: "User",
@@ -24,6 +38,35 @@ describe("Testing afterCreateApp hook", () => {
       entities: [
         {
           name: "User",
+          fields: [
+            {
+              "id": "daa757a6-4e15-4afc-a6e3-d4366d64367a",
+              "permanentId": "daa757a6-4e15-4afc-a6e3-d4366d643671",
+              "name": "priority",
+              "displayName": "Priority",
+              "required": true,
+              "unique": false,
+              "searchable": true,
+              "dataType": EnumDataType.OptionSet,
+              "properties": {
+                "options": [
+                  { "label": "High", "value": "high" },
+                  { "label": "Medium", "value": "medium" },
+                  { "label": "Low", "value": "low" }
+                ]
+              }
+            },
+            {
+              "id": "8c5c4130-94b0-4ce4-a4cb-4e42bf7a9b37",
+              "permanentId": "8c5c4130-94b0-4ce4-a4cb-4e42bf7a9b31",
+              "name": "email",
+              "displayName": "Email",
+              "required": true,
+              "unique": true,
+              "searchable": true,
+              "dataType": EnumDataType.Email,
+            },
+          ],
         },
       ],
       logger: {

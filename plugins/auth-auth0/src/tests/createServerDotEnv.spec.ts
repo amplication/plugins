@@ -22,8 +22,8 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
     });
   });
 
-  it("should use default values if plugin settings are not defined", () => {
-    eventParams = beforeCreateServerDotEnv(context, eventParams);
+  it("should use default values if plugin settings are not defined", async () => {
+    eventParams = await beforeCreateServerDotEnv(context, eventParams);
 
     const expectedEnvVariables = [
       { AUTH0_AUDIENCE: "AUTH0_AUDIENCE" },
@@ -33,13 +33,13 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
     expect(eventParams.envVariables).toEqual(expectedEnvVariables);
   });
 
-  it("should use plugin settings if defined", () => {
+  it("should use plugin settings if defined", async () => {
     context.pluginInstallations[0].settings = {
       audience: "CUSTOM_AUTH0_AUDIENCE",
       issuerURL: "CUSTOM_AUTH0_ISSUER_URL",
     };
 
-    eventParams = beforeCreateServerDotEnv(context, eventParams);
+    eventParams = await beforeCreateServerDotEnv(context, eventParams);
 
     const expectedEnvVariables = [
       { AUTH0_AUDIENCE: "CUSTOM_AUTH0_AUDIENCE" },

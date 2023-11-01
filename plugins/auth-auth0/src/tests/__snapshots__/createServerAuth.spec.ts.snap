@@ -10,7 +10,7 @@ import { Auth0User } from "./base/User";
 import { IAuthStrategy } from "../IAuthStrategy";
 import { UserInfo } from "../UserInfo";
 import { UserService } from "src/user/user.service";
-declare const DATA: { username: string };
+import { EnumUserPriority } from "../../user/base/EnumUserPriority";
 
 @Injectable()
 export class JwtStrategy extends JwtStrategyBase implements IAuthStrategy {
@@ -30,20 +30,20 @@ export class JwtStrategy extends JwtStrategyBase implements IAuthStrategy {
 
     // Otherwise, make a new entity and return it
     const userFields = payload.user;
-    const defaultData = DATA;
+    const defaultData = {
+      email: userFields.email,
+      priority: EnumUserPriority.High
+    };
 
     const newUser = await this.userService.create({
-      data: {
-        ...defaultData,
-        ...userFields,
-      }
+      data: defaultData,
     });
 
     return { ...newUser, roles: newUser?.roles as string[] };
   }
 }
 ",
-    "path": "undefined/jwt/jwt.strategy.ts",
+    "path": "src/auth/jwt/jwt.strategy.ts",
   },
   {
     "code": "/*
@@ -91,17 +91,16 @@ export class JwtStrategyBase extends PassportStrategy(Strategy) {
   async validateBase(payload: {
     user: Auth0User;
   }): Promise<UserInfo | null> {
-    const { email, name } = payload.user;
     const user = await this.userService.findOne({
       where: {
-        name_email: { email, name },
+        email: payload.user.email,
       },
     });
 
     return user ? { ...user, roles: user?.roles as string[] } : null;
   }
 }",
-    "path": "undefined/jwt/base/jwt.strategy.base.ts",
+    "path": "src/auth/jwt/base/jwt.strategy.base.ts",
   },
   {
     "code": "import { Module, forwardRef } from "@nestjs/common";
@@ -120,7 +119,7 @@ import { UserModule } from "../user/user.module";
 })
 export class AuthModule {}
 ",
-    "path": "undefined/auth.module.ts",
+    "path": "src/auth/auth.module.ts",
   },
   {
     "code": "/*
@@ -151,7 +150,7 @@ export class AuthResolver {
     return entityInfo;
   }
 }",
-    "path": "undefined/auth.resolver.ts",
+    "path": "src/auth/auth.resolver.ts",
   },
   {
     "code": "import { Observable } from "rxjs";
@@ -182,7 +181,7 @@ export class DefaultAuthGuard extends JwtAuthGuard {
   }
 }
 ",
-    "path": "auth/defaultAuth.guard.ts",
+    "path": "src/auth/defaultAuth.guard.ts",
   },
   {
     "code": "export interface Auth0User {
@@ -194,7 +193,7 @@ export class DefaultAuthGuard extends JwtAuthGuard {
   picture: string;
 }
 ",
-    "path": "auth/jwt/base/User.ts",
+    "path": "src/auth/jwt/base/User.ts",
   },
   {
     "code": "import { ExecutionContext } from "@nestjs/common";
@@ -216,7 +215,7 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
   }
 }
 ",
-    "path": "auth/jwt/jwtAuth.guard.ts",
+    "path": "src/auth/jwt/jwtAuth.guard.ts",
   },
 ]
 `;
