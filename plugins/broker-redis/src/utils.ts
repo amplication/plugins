@@ -1,13 +1,16 @@
-import { PluginInstallation, VariableDictionary } from "@amplication/code-gen-types";
+import {
+  PluginInstallation,
+  VariableDictionary,
+} from "@amplication/code-gen-types";
 import { name as PackageName } from "../package.json";
 import { Settings } from "./types";
-import { settings as defaultSettings }  from "../.amplicationrc.json";
+import { settings as defaultSettings } from "../.amplicationrc.json";
 import { namedTypes, ASTNode, builders } from "ast-types";
 import { NodePath } from "ast-types/lib/node-path";
 import * as K from "ast-types/gen/kinds";
 import * as recast from "recast";
-import { parse } from "@amplication/code-gen-utils"
-export * from "@amplication/code-gen-utils"
+import { parse } from "@amplication/code-gen-utils";
+export * from "@amplication/code-gen-utils";
 export { prettyPrint } from "recast";
 
 export const getPluginSettings = (
@@ -28,49 +31,54 @@ export const getPluginSettings = (
 };
 
 export const settingToEnvVar = (settingKey: keyof Settings): string => {
-  const mapping: {[key in keyof Settings]: string} = {
+  const mapping: { [key in keyof Settings]: string } = {
     host: "REDIS_BROKER_HOST",
     port: "REDIS_BROKER_PORT",
     retryAttempts: "REDIS_BROKER_RETRY_ATTEMPTS",
     retryDelay: "REDIS_BROKER_RETRY_DELAY",
-    enableTls: "REDIS_BROKER_ENABLE_TLS"
-  }
-  return mapping[settingKey]
-}
+    enableTls: "REDIS_BROKER_ENABLE_TLS",
+  };
+  return mapping[settingKey];
+};
 
 export const settingsToVarDict = (settings: Settings): VariableDictionary => {
-  return Object.keys(settings)
+  return (
+    Object.keys(settings)
       .map((settingKey) => ({
-          [settingToEnvVar(settingKey as keyof Settings)]:
-            settings[settingKey as keyof Settings]?.toString()
+        [settingToEnvVar(settingKey as keyof Settings)]:
+          settings[settingKey as keyof Settings]?.toString(),
       }))
       .filter((obj) => {
         const key = Object.keys(obj)[0];
         // To filter out unexpected settings that don't map to
         // environment variables
-        return key !== "undefined" &&
-          obj[key] !== undefined && obj[key] !== null
+        return (
+          key !== "undefined" && obj[key] !== undefined && obj[key] !== null
+        );
       })
       // Added this last map to get rid of typescript errors
       .map((obj) => {
-        const key = Object.keys(obj)[0]
-        return { [key]: obj[key]! }
+        const key = Object.keys(obj)[0];
+        return { [key]: obj[key]! };
       })
-}
+  );
+};
 
 export const removeSemicolon = (stmt: string) => {
-  if(stmt.length === 0) {
-    throw new Error("This isn't a statement")
+  if (stmt.length === 0) {
+    throw new Error("This isn't a statement");
   }
-  if(stmt[stmt.length - 1] !== ";") {
-    throw new Error("This statement doesn't end in a semicolon. No semicolon to remove")
+  if (stmt[stmt.length - 1] !== ";") {
+    throw new Error(
+      "This statement doesn't end in a semicolon. No semicolon to remove"
+    );
   }
   return stmt.slice(0, -1);
-}
+};
 
 export const prettyCode = (code: string): string => {
-    return recast.prettyPrint(parse(code)).code
-}
+  return recast.prettyPrint(parse(code)).code;
+};
 
 /**
  * Finds class declaration in provided AST node, if no class is found throws an exception
@@ -192,7 +200,11 @@ export function interpolate(
           const identifier = expression as namedTypes.Identifier;
           return mapping[identifier.name] as namedTypes.StringLiteral;
         });
-        path.replace(transformTemplateLiteralToStringLiteral(path.node as namedTypes.TemplateLiteral));
+        path.replace(
+          transformTemplateLiteralToStringLiteral(
+            path.node as namedTypes.TemplateLiteral
+          )
+        );
       }
       this.traverse(path);
     },
@@ -258,5 +270,3 @@ export function evaluateJSX(
     }
   );
 }
-
-
