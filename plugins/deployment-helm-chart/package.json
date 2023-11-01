@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-deployment-helm-chart",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Add helm chart for deployment of the service",
   "main": "dist/index.js",
   "scripts": {
