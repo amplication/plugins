@@ -15,7 +15,10 @@ module "${{ RDS_MODULE_NAME }}" {
 
   db_name  = "${{ DATABASE_NAME }}"
   username = "${{ DATABASE_USERNAME }}"
+  password = random_password.password.result
   port     = ${{ DATABASE_PORT }}
+
+  manage_master_user_password = false
 
   db_subnet_group_name   = module.vpc.database_subnet_group
   vpc_security_group_ids = [module.${{ SG_MODULE_NAME }}.security_group_id]
@@ -23,6 +26,11 @@ module "${{ RDS_MODULE_NAME }}" {
   maintenance_window      = "${{ MAINTENANCE_WINDOWS }}"
   backup_window           = "${{ BACKUP_WINDOW }}"
   backup_retention_period = ${{ BACKUP_RETENTION_PERIOD }}
+}
+
+resource "random_password" "password" {
+  length           = 20
+  special          = false
 }
 
 module "${{ SG_MODULE_NAME }}" {
