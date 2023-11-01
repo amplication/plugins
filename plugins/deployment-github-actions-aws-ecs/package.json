@@ -25,7 +25,6 @@
     "copy-webpack-plugin": "^11.0.0",
     "eslint": "^8.21.0",
     "jest-mock-extended": "^3.0.1",
-    "lodash": "^4.17.21",
     "prettier": "^2.8.7",
     "rimraf": "^4.4.1",
     "ts-loader": "^9.4.2",
