@@ -70,7 +70,7 @@ class GithubActionsAwsEcsPlugin implements AmplicationPlugin {
       fileNamePrefix +
       serviceName +
       taskDefinitionFileNameSuffix;
-  
+
     // getPluginSettings: fetch user settings + merge with default settings
     const settings = getPluginSettings(context.pluginInstallations);
     const staticPath = resolve(__dirname, "./static");
@@ -86,7 +86,7 @@ class GithubActionsAwsEcsPlugin implements AmplicationPlugin {
         .replace(templateTaskDefinitionFileName, outputSuffixTaskDefinition)
     );
 
-    staticFiles.replaceModulesCode((code) =>
+    staticFiles.replaceModulesCode((_path, code) =>
       code
         .replaceAll(serviceNameKey, serviceName)
         .replaceAll(regionIdentifierKey, settings.region_identifier)
@@ -95,7 +95,10 @@ class GithubActionsAwsEcsPlugin implements AmplicationPlugin {
         .replaceAll(ecrImageTagKey, settings.ecr_image_tag)
         .replaceAll(ecsClusterNameKey, settings.ecs_cluster_name)
         .replaceAll(ecsRoleNameKey, settings.ecs_role_name)
-        .replaceAll(ecsTaskDefinitionPathKey, outputDirectoryBase + outputSuffixTaskDefinition)
+        .replaceAll(
+          ecsTaskDefinitionPathKey,
+          outputDirectoryBase + outputSuffixTaskDefinition
+        )
         .replaceAll(smSecretNameKey, settings.sm_secret_name)
         .replaceAll(resourcesCpuKey, settings.resources.cpu)
         .replaceAll(resourcesMemoryKey, settings.resources.memory)

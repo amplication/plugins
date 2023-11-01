@@ -113,7 +113,7 @@ class HelmChartPlugin implements AmplicationPlugin {
 
     // render the helm chart from the static files in combination with the values provided through
     // the settings
-    chartTemplateFiles.replaceModulesCode((code) => {
+    chartTemplateFiles.replaceModulesCode((_path, code) => {
       return code
         .replaceAll(serviceNameKey, serviceName)
         .replaceAll(chartVersionKey, settings.server.chart_version)

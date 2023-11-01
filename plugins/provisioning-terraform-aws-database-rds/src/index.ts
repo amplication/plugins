@@ -108,7 +108,7 @@ class TerraformAwsDatabaseRdsPlugin implements AmplicationPlugin {
     );
 
     if (isPostgresSettings(settings)) {
-      staticFiles.replaceModulesCode((code) =>
+      staticFiles.replaceModulesCode((_path, code) =>
         code
           .replaceAll(moduleNameRdsKey, "rds_" + underscoreName)
           .replaceAll(moduleNameSgKey, "sg_" + underscoreName)
