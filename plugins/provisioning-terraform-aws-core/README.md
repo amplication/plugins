@@ -1,6 +1,6 @@
 # @amplication/plugin-provisioning-terraform-aws-core
 
-[![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-provisioning-terraform-aws-corec)](https://www.npmjs.com/package/@amplication/plugin-provisioning-terraform-aws-core)
+[![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-provisioning-terraform-aws-core)](https://www.npmjs.com/package/@amplication/plugin-provisioning-terraform-aws-core)
 
 Adds a core networking setup of terraform for Amazon Web Services to the generated service.
 
