@@ -23,6 +23,7 @@ on:
           - "db-postgres"
           - "db-sqlserver"
           - "deployment-helm-chart"
+          - "deployment-github-actions-aws-ecs"
           - "formatter-prettier"
           - "integration-openai"
           - "observability-opentelemetry"
