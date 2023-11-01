@@ -105,6 +105,7 @@ async function setupAuth0Environment({
         .create({
           name: "Amplication API",
           identifier: audience,
+          signing_alg: "RS256",
         })
         .then((response) => response.data);
     } else {
