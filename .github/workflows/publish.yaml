@@ -25,6 +25,7 @@ on:
           - "formatter-prettier"
           - "integration-openai"
           - "observability-opentelemetry"
+          - "provisioning-terraform-aws-database-rds"
           - "swagger-apibody"
           - "linter-eslint"
       publish:
