@@ -10,7 +10,7 @@ Adds a Github Actions workflow file for building and pushing a container image t
 
 ## Configuration
 
-Compared to other plugins, this plugin requires some additional upfront work to get the generated code working as expected. These pre-requisites can be found below after which the settings for the plugin are explained. As the plugins settings are very dependent on the configuration done in the pre-requisites it is adviced to read both.
+Compared to other plugins, this plugin requires some additional upfront work to get the generated code working as expected. These prerequisites can be found below, after which the settings for the plugin are explained. As the plugin's settings are very dependent on the configuration done in the prerequisites, it is advised to read both.
 
 ### Configuration - Pre-requisites
 
