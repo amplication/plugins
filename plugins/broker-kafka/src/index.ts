@@ -17,7 +17,7 @@ import {
   ModuleMap,
 } from "@amplication/code-gen-types";
 import { readFile, print } from "@amplication/code-gen-utils";
-import { kebabCase, merge } from "lodash";
+import { kebabCase } from "lodash";
 import { join, resolve } from "path";
 import { staticDirectory, templatesPath } from "./constants";
 import { builders, namedTypes } from "ast-types";
@@ -29,6 +29,7 @@ import {
   interpolate,
 } from "./util/ast";
 import { pascalCase } from "pascal-case";
+import { EnumResourceType } from "@amplication/code-gen-types/src/models";
 
 class KafkaPlugin implements AmplicationPlugin {
   static moduleFile: Module | undefined;
@@ -147,14 +148,12 @@ class KafkaPlugin implements AmplicationPlugin {
   ): CreateServerPackageJsonParams {
     const myValues = {
       dependencies: {
-        "@nestjs/microservices": "8.2.3",
-        kafkajs: "2.2.0",
+        "@nestjs/microservices": "10.2.7",
+        kafkajs: "^2.2.4",
       },
     };
 
-    eventParams.updateProperties.forEach((updateProperty) =>
-      merge(updateProperty, myValues)
-    );
+    eventParams.updateProperties.push(myValues);
 
     return eventParams;
   }
@@ -166,15 +165,32 @@ class KafkaPlugin implements AmplicationPlugin {
     const { serverDirectories, utils } = context;
     const { messageBrokerDirectory } = serverDirectories;
 
-    const serviceFilePath = resolve(
-      staticDirectory,
-      `kafka.producer.service.ts`
-    );
-    const serviceFile = await readFile(serviceFilePath);
     const servicePath = join(
       messageBrokerDirectory,
       `kafka.producer.service.ts`
     );
+
+    const messageBrokerName =
+      context.otherResources?.find(
+        (resource) => resource.resourceType === EnumResourceType.MessageBroker
+      )?.resourceInfo?.name ?? null;
+
+    if (!messageBrokerName) {
+      throw new Error("Message broker name not found");
+    }
+
+    const templatePath = join(
+      templatesPath,
+      "kafka.producer.service.template.ts"
+    );
+    const template = await readFile(templatePath);
+    const templateMapping = {
+      BROKER_TOPICS: builders.identifier(
+        pascalCase(messageBrokerName) + "Topics"
+      ),
+    };
+
+    interpolate(template, templateMapping);
 
     const kafkaMessageFilePath = resolve(
       `${staticDirectory}/contracts`,
@@ -194,7 +210,7 @@ class KafkaPlugin implements AmplicationPlugin {
     );
 
     const modules = new ModuleMap(context.logger);
-    await modules.set({ code: print(serviceFile).code, path: servicePath });
+    await modules.set({ code: print(template).code, path: servicePath });
     await modules.set({
       code: print(kafkaMessageFile).code,
       path: kafkaMessagePath,
@@ -314,24 +330,48 @@ class KafkaPlugin implements AmplicationPlugin {
           builders.callExpression(builders.identifier("Payload"), [])
         );
 
-        const messageId = builders.identifier.from({
-          name: "message",
+        const kafkaValue = builders.identifier.from({
+          name: "value",
           typeAnnotation: builders.tsTypeAnnotation(
-            builders.tsTypeReference(builders.identifier("KafkaMessage"))
+            builders.tsTypeReference(
+              builders.identifier("string | Record<string, any> | null")
+            )
           ),
         });
 
-        const decorators: namedTypes.Decorator[] = [payloadDecorator];
-
         //@ts-ignore
-        messageId.decorators = decorators;
+        kafkaValue.decorators = [payloadDecorator];
+
+        const kafkaContextDecorator = builders.decorator(
+          builders.callExpression(builders.identifier("Ctx"), [])
+        );
+        const kafkaContext = builders.identifier.from({
+          name: "context",
+          typeAnnotation: builders.tsTypeAnnotation(
+            builders.tsTypeReference(builders.identifier("KafkaContext"))
+          ),
+        });
+        //@ts-ignore
+        kafkaContext.decorators = [kafkaContextDecorator];
 
         const currentClassMethod = builders.classMethod.from({
-          body: builders.blockStatement([]),
+          body: builders.blockStatement([
+            builders.variableDeclaration("const", [
+              builders.variableDeclarator(
+                builders.identifier("message"),
+                builders.callExpression(
+                  builders.memberExpression(
+                    builders.identifier("context"),
+                    builders.identifier("getMessage")
+                  ),
+                  []
+                )
+              ),
+            ]),
+          ]),
           async: true,
           key: builders.identifier(`on${pascalCase(topic.topicName)}`),
-
-          params: [messageId],
+          params: [kafkaValue, kafkaContext],
           returnType: builders.tsTypeAnnotation(
             builders.tsTypeReference(
               builders.identifier("Promise"),

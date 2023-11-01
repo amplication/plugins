@@ -1,13 +1,13 @@
 import { types, Module, DsgContext, Entity } from "@amplication/code-gen-types";
-import { readFile } from "@amplication/code-gen-utils";
+import { print, readFile } from "@amplication/code-gen-utils";
 import {
   addImports,
   importNames,
   interpolate,
   removeTSClassDeclares,
 } from "../util/ast";
+import { idTypeClassOptions, idTypeTSOptions } from "../util/idTypeMapper";
 import { builders, namedTypes } from "ast-types";
-import { print } from "@amplication/code-gen-utils";
 import { getUserIdType } from "../util/get-user-id-type";
 import { join } from "path";
 import {
@@ -59,36 +59,9 @@ function prepareTemplateMapping(
   idType: types.Id["idType"],
   authEntity: Entity
 ) {
-  const number = {
-    class: "Number",
-    type: "number",
-  };
-
-  const string = {
-    class: "String",
-    type: "string",
-  };
-
-  const idTypClassOptions: {
-    [key in types.Id["idType"]]: namedTypes.Identifier;
-  } = {
-    AUTO_INCREMENT: builders.identifier(number.class),
-    UUID: builders.identifier(string.class),
-    CUID: builders.identifier(string.class),
-  };
-
-  /* eslint-disable @typescript-eslint/naming-convention */
-  const idTypeTSOptions: {
-    [key in types.Id["idType"]]: namedTypes.Identifier;
-  } = {
-    AUTO_INCREMENT: builders.identifier(number.type),
-    UUID: builders.identifier(string.type),
-    CUID: builders.identifier(string.type),
-  };
-
   return {
     USER_ID_TYPE_ANNOTATION: idTypeTSOptions[idType],
-    USER_ID_CLASS: idTypClassOptions[idType],
+    USER_ID_CLASS: idTypeClassOptions[idType],
     ENTITY_NAME: builders.identifier(authEntity.name),
     ENTITY_NAME_INFO: builders.identifier(`${authEntity.name}Info`),
   };
