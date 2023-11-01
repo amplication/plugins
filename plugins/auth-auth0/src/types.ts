@@ -1,10 +1,21 @@
 export interface Settings {
-  domain: string;
-  clientId: string;
-  audience: string;
-  issuerURL: string;
+  domain?: string;
+  clientID?: string;
+  audience?: string;
+  issuerURL?: string;
   recipe: IRecipe;
-  defaultUser: Record<string, unknown>;
+  useManagementApi: boolean;
+  managementParams?: IManagementApiParams;
+  defaultUser?: Record<string, unknown>;
+}
+
+export interface IManagementApiParams {
+  accessToken: string;
+  identifier: string;
+  actionName?: string;
+  clientName?: string;
+  apiName?: string;
+  audience?: string;
 }
 
 export interface IRecipe {

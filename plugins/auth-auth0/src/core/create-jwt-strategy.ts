@@ -46,7 +46,7 @@ const Auth0Fields = new Set([
 const createDefaultAuth0UserFields = (
   entity: Entity,
   recipe: IRecipe,
-  defaultUser: Record<string, unknown>,
+  defaultUser: Record<string, unknown> | undefined,
   entityFields: namedTypes.Identifier,
   authEmailField: EntityField,
 ) => {
@@ -94,7 +94,7 @@ const createDefaultAuth0UserFields = (
   );
   const defaultProperties = createAuthEntityObjectCustomProperties(
     { ...entity, fields: remainingFields },
-    defaultUser,
+    defaultUser || {},
   );
 
   return [emailProperty, ...payloadProperties, ...defaultProperties];

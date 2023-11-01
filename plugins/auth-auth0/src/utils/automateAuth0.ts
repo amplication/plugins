@@ -1,10 +1,12 @@
+import { BuildLogger } from "@amplication/code-gen-types";
 import { ManagementClient } from "auth0";
 
 export interface IAuth0Environment {
   clientID: string;
   clientSecret: string;
   audience: string;
-  issuerURL: string;
+  issuerURL: string;  
+  domain: string;
 }
 
 export interface IAuth0EnvironmentOptions {
@@ -14,16 +16,54 @@ export interface IAuth0EnvironmentOptions {
   apiName?: string;
   audience?: string;
   actionName?: string;
+  logger: BuildLogger;
 }
 
-export const setupAuth0Environment = async ({
+export class Auth0Environment implements IAuth0Environment {
+  private static instance: Auth0Environment | undefined;
+
+  private constructor(
+    public readonly clientID: string,
+    public readonly clientSecret: string,
+    public readonly audience: string,
+    public readonly issuerURL: string,
+    public readonly domain: string,
+  ) {}
+
+  public static async getInstance(
+    options: IAuth0EnvironmentOptions,
+  ): Promise<IAuth0Environment> {
+    if (!Auth0Environment.instance) {
+      const environment = await setupAuth0Environment(options);
+      if (!environment) {
+        throw new Error("Failed to create Auth0 environment");
+      }
+
+      Auth0Environment.instance = new Auth0Environment(
+        environment.clientID,
+        environment.clientSecret,
+        environment.audience,
+        environment.issuerURL,
+        environment.domain,
+      );
+    }
+    return Auth0Environment.instance;
+  }
+
+  public static async resetInstance(): Promise<void> {
+    Auth0Environment.instance = undefined;
+  }
+}
+
+async function setupAuth0Environment({
   identifier,
   jwtToken,
   clientName = "Amplication SPA",
   apiName = "Amplication API",
-  audience = "http://localjost:3001",
+  audience = "http://localhost:3001",
   actionName = "Add user details to user response",
-}: IAuth0EnvironmentOptions): Promise<IAuth0Environment | undefined> => {
+  logger,
+}: IAuth0EnvironmentOptions): Promise<IAuth0Environment | undefined> {
   // Identifer is of the form https://<tenant>.<region>.auth0.com/api/v2/
   // Need to extract the domain of form <tenant>.<region>.auth0.com
   const domain = identifier.split("/")[2];
@@ -38,7 +78,7 @@ export const setupAuth0Environment = async ({
     const clients = await management.clients.getAll();
     let client = clients.data.find((client) => client.name === clientName);
     if (!client) {
-      console.log("Creating SPA client");
+      logger.info("Creating SPA client");
       client = await management.clients
         .create({
           name: clientName,
@@ -53,14 +93,14 @@ export const setupAuth0Environment = async ({
         throw new Error("Failed to create SPA client");
       }
     } else {
-      console.log("SPA client already exists");
+      logger.info("SPA client already exists");
     }
 
     // Try to find the API by name and create it if it doesn't exist
     const apis = await management.resourceServers.getAll();
     let api = apis.data.find((api) => api.name === apiName);
     if (!api) {
-      console.log("Creating API");
+      logger.info("Creating API");
       api = await management.resourceServers
         .create({
           name: "Amplication API",
@@ -68,7 +108,7 @@ export const setupAuth0Environment = async ({
         })
         .then((response) => response.data);
     } else {
-      console.log("API already exists");
+      logger.info("API already exists");
     }
 
     // Try to find the action by name and create it if it doesn't exist
@@ -77,7 +117,7 @@ export const setupAuth0Environment = async ({
       (action) => action.name === actionName,
     );
     if (!action) {
-      console.log("Creating action");
+      logger.info("Creating action");
       action = await management.actions
         .create({
           name: actionName,
@@ -114,7 +154,7 @@ export const setupAuth0Environment = async ({
         id: action?.id,
       });
     } else {
-      console.log("Action already exists");
+      logger.info("Action already exists");
     }
 
     // Add action to post-login flow
@@ -140,8 +180,10 @@ export const setupAuth0Environment = async ({
       clientSecret: client.client_secret,
       audience,
       issuerURL: `https://${domain}/`,
+      domain,
     };
   } catch (error) {
-    console.error(error);
+    logger.error((error as Error).message);
+    throw error;
   }
-};
+}

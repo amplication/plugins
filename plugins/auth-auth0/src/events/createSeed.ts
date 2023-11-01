@@ -33,7 +33,7 @@ export const beforeCreateSeed = async (
   const template = await readFile(seedTemplatePath);
   const seedProperties = createAuthEntityObjectCustomProperties(
     authEntity,
-    defaultUser,
+    defaultUser || {},
   );
 
   const templateMapping = {
