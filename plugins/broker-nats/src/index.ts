@@ -14,12 +14,11 @@ import {
   Module,
   ModuleMap,
 } from "@amplication/code-gen-types";
-import { parse, removeTSVariableDeclares } from "@amplication/code-gen-utils";
 import { readFile } from "fs/promises";
 import { merge } from "lodash";
 import { join, resolve } from "path";
-import { print } from "recast";
 import { NATS_PORT, staticsPath, templatesPath } from "./constants";
+import { builders } from "ast-types";
 
 class NatsPlugin implements AmplicationPlugin {
   static moduleFile: Module | undefined;
@@ -31,13 +30,15 @@ class NatsPlugin implements AmplicationPlugin {
       CreateServerDockerCompose: {
         before: this.beforeCrateServerDockerCompose,
       },
+      CreateServerDockerComposeDev: {
+        before: this.beforeCrateServerDockerCompose,
+      },
       CreateServerDotEnv: {
         before: this.beforeCreateServerDotEnv,
       },
       CreateServerPackageJson: {
         before: this.beforeCreateServerPackageJson,
       },
-
       CreateMessageBroker: {
         before: this.beforeCreateBroker,
       },
@@ -104,8 +105,8 @@ class NatsPlugin implements AmplicationPlugin {
   ): CreateServerPackageJsonParams {
     const myValues = {
       dependencies: {
-        "@nestjs/microservices": "^9.3.10",
-        nats: "^2.13.1",
+        "@nestjs/microservices": "10.2.7",
+        nats: "2.17.0",
       },
     };
     eventParams.updateProperties.forEach((updateProperty) =>
@@ -130,13 +131,10 @@ class NatsPlugin implements AmplicationPlugin {
     const filePath = resolve(templatesPath, fileName);
     const file = await readFile(filePath, "utf8");
 
-    const astFile = parse(file.replaceAll("SERVICE_NAME", name));
-    removeTSVariableDeclares(astFile);
-
     const path = join(serverDirectories.messageBrokerDirectory, fileName);
 
     const modules = new ModuleMap(context.logger);
-    await modules.set({ code: print(astFile).code, path });
+    await modules.set({ code: file.replaceAll("SERVICE_NAME", name), path });
     return modules;
   }
   async beforeCreateServerAppModule(
@@ -147,7 +145,17 @@ class NatsPlugin implements AmplicationPlugin {
     if (!file) {
       throw new Error("Nats module file not found");
     }
-    await eventParams.modulesFiles.set(file);
+
+    const natsModuleId = builders.identifier("NatsModule");
+
+    const importArray = builders.arrayExpression([
+      natsModuleId,
+      ...eventParams.templateMapping["MODULES"].elements,
+    ]);
+
+    eventParams.templateMapping["MODULES"] = importArray;
+
+    eventParams.modulesFiles.set(file);
     return eventParams;
   }
 
@@ -174,19 +182,19 @@ class NatsPlugin implements AmplicationPlugin {
   ): Promise<ModuleMap> {
     const { serverDirectories } = context;
     const { messageBrokerDirectory } = serverDirectories;
-    const fileName = "nats.service.ts";
-    const filePath = resolve(staticsPath, fileName);
+    const serviceFileName = "nats.service.ts";
+    const serviceFilePath = resolve(staticsPath, serviceFileName);
 
-    const file = await readFile(filePath, "utf8");
-    const path = join(messageBrokerDirectory, fileName);
+    const serviceFile = await readFile(serviceFilePath, "utf8");
+    const servicePath = join(messageBrokerDirectory, serviceFileName);
     const controllerFileName = "nats.controller.ts";
     const controllerFilePath = resolve(staticsPath, controllerFileName);
 
     const controllerFile = await readFile(controllerFilePath, "utf8");
-    const controllerPath = join(messageBrokerDirectory, fileName);
+    const controllerPath = join(messageBrokerDirectory, controllerFileName);
 
     const modules = new ModuleMap(context.logger);
-    await modules.set({ code: file, path });
+    await modules.set({ code: serviceFile, path: servicePath });
     await modules.set({
       code: controllerFile,
       path: controllerPath,

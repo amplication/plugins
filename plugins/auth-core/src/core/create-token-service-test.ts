@@ -1,7 +1,6 @@
-import { print } from "@amplication/code-gen-utils";
+import { print, readFile } from "@amplication/code-gen-utils";
 import { EnumAuthProviderType } from "../types";
 import { DsgContext, Module } from "@amplication/code-gen-types";
-import { readFile } from "@amplication/code-gen-utils";
 import { join } from "path";
 import { templatesPath } from "../constants";
 

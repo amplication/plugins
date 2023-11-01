@@ -1,4 +1,3 @@
-import assert from "assert";
 import { builders, namedTypes } from "ast-types";
 import {
   EnumEntityAction,

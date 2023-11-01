@@ -4,16 +4,16 @@ import { Settings } from "./types";
 import defaultSettings from "../.amplicationrc.json";
 
 export const getPluginSettings = (
-  pluginInstallations: PluginInstallation[]
+  pluginInstallations: PluginInstallation[],
 ): Settings => {
   const plugin = pluginInstallations.find(
-    (plugin) => plugin.npm === PackageName
+    (plugin) => plugin.npm === PackageName,
   );
 
   const userSettings = plugin?.settings ?? {};
 
   const settings: Settings = {
-    ...defaultSettings,
+    ...defaultSettings.settings,
     ...userSettings,
   };
 
