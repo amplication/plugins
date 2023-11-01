@@ -28,6 +28,7 @@ on:
           - "integration-openai"
           - "observability-opentelemetry"
           - "provisioning-terraform-aws-deployment-ecs"
+          - "provisioning-terraform-aws-database-rds"
           - "provisioning-terraform-aws-repository-ecr"
           - "provisioning-terraform-aws-core"
           - "swagger-apibody"
