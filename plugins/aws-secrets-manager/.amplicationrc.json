@@ -1,0 +1,9 @@
+{
+    "settings": {
+        "awsRegion": "us-east-1",
+        "fetchMode": "ON_DEMAND"
+    },
+    "systemSettings": {
+        "requireAuthenticationEntity": "false"
+    }
+}
