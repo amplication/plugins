@@ -1,5 +1,5 @@
 {
-    "name": "@amplication/secrets-manager-aws-secret-manager",
+    "name": "@amplication/plugin-secrets-manager-aws-secret-manager",
     "version": "1.0.0",
     "description": "Amplication plugin for AWS Secrets Manager",
     "main": "dist/index.js",
