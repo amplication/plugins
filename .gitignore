@@ -1,36 +1,41 @@
-# Mac/OSX
-.DS_Store
+# See http://help.github.com/ignore-files/ for more about ignoring files.
 
-# Private Files
-*.csv
-*.csv.gz
-*.tsv
-*.tsv.gz
-*.xlsx
+# compiled output
+dist
+tmp
+/out-tsc
 
-# Build Files
-dist/
+# dependencies
+node_modules
 
-# Private Node Modules
-node_modules/
-creds.js
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
 
-# VSCode
+# IDE - VSCode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-*.code-workspace
 
-# Local History for Visual Studio Code
-.history/
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
 
-# Common credential files
-**/credentials.json
-**/client_secrets.json
-**/client_secret.json
-*creds*
-*.dat
-*password*
-*.httr-oauth*
+# System Files
+.DS_Store
+Thumbs.db
+
+.nx/cache
