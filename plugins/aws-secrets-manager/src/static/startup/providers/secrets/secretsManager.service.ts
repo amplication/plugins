@@ -1,6 +1,7 @@
 import { Injectable, Inject } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { SecretsManagerServiceBase } from "./base/secretsManager.service.base";
+import { Secrets } from "./secrets";
 
 @Injectable()
 export class SecretsManagerService extends SecretsManagerServiceBase {
@@ -12,7 +13,7 @@ export class SecretsManagerService extends SecretsManagerServiceBase {
     super(configService);
   }
 
-  async getSecret<T>(key: string): Promise<T | null> {
+  async getSecret<T>(key: Secrets): Promise<T | null> {
     return this.secrets[key] as any
   }
 }

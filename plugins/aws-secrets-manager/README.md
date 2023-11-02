@@ -21,7 +21,7 @@ Example:
 
 ```json
 "fetchMode": "STARTUP",
-"secretsNames": [
+"secretNames": [
     "/secretA",
     "/path/path2/secretB",
     "/path/path2/path3/secretC"
@@ -36,6 +36,15 @@ The secret name must be formatted in either of the following way:
 - `<secret_path>:<secret_name>` - This format specifies that a single secret named `secret_name` needs to be loaded from the `secret_path` path [applies to both fetch mode].
 - `<secret_path>` - This format specifies that all the secrets that are in the `secret_path` needs to be loaded [only applies to `STARTUP` fetch mode].
 
+## Usage
+
+To use this plugin:
+
+1. Enable the plugin in your Amplication app.
+2. Make sure to [setup your credentials](https://docs.aws.amazon.com/sdkref/latest/guide/creds-config-files.html) locally that will be used to fetch the secrets.
+
+This plugin will override your default implementation for `SecretsManagerService` to use the secrets from AWS Secrets Manager
+
 ## Scripts
 
 ### `build`
@@ -45,12 +54,3 @@ Running `npm run build` will bundle your plugin with Webpack for production.
 ### `dev`
 
 Running `npm run dev` will watch your plugin's source code and automatically bundle it with every change.
-
-## Usage
-
-To use this plugin:
-
-1. Enable the plugin in your Amplication app.
-2. Make sure to [setup your credentials](https://docs.aws.amazon.com/sdkref/latest/guide/creds-config-files.html) locally that will be used to fetch the secrets.
-
-This plugin will override your default implementation for `SecretsManagerService` to use the secrets from AWS Secrets Manager
