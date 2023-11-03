@@ -99,7 +99,7 @@ async function setupAuth0Environment({
 
     // Try to find the API by name and create it if it doesn't exist
     const apis = await management.resourceServers.getAll();
-    let api = apis.data.find((api) => api.name === apiName);
+    let api = apis.data.find((api) => api.name === apiName || api.identifier === audience);
     if (!api) {
       logger.info("Creating API");
       api = await management.resourceServers
