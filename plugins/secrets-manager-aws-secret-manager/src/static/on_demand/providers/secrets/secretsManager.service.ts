@@ -29,8 +29,10 @@ export class SecretsManagerService extends SecretsManagerServiceBase {
       )
 
       return secrets_list[secret_name] as any
-    } catch(err: any) {
-      this.logger.warn(`Error while loading secret named "${secret_name}" from secret id "${secret_id}" - ${err.message}`, "SecretsManager")
+    } catch(err: unknown) {
+      if (err instanceof Error) {
+        this.logger.error(`Error while loading secret named "${secret_name}" from secret id "${secret_id}" - ${err.message}`, "SecretsManager")
+      }
     }
 
     return null

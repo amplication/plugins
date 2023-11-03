@@ -8,16 +8,16 @@ import { Secrets } from "./secrets";
 
 export const secretsManagerFactory = {
   provide: "AWS_SECRETS_MANAGER",
-  useFactory: async (configService: ConfigService): Promise<Record<string, string>> => {
+  useFactory: async (configService: ConfigService) => {
     const logger = new Logger()
 
     const client = new SecretsManagerClient({
       region: configService.get("AWS_REGION")
     })
 
-    var secrets: Record<string, string> = {}
+    var secrets: Partial<Record<Secrets, unknown>> = {}
 
-    for (const [name, path] of Object.entries(Secrets)) {
+    for (const path of Object.values(Secrets)) {
       const [secret_id, secret_name] = path.split(":")
 
       try {
@@ -25,16 +25,18 @@ export const secretsManagerFactory = {
 
         const secrets_list: Record<string, string> = JSON.parse(
           response.SecretString ? response.SecretString :
-            response.SecretBinary ? new TextDecoder().decode(response.SecretBinary) :
-            "{}"
+          response.SecretBinary ? new TextDecoder().decode(response.SecretBinary) :
+          "{}"
         )
 
         secrets = {
           ...secrets,
-          ...(secret_name ? { [name]: secrets_list[secret_name] } : secrets_list)
+          [path]: (secret_name ? secrets_list[secret_name] : secrets_list)
         }
-      } catch(err) {
-        logger.warn(`Error while loading secret named "${secret_name}" from secret id "${secret_id}" - ${err.message}`, "SecretsManager")
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          logger.error(`Error while loading secret named "${secret_name}" from secret id "${secret_id}" - ${err.message}`, "SecretsManager")
+        }
       }
     }
 

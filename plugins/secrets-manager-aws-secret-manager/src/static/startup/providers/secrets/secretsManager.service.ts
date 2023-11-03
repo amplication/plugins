@@ -7,7 +7,7 @@ import { Secrets } from "./secrets";
 export class SecretsManagerService extends SecretsManagerServiceBase {
   constructor(
     @Inject("AWS_SECRETS_MANAGER")
-    protected readonly secrets: Record<string, any>,
+    protected readonly secrets: Partial<Record<Secrets, unknown>>,
     protected readonly configService: ConfigService
   ) {
     super(configService);
