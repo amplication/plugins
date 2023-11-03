@@ -1,7 +1,4 @@
-import {
-    CreateSeedParams,
-    DsgContext
-} from "@amplication/code-gen-types";
+import { CreateSeedParams, DsgContext } from "@amplication/code-gen-types";
 import { parse } from "@amplication/code-gen-utils";
 import { mock } from "jest-mock-extended";
 import { prettyPrint } from "recast";
@@ -19,18 +16,16 @@ describe("Testing beforeCreateSeed hook", () => {
       pluginInstallations: [{ npm: name }],
       resourceInfo: {
         settings: {
-            authEntityName: "TheAuthEntity"
-        }
+          authEntityName: "TheAuthEntity",
+        },
       },
-      entities: [
-            { name: "TheAuthEntity" }
-      ]
+      entities: [{ name: "TheAuthEntity" }],
     });
     params = {
-        ...mock<CreateSeedParams>(),
-        template: parse(initialTemplate),
-        templateMapping: {}
-    }
+      ...mock<CreateSeedParams>(),
+      template: parse(initialTemplate),
+      templateMapping: {},
+    };
   });
 
   it("should correctly alter the template", async () => {
@@ -63,7 +58,7 @@ async function seed() {
 
   console.info("Seeded database successfully");
 }
-`
+`;
 
 const correctOutputTemplate = `
 import { Salt, parseSalt } from "../src/auth/password.service";
@@ -107,6 +102,6 @@ async function seed(bcryptSalt: Salt) {
 
   console.info("Seeded database successfully");
 }
-`
+`;
 
 const prettyCode = (code: string) => prettyPrint(parse(code)).code;

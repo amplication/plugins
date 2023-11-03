@@ -32,10 +32,7 @@ describe("Testing beforeCreateServerAppModule hook", () => {
     };
   });
   it("should add the necessary module IDs to the modules array", () => {
-    const { templateMapping } = plugin.beforeCreateAppModule(
-      context,
-      params
-    );
+    const { templateMapping } = plugin.beforeCreateAppModule(context, params);
     let expectedModules = prettyCode("[ACLModule, AuthModule];").slice(0, -1);
     const modulesCode = prettyPrint(templateMapping.MODULES).code;
     expect(modulesCode).toBe(expectedModules);

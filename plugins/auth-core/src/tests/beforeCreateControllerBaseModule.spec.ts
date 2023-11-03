@@ -1,9 +1,9 @@
 import {
-    CreateEntityControllerBaseParams,
-    DsgContext,
-    EnumDataType,
-    EnumEntityAction,
-    EnumEntityPermissionType
+  CreateEntityControllerBaseParams,
+  DsgContext,
+  EnumDataType,
+  EnumEntityAction,
+  EnumEntityPermissionType,
 } from "@amplication/code-gen-types";
 import { parse } from "@amplication/code-gen-utils";
 import { mock } from "jest-mock-extended";
@@ -23,97 +23,100 @@ describe("Testing beforeCreateControllerBaseModule hook", () => {
       pluginInstallations: [{ npm: name }],
     });
     params = mock<CreateEntityControllerBaseParams>({
-        controllerBaseId: builders.identifier("TheControllerBase"),
-        entity: {
-            name: "User",
-            fields: [
-                { name: "username", dataType: EnumDataType.SingleLineText },
-                { name: "password", dataType: EnumDataType.SingleLineText },
-                { name: "id", dataType: EnumDataType.Id }
+      controllerBaseId: builders.identifier("TheControllerBase"),
+      entity: {
+        name: "User",
+        fields: [
+          { name: "username", dataType: EnumDataType.SingleLineText },
+          { name: "password", dataType: EnumDataType.SingleLineText },
+          { name: "id", dataType: EnumDataType.Id },
+        ],
+        permissions: [
+          {
+            action: EnumEntityAction.Create,
+            permissionFields: [],
+            permissionRoles: [
+              {
+                resourceRole: {
+                  name: "admin",
+                },
+              },
             ],
-            permissions: [
-                {
-                    action: EnumEntityAction.Create,
-                    permissionFields: [],
-                    permissionRoles: [
-                        {
-                            resourceRole: {
-                                name: "admin"
-                            }
-                        }
-                    ],
-                    type: EnumEntityPermissionType.Granular
-                },
-                {
-                    action: EnumEntityAction.Delete,
-                    type: EnumEntityPermissionType.Disabled
-                },
-                {
-                    action: EnumEntityAction.Search,
-                    permissionFields: [],
-                    type: EnumEntityPermissionType.Public
-                },
-                {
-                    action: EnumEntityAction.Update,
-                    permissionFields: [
-                        {
-                            field: { name: "username" },
-                            permissionRoles: [
-                                { resourceRole: { name: "admin" } },
-                                { resourceRole: { name: "user" } }
-                            ]
-                        },
-                        {
-                            field: { name: "password" },
-                            permissionRoles: [
-                                { resourceRole: { name: "admin" } },
-                                { resourceRole: { name: "user" } }
-                            ]
-                        },
-                        {
-                            field: { name: "id" },
-                            permissionRoles: [ { resourceRole: { name: "admin" } } ]
-                        }
-                    ],
-                    permissionRoles: [
-                        { resourceRole: { name: "admin" } },
-                        { resourceRole: { name: "user" } }
-                    ],
-                    type: EnumEntityPermissionType.Granular
-                },
-                {
-                    action: EnumEntityAction.View,
-                    permissionFields: [],
-                    type: EnumEntityPermissionType.AllRoles
-                }
-            ]
-        }
+            type: EnumEntityPermissionType.Granular,
+          },
+          {
+            action: EnumEntityAction.Delete,
+            type: EnumEntityPermissionType.Disabled,
+          },
+          {
+            action: EnumEntityAction.Search,
+            permissionFields: [],
+            type: EnumEntityPermissionType.Public,
+          },
+          {
+            action: EnumEntityAction.Update,
+            permissionFields: [
+              {
+                field: { name: "username" },
+                permissionRoles: [
+                  { resourceRole: { name: "admin" } },
+                  { resourceRole: { name: "user" } },
+                ],
+              },
+              {
+                field: { name: "password" },
+                permissionRoles: [
+                  { resourceRole: { name: "admin" } },
+                  { resourceRole: { name: "user" } },
+                ],
+              },
+              {
+                field: { name: "id" },
+                permissionRoles: [{ resourceRole: { name: "admin" } }],
+              },
+            ],
+            permissionRoles: [
+              { resourceRole: { name: "admin" } },
+              { resourceRole: { name: "user" } },
+            ],
+            type: EnumEntityPermissionType.Granular,
+          },
+          {
+            action: EnumEntityAction.View,
+            permissionFields: [],
+            type: EnumEntityPermissionType.AllRoles,
+          },
+        ],
+      },
     });
     params.template = parse(initialTemplate);
     params.templateMapping = {
-        CONTROLLER_BASE: builders.identifier("TheControllerBase"),
-        CREATE_ENTITY_FUNCTION: builders.identifier("create"),
-        FIND_MANY_ENTITY_FUNCTION: builders.identifier("findMany"),
-        FIND_ONE_ENTITY_FUNCTION: builders.identifier("findOne"),
-        UPDATE_ENTITY_FUNCTION: builders.identifier("update"),
-        DELETE_ENTITY_FUNCTION: builders.identifier("delete"),
-        ENTITY: builders.identifier("TheEntity"),
-        SELECT: builders.objectExpression([]),
-        CREATE_DATA_MAPPING: builders.objectExpression([]),
-        UPDATE_DATA_MAPPING: builders.objectExpression([]),
-        WHERE_UNIQUE_INPUT: builders.identifier("TheWhereInputUnique"),
-        CREATE_INPUT: builders.identifier("TheCreateInput"),
-        FIND_MANY_ARGS: builders.identifier("TheFindManyArgs"),
-        DELETE_PATH: builders.stringLiteral("/delete"),
-        UPDATE_PATH: builders.stringLiteral("/update"),
-        FIND_ONE_PATH: builders.stringLiteral("/findOne"),
-        UPDATE_INPUT: builders.identifier("TheUpdateInput"),
-        SERVICE: builders.identifier("TheService"),
-        SWAGGER_API_AUTH_FUNCTION: builders.identifier("ApiBasicAuth")
-    }
+      CONTROLLER_BASE: builders.identifier("TheControllerBase"),
+      CREATE_ENTITY_FUNCTION: builders.identifier("create"),
+      FIND_MANY_ENTITY_FUNCTION: builders.identifier("findMany"),
+      FIND_ONE_ENTITY_FUNCTION: builders.identifier("findOne"),
+      UPDATE_ENTITY_FUNCTION: builders.identifier("update"),
+      DELETE_ENTITY_FUNCTION: builders.identifier("delete"),
+      ENTITY: builders.identifier("TheEntity"),
+      SELECT: builders.objectExpression([]),
+      CREATE_DATA_MAPPING: builders.objectExpression([]),
+      UPDATE_DATA_MAPPING: builders.objectExpression([]),
+      WHERE_UNIQUE_INPUT: builders.identifier("TheWhereInputUnique"),
+      CREATE_INPUT: builders.identifier("TheCreateInput"),
+      FIND_MANY_ARGS: builders.identifier("TheFindManyArgs"),
+      DELETE_PATH: builders.stringLiteral("/delete"),
+      UPDATE_PATH: builders.stringLiteral("/update"),
+      FIND_ONE_PATH: builders.stringLiteral("/findOne"),
+      UPDATE_INPUT: builders.identifier("TheUpdateInput"),
+      SERVICE: builders.identifier("TheService"),
+      SWAGGER_API_AUTH_FUNCTION: builders.identifier("ApiBasicAuth"),
+    };
   });
   it("should correctly alter the controller base module", () => {
-    const { template } = plugin.beforeCreateControllerBaseModule(context, params);
+    const { template } = plugin.beforeCreateControllerBaseModule(
+      context,
+      params,
+    );
     const code = prettyPrint(template).code;
     const expectedCode = prettyCode(correctOutputTemplate);
     expect(code).toStrictEqual(expectedCode);
@@ -210,7 +213,7 @@ export class CONTROLLER_BASE {
     }
   }
 }
-`
+`;
 
 const correctOutputTemplate = `
 import * as nestAccessControl from "nest-access-control";
@@ -347,6 +350,6 @@ export class TheControllerBase {
   }
 
 }
-`
+`;
 
 const prettyCode = (code: string) => prettyPrint(parse(code)).code;

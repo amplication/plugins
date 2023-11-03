@@ -1,6 +1,6 @@
 import {
-    CreateEntityModuleParams,
-    DsgContext
+  CreateEntityModuleParams,
+  DsgContext,
 } from "@amplication/code-gen-types";
 import { parse } from "@amplication/code-gen-utils";
 import { mock } from "jest-mock-extended";
@@ -20,18 +20,18 @@ describe("Testing beforeCreateEntityModule hook", () => {
       pluginInstallations: [{ npm: name }],
     });
     params = {
-        ...mock<CreateEntityModuleParams>(),
-        template: parse(templateBefore),
-        templateMapping: {
-            MODULE_BASE: builders.identifier("TheModuleBase"),
-            CONTROLLER: builders.identifier("TheControllerBase"),
-            PROVIDERS_ARRAY: builders.arrayExpression([
-                builders.identifier("TheService"),
-                builders.identifier("TheResolver")
-            ]),
-            SERVICE: builders.identifier("TheService"),
-            MODULE: builders.identifier("TheModule")
-        }
+      ...mock<CreateEntityModuleParams>(),
+      template: parse(templateBefore),
+      templateMapping: {
+        MODULE_BASE: builders.identifier("TheModuleBase"),
+        CONTROLLER: builders.identifier("TheControllerBase"),
+        PROVIDERS_ARRAY: builders.arrayExpression([
+          builders.identifier("TheService"),
+          builders.identifier("TheResolver"),
+        ]),
+        SERVICE: builders.identifier("TheService"),
+        MODULE: builders.identifier("TheModule"),
+      },
     };
   });
   it("should correctly alter the entity module", async () => {
@@ -52,7 +52,7 @@ const templateBefore = `import { Module } from "@nestjs/common";
 })
 export class MODULE {}
 
-`
+`;
 
 const correctTemplate = `import { Module, forwardRef } from "@nestjs/common";
 import { AuthModule } from "../auth/auth.module";
@@ -64,6 +64,6 @@ import { AuthModule } from "../auth/auth.module";
     exports: [TheService],
 })
 export class TheModule {}
-`
+`;
 
 const prettyCode = (code: string) => prettyPrint(parse(code)).code;

@@ -1,9 +1,9 @@
 import {
-    CreateEntityResolverToManyRelationMethodsParams,
-    DsgContext,
-    EnumDataType,
-    EnumEntityAction,
-    EnumEntityPermissionType
+  CreateEntityResolverToManyRelationMethodsParams,
+  DsgContext,
+  EnumDataType,
+  EnumEntityAction,
+  EnumEntityPermissionType,
 } from "@amplication/code-gen-types";
 import { parse } from "@amplication/code-gen-utils";
 import { mock } from "jest-mock-extended";
@@ -23,39 +23,40 @@ describe("Testing beforeCreateEntityResolverToManyRelationMethods hook", () => {
       pluginInstallations: [{ npm: name }],
     });
     params = mock<CreateEntityResolverToManyRelationMethodsParams>({
-        field: {
-            properties: {
-                relatedEntity: {
-                    name: "TheEntity",
-                    fields: [
-                        { name: "username", dataType: EnumDataType.SingleLineText },
-                        { name: "password", dataType: EnumDataType.SingleLineText },
-                        { name: "id", dataType: EnumDataType.Id }
-                    ],
-                    permissions: [
-                        {
-                            action: EnumEntityAction.Search,
-                            permissionFields: [],
-                            type: EnumEntityPermissionType.AllRoles
-                        }
-                    ]
-                }
-            }
-        }
+      field: {
+        properties: {
+          relatedEntity: {
+            name: "TheEntity",
+            fields: [
+              { name: "username", dataType: EnumDataType.SingleLineText },
+              { name: "password", dataType: EnumDataType.SingleLineText },
+              { name: "id", dataType: EnumDataType.Id },
+            ],
+            permissions: [
+              {
+                action: EnumEntityAction.Search,
+                permissionFields: [],
+                type: EnumEntityPermissionType.AllRoles,
+              },
+            ],
+          },
+        },
+      },
     });
-    params.toManyFile = parse(initialTemplate),
-    params.toManyMapping = {
+    (params.toManyFile = parse(initialTemplate)),
+      (params.toManyMapping = {
         RELATED_ENTITY: builders.identifier("TheEntity"),
         SERVICE: builders.identifier("TheService"),
         ENTITY: builders.identifier("User"),
         FIND_PROPERTY: builders.identifier("theFindProp"),
         FIND_MANY: builders.identifier("findMany"),
         ARGS: builders.identifier("TheFindManyArgs"),
-        FIND_MANY_FIELD_NAME: builders.identifier("theFindManyField")
-    }
+        FIND_MANY_FIELD_NAME: builders.identifier("theFindManyField"),
+      });
   });
   it("should correctly alter the resolver to many relations template", () => {
-    const { toManyFile } = plugin.beforeCreateEntityResolverToManyRelationMethods(context, params);
+    const { toManyFile } =
+      plugin.beforeCreateEntityResolverToManyRelationMethods(context, params);
     const code = prettyPrint(toManyFile).code;
     const expectedCode = prettyCode(correctOutputTemplate);
     expect(code).toStrictEqual(expectedCode);
@@ -80,7 +81,7 @@ export class Mixin {
     return results;
   }
 }
-`
+`;
 
 const correctOutputTemplate = `
 export class Mixin {
@@ -106,6 +107,6 @@ export class Mixin {
     return results;
   }
 }
-`
+`;
 
 const prettyCode = (code: string) => prettyPrint(parse(code)).code;

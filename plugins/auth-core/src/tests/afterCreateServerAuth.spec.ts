@@ -1,9 +1,9 @@
 import {
-    BuildLogger,
-    CreateServerAuthParams,
-    DsgContext,
-    EnumDataType,
-    ModuleMap,
+  BuildLogger,
+  CreateServerAuthParams,
+  DsgContext,
+  EnumDataType,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
 import normalize from "normalize-path";
@@ -22,55 +22,60 @@ describe("Testing afterCreateServerAuth hook", () => {
   beforeEach(() => {
     plugin = new AuthCorePlugin();
     context = mock<DsgContext>({
-        pluginInstallations: [{ npm: name }],
-        serverDirectories: {
-            srcDirectory: "src",
-            authDirectory: "src/auth",
-            scriptsDirectory: "scripts"
+      pluginInstallations: [{ npm: name }],
+      serverDirectories: {
+        srcDirectory: "src",
+        authDirectory: "src/auth",
+        scriptsDirectory: "scripts",
+      },
+      entities: [
+        {
+          name: "AuthEntity",
+          fields: [{ name: "id", dataType: EnumDataType.Id }],
         },
-        entities: [
-            { name: "AuthEntity", fields: [
-                { name: "id", dataType: EnumDataType.Id }
-            ] }
-        ],
-        resourceInfo: { settings: { authEntityName: "AuthEntity" } },
-        utils: {
-            importStaticModules: readStaticModulesInner
-        }
+      ],
+      resourceInfo: { settings: { authEntityName: "AuthEntity" } },
+      utils: {
+        importStaticModules: readStaticModulesInner,
+      },
     });
     params = mock<CreateServerAuthParams>();
     modules = new ModuleMap(mock<BuildLogger>());
   });
   it("should add the necessary auth modules", async () => {
-    const newModules = await plugin.afterCreateServerAuth(context, params, modules);
+    const newModules = await plugin.afterCreateServerAuth(
+      context,
+      params,
+      modules,
+    );
     const expectedModuleNames = [
-        "src/auth/AuthEntityInfo.ts",
-        "src/auth/ITokenService.ts",
-        "src/tests/auth/constants.ts",
-        "src/auth/auth.controller.ts",
-        "src/auth/auth.resolver.ts",
-        "src/auth/auth.service.ts",
-        "src/auth/IAuthStrategy.ts",
-        "src/auth/auth.service.spec.ts",
-        "src/auth/userData.decorator.ts",
-        "scripts/customSeed.ts",
-        "src/interceptors/aclFilterResponse.interceptor.ts",
-        "src/interceptors/aclValidateRequest.interceptor.ts",
-        "src/auth/abac.util.ts",
-        "src/auth/acl.module.ts",
-        "src/auth/constants.ts",
-        "src/auth/Credentials.ts",
-        "src/auth/gqlAC.guard.ts",
-        "src/auth/gqlUserRoles.decorator.ts",
-        "src/auth/LoginArgs.ts",
-        "src/auth/token.service.ts"
+      "src/auth/AuthEntityInfo.ts",
+      "src/auth/ITokenService.ts",
+      "src/tests/auth/constants.ts",
+      "src/auth/auth.controller.ts",
+      "src/auth/auth.resolver.ts",
+      "src/auth/auth.service.ts",
+      "src/auth/IAuthStrategy.ts",
+      "src/auth/auth.service.spec.ts",
+      "src/auth/userData.decorator.ts",
+      "scripts/customSeed.ts",
+      "src/interceptors/aclFilterResponse.interceptor.ts",
+      "src/interceptors/aclValidateRequest.interceptor.ts",
+      "src/auth/abac.util.ts",
+      "src/auth/acl.module.ts",
+      "src/auth/constants.ts",
+      "src/auth/Credentials.ts",
+      "src/auth/gqlAC.guard.ts",
+      "src/auth/gqlUserRoles.decorator.ts",
+      "src/auth/LoginArgs.ts",
+      "src/auth/token.service.ts",
     ];
-    for(const name of expectedModuleNames) {
-        try {
-            expect(newModules.get(name)).toBeTruthy();
-        } catch(err) {
-            throw new Error(`Failed to find the module ${name}`);
-        }
+    for (const name of expectedModuleNames) {
+      try {
+        expect(newModules.get(name)).toBeTruthy();
+      } catch (err) {
+        throw new Error(`Failed to find the module ${name}`);
+      }
     }
   });
 });
@@ -84,7 +89,7 @@ describe("Testing afterCreateServerAuth hook", () => {
  */
 export async function readStaticModulesInner(
   source: string,
-  basePath: string
+  basePath: string,
 ): Promise<ModuleMap> {
   const directory = `${normalize(source)}/`;
   const staticModules = await fg(`${directory}**/*`, {
@@ -92,15 +97,15 @@ export async function readStaticModulesInner(
     dot: true,
     ignore: ["**.js", "**.js.map", "**.d.ts"],
   });
-    const filesToFilter = /(\._.*)|(.DS_Store)$/;
+  const filesToFilter = /(\._.*)|(.DS_Store)$/;
   const modules = await Promise.all(
     staticModules
       .sort()
       .filter(
         (module) =>
           !filesToFilter.test(
-            module.replace(directory, basePath ? basePath + "/" : "")
-          )
+            module.replace(directory, basePath ? basePath + "/" : ""),
+          ),
       )
       .map(async (module) => {
         const encoding = getFileEncoding(module);
@@ -108,7 +113,7 @@ export async function readStaticModulesInner(
           path: module.replace(directory, basePath ? basePath + "/" : ""),
           code: await fs.promises.readFile(module, encoding),
         };
-      })
+      }),
   );
   const moduleMap: ModuleMap = new ModuleMap(mock<BuildLogger>());
   for await (const module of modules) {

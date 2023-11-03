@@ -1,9 +1,9 @@
 import {
-    CreateEntityControllerToManyRelationMethodsParams,
-    DsgContext,
-    EnumDataType,
-    EnumEntityAction,
-    EnumEntityPermissionType
+  CreateEntityControllerToManyRelationMethodsParams,
+  DsgContext,
+  EnumDataType,
+  EnumEntityAction,
+  EnumEntityPermissionType,
 } from "@amplication/code-gen-types";
 import { parse } from "@amplication/code-gen-utils";
 import { mock } from "jest-mock-extended";
@@ -23,144 +23,150 @@ describe("Testing beforeCreateEntityControllerToManyRelationMethods hook", () =>
       pluginInstallations: [{ npm: name }],
     });
     params = mock<CreateEntityControllerToManyRelationMethodsParams>({
-        entity: {
-            name: "User",
+      entity: {
+        name: "User",
+        fields: [
+          { name: "username", dataType: EnumDataType.SingleLineText },
+          { name: "password", dataType: EnumDataType.SingleLineText },
+          { name: "id", dataType: EnumDataType.Id },
+        ],
+        permissions: [
+          {
+            action: EnumEntityAction.Create,
+            permissionFields: [],
+            permissionRoles: [
+              {
+                resourceRole: {
+                  name: "admin",
+                },
+              },
+            ],
+            type: EnumEntityPermissionType.Granular,
+          },
+          {
+            action: EnumEntityAction.Delete,
+            type: EnumEntityPermissionType.Disabled,
+          },
+          {
+            action: EnumEntityAction.Search,
+            permissionFields: [],
+            type: EnumEntityPermissionType.Public,
+          },
+          {
+            action: EnumEntityAction.Update,
+            permissionFields: [
+              {
+                field: { name: "username" },
+                permissionRoles: [
+                  { resourceRole: { name: "admin" } },
+                  { resourceRole: { name: "user" } },
+                ],
+              },
+              {
+                field: { name: "password" },
+                permissionRoles: [
+                  { resourceRole: { name: "admin" } },
+                  { resourceRole: { name: "user" } },
+                ],
+              },
+              {
+                field: { name: "id" },
+                permissionRoles: [{ resourceRole: { name: "admin" } }],
+              },
+            ],
+            permissionRoles: [
+              { resourceRole: { name: "admin" } },
+              { resourceRole: { name: "user" } },
+            ],
+            type: EnumEntityPermissionType.Granular,
+          },
+          {
+            action: EnumEntityAction.View,
+            permissionFields: [],
+            type: EnumEntityPermissionType.AllRoles,
+          },
+        ],
+      },
+      field: {
+        properties: {
+          relatedEntity: {
+            name: "TheEntity",
             fields: [
-                { name: "username", dataType: EnumDataType.SingleLineText },
-                { name: "password", dataType: EnumDataType.SingleLineText },
-                { name: "id", dataType: EnumDataType.Id }
+              { name: "username", dataType: EnumDataType.SingleLineText },
+              { name: "password", dataType: EnumDataType.SingleLineText },
+              { name: "id", dataType: EnumDataType.Id },
             ],
             permissions: [
-                {
-                    action: EnumEntityAction.Create,
-                    permissionFields: [],
+              {
+                action: EnumEntityAction.Create,
+                permissionFields: [],
+                permissionRoles: [
+                  {
+                    resourceRole: {
+                      name: "admin",
+                    },
+                  },
+                ],
+                type: EnumEntityPermissionType.Granular,
+              },
+              {
+                action: EnumEntityAction.Delete,
+                type: EnumEntityPermissionType.Disabled,
+              },
+              {
+                action: EnumEntityAction.Search,
+                permissionFields: [],
+                type: EnumEntityPermissionType.Public,
+              },
+              {
+                action: EnumEntityAction.Update,
+                permissionFields: [
+                  {
+                    field: { name: "username" },
                     permissionRoles: [
-                        {
-                            resourceRole: {
-                                name: "admin"
-                            }
-                        }
+                      { resourceRole: { name: "admin" } },
+                      { resourceRole: { name: "user" } },
                     ],
-                    type: EnumEntityPermissionType.Granular
-                },
-                {
-                    action: EnumEntityAction.Delete,
-                    type: EnumEntityPermissionType.Disabled
-                },
-                {
-                    action: EnumEntityAction.Search,
-                    permissionFields: [],
-                    type: EnumEntityPermissionType.Public
-                },
-                {
-                    action: EnumEntityAction.Update,
-                    permissionFields: [
-                        {
-                            field: { name: "username" },
-                            permissionRoles: [
-                                { resourceRole: { name: "admin" } },
-                                { resourceRole: { name: "user" } }
-                            ]
-                        },
-                        {
-                            field: { name: "password" },
-                            permissionRoles: [
-                                { resourceRole: { name: "admin" } },
-                                { resourceRole: { name: "user" } }
-                            ]
-                        },
-                        {
-                            field: { name: "id" },
-                            permissionRoles: [ { resourceRole: { name: "admin" } } ]
-                        }
-                    ],
+                  },
+                  {
+                    field: { name: "password" },
                     permissionRoles: [
-                        { resourceRole: { name: "admin" } },
-                        { resourceRole: { name: "user" } }
+                      { resourceRole: { name: "admin" } },
+                      { resourceRole: { name: "user" } },
                     ],
-                    type: EnumEntityPermissionType.Granular
-                },
-                {
-                    action: EnumEntityAction.View,
-                    permissionFields: [],
-                    type: EnumEntityPermissionType.AllRoles
-                }
-            ]
+                  },
+                  {
+                    field: { name: "id" },
+                    permissionRoles: [{ resourceRole: { name: "admin" } }],
+                  },
+                ],
+                permissionRoles: [
+                  { resourceRole: { name: "admin" } },
+                  { resourceRole: { name: "user" } },
+                ],
+                type: EnumEntityPermissionType.Granular,
+              },
+              {
+                action: EnumEntityAction.View,
+                permissionFields: [],
+                type: EnumEntityPermissionType.AllRoles,
+              },
+            ],
+          },
         },
-        field: {
-            properties: {
-                relatedEntity: {
-                    name: "TheEntity",
-                    fields: [
-                        { name: "username", dataType: EnumDataType.SingleLineText },
-                        { name: "password", dataType: EnumDataType.SingleLineText },
-                        { name: "id", dataType: EnumDataType.Id }
-                    ],
-                    permissions: [
-                        {
-                            action: EnumEntityAction.Create,
-                            permissionFields: [],
-                            permissionRoles: [
-                                {
-                                    resourceRole: {
-                                        name: "admin"
-                                    }
-                                }
-                            ],
-                            type: EnumEntityPermissionType.Granular
-                        },
-                        {
-                            action: EnumEntityAction.Delete,
-                            type: EnumEntityPermissionType.Disabled
-                        },
-                        {
-                            action: EnumEntityAction.Search,
-                            permissionFields: [],
-                            type: EnumEntityPermissionType.Public
-                        },
-                        {
-                            action: EnumEntityAction.Update,
-                            permissionFields: [
-                                {
-                                    field: { name: "username" },
-                                    permissionRoles: [
-                                        { resourceRole: { name: "admin" } },
-                                        { resourceRole: { name: "user" } }
-                                    ]
-                                },
-                                {
-                                    field: { name: "password" },
-                                    permissionRoles: [
-                                        { resourceRole: { name: "admin" } },
-                                        { resourceRole: { name: "user" } }
-                                    ]
-                                },
-                                {
-                                    field: { name: "id" },
-                                    permissionRoles: [ { resourceRole: { name: "admin" } } ]
-                                }
-                            ],
-                            permissionRoles: [
-                                { resourceRole: { name: "admin" } },
-                                { resourceRole: { name: "user" } }
-                            ],
-                            type: EnumEntityPermissionType.Granular
-                        },
-                        {
-                            action: EnumEntityAction.View,
-                            permissionFields: [],
-                            type: EnumEntityPermissionType.AllRoles
-                        }
-                    ]
-                }
-            }
-        }
+      },
     });
-    params.toManyFile = parse(initialTemplate),
-    params.toManyMapping = {
-        RELATED_ENTITY_WHERE_UNIQUE_INPUT: builders.identifier("TheRelatedEntityWhereUniqueInput"),
-        RELATED_ENTITY_WHERE_INPUT: builders.identifier("TheRelatedEntityWhereInput"),
-        RELATED_ENTITY_FIND_MANY_ARGS: builders.identifier("TheRelatedEntityFindManyArgs"),
+    (params.toManyFile = parse(initialTemplate)),
+      (params.toManyMapping = {
+        RELATED_ENTITY_WHERE_UNIQUE_INPUT: builders.identifier(
+          "TheRelatedEntityWhereUniqueInput",
+        ),
+        RELATED_ENTITY_WHERE_INPUT: builders.identifier(
+          "TheRelatedEntityWhereInput",
+        ),
+        RELATED_ENTITY_FIND_MANY_ARGS: builders.identifier(
+          "TheRelatedEntityFindManyArgs",
+        ),
         RELATED_ENTITY: builders.identifier("TheEntity"),
         RELATED_ENTITY_NAME: builders.stringLiteral("TheEntity"),
         WHERE_UNIQUE_INPUT: builders.identifier("TheWhereUniqueInput"),
@@ -176,11 +182,12 @@ describe("Testing beforeCreateEntityControllerToManyRelationMethods hook", () =>
         DELETE_PATH: builders.stringLiteral("/delete"),
         UPDATE: builders.identifier("update"),
         UPDATE_PATH: builders.stringLiteral("/update"),
-        SELECT: builders.objectExpression([])
-    }
+        SELECT: builders.objectExpression([]),
+      });
   });
   it("should correctly alter the controller module", () => {
-    const { toManyFile } = plugin.beforeCreateEntityControllerToManyRelationMethods(context, params);
+    const { toManyFile } =
+      plugin.beforeCreateEntityControllerToManyRelationMethods(context, params);
     const code = prettyPrint(toManyFile).code;
     const expectedCode = prettyCode(correctOutputTemplate);
     expect(code).toStrictEqual(expectedCode);
@@ -262,7 +269,7 @@ export class Mixin {
   }
 }
 
-`
+`;
 
 const correctOutputTemplate = `
 export class Mixin {
@@ -354,6 +361,6 @@ export class Mixin {
   }
 }
 
-`
+`;
 
 const prettyCode = (code: string) => prettyPrint(parse(code)).code;

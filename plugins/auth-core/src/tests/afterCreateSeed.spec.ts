@@ -1,8 +1,8 @@
 import {
-    BuildLogger,
-    CreateSeedParams,
-    DsgContext,
-    ModuleMap
+  BuildLogger,
+  CreateSeedParams,
+  DsgContext,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
 import normalize from "normalize-path";
@@ -24,8 +24,8 @@ describe("Testing afterCreateSeed hook", () => {
       pluginInstallations: [{ npm: name }],
       serverDirectories: { scriptsDirectory: "scripts" },
       utils: {
-            importStaticModules: readStaticModulesInner
-        }
+        importStaticModules: readStaticModulesInner,
+      },
     });
     params = mock<CreateSeedParams>();
     modules = new ModuleMap(mock<BuildLogger>());
@@ -46,7 +46,7 @@ describe("Testing afterCreateSeed hook", () => {
  */
 export async function readStaticModulesInner(
   source: string,
-  basePath: string
+  basePath: string,
 ): Promise<ModuleMap> {
   const directory = `${normalize(source)}/`;
   const staticModules = await fg(`${directory}**/*`, {
@@ -54,15 +54,15 @@ export async function readStaticModulesInner(
     dot: true,
     ignore: ["**.js", "**.js.map", "**.d.ts"],
   });
-    const filesToFilter = /(\._.*)|(.DS_Store)$/;
+  const filesToFilter = /(\._.*)|(.DS_Store)$/;
   const modules = await Promise.all(
     staticModules
       .sort()
       .filter(
         (module) =>
           !filesToFilter.test(
-            module.replace(directory, basePath ? basePath + "/" : "")
-          )
+            module.replace(directory, basePath ? basePath + "/" : ""),
+          ),
       )
       .map(async (module) => {
         const encoding = getFileEncoding(module);
@@ -70,7 +70,7 @@ export async function readStaticModulesInner(
           path: module.replace(directory, basePath ? basePath + "/" : ""),
           code: await fs.promises.readFile(module, encoding),
         };
-      })
+      }),
   );
   const moduleMap: ModuleMap = new ModuleMap(mock<BuildLogger>());
   for await (const module of modules) {
@@ -90,4 +90,3 @@ export function getFileEncoding(filePath: string): BufferEncoding {
       return "utf-8";
   }
 }
-

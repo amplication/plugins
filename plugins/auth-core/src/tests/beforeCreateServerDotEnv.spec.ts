@@ -17,16 +17,14 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
     context = mock<DsgContext>({
       pluginInstallations: [{ npm: name }],
     });
-    params = { envVariables: [
-        { dummy: "A dummy env variable" }
-    ] };
+    params = { envVariables: [{ dummy: "A dummy env variable" }] };
   });
   it("should add the necessary environment variables", () => {
     const { envVariables } = plugin.beforeCreateServerDotEnv(context, params);
     const expectedEnvVars: VariableDictionary = [
-        { dummy: "A dummy env variable" },
-        { JWT_SECRET_KEY: "Change_ME!!!" },
-        { JWT_EXPIRATION: "2d" }
+      { dummy: "A dummy env variable" },
+      { JWT_SECRET_KEY: "Change_ME!!!" },
+      { JWT_EXPIRATION: "2d" },
     ];
     expect(envVariables).toStrictEqual(expectedEnvVars);
   });

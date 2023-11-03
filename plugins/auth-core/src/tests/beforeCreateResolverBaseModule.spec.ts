@@ -1,10 +1,10 @@
 import {
-    CreateEntityResolverBaseParams,
-    DsgContext,
-    Entity,
-    EnumDataType,
-    EnumEntityAction,
-    EnumEntityPermissionType
+  CreateEntityResolverBaseParams,
+  DsgContext,
+  Entity,
+  EnumDataType,
+  EnumEntityAction,
+  EnumEntityPermissionType,
 } from "@amplication/code-gen-types";
 import { parse } from "@amplication/code-gen-utils";
 import { mock } from "jest-mock-extended";
@@ -24,94 +24,94 @@ describe("Testing beforeCreateEntityResolverBaseModule hook", () => {
       pluginInstallations: [{ npm: name }],
     });
     params = {
-        ...mock<CreateEntityResolverBaseParams>(),
-        entity: mock<Entity>({
-            name: "TheEntity",
-            fields: [
-                { name: "username", dataType: EnumDataType.SingleLineText },
-                { name: "password", dataType: EnumDataType.SingleLineText },
-                { name: "id", dataType: EnumDataType.Id }
+      ...mock<CreateEntityResolverBaseParams>(),
+      entity: mock<Entity>({
+        name: "TheEntity",
+        fields: [
+          { name: "username", dataType: EnumDataType.SingleLineText },
+          { name: "password", dataType: EnumDataType.SingleLineText },
+          { name: "id", dataType: EnumDataType.Id },
+        ],
+        permissions: [
+          {
+            action: EnumEntityAction.Create,
+            permissionFields: [],
+            permissionRoles: [
+              {
+                resourceRole: {
+                  name: "admin",
+                },
+              },
             ],
-            permissions: [
-                {
-                    action: EnumEntityAction.Create,
-                    permissionFields: [],
-                    permissionRoles: [
-                        {
-                            resourceRole: {
-                                name: "admin"
-                            }
-                        }
-                    ],
-                    type: EnumEntityPermissionType.Granular
-                },
-                {
-                    action: EnumEntityAction.Delete,
-                    type: EnumEntityPermissionType.Disabled
-                },
-                {
-                    action: EnumEntityAction.Search,
-                    permissionFields: [],
-                    type: EnumEntityPermissionType.Public
-                },
-                {
-                    action: EnumEntityAction.Update,
-                    permissionFields: [
-                        {
-                            field: { name: "username" },
-                            permissionRoles: [
-                                { resourceRole: { name: "admin" } },
-                                { resourceRole: { name: "user" } }
-                            ]
-                        },
-                        {
-                            field: { name: "password" },
-                            permissionRoles: [
-                                { resourceRole: { name: "admin" } },
-                                { resourceRole: { name: "user" } }
-                            ]
-                        },
-                        {
-                            field: { name: "id" },
-                            permissionRoles: [ { resourceRole: { name: "admin" } } ]
-                        }
-                    ],
-                    permissionRoles: [
-                        { resourceRole: { name: "admin" } },
-                        { resourceRole: { name: "user" } }
-                    ],
-                    type: EnumEntityPermissionType.Granular
-                },
-                {
-                    action: EnumEntityAction.View,
-                    permissionFields: [],
-                    type: EnumEntityPermissionType.AllRoles
-                }
-            ]
-        }),
-        resolverBaseId: builders.identifier("TheResolverBase"),
-        template: parse(initialTemplate),
-        templateMapping: {
-            RESOLVER: builders.identifier("TheResolver"),
-            RESOLVER_BASE: builders.identifier("TheResolverBase"),
-            SERVICE: builders.identifier("TheService"),
-            ENTITY: builders.identifier("TheEntity"),
-            META_QUERY: builders.identifier("meta"),
-            COUNT_ARGS: builders.identifier("CountArgs"),
-            ENTITIES_QUERY: builders.identifier("findMultiple"),
-            FIND_MANY_ARGS: builders.identifier("TheFindManyArgs"),
-            ENTITY_QUERY: builders.identifier("findOne"),
-            FIND_ONE_ARGS: builders.identifier("TheFindOneArgs"),
-            CREATE_MUTATION: builders.identifier("create"),
-            UPDATE_MUTATION: builders.identifier("update"),
-            DELETE_MUTATION: builders.identifier("delete"),
-            UPDATE_DATA_MAPPING: builders.objectExpression([]),
-            CREATE_ARGS: builders.identifier("TheCreateArgs"),
-            UPDATE_ARGS: builders.identifier("TheUpdateArgs"),
-            DELETE_ARGS: builders.identifier("TheDeleteArgs"),
-            CREATE_DATA_MAPPING: builders.objectExpression([]),
-            ENTITY_NAME: builders.stringLiteral("TheEntity")
-        }
+            type: EnumEntityPermissionType.Granular,
+          },
+          {
+            action: EnumEntityAction.Delete,
+            type: EnumEntityPermissionType.Disabled,
+          },
+          {
+            action: EnumEntityAction.Search,
+            permissionFields: [],
+            type: EnumEntityPermissionType.Public,
+          },
+          {
+            action: EnumEntityAction.Update,
+            permissionFields: [
+              {
+                field: { name: "username" },
+                permissionRoles: [
+                  { resourceRole: { name: "admin" } },
+                  { resourceRole: { name: "user" } },
+                ],
+              },
+              {
+                field: { name: "password" },
+                permissionRoles: [
+                  { resourceRole: { name: "admin" } },
+                  { resourceRole: { name: "user" } },
+                ],
+              },
+              {
+                field: { name: "id" },
+                permissionRoles: [{ resourceRole: { name: "admin" } }],
+              },
+            ],
+            permissionRoles: [
+              { resourceRole: { name: "admin" } },
+              { resourceRole: { name: "user" } },
+            ],
+            type: EnumEntityPermissionType.Granular,
+          },
+          {
+            action: EnumEntityAction.View,
+            permissionFields: [],
+            type: EnumEntityPermissionType.AllRoles,
+          },
+        ],
+      }),
+      resolverBaseId: builders.identifier("TheResolverBase"),
+      template: parse(initialTemplate),
+      templateMapping: {
+        RESOLVER: builders.identifier("TheResolver"),
+        RESOLVER_BASE: builders.identifier("TheResolverBase"),
+        SERVICE: builders.identifier("TheService"),
+        ENTITY: builders.identifier("TheEntity"),
+        META_QUERY: builders.identifier("meta"),
+        COUNT_ARGS: builders.identifier("CountArgs"),
+        ENTITIES_QUERY: builders.identifier("findMultiple"),
+        FIND_MANY_ARGS: builders.identifier("TheFindManyArgs"),
+        ENTITY_QUERY: builders.identifier("findOne"),
+        FIND_ONE_ARGS: builders.identifier("TheFindOneArgs"),
+        CREATE_MUTATION: builders.identifier("create"),
+        UPDATE_MUTATION: builders.identifier("update"),
+        DELETE_MUTATION: builders.identifier("delete"),
+        UPDATE_DATA_MAPPING: builders.objectExpression([]),
+        CREATE_ARGS: builders.identifier("TheCreateArgs"),
+        UPDATE_ARGS: builders.identifier("TheUpdateArgs"),
+        DELETE_ARGS: builders.identifier("TheDeleteArgs"),
+        CREATE_DATA_MAPPING: builders.objectExpression([]),
+        ENTITY_NAME: builders.stringLiteral("TheEntity"),
+      },
     };
   });
   it("should correctly alter the resolver base module", () => {
@@ -200,7 +200,7 @@ export class RESOLVER_BASE {
     }
   }
 }
-`
+`;
 
 const correctOutputTemplate = `
 import * as nestAccessControl from "nest-access-control";
@@ -316,6 +316,6 @@ export class TheResolverBase {
     }
   }
 }
-`
+`;
 
 const prettyCode = (code: string) => prettyPrint(parse(code)).code;

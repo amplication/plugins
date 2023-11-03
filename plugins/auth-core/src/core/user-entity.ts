@@ -109,14 +109,14 @@ export class InvalidDataTypeError extends Error {
     super(
       `Invalid fields data types: ${fields
         .map((field) => `${field.name} data type should be ${field.dataType}`)
-        .join(", ")}`
+        .join(", ")}`,
     );
   }
 }
 
 export function createUserEntityIfNotExist(
   authEntity?: Entity,
-  entities?: Entity[]
+  entities?: Entity[],
 ): void {
   if (!authEntity) {
     entities?.push(DEFAULT_USER_ENTITY);
@@ -133,7 +133,7 @@ export function createUserEntityIfNotExist(
 
 export function getMissingAuthFields(fields: EntityField[]): EntityField[] {
   const fieldsByName = Object.fromEntries(
-    fields.map((field) => [field.name, field])
+    fields.map((field) => [field.name, field]),
   );
   const missingAuthFields: EntityField[] = [];
   const invalidDataTypeAuthFields: EntityField[] = [];

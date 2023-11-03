@@ -1,6 +1,6 @@
 import {
-    CreateEntityResolverParams,
-    DsgContext
+  CreateEntityResolverParams,
+  DsgContext,
 } from "@amplication/code-gen-types";
 import { parse } from "@amplication/code-gen-utils";
 import { mock } from "jest-mock-extended";
@@ -20,14 +20,14 @@ describe("Testing beforeCreateEntityControllerModule hook", () => {
       pluginInstallations: [{ npm: name }],
     });
     params = {
-        ...mock<CreateEntityResolverParams>(),
-        template: parse(initialTemplate),
-        templateMapping: {
-            RESOLVER: builders.identifier("TheResolver"),
-            RESOLVER_BASE: builders.identifier("TheResolverBase"),
-            SERVICE: builders.identifier("TheService"),
-            ENTITY: builders.identifier("TheEntity")
-        }
+      ...mock<CreateEntityResolverParams>(),
+      template: parse(initialTemplate),
+      templateMapping: {
+        RESOLVER: builders.identifier("TheResolver"),
+        RESOLVER_BASE: builders.identifier("TheResolverBase"),
+        SERVICE: builders.identifier("TheService"),
+        ENTITY: builders.identifier("TheEntity"),
+      },
     };
   });
   it("should correctly alter the resolver module", () => {
@@ -45,7 +45,7 @@ export class RESOLVER extends RESOLVER_BASE {
     super(service);
   }
 }
-`
+`;
 
 const correctOutputTemplate = `
 import * as nestAccessControl from "nest-access-control";
@@ -62,6 +62,6 @@ export class TheResolver extends TheResolverBase {
     super(service, rolesBuilder);
   }
 }
-`
+`;
 
 const prettyCode = (code: string) => prettyPrint(parse(code)).code;

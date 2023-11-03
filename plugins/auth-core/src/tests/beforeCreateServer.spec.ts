@@ -1,7 +1,4 @@
-import {
-  CreateServerParams,
-  DsgContext,
-} from "@amplication/code-gen-types";
+import { CreateServerParams, DsgContext } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
 import { name } from "../../package.json";
 import AuthCorePlugin from "../index";
@@ -16,9 +13,9 @@ describe("Testing beforeCreateServer hook", () => {
   });
   it("should add the auth entity when none is present", () => {
     const context = mock<DsgContext>({
-        pluginInstallations: [{ npm: name }],
-        resourceInfo: { settings: { } },
-        entities: []
+      pluginInstallations: [{ npm: name }],
+      resourceInfo: { settings: {} },
+      entities: [],
     });
 
     plugin.beforeCreateServer(context, params);
@@ -31,7 +28,7 @@ describe("Testing beforeCreateServer hook", () => {
     const context = mock<DsgContext>({
       pluginInstallations: [{ npm: name }],
       resourceInfo: { settings: { authEntityName: "User" } },
-      entities: [ { name: "User", fields: [] } ]
+      entities: [{ name: "User", fields: [] }],
     });
 
     plugin.beforeCreateServer(context, params);
@@ -39,13 +36,14 @@ describe("Testing beforeCreateServer hook", () => {
     expect(context.entities!.length).toStrictEqual(1);
     const authEntity = context.entities![0];
     expect(authEntity.fields.length).toStrictEqual(3);
-    for(const fieldname of ["username", "password", "roles"]) {
-        try {
-            expect(authEntity.fields.find((field) => field.name === fieldname))
-                .toBeTruthy()
-        } catch(err) {
-            throw new Error(`The plugin did not add the ${fieldname} field`);
-        }
+    for (const fieldname of ["username", "password", "roles"]) {
+      try {
+        expect(
+          authEntity.fields.find((field) => field.name === fieldname),
+        ).toBeTruthy();
+      } catch (err) {
+        throw new Error(`The plugin did not add the ${fieldname} field`);
+      }
     }
   });
 });

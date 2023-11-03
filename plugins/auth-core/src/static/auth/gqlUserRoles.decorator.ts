@@ -15,5 +15,5 @@ export const UserRoles = createParamDecorator(
       return null;
     }
     return data ? request.user[data] : request.user.roles;
-  }
+  },
 );

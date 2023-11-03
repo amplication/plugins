@@ -48,7 +48,7 @@ export const READ_OWN: Action = "read:own";
 export function createGrantsModule(
   serverSrcDirectory: string,
   entities: Entity[],
-  roles: Role[]
+  roles: Role[],
 ): Module {
   const MODULE_PATH = `${serverSrcDirectory}/grants.json`;
   return {
@@ -99,19 +99,19 @@ export function createGrants(entities: Entity[], roles: Role[]): Grant[] {
         case EnumEntityPermissionType.Granular: {
           if (!permission.permissionRoles) {
             throw new Error(
-              "For granular permissions, permissionRoles must be defined"
+              "For granular permissions, permissionRoles must be defined",
             );
           }
           for (const { resourceRole } of permission.permissionRoles) {
             const fields = roleToFields[resourceRole.name] || new Set();
             /** Set of fields allowed other roles */
             const forbiddenFields = new Set(
-              [...fieldsWithRoles].filter((x) => !fields.has(x))
+              [...fieldsWithRoles].filter((x) => !fields.has(x)),
             );
             const attributes = createAttributes([
               ALL_ATTRIBUTES_ALLOWED,
               ...Array.from(forbiddenFields, (field: string) =>
-                createNegativeAttributeMatcher(field)
+                createNegativeAttributeMatcher(field),
               ),
             ]);
             grants.push({
