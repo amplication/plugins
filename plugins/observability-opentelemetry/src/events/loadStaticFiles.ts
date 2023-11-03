@@ -19,7 +19,7 @@ export const afterLoadStaticFiles = async (
     context.serverDirectories.baseDirectory
   );
 
-  staticFiles.replaceModulesCode((code) =>
+  staticFiles.replaceModulesCode((_path, code) =>
     code
       .replaceAll(placeholders.otelAgentGrpcEndpoint, OTEL_COLLECTOR_PORT_GRPC)
       .replaceAll(placeholders.otelAgentHttpEndpoint, OTEL_COLLECTOR_PORT_HTTP)

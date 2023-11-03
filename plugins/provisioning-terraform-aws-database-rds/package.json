@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-provisioning-terraform-aws-database-rds",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Description of your plugin",
   "main": "dist/index.js",
   "scripts": {

@@ -67,8 +67,8 @@ class TerraformAwsDeploymentEcsPlugin implements AmplicationPlugin {
       ? settings.service.name
       : serviceName;
     const ecsClusterName: string = settings.cluster.name
-    ? settings.cluster.name
-    : serviceName;
+      ? settings.cluster.name
+      : serviceName;
 
     const staticPath = resolve(__dirname, "./static");
     const staticFiles = await context.utils.importStaticModules(
@@ -103,17 +103,26 @@ class TerraformAwsDeploymentEcsPlugin implements AmplicationPlugin {
     const underscoreClusterName: string = snakeCase(ecsClusterName);
 
     staticFiles.replaceModulesPath((path) =>
-      path.replace(templateFileName, fileNamePrefix + kebabCase(serviceName) + fileNameSuffix)
+      path.replace(
+        templateFileName,
+        fileNamePrefix + kebabCase(serviceName) + fileNameSuffix
+      )
     );
 
-    staticFiles.replaceModulesCode((code) =>
+    staticFiles.replaceModulesCode((_path, code) =>
       code
         .replaceAll(clusterHyphenNameKey, hyphenClusterName)
         .replaceAll(clusterUnderscoreNameKey, underscoreClusterName)
         .replaceAll(serviceHyphenNameKey, hyphenServiceName)
         .replaceAll(serviceUnderscoreNameKey, underscoreServiceName)
-        .replaceAll(moduleNameEcsClusterKey, "ecs_cluster_" + underscoreClusterName)
-        .replaceAll(moduleNameEcsServiceKey, "ecs_service_" + underscoreServiceName)
+        .replaceAll(
+          moduleNameEcsClusterKey,
+          "ecs_cluster_" + underscoreClusterName
+        )
+        .replaceAll(
+          moduleNameEcsServiceKey,
+          "ecs_service_" + underscoreServiceName
+        )
         .replaceAll(moduleNameEcsAlbKey, "ecs_alb_" + underscoreServiceName)
         .replaceAll(moduleNameEcsSgKey, "ecs_alb_sg_" + underscoreServiceName)
         .replaceAll(clusterCapacityProviderKey, capacityProvider)

@@ -32,41 +32,38 @@ class PrettierPlugin implements AmplicationPlugin {
     };
   }
 
-  afterCreateApp = (
-    event: "server" | "client",
-  ) => {
+  afterCreateApp = (event: "server" | "client") => {
     return async (
       context: DsgContext,
       eventParams: CreateAdminUIParams | CreateServerParams,
-      modules: ModuleMap,
+      modules: ModuleMap
     ): Promise<ModuleMap> => {
-      const { rules } = getPluginSettings(
-        context.pluginInstallations
-      );
+      const { rules } = getPluginSettings(context.pluginInstallations);
       let baseDirectory;
       const staticFilesPath = resolve(__dirname, "static");
-      const rulesPlaceholder = "\"${{ RULES }}\"";
-    
+      const rulesPlaceholder = '"${{ RULES }}"';
+
       switch (event) {
         case "server":
           baseDirectory = context.serverDirectories.baseDirectory;
           break;
-  
+
         case "client":
           baseDirectory = context.clientDirectories.baseDirectory;
           break;
       }
-  
+
       const staticFiles = await context.utils.importStaticModules(
         staticFilesPath,
         baseDirectory
       );
-      staticFiles.replaceModulesCode(( code ) => 
+      staticFiles.replaceModulesCode((_path, code) =>
         code.replaceAll(
-          rulesPlaceholder, 
+          rulesPlaceholder,
           format(JSON.stringify(rules, null, 2), { parser: "json" })
-        ));
-    
+        )
+      );
+
       await modules.merge(staticFiles);
       return modules;
     };
@@ -85,7 +82,7 @@ class PrettierPlugin implements AmplicationPlugin {
       },
     };
 
-    eventParams.updateProperties.push(packageJsonValues);  
+    eventParams.updateProperties.push(packageJsonValues);
     return eventParams;
   }
 }
