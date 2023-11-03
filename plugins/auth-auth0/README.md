@@ -185,7 +185,7 @@ This section elaborates on the steps to be followed to get the required values f
 
 - Go to the [API Dashboard](https://manage.auth0.com/#/apis) and create a new API with the following values :-
 
-  - Identifier : https://sample-nest.demo.com
+  - Identifier : http://localhost:3001
   - Signing Algorithm : RS256
 
 - Go to the quickstart tab and switch to NodeJS tab and copy the values of the following :-
