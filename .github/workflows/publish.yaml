@@ -9,6 +9,7 @@ on:
         type: choice
         required: true
         options:
+          - "auth-auth0"
           - "auth-basic"
           - "auth-core"
           - "auth-jwt"
