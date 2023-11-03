@@ -31,6 +31,7 @@ on:
           - "provisioning-terraform-aws-database-rds"
           - "provisioning-terraform-aws-repository-ecr"
           - "provisioning-terraform-aws-core"
+          - "secrets-manager-aws-secret-manager"
           - "swagger-apibody"
           - "linter-eslint"
           - "transport-grpc"

@@ -1,6 +1,6 @@
-# @amplication/plugin-aws-secrets-manager
+# @amplication/plugin-secrets-manager-aws-secret-manager
 
-[![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-aws-secrets-manager)](https://www.npmjs.com/package/@amplication/plugin-aws-secrets-manager)
+[![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-aws-secrets-manager)](https://www.npmjs.com/package/@amplication/plugin-secrets-manager-aws-secret-manager)
 
 Amplication plugin that allows easy management of secrets by using AWS Secrets Manager.
 
