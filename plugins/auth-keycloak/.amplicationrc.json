@@ -3,7 +3,7 @@
     "KEYCLOAK_HOST": "localhost",
     "KEYCLOAK_REALM": "test-realm",
     "KEYCLOAK_CLIENT_ID": "test-client",
-    "KEYCLOAK_CLIENT_SECRET": "pryUAZxDplBlJmRfCZ8yxH2NT1Dcad5H",
+    "KEYCLOAK_CLIENT_SECRET": "DEFAULT_CLIENT_SECRET",
     "KEYCLOAK_CALLBACK_URL": "http://localhost:3000/api/callback"
   }
 }
