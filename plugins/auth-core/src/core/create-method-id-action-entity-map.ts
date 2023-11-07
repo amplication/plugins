@@ -23,7 +23,7 @@ export const enum EnumTemplateType {
 
 export const controllerMethodsIdsActionPairs = (
   templateMapping: { [key: string]: any },
-  entity: Entity
+  entity: Entity,
 ): MethodsIdsActionEntityTriplet[] => [
   {
     methodId: templateMapping[
@@ -32,7 +32,7 @@ export const controllerMethodsIdsActionPairs = (
     action: EnumEntityAction.Create,
     entity: entity,
     permissionType: entity.permissions.find(
-      (p) => p.action === EnumEntityAction.Create
+      (p) => p.action === EnumEntityAction.Create,
     )?.type,
   },
   {
@@ -42,7 +42,7 @@ export const controllerMethodsIdsActionPairs = (
     action: EnumEntityAction.Search,
     entity: entity,
     permissionType: entity.permissions.find(
-      (p) => p.action === EnumEntityAction.Search
+      (p) => p.action === EnumEntityAction.Search,
     )?.type,
   },
   {
@@ -52,7 +52,7 @@ export const controllerMethodsIdsActionPairs = (
     action: EnumEntityAction.View,
     entity: entity,
     permissionType: entity.permissions.find(
-      (p) => p.action === EnumEntityAction.View
+      (p) => p.action === EnumEntityAction.View,
     )?.type,
     methodName: "FIND_ONE_ENTITY_FUNCTION",
   },
@@ -63,7 +63,7 @@ export const controllerMethodsIdsActionPairs = (
     action: EnumEntityAction.Update,
     entity: entity,
     permissionType: entity.permissions.find(
-      (p) => p.action === EnumEntityAction.Update
+      (p) => p.action === EnumEntityAction.Update,
     )?.type,
   },
   {
@@ -73,7 +73,7 @@ export const controllerMethodsIdsActionPairs = (
     action: EnumEntityAction.Delete,
     entity: entity,
     permissionType: entity.permissions.find(
-      (p) => p.action === EnumEntityAction.Delete
+      (p) => p.action === EnumEntityAction.Delete,
     )?.type,
   },
 ];
@@ -81,14 +81,14 @@ export const controllerMethodsIdsActionPairs = (
 export const controllerToManyMethodsIdsActionPairs = (
   toManyMapping: { [key: string]: any },
   entity: Entity,
-  relatedEntity: Entity
+  relatedEntity: Entity,
 ): MethodsIdsActionEntityTriplet[] => [
   {
     methodId: toManyMapping["FIND_MANY"],
     action: EnumEntityAction.Search,
     entity: relatedEntity,
     permissionType: relatedEntity.permissions.find(
-      (p) => p.action === EnumEntityAction.Search
+      (p) => p.action === EnumEntityAction.Search,
     )?.type,
   },
   {
@@ -96,7 +96,7 @@ export const controllerToManyMethodsIdsActionPairs = (
     action: EnumEntityAction.Update,
     entity: entity,
     permissionType: entity.permissions.find(
-      (p) => p.action === EnumEntityAction.Update
+      (p) => p.action === EnumEntityAction.Update,
     )?.type,
   },
   {
@@ -104,7 +104,7 @@ export const controllerToManyMethodsIdsActionPairs = (
     action: EnumEntityAction.Update,
     entity: entity,
     permissionType: entity.permissions.find(
-      (p) => p.action === EnumEntityAction.Update
+      (p) => p.action === EnumEntityAction.Update,
     )?.type,
   },
   {
@@ -112,21 +112,21 @@ export const controllerToManyMethodsIdsActionPairs = (
     action: EnumEntityAction.Update,
     entity: entity,
     permissionType: entity.permissions.find(
-      (p) => p.action === EnumEntityAction.Delete
+      (p) => p.action === EnumEntityAction.Delete,
     )?.type,
   },
 ];
 
 export const resolverMethodsIdsActionPairs = (
   templateMapping: { [key: string]: any },
-  entity: Entity
+  entity: Entity,
 ): MethodsIdsActionEntityTriplet[] => [
   {
     methodId: templateMapping["CREATE_MUTATION"] as namedTypes.Identifier,
     action: EnumEntityAction.Create,
     entity: entity,
     permissionType: entity.permissions.find(
-      (p) => p.action === EnumEntityAction.Create
+      (p) => p.action === EnumEntityAction.Create,
     )?.type,
   },
   {
@@ -134,7 +134,7 @@ export const resolverMethodsIdsActionPairs = (
     action: EnumEntityAction.Search,
     entity: entity,
     permissionType: entity.permissions.find(
-      (p) => p.action === EnumEntityAction.Search
+      (p) => p.action === EnumEntityAction.Search,
     )?.type,
   },
   {
@@ -142,7 +142,7 @@ export const resolverMethodsIdsActionPairs = (
     action: EnumEntityAction.View,
     entity: entity,
     permissionType: entity.permissions.find(
-      (p) => p.action === EnumEntityAction.View
+      (p) => p.action === EnumEntityAction.View,
     )?.type,
     methodName: "ENTITY_QUERY",
   },
@@ -151,7 +151,7 @@ export const resolverMethodsIdsActionPairs = (
     action: EnumEntityAction.Update,
     entity: entity,
     permissionType: entity.permissions.find(
-      (p) => p.action === EnumEntityAction.Update
+      (p) => p.action === EnumEntityAction.Update,
     )?.type,
   },
   {
@@ -159,7 +159,7 @@ export const resolverMethodsIdsActionPairs = (
     action: EnumEntityAction.Delete,
     entity: entity,
     permissionType: entity.permissions.find(
-      (p) => p.action === EnumEntityAction.Delete
+      (p) => p.action === EnumEntityAction.Delete,
     )?.type,
   },
 ];

@@ -8,11 +8,11 @@ import { interpolate, removeTSClassDeclares } from "../util/ast";
 const customSeedPath = join(templatesPath, "custom-seed.template.ts");
 
 export async function createCustomSeed(
-  dsgContext: DsgContext
+  dsgContext: DsgContext,
 ): Promise<Module> {
   const { entities, resourceInfo, serverDirectories } = dsgContext;
   const authEntity = entities?.find(
-    (x) => x.name === resourceInfo?.settings.authEntityName
+    (x) => x.name === resourceInfo?.settings.authEntityName,
   );
   if (!authEntity) {
     dsgContext.logger.error("Authentication entity does not exist");

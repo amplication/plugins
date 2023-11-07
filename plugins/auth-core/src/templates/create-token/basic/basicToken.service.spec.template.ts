@@ -16,7 +16,7 @@ describe("Testing the TokenServiceBase", () => {
           id: VALID_ID,
           username: "admin",
           password: "admin",
-        })
+        }),
       ).toBe("YWRtaW46YWRtaW4=");
     });
     it("should reject when username missing", () => {

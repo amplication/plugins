@@ -13,13 +13,13 @@ import { Reflector } from "@nestjs/core";
 export class AclFilterResponseInterceptor implements NestInterceptor {
   constructor(
     @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder,
-    private readonly reflector: Reflector
+    private readonly reflector: Reflector,
   ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const [permissionsRoles]: any = this.reflector.getAllAndMerge<string[]>(
       "roles",
-      [context.getHandler(), context.getClass()]
+      [context.getHandler(), context.getClass()],
     );
 
     const permission = this.rolesBuilder.permission({
@@ -36,7 +36,7 @@ export class AclFilterResponseInterceptor implements NestInterceptor {
         } else {
           return permission.filter(data);
         }
-      })
+      }),
     );
   }
 }

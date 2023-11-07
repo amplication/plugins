@@ -14,13 +14,13 @@ import { ForbiddenException } from "../errors";
 export class AclValidateRequestInterceptor implements NestInterceptor {
   constructor(
     @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder,
-    private readonly reflector: Reflector
+    private readonly reflector: Reflector,
   ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const [permissionsRoles]: any = this.reflector.getAllAndMerge<string[]>(
       "roles",
-      [context.getHandler(), context.getClass()]
+      [context.getHandler(), context.getClass()],
     );
 
     const type = context.getType();
@@ -39,12 +39,12 @@ export class AclValidateRequestInterceptor implements NestInterceptor {
 
     const invalidAttributes = abacUtil.getInvalidAttributes(
       permission,
-      inputDataToValidate
+      inputDataToValidate,
     );
 
     if (invalidAttributes.length) {
       throw new ForbiddenException(
-        "Insufficient privileges to complete the operation"
+        "Insufficient privileges to complete the operation",
       );
     }
 
