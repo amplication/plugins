@@ -87,7 +87,7 @@ class TerraformAwsCorePlugin implements AmplicationPlugin {
     backend "s3" {
       bucket = "${settings.backend?.s3?.bucket_name}"
       key    = "${settings.backend?.s3?.key}"
-     region = "${settings.backend?.s3?.region}"
+      region = "${settings.backend?.s3?.region}"
     }
   }`;
     }
