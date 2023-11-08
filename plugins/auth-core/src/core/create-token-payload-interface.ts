@@ -9,11 +9,11 @@ import { idTypeTSOptions } from "../util/idTypeMapper";
 
 const templatePath = join(
   templatesPath,
-  "create-token/token-payload-interface.template.ts"
+  "create-token/token-payload-interface.template.ts",
 );
 
 export async function createTokenPayloadInterface(
-  dsgContext: DsgContext
+  dsgContext: DsgContext,
 ): Promise<Module> {
   const { serverDirectories } = dsgContext;
   const authDir = `${serverDirectories.authDirectory}`;

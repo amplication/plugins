@@ -12,27 +12,27 @@ import { builders, namedTypes } from "ast-types";
 
 const userDataDecoratorPath = join(
   templatesPath,
-  "userData.decorator.template.ts"
+  "userData.decorator.template.ts",
 );
 
 export async function createUserDataDecorator(
-  dsgContext: DsgContext
+  dsgContext: DsgContext,
 ): Promise<Module> {
   return await mapUserDataDecoratorTemplate(
     dsgContext,
     userDataDecoratorPath,
-    "userData.decorator.ts"
+    "userData.decorator.ts",
   );
 }
 
 async function mapUserDataDecoratorTemplate(
   context: DsgContext,
   templatePath: string,
-  fileName: string
+  fileName: string,
 ): Promise<Module> {
   const { entities, resourceInfo, serverDirectories } = context;
   const authEntity = entities?.find(
-    (x) => x.name === resourceInfo?.settings.authEntityName
+    (x) => x.name === resourceInfo?.settings.authEntityName,
   );
   if (!authEntity) {
     context.logger.error("Authentication entity does not exist");
@@ -47,8 +47,8 @@ async function mapUserDataDecoratorTemplate(
   addImports(
     template,
     [entityNameImport].filter(
-      (x) => x //remove nulls and undefined
-    ) as namedTypes.ImportDeclaration[]
+      (x) => x, //remove nulls and undefined
+    ) as namedTypes.ImportDeclaration[],
   );
 
   const templateMapping = {

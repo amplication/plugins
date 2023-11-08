@@ -7,7 +7,7 @@ import { Permission } from "accesscontrol";
 export function getInvalidAttributes(
   permission: Permission,
   // eslint-disable-next-line @typescript-eslint/ban-types
-  data: Object
+  data: Object,
 ): string[] {
   // The structuredClone call is necessary because the
   // `Permission.filter` function doesn't consider objects
