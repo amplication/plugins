@@ -12,6 +12,7 @@ export const verifySupertokensIdFieldExists = (
     const supertokensIdField = authEntity.fields.find((field) => 
         field.name === supertokensIdFieldName);
     if(!supertokensIdField) {
-        throw new Error(`The field ${supertokensIdFieldName} specified in the settings does not exist in the auth entity`);
+        throw new Error(`The field ${supertokensIdFieldName} specified in the settings does not exist in the auth entity.
+            Please add the field to the auth entity or update the supertokensIdFieldName setting`);
     }
 }

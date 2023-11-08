@@ -32,6 +32,10 @@ It updates the following parts:
 
 Amplication uses roles for authorization. The generated code integrates with this and only uses SuperTokens for authentication.
 
+You will also need to setup the SuperTokens core which is what handles the storage of user data.
+You can follow this guide: https://supertokens.com/docs/emailpassword/nestjs/guide#10-setup-the-supertokens-core
+to set it up.
+
 ## Configuration
 
 The settings for this plugin looks like this:

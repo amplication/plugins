@@ -19,12 +19,14 @@ import {
   CreateAdminDotEnvParams,
   CreateAdminUIParams,
   CreateAdminAppModuleParams,
+  CreateSeedParams,
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
+import { resolve } from "path";
 import { readFile } from "@amplication/code-gen-utils";
 import { camelCase, merge } from "lodash";
 import { join } from "path";
-import { builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import * as utils from "./utils";
 import * as constants from "./constants";
 import {
@@ -119,7 +121,29 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
         before: this.beforeCreateAdminAppModule,
         after: this.afterCreateAdminAppModule,
       },
+      [EventNames.CreateSeed]: {
+        before: this.beforeCreateSeed
+      }
     };
+  }
+
+  async beforeCreateSeed(
+    context: DsgContext,
+    eventParams: CreateSeedParams
+  ): Promise<CreateSeedParams> {
+    const path = resolve(constants.templatesPath, "seed.template.ts");
+    eventParams.template = await readFile(path);
+    const data = eventParams.templateMapping.DATA as namedTypes.ObjectExpression;
+    const passwordProp = data.properties.find((prop) => 
+      prop.type === "ObjectProperty"
+      && prop.key.type === "Identifier"
+      && prop.key.name === "password");
+    if(passwordProp) {
+      const prop = passwordProp as namedTypes.ObjectProperty;
+      // Remove the hash() invocation from the password property's value
+      prop.value = builders.stringLiteral("admin");
+    }
+    return eventParams;
   }
 
   async beforeCreateAdminAppModule(
