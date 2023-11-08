@@ -15,8 +15,6 @@
   "author": "Damanpreet singh<daman.4880@gmail.com>",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@amplication/code-gen-types": "^2.0.18",
-    "@amplication/code-gen-utils": "^0.0.7",
     "@babel/parser": "^7.23.0",
     "@babel/types": "^7.23.0",
     "@nestjs/common": "9.4.3",
@@ -43,6 +41,8 @@
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
+    "@amplication/code-gen-types": "^2.0.18",
+    "@amplication/code-gen-utils": "^0.0.7",
     "@exlinc/keycloak-passport": "^1.0.2"
   }
 }

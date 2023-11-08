@@ -59,8 +59,8 @@ export async function mapAuthTemplate(
       code: print(template).code,
       path: filePath,
     };
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    context.logger.error((err as Error).toString());
     return { code: "", path: "" };
   }
 }
