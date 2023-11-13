@@ -339,7 +339,7 @@ export const createProtobufSchemaFieldsHandler: {
     fieldName: string,
     countField: number,
     field: EntityField
-  ) => createScalarField(fieldName, "json", countField, false),
+  ) => createScalarField(fieldName, "string", countField, true),
   [EnumDataType.Username]: (
     fieldName: string,
     countField: number,
