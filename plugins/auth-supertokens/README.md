@@ -264,7 +264,7 @@ user data on the SuperTokens core and should be customized to your specific use 
 
 ### Authorization
 
-Although the generated code uses SuperTokens for authentication, authoriazation is left to the role-based
+Although the generated code uses SuperTokens for authentication, authorization is left to the role-based
 mechanism that generated Amplication code already uses. The authorization is done by a generated auth guard
 in `src/auth/supertokens/auth.guard.ts`.
 
