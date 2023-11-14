@@ -22,9 +22,10 @@ Example:
 ```json
 "fetchMode": "STARTUP",
 "secretNames": [
-    "/secretA",
-    "/path/path2/secretB",
-    "/path/path2/path3/secretC"
+    "/path/common",
+    "/path/path1:SecretA",
+    "/path/path2:SecretB",
+    "/path/path2/path3:SecretC"
 ]
 
 ```
