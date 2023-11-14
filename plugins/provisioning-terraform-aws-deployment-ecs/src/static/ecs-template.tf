@@ -40,9 +40,9 @@ module "${{ ECS_SERVICE_MODULE_NAME }}" {
       log_configuration = {
         logDriver = "awslogs"
         options = {
-          awslogs-create-group = "true"
-          awslogs-group = "/ecs/${{ SERVICE_NAME }}"
-          awslogs-region = local.region
+          awslogs-create-group  = "true"
+          awslogs-group         = "/ecs/${{ SERVICE_NAME }}"
+          awslogs-region        = local.region
           awslogs-stream-prefix = "ecs"
         }
       }
@@ -87,8 +87,8 @@ module "${{ ECS_SG_MODULE_NAME }}" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "5.1.0"
 
-  name        = "${{ SERVICE_NAME }}"
-  vpc_id      = module.vpc.vpc_id
+  name   = "${{ SERVICE_NAME }}"
+  vpc_id = module.vpc.vpc_id
 
   ingress_rules       = ["http-80-tcp"]
   ingress_cidr_blocks = ["0.0.0.0/0"]
