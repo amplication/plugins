@@ -34,3 +34,7 @@ creds.js
 *.dat
 *password*
 *.httr-oauth*
+
+# Terraform development
+**/.terraform.lock.hcl
+**/.terraform
