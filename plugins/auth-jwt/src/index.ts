@@ -4,6 +4,7 @@ import {
   CreateEntityServiceBaseParams,
   CreateEntityServiceParams,
   CreateServerAuthParams,
+  CreateServerParams,
   CreateServerDockerComposeParams,
   CreateServerSecretsManagerParams,
   DsgContext,
@@ -33,7 +34,11 @@ import {
 import { builders, namedTypes } from "ast-types";
 import { relativeImportPath } from "./util/module";
 import { isPasswordField } from "./util/field";
-import { updateDockerComposeProperties } from "./constants";
+import {   
+	AUTH_ENTITY_FIELD_PASSWORD,
+  	AUTH_ENTITY_FIELD_USERNAME,
+	updateDockerComposeProperties
+} from "./constants";
 import { getPluginSettings } from "./util/getPluginSettings";
 
 const ARGS_ID = builders.identifier("args");
@@ -49,6 +54,9 @@ const TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID = builders.identifier(
 class JwtAuthPlugin implements AmplicationPlugin {
   register(): Events {
     return {
+      CreateServer: {
+        before: this.beforeCreateServer,
+      },
       CreateAdminUI: {
         before: this.beforeCreateAdminModules,
       },
@@ -69,6 +77,33 @@ class JwtAuthPlugin implements AmplicationPlugin {
         before: this.beforeCreateSecretsManager,
       },
     };
+  }
+
+  beforeCreateServer(context: DsgContext, eventParams: CreateServerParams) {
+    const authEntity = context.entities?.find(
+      (x) => x.name === context.resourceInfo?.settings.authEntityName
+    );
+    if (!authEntity) {
+      throw new Error(`Authentication entity does not exist`);
+    }
+
+    const requiredFields = [
+      AUTH_ENTITY_FIELD_USERNAME,
+      AUTH_ENTITY_FIELD_PASSWORD,
+    ];
+
+    requiredFields.forEach((requiredField) => {
+      const field = authEntity.fields.find(
+        (field) => field.name === requiredField
+      );
+      if (!field) {
+        throw new Error(
+          `Authentication entity must have a field named ${requiredField}`
+        );
+      }
+    });
+
+    return eventParams;
   }
 
   beforeCreateAdminModules(
