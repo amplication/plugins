@@ -67,7 +67,7 @@ jobs:
           REF: ${{ fromJSON(steps.get-pr.outputs.result).head.ref }}
           PR_NUMBER: ${{ github.event.issue.number }}
         run: |
-          git remote add upstream https://github.com/amplication/amplication.git
+          git remote add upstream https://github.com/amplication/plugins.git
           git fetch --all
           git checkout ${{ env.REF }}
           git checkout -b pr/${{ env.REF }}-${{ env.PR_NUMBER }}
