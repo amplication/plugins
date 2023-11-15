@@ -62,7 +62,7 @@ export const getSearchableAuthField = (
 
   if (!authEmailField) {
     throw new Error(
-      `The entity ${entity.name} does not have a field named ${
+      `The Auth entity ${entity.name} does not have a field named ${
         emailFieldName || payloadEmailField || fallbackEmailField?.name
       }`,
     );
