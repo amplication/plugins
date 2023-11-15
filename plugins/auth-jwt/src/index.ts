@@ -4,6 +4,7 @@ import {
   CreateEntityServiceBaseParams,
   CreateEntityServiceParams,
   CreateServerAuthParams,
+  CreateServerDockerComposeParams,
   DsgContext,
   EntityField,
   Events,
@@ -17,10 +18,21 @@ import {
   createJwtStrategyBase,
   createJwtStrategySpec,
 } from "./core";
-import { addIdentifierToConstructorSuperCall, addImports, addInjectableDependency, awaitExpression, getClassDeclarationById, importNames, interpolate, logicalExpression, memberExpression } from "./util/ast";
+import {
+  addIdentifierToConstructorSuperCall,
+  addImports,
+  addInjectableDependency,
+  awaitExpression,
+  getClassDeclarationById,
+  importNames,
+  interpolate,
+  logicalExpression,
+  memberExpression,
+} from "./util/ast";
 import { builders, namedTypes } from "ast-types";
 import { relativeImportPath } from "./util/module";
 import { isPasswordField } from "./util/field";
+import { updateDockerComposeProperties } from "./constants";
 
 const ARGS_ID = builders.identifier("args");
 const PASSWORD_FIELD_ASYNC_METHODS = new Set(["create", "update"]);
@@ -47,6 +59,9 @@ class JwtAuthPlugin implements AmplicationPlugin {
       },
       CreateEntityServiceBase: {
         before: this.beforeCreateEntityServiceBase,
+      },
+      CreateServerDockerCompose: {
+        before: this.beforeCreateDockerComposeFile,
       },
     };
   }
@@ -263,6 +278,14 @@ class JwtAuthPlugin implements AmplicationPlugin {
         ])
       ),
     ]);
+  }
+
+  beforeCreateDockerComposeFile(
+    dsgContext: DsgContext,
+    eventParams: CreateServerDockerComposeParams
+  ): CreateServerDockerComposeParams {
+    eventParams.updateProperties.push(...updateDockerComposeProperties);
+    return eventParams;
   }
 }
 
