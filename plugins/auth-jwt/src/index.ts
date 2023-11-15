@@ -34,6 +34,7 @@ import { builders, namedTypes } from "ast-types";
 import { relativeImportPath } from "./util/module";
 import { isPasswordField } from "./util/field";
 import { updateDockerComposeProperties } from "./constants";
+import { getPluginSettings } from "./util/getPluginSettings";
 
 const ARGS_ID = builders.identifier("args");
 const PASSWORD_FIELD_ASYNC_METHODS = new Set(["create", "update"]);
@@ -296,9 +297,10 @@ class JwtAuthPlugin implements AmplicationPlugin {
     dsgContext: DsgContext,
     eventParams: CreateServerSecretsManagerParams
   ): CreateServerSecretsManagerParams {
+    const settings = getPluginSettings(dsgContext.pluginInstallations);
     eventParams.secretsNameKey.push({
       name: "JwtSecretKey", // Used in jwt strategy as Enum key
-      key: "JWT_SECRET_KEY",
+      key: settings.JwtSecretKeyReference,
     });
     return eventParams;
   }
