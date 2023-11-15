@@ -26,6 +26,11 @@ class ExamplePlugin implements AmplicationPlugin {
       [EventNames.CreateServer]: {
         after: this.beforeCreateServer,
       },
+      [EventNames.CreateServerSecretsManager]: {
+        before: this.beforeCreateServerSecretsManager,
+      },
+    };
+  }
 
   beforeCreatePackageJson(
     _: DsgContext,
@@ -63,16 +68,19 @@ class ExamplePlugin implements AmplicationPlugin {
 
     await modules.merge(staticFiles);
 
-        // Dynamically generate Secrets.ts file if the fetch mode is STARTUP
-        if(fetchMode == FetchMode.Startup) {
-            await modules.set({
-                code: genSecretsEnum(secretNamesParser(secretNames)),
-                path: join(context.serverDirectories.srcDirectory, "providers", "secrets", "secrets.ts")
-            })
-        }
+    return modules;
+  }
 
-        return modules
-    }
+  async beforeCreateServerSecretsManager(
+    context: DsgContext,
+    eventParams: CreateServerSecretsManagerParams,
+  ): Promise<CreateServerSecretsManagerParams> {
+    const { secretNames } = getPluginSettings(context.pluginInstallations);
+
+    eventParams.secretsNameKey.push(...secretNamesParser(secretNames));
+
+    return eventParams;
+  }
 }
 
 export default ExamplePlugin;

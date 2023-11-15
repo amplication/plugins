@@ -13,12 +13,17 @@ export function secretNameParser(secretPath: string): Record<string, string> {
   };
 }
 
-export function secretNamesParser(secretNames: string[]): Record<string, string> {
-    var secretsParsed = {}
+export function secretNamesParser(secretNames: string[]): SecretsNameKey[] {
+  var secretsParsed: SecretsNameKey[] = [];
 
   secretNames.forEach((secretName) => {
-        secretsParsed = { ...secretsParsed, ...secretNameParser(secretName) }
-    })
+    const [name, key] = Object.entries(secretNameParser(secretName))[0];
 
-    return secretsParsed
+    secretsParsed.push({
+      name,
+      key,
+    });
+  });
+
+  return secretsParsed;
 }
