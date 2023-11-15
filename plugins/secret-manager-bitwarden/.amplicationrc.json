@@ -1,0 +1,12 @@
+{
+    "settings": {
+        "fetchMode": "STARTUP",
+        "secretNames": [
+            "key1",
+            "key2"
+        ]
+    },
+    "systemSettings": {
+        "requireAuthenticationEntity": "false"
+    }
+}
