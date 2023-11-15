@@ -12,5 +12,10 @@ export const beforeCreateServer = (
     throw new Error("Auth entity not found");
   }
 
+  // Check if auth-core plugin is installed
+  if(!context.pluginInstallations.some((plugin) => plugin.npm === "@amplication/plugin-auth-core")) {
+    throw new Error("The auth-core plugin must be installed for the auth-auth0 plugin to function");
+  }
+
   return eventParams;
 };
