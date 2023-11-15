@@ -5,6 +5,7 @@ import {
   CreateEntityServiceParams,
   CreateServerAuthParams,
   CreateServerDockerComposeParams,
+  CreateServerSecretsManagerParams,
   DsgContext,
   EntityField,
   Events,
@@ -62,6 +63,9 @@ class JwtAuthPlugin implements AmplicationPlugin {
       },
       CreateServerDockerCompose: {
         before: this.beforeCreateDockerComposeFile,
+      },
+      CreateServerSecretsManager: {
+        before: this.beforeCreateSecretsManager,
       },
     };
   }
@@ -285,6 +289,17 @@ class JwtAuthPlugin implements AmplicationPlugin {
     eventParams: CreateServerDockerComposeParams
   ): CreateServerDockerComposeParams {
     eventParams.updateProperties.push(...updateDockerComposeProperties);
+    return eventParams;
+  }
+
+  beforeCreateSecretsManager(
+    dsgContext: DsgContext,
+    eventParams: CreateServerSecretsManagerParams
+  ): CreateServerSecretsManagerParams {
+    eventParams.secretsNameKey.push({
+      name: "JwtSecretKey", // Used in jwt strategy as Enum key
+      key: "JWT_SECRET_KEY",
+    });
     return eventParams;
   }
 }
