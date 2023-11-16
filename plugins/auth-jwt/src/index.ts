@@ -5,6 +5,8 @@ import {
   CreateEntityServiceParams,
   CreateServerAuthParams,
   CreateServerParams,
+  CreateServerDockerComposeParams,
+  CreateServerSecretsManagerParams,
   DsgContext,
   EntityField,
   Events,
@@ -32,10 +34,12 @@ import {
 import { builders, namedTypes } from "ast-types";
 import { relativeImportPath } from "./util/module";
 import { isPasswordField } from "./util/field";
-import {
-  AUTH_ENTITY_FIELD_PASSWORD,
-  AUTH_ENTITY_FIELD_USERNAME,
+import {   
+	AUTH_ENTITY_FIELD_PASSWORD,
+  	AUTH_ENTITY_FIELD_USERNAME,
+	updateDockerComposeProperties
 } from "./constants";
+import { getPluginSettings } from "./util/getPluginSettings";
 
 const ARGS_ID = builders.identifier("args");
 const PASSWORD_FIELD_ASYNC_METHODS = new Set(["create", "update"]);
@@ -65,6 +69,12 @@ class JwtAuthPlugin implements AmplicationPlugin {
       },
       CreateEntityServiceBase: {
         before: this.beforeCreateEntityServiceBase,
+      },
+      CreateServerDockerCompose: {
+        before: this.beforeCreateDockerComposeFile,
+      },
+      CreateServerSecretsManager: {
+        before: this.beforeCreateSecretsManager,
       },
     };
   }
@@ -308,6 +318,26 @@ class JwtAuthPlugin implements AmplicationPlugin {
         ])
       ),
     ]);
+  }
+
+  beforeCreateDockerComposeFile(
+    dsgContext: DsgContext,
+    eventParams: CreateServerDockerComposeParams
+  ): CreateServerDockerComposeParams {
+    eventParams.updateProperties.push(...updateDockerComposeProperties);
+    return eventParams;
+  }
+
+  beforeCreateSecretsManager(
+    dsgContext: DsgContext,
+    eventParams: CreateServerSecretsManagerParams
+  ): CreateServerSecretsManagerParams {
+    const settings = getPluginSettings(dsgContext.pluginInstallations);
+    eventParams.secretsNameKey.push({
+      name: "JwtSecretKey", // Used in jwt strategy as Enum key
+      key: settings.JwtSecretKeyReference,
+    });
+    return eventParams;
   }
 }
 
