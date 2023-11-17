@@ -7,7 +7,7 @@
     "install": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm install",
+        "command": "npm ci",
         "cwd": "{projectRoot}/"
       }
     },
