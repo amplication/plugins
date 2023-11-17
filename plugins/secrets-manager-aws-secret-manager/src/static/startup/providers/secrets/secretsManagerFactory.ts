@@ -22,7 +22,7 @@ export const secretsManagerFactory = {
 
       try {
         const response = await client.send(
-          new GetSecretValueCommand({ SecretId: secret_id }),
+          new GetSecretValueCommand({ SecretId: secret_id })
         );
 
         const secrets_list: Record<string, string> = JSON.parse(
