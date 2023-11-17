@@ -1,0 +1,58 @@
+name: _Reusable publish template
+
+on:
+  workflow_call:
+    inputs:
+      affected-plugin:
+        type: string
+        description: Nx plugins affected by the changes
+        required: true
+      event:
+        type: string
+        description: The github event that triggered the original workflow
+        required: true
+      pr-number:
+        type: number
+        description: When the event is a pull-request it passes the pr number
+        required: true
+      commit-sha:
+        type: string
+        description: The base sha
+        required: true
+
+jobs:
+  publish:
+    if: ${{ github.event.inputs.publish }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies and build 🔧
+        run: npm ci && npm run build
+        working-directory: plugins/${{ inputs.affected-plugin }}
+
+      # if the branch is the default branch, the latest tag is applied
+      - name: Publish package on NPM [latest] 📦
+        if: ${{ inputs.event }} == commit
+        run: npm publish --access public
+        working-directory: plugins/${{ inputs.affected-plugin }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # if the branch is not the default branch, the beta tag is applied
+      - name: Publish package on NPM [beta] 📦
+        if: ${{ inputs.event }} == pull_request
+        run: |
+          VERSION=$(cat package-lock.json | jq -r '.version')
+          npm version $VERSION-beta.pr-${{ inputs.pr-number }}.${{ inputs.commit-sha }}
+          npm publish --access public --tag beta
+        working-directory: plugins/${{ inputs.affected-plugin }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
