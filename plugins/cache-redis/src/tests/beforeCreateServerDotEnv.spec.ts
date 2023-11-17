@@ -40,7 +40,7 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
     context.pluginInstallations[0].settings = userSpecifiedSettings;
     const { envVariables } = plugin.beforeCreateServerDotEnv(context, params);
     expect(envVariables).toStrictEqual(
-      utils.settingsToVarDict(userSpecifiedSettings)
+      utils.settingsToVarDict(userSpecifiedSettings),
     );
   });
 });

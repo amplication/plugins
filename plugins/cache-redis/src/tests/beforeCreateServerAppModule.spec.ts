@@ -46,7 +46,7 @@ describe("Testing beforeCreateServerAppModule hook", () => {
   it("should add the cache module configured with Redis to the modules list", () => {
     const { templateMapping } = plugin.beforeCreateServerAppModule(
       context,
-      params
+      params,
     );
     let expectedModules = prettyCode(`
         [CacheModule.registerAsync({
