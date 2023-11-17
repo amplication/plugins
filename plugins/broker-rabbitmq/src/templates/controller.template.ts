@@ -3,4 +3,4 @@ import { RabbitMQMessage } from "./RabbitMQMessage";
 import { Controller } from "@nestjs/common";
 
 @Controller("rabbitmq-controller")
-export class CONTROLLER { }
+export class CONTROLLER {}

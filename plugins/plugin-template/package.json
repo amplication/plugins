@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Description of your plugin",
   "main": "dist/index.js",
+  "nx": {},
   "scripts": {
     "prepublishOnly": "npm run build",
     "dev": "webpack --watch",

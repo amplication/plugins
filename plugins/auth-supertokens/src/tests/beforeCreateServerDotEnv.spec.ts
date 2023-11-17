@@ -46,7 +46,7 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
       apiKey: "THEKey!",
       supertokensIdFieldName: "supetokensId",
       recipe: {
-        name: "emailpassword"
+        name: "emailpassword",
       },
     };
     context.pluginInstallations[0].settings = userSpecifiedSettings;

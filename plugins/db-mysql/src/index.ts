@@ -12,7 +12,11 @@ import {
 } from "@amplication/code-gen-types";
 import { resolve } from "path";
 import { getPluginSettings } from "./utils";
-import { dataSource, updateDockerComposeDevProperties, updateDockerComposeProperties } from "./constants";
+import {
+  dataSource,
+  updateDockerComposeDevProperties,
+  updateDockerComposeProperties,
+} from "./constants";
 
 class MySQLPlugin implements AmplicationPlugin {
   register(): Events {

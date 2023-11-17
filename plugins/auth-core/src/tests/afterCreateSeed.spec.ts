@@ -46,7 +46,7 @@ describe("Testing afterCreateSeed hook", () => {
  */
 export async function readStaticModulesInner(
   source: string,
-  basePath: string,
+  basePath: string
 ): Promise<ModuleMap> {
   const directory = `${normalize(source)}/`;
   const staticModules = await fg(`${directory}**/*`, {
@@ -61,8 +61,8 @@ export async function readStaticModulesInner(
       .filter(
         (module) =>
           !filesToFilter.test(
-            module.replace(directory, basePath ? basePath + "/" : ""),
-          ),
+            module.replace(directory, basePath ? basePath + "/" : "")
+          )
       )
       .map(async (module) => {
         const encoding = getFileEncoding(module);
@@ -70,7 +70,7 @@ export async function readStaticModulesInner(
           path: module.replace(directory, basePath ? basePath + "/" : ""),
           code: await fs.promises.readFile(module, encoding),
         };
-      }),
+      })
   );
   const moduleMap: ModuleMap = new ModuleMap(mock<BuildLogger>());
   for await (const module of modules) {

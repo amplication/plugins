@@ -51,7 +51,7 @@ import {
   addAuthFilter,
   addAppCorsSettings,
   addGenSupertokensOptionsImport,
-  verifySupertokensIdFieldExists
+  verifySupertokensIdFieldExists,
 } from "./core";
 import { EnumAuthProviderType } from "@amplication/code-gen-types/src/models";
 
@@ -122,8 +122,8 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
         after: this.afterCreateAdminAppModule,
       },
       [EventNames.CreateSeed]: {
-        before: this.beforeCreateSeed
-      }
+        before: this.beforeCreateSeed,
+      },
     };
   }
 
@@ -133,12 +133,15 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
   ): Promise<CreateSeedParams> {
     const path = resolve(constants.templatesPath, "seed.template.ts");
     eventParams.template = await readFile(path);
-    const data = eventParams.templateMapping.DATA as namedTypes.ObjectExpression;
-    const passwordProp = data.properties.find((prop) => 
-      prop.type === "ObjectProperty"
-      && prop.key.type === "Identifier"
-      && prop.key.name === "password");
-    if(passwordProp) {
+    const data = eventParams.templateMapping
+      .DATA as namedTypes.ObjectExpression;
+    const passwordProp = data.properties.find(
+      (prop) =>
+        prop.type === "ObjectProperty" &&
+        prop.key.type === "Identifier" &&
+        prop.key.name === "password"
+    );
+    if (passwordProp) {
       const prop = passwordProp as namedTypes.ObjectProperty;
       // Remove the hash() invocation from the password property's value
       prop.value = builders.stringLiteral("admin");
