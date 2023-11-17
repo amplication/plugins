@@ -82,7 +82,9 @@ export const beforeCreateServerAppModule = (
 
   templateMapping["MODULES"] = builders.arrayExpression([
     ...templateMapping["MODULES"].elements,
-    opentelemetryModule(serviceName || context.resourceInfo?.name || "sample-service"),
+    opentelemetryModule(
+      serviceName || context.resourceInfo?.name || "sample-service"
+    ),
   ]);
 
   addImports(template, generateImports());

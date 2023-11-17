@@ -19,7 +19,13 @@ type UseCasesCrud =
   | "Update"
   | "Delete";
 
-const useCasesByAction = ["FindMany", "FindUnique", "Create", "Update", "Delete"];
+const useCasesByAction = [
+  "FindMany",
+  "FindUnique",
+  "Create",
+  "Update",
+  "Delete",
+];
 const useCaseTemplatePath = join(
   resolve(__dirname, "./templates"),
   "useCase.template.ts"
@@ -33,7 +39,7 @@ export const createUseCasesCrud = async (entityName: string) => {
   const useCasesLength = useCasesByAction.length;
   const useCasesModules: Module[] = [];
   const indexTemplate = await readFile(useCaseIndexTemplatePath);
-  for (let i=0; i < useCasesLength; i++) {
+  for (let i = 0; i < useCasesLength; i++) {
     const template = await readFile(useCaseTemplatePath);
     const useCaseModuleTemp = await createUsCaseModule(
       useCasesByAction[i] as UseCasesCrud,
@@ -64,11 +70,15 @@ const createUsCaseModule = async (
   entityName: string
 ): Promise<ModuleUseCase> => {
   const entityCapitalFirst = capitalizeFirstLetter(entityName);
-  const useCaseClass = `${useCase}${entityCapitalFirst}UseCase`
+  const useCaseClass = `${useCase}${entityCapitalFirst}UseCase`;
   const templateMapping = {
     USE_CASE: builders.identifier(useCaseClass),
-    USE_CASE_ARGS: builders.identifier(setUseCaseArgsName(entityCapitalFirst, useCase)),
-    ENTITY_DTO: builders.identifier(useCase === "FindMany" ? `${entityCapitalFirst}[]` : entityCapitalFirst), 
+    USE_CASE_ARGS: builders.identifier(
+      setUseCaseArgsName(entityCapitalFirst, useCase)
+    ),
+    ENTITY_DTO: builders.identifier(
+      useCase === "FindMany" ? `${entityCapitalFirst}[]` : entityCapitalFirst
+    ),
   };
 
   const useCaseId = builders.identifier(useCaseClass);
@@ -95,8 +105,10 @@ const setUseCaseArgsName = (entityName: string, useCase: UseCasesCrud) => {
   const oppositeCrud = ["Create", "Delete", "Update"];
   const testUseCase = oppositeCrud.includes(useCase);
 
-  return `${testUseCase ? "" : entityName}${useCase}${testUseCase ? entityName : "" }Args`
-}
+  return `${testUseCase ? "" : entityName}${useCase}${
+    testUseCase ? entityName : ""
+  }Args`;
+};
 /**
  * Add repository interface import and entity dto import and useCase args
  * @param template
@@ -107,7 +119,7 @@ const createClassImport = (
   useCase: UseCasesCrud
 ) => {
   const dtoName = `${entityName}${useCase}`;
- 
+
   const crudDtoImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(entityName))],
     builders.stringLiteral(`../model/dtos/${entityName}`)
@@ -170,19 +182,23 @@ const createClassMethod = (entityName: string, useCase: UseCasesCrud) => {
                 `${useCase.charAt(0).toLowerCase()}${useCase.slice(1)}`
               )
             ),
-            [
-              builders.identifier("args"),
-            ]
+            [builders.identifier("args")]
           )
         )
       ),
     ]),
     async: true,
     key: builders.identifier("execute"),
-    params: [builders.identifier.from({
-      name: "args",
-      typeAnnotation: builders.tsTypeAnnotation(builders.tsTypeReference(builders.identifier(setUseCaseArgsName(entityName, useCase))))
-    }),],
+    params: [
+      builders.identifier.from({
+        name: "args",
+        typeAnnotation: builders.tsTypeAnnotation(
+          builders.tsTypeReference(
+            builders.identifier(setUseCaseArgsName(entityName, useCase))
+          )
+        ),
+      }),
+    ],
     returnType: builders.tsTypeAnnotation(
       builders.tsTypeReference(
         builders.identifier("Promise"),

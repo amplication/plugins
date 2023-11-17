@@ -34,7 +34,7 @@ describe("Testing beforeCreateEntityControllerModule hook", () => {
   it("should correctly alter the controller module", () => {
     const { template } = plugin.beforeCreateEntityControllerModule(
       context,
-      params,
+      params
     );
     const code = prettyPrint(template).code;
     const expectedCode = prettyCode(correctOutputTemplate);

@@ -20,8 +20,8 @@ export const beforeCreateAppModule = (
 ) => {
   context.utils.skipDefaultBehavior = true;
 
-  return eventParams
-}
+  return eventParams;
+};
 
 export const afterCreateAppModule = async (
   context: DsgContext,
@@ -37,9 +37,11 @@ export const afterCreateAppModule = async (
   interpolate(template, {
     MODULES: builders.arrayExpression([
       builders.identifier("PrismaModule"),
-      ...entitiesDtos.map((entity) => builders.identifier(`Sapphire${entity}Module`)),
+      ...entitiesDtos.map((entity) =>
+        builders.identifier(`Sapphire${entity}Module`)
+      ),
       builders.identifier("ConfigModule"),
-    ])
+    ]),
   });
   createClassImport(template, entitiesDtos);
 

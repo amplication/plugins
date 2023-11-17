@@ -102,7 +102,7 @@ For the email password recipe, the recipe setting is like:
 
 ```js
 type Recipe = {
-  name: "emailpassword"
+  name: "emailpassword",
 };
 ```
 
@@ -242,7 +242,7 @@ You have to manually create the corresponding supertokens user on the supertoken
 ### Server
 
 This plugin generates the code for the initial setup of SuperTokens configuration and some utility functions
-that can be used to handle user data stored on the SuperTokens core in the generated 
+that can be used to handle user data stored on the SuperTokens core in the generated
 `src/auth/supertokens/supertokens.service.ts`.
 The signatures of the functions that are generated depend on the selected auth recipe.
 
@@ -294,10 +294,10 @@ an email and password form in the login page.
 The SuperTokens frontend SDK is used for the session creation of a user.
 
 To login a user on the admin UI, you first have to create that user on the SuperTokens core, either through
-the SuperTokens backend SDK (which the generated SuperTokens service functions use) or through the 
+the SuperTokens backend SDK (which the generated SuperTokens service functions use) or through the
 SuperTokens dashboard (which you can learn more about here: https://supertokens.com/docs/userdashboard/about).
 
-You also have to create the user in the DB and store the SuperTokens ID of the user in the 
+You also have to create the user in the DB and store the SuperTokens ID of the user in the
 `supertokensIdFieldName`. This is necessary because SuperTokens is used for authentication and the
 roles in the DB is then what is used for authorization.
 
@@ -306,10 +306,10 @@ You then use the details of the user to login.
 For example, some steps you can follow to do this when using the emailpassword recipe:
 
 1. Customize the POST endpoint in the user controller to call `createSupertokensUser` with the
-supplied email and password.
+   supplied email and password.
 2. Start the admin UI and backend servers.
 3. Create a new user using the POST endpoint with an email and password, and all the roles the user needs
-to use the admin UI pages.
+   to use the admin UI pages.
 4. Open the admin UI page.
 5. Enter the email and password used to create the user.
 6. Click the login button.

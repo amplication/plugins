@@ -1,9 +1,9 @@
 {
-    "settings": {
-        "host": "localhost",
-        "port": 6379,
-        "retryAttempts": 3,
-        "retryDelay": 3,
-        "enableTls": false
-    }
+  "settings": {
+    "host": "localhost",
+    "port": 6379,
+    "retryAttempts": 3,
+    "retryDelay": 3,
+    "enableTls": false
+  }
 }

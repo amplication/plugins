@@ -22,7 +22,7 @@ describe("Testing beforeCreateAdminDotEnv hook", () => {
     });
   });
 
-  it("should use default values if plugin settings are not defined",async () => {
+  it("should use default values if plugin settings are not defined", async () => {
     eventParams = await beforeCreateAdminDotEnv(context, eventParams);
 
     const expectedEnvVariables = [
@@ -37,7 +37,7 @@ describe("Testing beforeCreateAdminDotEnv hook", () => {
     expect(eventParams.envVariables).toEqual(expectedEnvVariables);
   });
 
-  it("should use plugin settings if defined",async () => {
+  it("should use plugin settings if defined", async () => {
     context.pluginInstallations[0].settings = {
       domain: "CUSTOM_AUTH0_DOMAIN",
       clientID: "CUSTOM_AUTH0_CLIENT_ID",

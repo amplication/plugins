@@ -1,5 +1,5 @@
 {
-  "settings" : {
+  "settings": {
     "root_level": false,
     "directory_name": "terraform",
     "global": {

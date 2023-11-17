@@ -3,6 +3,7 @@
   "version": "1.3.0",
   "description": "Add Description of Routes and Entity properties to the REST-API Documentation",
   "main": "dist/index.js",
+  "nx": {},
   "scripts": {
     "prepublishOnly": "npm run build",
     "dev": "webpack --watch",

@@ -15,7 +15,7 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [
         { from: "./src/static", to: "static", noErrorOnMissing: true },
-        { from: "./src/templates", to: "templates", noErrorOnMissing: true }
+        { from: "./src/templates", to: "templates", noErrorOnMissing: true },
       ],
     }),
   ],
@@ -24,7 +24,7 @@ module.exports = {
       {
         test: /\.ts?$/,
         use: "ts-loader",
-        exclude: /node_modules/
+        exclude: /node_modules/,
       },
     ],
   },

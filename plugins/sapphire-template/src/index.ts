@@ -10,7 +10,10 @@ import {
 } from "./events/createService";
 import { afterCreateServerModules } from "./events/createServerModules";
 import { afterCreateEntityModule } from "./events/createEntityModule";
-import { beforeCreateAppModule, afterCreateAppModule } from "./events/createAppModule";
+import {
+  beforeCreateAppModule,
+  afterCreateAppModule,
+} from "./events/createAppModule";
 import { afterLoadStaticFiles } from "./events/loadStaticFiles";
 import { afterCreateDTOs } from "./events/createDTOs";
 
@@ -33,14 +36,14 @@ class SapphireTemplatePlugin implements AmplicationPlugin {
       },
       [EventNames.CreateServerAppModule]: {
         before: beforeCreateAppModule,
-        after: afterCreateAppModule
+        after: afterCreateAppModule,
       },
       [EventNames.LoadStaticFiles]: {
-        after: afterLoadStaticFiles
+        after: afterLoadStaticFiles,
       },
       [EventNames.CreateDTOs]: {
-        after: afterCreateDTOs
-      }
+        after: afterCreateDTOs,
+      },
     };
   }
 }

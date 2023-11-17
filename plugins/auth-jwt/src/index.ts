@@ -34,10 +34,10 @@ import {
 import { builders, namedTypes } from "ast-types";
 import { relativeImportPath } from "./util/module";
 import { isPasswordField } from "./util/field";
-import {   
-	AUTH_ENTITY_FIELD_PASSWORD,
-  	AUTH_ENTITY_FIELD_USERNAME,
-	updateDockerComposeProperties
+import {
+  AUTH_ENTITY_FIELD_PASSWORD,
+  AUTH_ENTITY_FIELD_USERNAME,
+  updateDockerComposeProperties,
 } from "./constants";
 import { getPluginSettings } from "./util/getPluginSettings";
 
