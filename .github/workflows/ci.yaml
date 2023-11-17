@@ -10,7 +10,6 @@ on:
 env:
   NX_CLOUD_TOKEN: ${{ secrets.NX_CLOUD_TOKEN }}
   NX_BRANCH: ${{ github.head_ref }}
-  NX_FORCE_ALL: ${{ fromJSON('["", "--all"]')[ inputs.nx-force-all ] }}
   BASE: ${{ github.base_ref || github.event.repository.default_branch}}
 
 jobs:
