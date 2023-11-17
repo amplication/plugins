@@ -2,7 +2,6 @@ import * as dotenv from "dotenv";
 import { PrismaClient } from "../prisma/generated-prisma-client";
 import { customSeed } from "./customSeed";
 
-
 if (require.main === module) {
   dotenv.config();
 

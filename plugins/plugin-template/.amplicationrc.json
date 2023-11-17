@@ -1,6 +1,6 @@
 {
-    "settings": {},
-    "systemSettings": {
-        "requireAuthenticationEntity": "false"
-    }
+  "settings": {},
+  "systemSettings": {
+    "requireAuthenticationEntity": "false"
+  }
 }
