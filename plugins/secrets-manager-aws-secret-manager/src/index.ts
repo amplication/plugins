@@ -7,13 +7,12 @@ import {
   CreateServerDotEnvParams,
   CreateServerParams,
   ModuleMap,
+  CreateServerSecretsManagerParams,
 } from "@amplication/code-gen-types";
 import { dependencies, envVariables } from "./constants";
-import { resolve, join } from "path";
+import { resolve } from "path";
 import { getPluginSettings } from "./utils";
-import { genSecretsEnum } from "./utils/gen_enum";
 import { secretNamesParser } from "./utils/secret_name_parser";
-import { FetchMode } from "./types";
 
 class ExamplePlugin implements AmplicationPlugin {
   register(): Events {
@@ -26,6 +25,9 @@ class ExamplePlugin implements AmplicationPlugin {
       },
       [EventNames.CreateServer]: {
         after: this.beforeCreateServer,
+      },
+      [EventNames.CreateServerSecretsManager]: {
+        before: this.beforeCreateServerSecretsManager,
       },
     };
   }
@@ -53,9 +55,7 @@ class ExamplePlugin implements AmplicationPlugin {
     _: CreateServerParams,
     modules: ModuleMap
   ): Promise<ModuleMap> {
-    const { fetchMode, secretNames } = getPluginSettings(
-      context.pluginInstallations
-    );
+    const { fetchMode } = getPluginSettings(context.pluginInstallations);
     const staticPath = resolve(__dirname, "static", fetchMode.toLowerCase());
 
     // Import static files
@@ -66,20 +66,18 @@ class ExamplePlugin implements AmplicationPlugin {
 
     await modules.merge(staticFiles);
 
-    // Dynamically generate Secrets.ts file if the fetch mode is STARTUP
-    if (fetchMode == FetchMode.Startup) {
-      await modules.set({
-        code: genSecretsEnum(secretNamesParser(secretNames)),
-        path: join(
-          context.serverDirectories.srcDirectory,
-          "providers",
-          "secrets",
-          "secrets.ts"
-        ),
-      });
-    }
-
     return modules;
+  }
+
+  async beforeCreateServerSecretsManager(
+    context: DsgContext,
+    eventParams: CreateServerSecretsManagerParams
+  ): Promise<CreateServerSecretsManagerParams> {
+    const { secretNames } = getPluginSettings(context.pluginInstallations);
+
+    eventParams.secretsNameKey.push(...secretNamesParser(secretNames));
+
+    return eventParams;
   }
 }
 
