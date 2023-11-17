@@ -49,5 +49,8 @@
     ],
     "sharedGlobals": []
   },
+  "workspaceLayout": {
+    "appsDir": "plugins"
+  },
   "nxCloudAccessToken": "NTVlMDE1YmItM2FmZC00MTA5LTg0YzItMDA4M2NjZWI1ODVjfHJlYWQ="
 }
