@@ -37,7 +37,7 @@ class RedisCachePlugin implements AmplicationPlugin {
 
   beforeCreateServerPackageJson(
     context: DsgContext,
-    eventParams: CreateServerPackageJsonParams
+    eventParams: CreateServerPackageJsonParams,
   ): CreateServerPackageJsonParams {
     const redisDeps = constants.dependencies;
 
@@ -50,7 +50,7 @@ class RedisCachePlugin implements AmplicationPlugin {
 
   beforeCreateServerAppModule(
     context: DsgContext,
-    eventParams: CreateServerAppModuleParams
+    eventParams: CreateServerAppModuleParams,
   ): CreateServerAppModuleParams {
     const { template, templateMapping } = eventParams;
 
@@ -71,7 +71,7 @@ class RedisCachePlugin implements AmplicationPlugin {
 
   beforeCreateServerDotEnv(
     context: DsgContext,
-    eventParams: CreateServerDotEnvParams
+    eventParams: CreateServerDotEnvParams,
   ): CreateServerDotEnvParams {
     const settings = utils.getPluginSettings(context.pluginInstallations);
     eventParams.envVariables.push(...utils.settingsToVarDict(settings));
@@ -81,10 +81,10 @@ class RedisCachePlugin implements AmplicationPlugin {
 
   beforeCreateServerDockerCompose(
     context: DsgContext,
-    eventParams: CreateServerDockerComposeParams
+    eventParams: CreateServerDockerComposeParams,
   ): CreateServerDockerComposeParams {
     eventParams.updateProperties.push(
-      ...constants.updateDockerComposeProperties
+      ...constants.updateDockerComposeProperties,
     );
 
     return eventParams;
@@ -92,10 +92,10 @@ class RedisCachePlugin implements AmplicationPlugin {
 
   beforeCreateServerDockerComposeDev(
     context: DsgContext,
-    eventParams: CreateServerDockerComposeDevParams
+    eventParams: CreateServerDockerComposeDevParams,
   ): CreateServerDockerComposeParams {
     eventParams.updateProperties.push(
-      ...constants.updateDockerComposeDevProperties
+      ...constants.updateDockerComposeDevProperties,
     );
 
     return eventParams;
@@ -105,14 +105,14 @@ class RedisCachePlugin implements AmplicationPlugin {
 const cacheModuleImport = (): namedTypes.ImportDeclaration => {
   return builders.importDeclaration(
     [builders.importSpecifier(builders.identifier("CacheModule"))],
-    builders.stringLiteral("@nestjs/cache-manager")
+    builders.stringLiteral("@nestjs/cache-manager"),
   );
 };
 
 const redisStoreImport = (): namedTypes.ImportDeclaration => {
   return builders.importDeclaration(
     [builders.importSpecifier(builders.identifier("redisStore"))],
-    builders.stringLiteral("cache-manager-ioredis-yet")
+    builders.stringLiteral("cache-manager-ioredis-yet"),
   );
 };
 
@@ -120,22 +120,22 @@ const cacheModuleInstantiation = () => {
   return builders.callExpression(
     builders.memberExpression(
       builders.identifier("CacheModule"),
-      builders.identifier("registerAsync")
+      builders.identifier("registerAsync"),
     ),
     [
       builders.objectExpression([
         objProp("isGlobal", builders.booleanLiteral(true)),
         objProp(
           "imports",
-          builders.arrayExpression([builders.identifier("ConfigModule")])
+          builders.arrayExpression([builders.identifier("ConfigModule")]),
         ),
         objProp("useFactory", useFactoryConfigFunc()),
         objProp(
           "inject",
-          builders.arrayExpression([builders.identifier("ConfigService")])
+          builders.arrayExpression([builders.identifier("ConfigService")]),
         ),
       ]),
-    ]
+    ],
   );
 };
 
@@ -144,7 +144,7 @@ const useFactoryConfigFunc = (): namedTypes.ArrowFunctionExpression => {
     builders.identifier.from({
       name: "configService",
       typeAnnotation: builders.tsTypeAnnotation(
-        builders.tsTypeReference(builders.identifier("ConfigService"))
+        builders.tsTypeReference(builders.identifier("ConfigService")),
       ),
     }),
   ];
@@ -173,13 +173,13 @@ const useFactoryConfigFunc = (): namedTypes.ArrowFunctionExpression => {
             builders.awaitExpression(
               builders.callExpression(
                 builders.identifier("redisStore"),
-                redisStoreArgs
-              )
-            )
+                redisStoreArgs,
+              ),
+            ),
           ),
-        ])
+        ]),
       ),
-    ])
+    ]),
   );
   factoryConfigFunc.async = true;
 
@@ -197,10 +197,10 @@ const configAssign = (
       builders.callExpression(
         builders.memberExpression(
           builders.identifier("configService"),
-          builders.identifier("get")
+          builders.identifier("get"),
         ),
-        [builders.stringLiteral(key), ...others]
-      )
+        [builders.stringLiteral(key), ...others],
+      ),
     ),
   ]);
 };

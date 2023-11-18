@@ -1,12 +1,12 @@
 {
-    "settings": {
-        "repository_name": "",
-        "repository_type": "private",
-        "configuration": {
-            "force_delete": false
-        }
-    },
-    "systemSettings": {
-        "requireAuthenticationEntity": "false"
+  "settings": {
+    "repository_name": "",
+    "repository_type": "private",
+    "configuration": {
+      "force_delete": false
     }
+  },
+  "systemSettings": {
+    "requireAuthenticationEntity": "false"
+  }
 }

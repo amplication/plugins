@@ -15,7 +15,7 @@ export class TokenServiceBase implements ITokenService {
     if (!username) return Promise.reject(INVALID_USERNAME_ERROR);
     if (!password) return Promise.reject(INVALID_PASSWORD_ERROR);
     return Promise.resolve(
-      Buffer.from(`${username}:${password}`).toString("base64"),
+      Buffer.from(`${username}:${password}`).toString("base64")
     );
   }
 }

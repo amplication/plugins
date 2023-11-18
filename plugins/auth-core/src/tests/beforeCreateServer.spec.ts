@@ -39,7 +39,7 @@ describe("Testing beforeCreateServer hook", () => {
     for (const fieldname of ["username", "password", "roles"]) {
       try {
         expect(
-          authEntity.fields.find((field) => field.name === fieldname),
+          authEntity.fields.find((field) => field.name === fieldname)
         ).toBeTruthy();
       } catch (err) {
         throw new Error(`The plugin did not add the ${fieldname} field`);

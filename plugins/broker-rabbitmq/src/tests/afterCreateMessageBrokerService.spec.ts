@@ -1,39 +1,63 @@
-import { CreateMessageBrokerServiceParams, DsgContext } from "@amplication/code-gen-types";
+import {
+  CreateMessageBrokerServiceParams,
+  DsgContext,
+} from "@amplication/code-gen-types";
 import RabbitMQPlugin from "../index";
-import { mock } from "jest-mock-extended"
-import * as utils from "../util/ast"
+import { mock } from "jest-mock-extended";
+import * as utils from "../util/ast";
 
 describe("Testing afterCreateMessageBrokerService", () => {
-    let plugin: RabbitMQPlugin
-    let context: DsgContext
-    let params: CreateMessageBrokerServiceParams
+  let plugin: RabbitMQPlugin;
+  let context: DsgContext;
+  let params: CreateMessageBrokerServiceParams;
 
-    beforeEach(() => {
-        plugin = new RabbitMQPlugin();
-        context = fakeContext()
-        params = mock<CreateMessageBrokerServiceParams>()
-    })
+  beforeEach(() => {
+    plugin = new RabbitMQPlugin();
+    context = fakeContext();
+    params = mock<CreateMessageBrokerServiceParams>();
+  });
 
-    it("should correctly add the code for generating rabbitmq producer service", async () => {
-        const modules = await plugin.afterCreateMessageBrokerService(context, params);
+  it("should correctly add the code for generating rabbitmq producer service", async () => {
+    const modules = await plugin.afterCreateMessageBrokerService(
+      context,
+      params
+    );
 
-        const rabbitMqProducerService = modules.get("/rabbitmq.producer.service.ts");
-        const rabbitMqProducerServiceCode = utils.print(utils.parse(rabbitMqProducerService.code)).code;
-        const expectedProducerServiceCode = utils.print(utils.parse(expectedProducerService)).code;
+    const rabbitMqProducerService = modules.get(
+      "/rabbitmq.producer.service.ts"
+    );
+    const rabbitMqProducerServiceCode = utils.print(
+      utils.parse(rabbitMqProducerService.code)
+    ).code;
+    const expectedProducerServiceCode = utils.print(
+      utils.parse(expectedProducerService)
+    ).code;
 
-        const rabbitMQMessage = modules.get("/RabbitMQMessage.ts");
-        const rabbitMQMessageCode = utils.print(utils.parse(rabbitMQMessage.code)).code;
-        const expectedRabbitMQMessageCode = utils.print(utils.parse(expectedRabbitMQMessage)).code;
+    const rabbitMQMessage = modules.get("/RabbitMQMessage.ts");
+    const rabbitMQMessageCode = utils.print(
+      utils.parse(rabbitMQMessage.code)
+    ).code;
+    const expectedRabbitMQMessageCode = utils.print(
+      utils.parse(expectedRabbitMQMessage)
+    ).code;
 
-        const rabbitMQMessageHeaders = modules.get("/RabbitMQMessageHeaders.ts");
-        const rabbitMQMessageHeadersCode = utils.print(utils.parse(rabbitMQMessageHeaders.code)).code;
-        const expectedRabbitMQMessageHeadersCode = utils.print(utils.parse(expectedRabbitMQMessageHeaders)).code;
+    const rabbitMQMessageHeaders = modules.get("/RabbitMQMessageHeaders.ts");
+    const rabbitMQMessageHeadersCode = utils.print(
+      utils.parse(rabbitMQMessageHeaders.code)
+    ).code;
+    const expectedRabbitMQMessageHeadersCode = utils.print(
+      utils.parse(expectedRabbitMQMessageHeaders)
+    ).code;
 
-        expect(rabbitMqProducerServiceCode).toStrictEqual(expectedProducerServiceCode);
-        expect(rabbitMQMessageCode).toStrictEqual(expectedRabbitMQMessageCode);
-        expect(rabbitMQMessageHeadersCode).toStrictEqual(expectedRabbitMQMessageHeadersCode);
-    })
-})
+    expect(rabbitMqProducerServiceCode).toStrictEqual(
+      expectedProducerServiceCode
+    );
+    expect(rabbitMQMessageCode).toStrictEqual(expectedRabbitMQMessageCode);
+    expect(rabbitMQMessageHeadersCode).toStrictEqual(
+      expectedRabbitMQMessageHeadersCode
+    );
+  });
+});
 
 const expectedRabbitMQMessage = `import { RabbitMQMessageHeaders } from "./RabbitMQMessageHeaders";
 
@@ -42,10 +66,10 @@ export interface RabbitMQMessage {
   value: string | Record<string, any>;
   headers?: RabbitMQMessageHeaders;
 }
-`
+`;
 const expectedRabbitMQMessageHeaders = `export interface RabbitMQMessageHeaders {
   [key: string]: Buffer | string | undefined;
-}`
+}`;
 
 const expectedProducerService = `import { Inject, Injectable } from "@nestjs/common";
 import { ClientRMQ } from "@nestjs/microservices";
@@ -76,17 +100,21 @@ export class RabbitMQProducerService {
     await this.rabbitMQClient.connect();
   }
 }
-`
+`;
 
 const fakeContext = () => {
-    return mock<DsgContext>({
-        logger: {
-            warn: async (message: string, params?: Record<string, unknown>, userFriendlyMessage?: string) => {
-                console.log("Warning!", userFriendlyMessage);
-            }
-        },
-        serverDirectories: {
-            messageBrokerDirectory: "/"
-        }
-    });
-}
+  return mock<DsgContext>({
+    logger: {
+      warn: async (
+        message: string,
+        params?: Record<string, unknown>,
+        userFriendlyMessage?: string
+      ) => {
+        console.log("Warning!", userFriendlyMessage);
+      },
+    },
+    serverDirectories: {
+      messageBrokerDirectory: "/",
+    },
+  });
+};

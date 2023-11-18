@@ -22,13 +22,13 @@ describe("Testing afterCreateApp hook", () => {
         authDirectory: "src/auth",
       },
       DTOs: {
-        "User": {
-          "EnumUserPriority": {
+        User: {
+          EnumUserPriority: {
             id: {
               name: "EnumUserPriority",
-            }
+            },
           },
-        }
+        },
       },
       resourceInfo: {
         settings: {
@@ -40,31 +40,31 @@ describe("Testing afterCreateApp hook", () => {
           name: "User",
           fields: [
             {
-              "id": "daa757a6-4e15-4afc-a6e3-d4366d64367a",
-              "permanentId": "daa757a6-4e15-4afc-a6e3-d4366d643671",
-              "name": "priority",
-              "displayName": "Priority",
-              "required": true,
-              "unique": false,
-              "searchable": true,
-              "dataType": EnumDataType.OptionSet,
-              "properties": {
-                "options": [
-                  { "label": "High", "value": "high" },
-                  { "label": "Medium", "value": "medium" },
-                  { "label": "Low", "value": "low" }
-                ]
-              }
+              id: "daa757a6-4e15-4afc-a6e3-d4366d64367a",
+              permanentId: "daa757a6-4e15-4afc-a6e3-d4366d643671",
+              name: "priority",
+              displayName: "Priority",
+              required: true,
+              unique: false,
+              searchable: true,
+              dataType: EnumDataType.OptionSet,
+              properties: {
+                options: [
+                  { label: "High", value: "high" },
+                  { label: "Medium", value: "medium" },
+                  { label: "Low", value: "low" },
+                ],
+              },
             },
             {
-              "id": "8c5c4130-94b0-4ce4-a4cb-4e42bf7a9b37",
-              "permanentId": "8c5c4130-94b0-4ce4-a4cb-4e42bf7a9b31",
-              "name": "email",
-              "displayName": "Email",
-              "required": true,
-              "unique": true,
-              "searchable": true,
-              "dataType": EnumDataType.Email,
+              id: "8c5c4130-94b0-4ce4-a4cb-4e42bf7a9b37",
+              permanentId: "8c5c4130-94b0-4ce4-a4cb-4e42bf7a9b31",
+              name: "email",
+              displayName: "Email",
+              required: true,
+              unique: true,
+              searchable: true,
+              dataType: EnumDataType.Email,
             },
           ],
         },
@@ -94,7 +94,7 @@ describe("Testing afterCreateApp hook", () => {
                 path: module.replace(directory, basePath ? basePath + "/" : ""),
                 code: await fs.promises.readFile(module, "utf-8"),
               };
-            }),
+            })
           );
 
           const moduleMap: ModuleMap = new ModuleMap(logger);

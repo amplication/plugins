@@ -1,0 +1,63 @@
+name: _Reusable nx template
+
+on:
+  workflow_call:
+    inputs:
+      nx-head:
+        type: string
+        description: Commit SHA, branch or tag name used by Nx in the affected jobs as head.
+        required: true
+      nx-base:
+        type: string
+        description: Commit SHA, branch or tag name used by Nx in the affected jobs as base.
+        required: true
+    outputs:
+      affected-plugins:
+        description: Nx plugins affected by the changes
+        value: ${{ jobs.nx.outputs.affected-plugins }}
+
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NX_BRANCH: ${{ github.event.workflow_run.head_branch }}
+  BRANCH: ${{ github.event.workflow_run.head_branch }}
+
+jobs:
+  nx:
+    name: Nx Affected
+    runs-on: ubuntu-20.04
+    outputs:
+      affected-plugins: ${{ steps.configure-nx.outputs.affected-plugins }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.nx-head }}
+          filter: blob:none
+
+      - uses: nrwl/nx-set-shas@v3
+        if: inputs.nx-force-all == false
+        with:
+          main-branch-name: ${{ inputs.nx-base }}
+
+      - name: Setup Bun Runtime
+        if: ${{ steps.cache.outputs.cache-hit != 'true' }}
+        uses: oven-sh/setup-bun@v1
+
+      - name: Cache
+        id: cache
+        uses: actions/cache@v3
+        env:
+          cache-name: cache
+        with:
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          path: |
+            ~/.bun/install/cache
+
+      - name: Install Dependencies
+        run: bun i --lockfile package-lock.json
+
+      - name: Evaluate affected projects
+        id: configure-nx
+        run: |
+          echo affected-plugins=$(bunx nx show projects --type=app --affected --json) >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT | grep affected

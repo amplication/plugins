@@ -25,7 +25,7 @@ describe("Testing afterCreateDTOs for emailpassword recipe hook", () => {
           settings: {
             supertokensIdFieldName: "stId",
             recipe: {
-              name: "emailpassword"
+              name: "emailpassword",
             },
           },
         },

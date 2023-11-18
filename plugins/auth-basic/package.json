@@ -1,8 +1,9 @@
 {
   "name": "@amplication/plugin-auth-basic",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "set basic auth for Amplication build",
   "main": "dist/index.js",
+  "nx": {},
   "scripts": {
     "dev": "webpack --watch",
     "build": "webpack",

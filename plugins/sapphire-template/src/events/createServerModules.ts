@@ -10,7 +10,6 @@ export const afterCreateServerModules = (
   modules: Module[]
 ): Module[] =>
   modules.map((module: Module) => {
-    
     if (!module.path.includes("/base/")) return module;
 
     if (/controller|service|module/.test(module.path)) return module;

@@ -5,7 +5,7 @@ export interface IAuth0Environment {
   clientID: string;
   clientSecret: string;
   audience: string;
-  issuerURL: string;  
+  issuerURL: string;
   domain: string;
 }
 
@@ -27,11 +27,11 @@ export class Auth0Environment implements IAuth0Environment {
     public readonly clientSecret: string,
     public readonly audience: string,
     public readonly issuerURL: string,
-    public readonly domain: string,
+    public readonly domain: string
   ) {}
 
   public static async getInstance(
-    options: IAuth0EnvironmentOptions,
+    options: IAuth0EnvironmentOptions
   ): Promise<IAuth0Environment> {
     if (!Auth0Environment.instance) {
       const environment = await setupAuth0Environment(options);
@@ -44,7 +44,7 @@ export class Auth0Environment implements IAuth0Environment {
         environment.clientSecret,
         environment.audience,
         environment.issuerURL,
-        environment.domain,
+        environment.domain
       );
     }
     return Auth0Environment.instance;
@@ -99,7 +99,9 @@ async function setupAuth0Environment({
 
     // Try to find the API by name and create it if it doesn't exist
     const apis = await management.resourceServers.getAll();
-    let api = apis.data.find((api) => api.name === apiName || api.identifier === audience);
+    let api = apis.data.find(
+      (api) => api.name === apiName || api.identifier === audience
+    );
     if (!api) {
       logger.info("Creating API");
       api = await management.resourceServers
@@ -135,7 +137,7 @@ async function setupAuth0Environment({
     // Try to find the action by name and create it if it doesn't exist
     const actions = await management.actions.getAll();
     let action = actions.data.actions.find(
-      (action) => action.name === actionName,
+      (action) => action.name === actionName
     );
     if (!action) {
       logger.info("Creating action");
@@ -193,7 +195,7 @@ async function setupAuth0Environment({
             },
           },
         ],
-      },
+      }
     );
 
     return {

@@ -4,6 +4,7 @@ import {
   CreateEntityServiceBaseParams,
   CreateEntityServiceParams,
   CreateServerAuthParams,
+  CreateServerParams,
   DsgContext,
   EntityField,
   Events,
@@ -12,10 +13,24 @@ import {
 import { EnumAuthProviderType } from "@amplication/code-gen-types/src/models";
 import { resolve } from "path";
 import { createAuthModule, createBasicStrategyBase } from "./core";
-import { addIdentifierToConstructorSuperCall, addImports, addInjectableDependency, awaitExpression, getClassDeclarationById, importNames, interpolate, logicalExpression, memberExpression } from "./util/ast";
+import {
+  addIdentifierToConstructorSuperCall,
+  addImports,
+  addInjectableDependency,
+  awaitExpression,
+  getClassDeclarationById,
+  importNames,
+  interpolate,
+  logicalExpression,
+  memberExpression,
+} from "./util/ast";
 import { builders, namedTypes } from "ast-types";
 import { relativeImportPath } from "./util/module";
 import { isPasswordField } from "./util/field";
+import {
+  AUTH_ENTITY_FIELD_PASSWORD,
+  AUTH_ENTITY_FIELD_USERNAME,
+} from "./constants";
 
 const ARGS_ID = builders.identifier("args");
 const PASSWORD_FIELD_ASYNC_METHODS = new Set(["create", "update"]);
@@ -30,6 +45,9 @@ const TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID = builders.identifier(
 class BasicAuthPlugin implements AmplicationPlugin {
   register(): Events {
     return {
+      CreateServer: {
+        before: this.beforeCreateServer,
+      },
       CreateAdminUI: {
         before: this.beforeCreateAdminModules,
       },
@@ -44,6 +62,33 @@ class BasicAuthPlugin implements AmplicationPlugin {
         before: this.beforeCreateEntityServiceBase,
       },
     };
+  }
+
+  beforeCreateServer(context: DsgContext, eventParams: CreateServerParams) {
+    const authEntity = context.entities?.find(
+      (x) => x.name === context.resourceInfo?.settings.authEntityName
+    );
+    if (!authEntity) {
+      throw new Error(`Authentication entity does not exist`);
+    }
+
+    const requiredFields = [
+      AUTH_ENTITY_FIELD_USERNAME,
+      AUTH_ENTITY_FIELD_PASSWORD,
+    ];
+
+    requiredFields.forEach((requiredField) => {
+      const field = authEntity.fields.find(
+        (field) => field.name === requiredField
+      );
+      if (!field) {
+        throw new Error(
+          `Authentication entity must have a field named ${requiredField}`
+        );
+      }
+    });
+
+    return eventParams;
   }
 
   beforeCreateAdminModules(
@@ -87,7 +132,6 @@ class BasicAuthPlugin implements AmplicationPlugin {
     await modules.merge(staticsFiles);
     return modules;
   }
-
 
   beforeCreateEntityService(
     context: DsgContext,

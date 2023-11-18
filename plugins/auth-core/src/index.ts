@@ -22,7 +22,7 @@ import {
   Events,
   ModuleMap,
 } from "@amplication/code-gen-types";
-import { envVariables } from "./constants";
+import { AUTH_ENTITY_FIELD_ROLES, envVariables } from "./constants";
 import { resolve } from "path";
 import {
   createUserInfo,
@@ -131,6 +131,16 @@ class AuthCorePlugin implements AmplicationPlugin {
     );
     if (!authEntity) {
       throw new Error(`Authentication entity does not exist`);
+    }
+
+    const authEntityFieldRoles = authEntity.fields.find(
+      (x) => x.name === AUTH_ENTITY_FIELD_ROLES
+    );
+
+    if (!authEntityFieldRoles) {
+      throw new Error(
+        `Authentication entity does not have a field named ${AUTH_ENTITY_FIELD_ROLES}`
+      );
     }
 
     return eventParams;

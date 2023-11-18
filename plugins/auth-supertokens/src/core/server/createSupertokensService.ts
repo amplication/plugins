@@ -43,10 +43,7 @@ export const createSupertokensService = async (
     supertokensIdFieldName
   );
   if (recipeSettings.name === "emailpassword") {
-    await createFunc(
-      resolve(constants.templatesPath, "emailpassword"),
-      {}
-    );
+    await createFunc(resolve(constants.templatesPath, "emailpassword"), {});
   } else if (recipeSettings.name === "passwordless") {
     await createFunc(resolve(constants.templatesPath, "passwordless"), {
       FLOW_TYPE: builders.stringLiteral(recipeSettings.flowType),
@@ -109,10 +106,10 @@ const baseCreateSupertokensService = (
       SUPERTOKENS_ID_FIELD_NAME: builders.identifier(supertokensIdFieldName),
       AUTH_ENTITY_SERVICE_ID: getAuthEntityServiceId(authEntityName),
       AUTH_ENTITY_ID: builders.identifier(authEntityName),
-      DEFAULT_FIELD_VALUES: getDefaultCreateValues(
-        authEntityCreateInput,
-        [...(skipDefaultCreation ?? []), supertokensIdFieldName]
-      ),
+      DEFAULT_FIELD_VALUES: getDefaultCreateValues(authEntityCreateInput, [
+        ...(skipDefaultCreation ?? []),
+        supertokensIdFieldName,
+      ]),
     };
     appendImports(template, [
       authEntityServiceImport(srcDirectory, authDirectory, authEntityName),
@@ -211,7 +208,9 @@ const getDefaultValueForType = (
             lit.prefix
           );
         default:
-          throw new Error("Failed to determine the default value of a TS literal type");
+          throw new Error(
+            "Failed to determine the default value of a TS literal type"
+          );
       }
     case "TSTypeReference":
       const name = propType.typeName;
