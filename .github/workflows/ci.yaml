@@ -68,4 +68,4 @@ jobs:
       affected-plugin: ${{ matrix.affected-plugin }}
       event: ${{ github.event.pull_request.number }}
       pr-number: ${{ github.event.number }}
-      commit-sha: ${{ github.GITHUB_SHA }}
+      commit-sha: ${{ github.event.pull_request.head.sha }}
