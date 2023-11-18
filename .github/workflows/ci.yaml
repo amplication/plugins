@@ -69,3 +69,4 @@ jobs:
       event: ${{ github.event.pull_request.number }}
       pr-number: ${{ github.event.number }}
       commit-sha: ${{ github.event.pull_request.head.sha }}
+      publish: true
