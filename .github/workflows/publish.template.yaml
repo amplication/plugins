@@ -51,7 +51,8 @@ jobs:
         if: ${{ inputs.event }} == pull_request
         run: |
           VERSION=$(cat package-lock.json | jq -r '.version')
-          npm version $VERSION-beta.pr-${{ inputs.pr-number }}.${{ inputs.commit-sha }}
+          SHORT_SHA=$(echo ${{ inputs.commit-sha }} | cut -c1-7)
+          npm version $VERSION-beta.pr-${{ inputs.pr-number }}.SHORT_SHA
           npm publish --access public --tag beta
         working-directory: plugins/${{ inputs.affected-plugin }}
         env:
