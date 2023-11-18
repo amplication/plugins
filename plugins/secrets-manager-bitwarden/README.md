@@ -16,7 +16,7 @@ The plugins are fetched by two methods:
 - `STARTUP` - In this method, the plugins are fetched during the startup time (Initially loaded).
 - `ON_DEMAND` - In this method, the plugins are fetched during the runtime (Loaded when the secrets are needed).
 
-If you are choosing the `STARTUP` method, you need to define another property named `secretNames` that will contain a list of the keys of the secrets that needs to be loaded at startup (see below for the formatting of the secret name).
+You need to define also a property named `secretNames` that will contain a list of the secrets that the service needs to interact with (see below for the formatting of the secret name).
 Ensure that the secretNames match exactly with the keys from your bitwarden secret manager.
 
 Example:
