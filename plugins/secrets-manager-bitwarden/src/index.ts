@@ -6,12 +6,12 @@ import type {
   ModuleMap,
   CreateServerPackageJsonParams,
   CreateServerDotEnvParams,
+  CreateServerSecretsManagerParams,
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
-import { resolve, join } from "path";
+import { resolve } from "path";
 import { dependencies, envVariables } from "./constants";
-import { genSecretsEnum, getPluginSettings } from "./utils";
-import { FetchMode } from "./types";
+import { getPluginSettings, secretNamesParser } from "./utils";
 
 class BitWardenSecretsManagerPlugin implements AmplicationPlugin {
   /**
@@ -28,20 +28,26 @@ class BitWardenSecretsManagerPlugin implements AmplicationPlugin {
       [EventNames.CreateServer]: {
         after: this.AfterCreateServer,
       },
+      [EventNames.CreateServerSecretsManager]:{
+        before: this.beforeCreateServerSecretsManager
+      }
     };
   }
   // You can combine many events in one plugin in order to change the related files.
-  beforeCreatePackageJson(_:DsgContext, eventParams: CreateServerPackageJsonParams): CreateServerPackageJsonParams {
+  beforeCreatePackageJson(_:DsgContext, eventParams: CreateServerPackageJsonParams)
+  : CreateServerPackageJsonParams {
     eventParams.updateProperties.push(dependencies)
     return eventParams
   }
 
-  beforeCreateServerDotEnv(_:DsgContext, eventParams: CreateServerDotEnvParams): CreateServerDotEnvParams {
+  beforeCreateServerDotEnv(_:DsgContext, eventParams: CreateServerDotEnvParams)
+  : CreateServerDotEnvParams {
     eventParams.envVariables = [...eventParams.envVariables, ...envVariables]
     return eventParams
   }
 
-  async AfterCreateServer(context: DsgContext, _: CreateServerParams, modules: ModuleMap): Promise<ModuleMap> {
+  async AfterCreateServer(context: DsgContext, _: CreateServerParams, modules: ModuleMap)
+  : Promise<ModuleMap> {
     const {fetchMode, secretNames} = getPluginSettings(context.pluginInstallations).settings
     const staticPath = resolve(__dirname, "static", fetchMode.toLowerCase())
 
@@ -52,16 +58,13 @@ class BitWardenSecretsManagerPlugin implements AmplicationPlugin {
 
     await modules.merge(staticFiles)
 
-    // Dynamically generate Secrets.ts file if the fetch mode is STARTUP
-    if(fetchMode == FetchMode.Startup) {
-        await modules.set({
-            code: genSecretsEnum(secretNames),
-            path: join(context.serverDirectories.srcDirectory, "providers", "secrets", "secrets.ts")
-        })
-    }
-
-
     return modules
+  }
+  async beforeCreateServerSecretsManager(context:DsgContext, eventParams:CreateServerSecretsManagerParams)
+  : Promise<CreateServerSecretsManagerParams> {
+    const {secretNames} = getPluginSettings(context.pluginInstallations).settings
+    eventParams.secretsNameKey.push(...secretNamesParser(secretNames))
+    return eventParams
   }
 }
 
