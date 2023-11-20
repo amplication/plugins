@@ -60,6 +60,7 @@ jobs:
   publish:
     name: Publish
     needs: nx
+    if: fromJson(needs.nx.outputs.affected-plugins).length > 0
     uses: ./.github/workflows/publish.template.yaml
     strategy:
       matrix:
