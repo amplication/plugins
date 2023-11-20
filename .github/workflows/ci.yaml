@@ -60,6 +60,7 @@ jobs:
   publish:
     name: Publish
     needs: nx
+    if: fromJson(needs.nx.outputs.affected-plugins).length > 0
     uses: ./.github/workflows/publish.template.yaml
     strategy:
       matrix:
@@ -70,3 +71,5 @@ jobs:
       pr-number: ${{ github.event.number }}
       commit-sha: ${{ github.event.pull_request.head.sha }}
       publish: true
+    secrets:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
