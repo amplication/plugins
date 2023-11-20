@@ -12,7 +12,7 @@ on:
         description: The github event that triggered the original workflow
         required: true
       pr-number:
-        type: number
+        type: string
         description: When the event is a pull-request it passes the pr number
         required: false
       commit-sha:
