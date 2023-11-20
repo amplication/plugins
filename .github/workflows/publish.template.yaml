@@ -7,23 +7,6 @@ on:
         type: string
         description: Nx plugins affected by the changes
         required: true
-      event:
-        type: string
-        description: The github event that triggered the original workflow
-        required: true
-      pr-number:
-        type: string
-        description: When the event is a pull-request it passes the pr number
-        required: false
-      commit-sha:
-        type: string
-        description: The base sha
-        required: true
-      publish:
-        type: boolean
-        description: Flag to indicate whether to run the publish job
-        required: false
-        default: false
     secrets:
       NODE_AUTH_TOKEN:
         description: NPM token
@@ -31,7 +14,6 @@ on:
 
 jobs:
   publish:
-    if: ${{ inputs.publish }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -57,11 +39,11 @@ jobs:
 
       # if the branch is not the default branch, the beta tag is applied
       - name: Publish package on NPM [beta] 📦
-        if: (github.ref != format('refs/heads/{0}', github.event.repository.default_branch) && ${{ inputs.pr-number != '' }} && github.event_name == 'push') || github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request'
         run: |
           VERSION=$(cat package-lock.json | jq -r '.version')
-          SHORT_SHA=$(echo ${{ inputs.commit-sha }} | cut -c1-7)
-          npm version $VERSION-beta.pr-${{ inputs.pr-number }}.$SHORT_SHA
+          SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)
+          npm version $VERSION-beta.pr-${{ github.event.number }}.$SHORT_SHA
           npm publish --access public --tag beta
         working-directory: plugins/${{ inputs.affected-plugin }}
         env:
