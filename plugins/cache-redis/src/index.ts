@@ -13,6 +13,7 @@ import { merge } from "lodash";
 import * as utils from "./utils";
 import { builders, namedTypes } from "ast-types";
 import * as constants from "./constants";
+import { ExpressionKind, PatternKind } from "ast-types/gen/kinds";
 
 class RedisCachePlugin implements AmplicationPlugin {
   register(): Events {
@@ -189,7 +190,7 @@ const useFactoryConfigFunc = (): namedTypes.ArrowFunctionExpression => {
 const configAssign = (
   name: string,
   key: string,
-  ...others: any[]
+  ...others: namedTypes.Literal[]
 ): namedTypes.VariableDeclaration => {
   return builders.variableDeclaration("const", [
     builders.variableDeclarator(
@@ -205,7 +206,10 @@ const configAssign = (
   ]);
 };
 
-const objProp = (key: string, val: any): namedTypes.ObjectProperty => {
+const objProp = (
+  key: string,
+  val: ExpressionKind | PatternKind,
+): namedTypes.ObjectProperty => {
   return builders.objectProperty(builders.identifier(key), val);
 };
 
