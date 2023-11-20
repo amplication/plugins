@@ -71,3 +71,5 @@ jobs:
       pr-number: ${{ github.event.number }}
       commit-sha: ${{ github.event.pull_request.head.sha }}
       publish: true
+    secrets:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
