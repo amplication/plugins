@@ -14,7 +14,7 @@ on:
       pr-number:
         type: number
         description: When the event is a pull-request it passes the pr number
-        required: true
+        required: false
       commit-sha:
         type: string
         description: The base sha
