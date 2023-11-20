@@ -14,7 +14,7 @@ on:
       pr-number:
         type: number
         description: When the event is a pull-request it passes the pr number
-        required: true
+        required: false
       commit-sha:
         type: string
         description: The base sha
@@ -57,7 +57,7 @@ jobs:
 
       # if the branch is not the default branch, the beta tag is applied
       - name: Publish package on NPM [beta] 📦
-        if: (github.ref != format('refs/heads/{0}', github.event.repository.default_branch) && github.event_name == 'push') || github.event_name == 'pull_request'
+        if: (github.ref != format('refs/heads/{0}', github.event.repository.default_branch) && ${{ inputs.pr-number != '' }} && github.event_name == 'push') || github.event_name == 'pull_request'
         run: |
           VERSION=$(cat package-lock.json | jq -r '.version')
           SHORT_SHA=$(echo ${{ inputs.commit-sha }} | cut -c1-7)
