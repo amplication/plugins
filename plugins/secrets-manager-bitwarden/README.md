@@ -35,16 +35,9 @@ Example:
 1. Enable the plugin from your Amplication app
 when enabled, This plugin will override your default implementation for `SecretsManagerService` to use the Bitwarden secrets manager.
 
-2. Set your preffered `fetchMode` and specify your `secretNames` if your preferred fetchMode is `STARTUP`.
+2. Make sure to set your Bitwarden credentials(`access_token` and `organisation_id`) correctly.
 
-3. After generating your application, Make sure to set your Bitwarden credentials in the `.env` file.
-The required credentials include:
-```env
-    BITWARDEN_ACCESS_TOKEN=
-    BITWARDEN_ORGANISATION_ID=
-    BITWARDEN_API_URL=https://api.bitwarden.com
-    BITWARDEN_IDENTITY_URL=https://identity.bitwarden.com
-```
+3. Set your preffered `fetchMode` and specify your `secretNames` if your preferred fetchMode is `STARTUP`.
 
 
 ## Scripts

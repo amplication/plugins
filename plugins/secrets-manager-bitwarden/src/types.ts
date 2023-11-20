@@ -1,5 +1,7 @@
 export interface Settings {
   settings: {
+    BITWARDEN_ACCESS_TOKEN: string
+    BITWARDEN_ORGANISATION_ID: string
     fetchMode: FetchMode,
     secretNames: string[]
   },

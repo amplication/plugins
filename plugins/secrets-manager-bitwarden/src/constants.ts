@@ -7,8 +7,6 @@ export const dependencies = {
 }
 
 export const envVariables: VariableDictionary = [
-    {BITWARDEN_ACCESS_TOKEN: ""},
-    {BITWARDEN_ORGANISATION_ID: ""},
-    {BITWARDEN_API_URL: "https://api.bitwarden.com"},
-    {BITWARDEN_IDENTITY_URL: "https://identity.bitwarden.com"},
+    { BITWARDEN_API_URL: "https://api.bitwarden.com" },
+    { BITWARDEN_IDENTITY_URL: "https://identity.bitwarden.com" },
 ]

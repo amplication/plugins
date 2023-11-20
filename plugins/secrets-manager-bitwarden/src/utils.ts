@@ -1,4 +1,3 @@
-import * as ts from "typescript"
 import { PluginInstallation, SecretsNameKey } from "@amplication/code-gen-types";
 import { name as PackageName } from "../package.json";
 import { Settings } from "./types";
@@ -17,7 +16,6 @@ export const getPluginSettings = (
     ...defaultSettings,
     ...userSettings,
   };
-  console.log("SETTING: ", settings)
 
   return settings;
 };
@@ -28,8 +26,8 @@ export function secretNamesParser(secretNames: string[]): SecretsNameKey[] {
   secretNames.forEach((secretName) => {
 
     secretsParsed.push({
-      name:secretName,
-      key:secretName,
+      name: secretName,
+      key: secretName,
     });
   });
 
