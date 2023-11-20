@@ -24,6 +24,10 @@ on:
         description: Flag to indicate whether to run the publish job
         required: false
         default: false
+    secrets:
+      NODE_AUTH_TOKEN:
+        description: NPM token
+        required: true
 
 jobs:
   publish:
@@ -49,7 +53,7 @@ jobs:
         run: npm publish --access public
         working-directory: plugins/${{ inputs.affected-plugin }}
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
 
       # if the branch is not the default branch, the beta tag is applied
       - name: Publish package on NPM [beta] 📦
@@ -61,4 +65,4 @@ jobs:
           npm publish --access public --tag beta
         working-directory: plugins/${{ inputs.affected-plugin }}
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
