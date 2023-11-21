@@ -73,7 +73,7 @@ jobs:
         id: get-plugin-version
         run: |
           PLUGIN_PATH="plugins/${{ matrix.affected-plugin }}/package.json"
-          echo "::set-output name=version::$(cat $PLUGIN_PATH | jq -r '.version')"
+          echo "version=$(cat $PLUGIN_PATH | jq -r '.version')" >> $GITHUB_OUTPUT
 
       - name: Checkout target branch
         uses: actions/checkout@v4
@@ -83,7 +83,7 @@ jobs:
       - name: Get current latest plugin version from the base branch
         id: get-current-latest-version
         run: |
-          echo "::set-output name=version::$(cat package-lock.json | jq -r '.version')"
+          echo "version=$(cat package-lock.json | jq -r '.version')" >> $GITHUB_OUTPUT
 
       - name: Check if versions are equal
         id: check-version
