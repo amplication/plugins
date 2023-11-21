@@ -1,4 +1,4 @@
-export interface keyCloakUser {
+export interface KeyCloakUser {
   name: string;
   email: string;
   username: string;

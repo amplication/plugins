@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { KeycloakStrategyBase } from "./base/keycloak.strategy.base";
 import { ConfigService } from "@nestjs/config";
-import { keyCloakUser } from "./base/User";
+import { KeyCloakUser } from "./base/User";
 import { IAuthStrategy } from "../IAuthStrategy";
 
-declare class ENTITY_SERVICE {}
-declare class ENTITY_NAME_INFO {}
-declare class ENTITY_FIELDS {}
+declare class ENTITY_SERVICE { }
+declare class ENTITY_NAME_INFO { }
+declare class ENTITY_FIELDS { }
 
 @Injectable()
 export class KeycloakStrategy extends KeycloakStrategyBase implements IAuthStrategy {
@@ -14,7 +14,7 @@ export class KeycloakStrategy extends KeycloakStrategyBase implements IAuthStrat
     super(configService, ENTITY_SERVICE);
   }
 
-  async validate(payload: { user: keyCloakUser }): Promise<ENTITY_NAME_INFO> {
+  async validate(payload: { user: KeyCloakUser }): Promise<ENTITY_NAME_INFO> {
     const VALIDATED_ENTITY = await this.validateBase(payload);
     // If the entity is valid, return it
     if (VALIDATED_ENTITY) {
