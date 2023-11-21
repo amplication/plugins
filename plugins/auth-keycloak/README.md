@@ -9,6 +9,10 @@ Enable [KeyCloak](https://www.keycloak.org/) authentication on a service
 This plugin adds the required code to use Passport Keycloak strategy on the generated NestJS application
 [**Keycloak**](https://www.keycloak.org/) is an authentication and authorization platform that provides the required tools to secure your applications and services.
 
+## Prerequisite
+
+Before running this plugin, user need to setup Keycloak instance. Once you've a running instance, please follow [setup the KeyCloak Realm](#setting_up_keycloak) to create a realm and get values required to configure the plugin.
+
 ## Configuration
 This plugin requires the following settings during plugin configuration:
 - `KEYCLOAK_HOST`:   Complete URL of keycloak instance,
@@ -33,9 +37,9 @@ This plugin requires the following settings during plugin configuration:
 
 ## Working with the plugin
 
-It can be used by adding the plugin in the `plugins` page of the app settings. The plugin can be added by providing the settings as shown in the [Configuration](#configuration) section. Once it is run, you can [setup the KeyCloak Realm](#setting_up_keycloak) using plugin cofiguration
+It can be used by adding the plugin in the `plugins` page of the app settings. The plugin can be added by providing the settings as shown in the [Configuration](#configuration) section.
 
-Results in configuring the app to use keycloak for authentication. It adds the necessary dependencies, creates a Keycloak strategy and adds the required environment variables in the `.env` file.
+> **Note:** Before run it, you need to [setup the KeyCloak Realm](#setting_up_keycloak) with required cofiguration
 
 > **Note:** Keycloak stores user data in a separate db. You will have to add this step in user-creation flow.
 
