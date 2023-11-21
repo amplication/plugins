@@ -5,3 +5,10 @@ export interface Settings {
   KEYCLOAK_CLIENT_SECRET: string;
   KEYCLOAK_CALLBACK_URL: string;
 }
+
+export interface IRecipe {
+  type: "password" | "passwordless";
+  method?: "email" | "sms" | "magic-link";
+  emailFieldName: string;
+  payloadFieldMapping: Record<string, string>;
+}
