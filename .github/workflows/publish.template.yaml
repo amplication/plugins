@@ -17,9 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@v3
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -30,33 +28,6 @@ jobs:
       - name: Install dependencies and build 🔧
         run: npm ci && npm run build
         working-directory: plugins/${{ inputs.affected-plugin }}
-
-      - name: Get current package.json version
-        id: get-version
-        run: |
-          echo "::set-output name=version::$(cat package-lock.json | jq -r '.version')"
-
-      - name: Checkout target branch
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.base_ref }}
-          fetch-depth: 0
-
-      - name: Get package.json version from target branch
-        id: get-version-target
-        run: |
-          echo "::set-output name=version::$(cat package-lock.json | jq -r '.version')"
-
-      - name: Check if versions are equal
-        id: check-version
-        run: |
-          if [ "${{ steps.get-version.outputs.version }}" == "${{ steps.get-version-target.outputs.version }}" ]; then
-            echo "❌ Versions are equal. Please bump the version in ${{ inputs.affected-plugin }} 😵"
-            exit 1
-          else
-            echo "✅ Versions are not equal. All good"
-            exit 0
-          fi
 
       # if the branch is the default branch, the latest tag is applied
       - name: Publish package on NPM [latest] 📦

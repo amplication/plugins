@@ -57,9 +57,47 @@ jobs:
       nx-head: ${{ github.head_ref && format('refs/pull/{0}/merge', github.event.number) || github.ref_name  }}
       nx-base: ${{ github.base_ref || inputs.nx-base || github.event.repository.default_branch }}
 
+  plugin-version-validator:
+    runs-on: ubuntu-latest
+    name: Plugin Version Validator
+    needs: nx
+    if: ${{ needs.nx.outputs.affected-plugins != '[]' && needs.nx.outputs.affected-plugins != '' }}
+    strategy:
+      matrix:
+        affected-plugin: ${{ fromJson(needs.nx.outputs.affected-plugins) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get current package.json version
+        id: get-version
+        run: |
+          echo "::set-output name=version::$(cat package-lock.json | jq -r '.version')"
+
+      - name: Checkout target branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+
+      - name: Get package.json version from target branch
+        id: get-version-target
+        run: |
+          echo "::set-output name=version::$(cat package-lock.json | jq -r '.version')"
+
+      - name: Check if versions are equal
+        id: check-version
+        run: |
+          if [ "${{ steps.get-version.outputs.version }}" == "${{ steps.get-version-target.outputs.version }}" ]; then
+            echo "❌ Versions are equal. Please bump the version in ${{ inputs.affected-plugin }} 😵"
+            exit 1
+          else
+            echo "✅ Versions are not equal. All good"
+            exit 0
+          fi
+    
   publish:
     name: Publish
-    needs: nx
+    needs: [nx, plugin-version-validator]
     if: ${{ needs.nx.outputs.affected-plugins != '[]' && needs.nx.outputs.affected-plugins != '' }}
     uses: ./.github/workflows/publish.template.yaml
     strategy:
