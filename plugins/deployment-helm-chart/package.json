@@ -3,6 +3,7 @@
   "version": "1.0.4",
   "description": "Add helm chart for deployment of the service",
   "main": "dist/index.js",
+  "nx": {},
   "scripts": {
     "dev": "webpack --watch",
     "build": "webpack",

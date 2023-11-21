@@ -1,4 +1,9 @@
-import { BuildLogger, DsgContext, LoadStaticFilesParams, ModuleMap } from "@amplication/code-gen-types";
+import {
+  BuildLogger,
+  DsgContext,
+  LoadStaticFilesParams,
+  ModuleMap,
+} from "@amplication/code-gen-types";
 import fg from "fast-glob";
 import * as fs from "fs";
 import { afterLoadStaticFiles } from "@events/loadStaticFiles";
@@ -13,10 +18,12 @@ describe("Testing loadStaticFiles hook", () => {
   beforeEach(() => {
     logger = mock<BuildLogger>();
     context = mock<DsgContext>({
-      pluginInstallations: [{ npm: "@amplication/plugin-observability-opentelemetry" }],
+      pluginInstallations: [
+        { npm: "@amplication/plugin-observability-opentelemetry" },
+      ],
       utils: {
         importStaticModules: async (source, basePath) => {
-          const directory = `${(source)}/`;
+          const directory = `${source}/`;
           const staticModules = await fg(`${directory}**/*`, {
             absolute: false,
             dot: true,
@@ -24,32 +31,34 @@ describe("Testing loadStaticFiles hook", () => {
           });
 
           const modules = await Promise.all(
-            staticModules
-              .sort()
-              .map(async (module) => {
-                return {
-                  path: module.replace(directory, basePath ? basePath + "/" : ""),
-                  code: await fs.promises.readFile(module, "utf-8"),
-                };
-              })
+            staticModules.sort().map(async (module) => {
+              return {
+                path: module.replace(directory, basePath ? basePath + "/" : ""),
+                code: await fs.promises.readFile(module, "utf-8"),
+              };
+            })
           );
 
           const moduleMap: ModuleMap = new ModuleMap(logger);
-          
+
           for await (const module of modules) {
             await moduleMap.set(module);
           }
 
           return moduleMap;
-        }
-      }
+        },
+      },
     });
     modules = new ModuleMap(logger);
     eventParams = mock<LoadStaticFilesParams>();
   });
 
   it("should use default settings if no settings are provided", async () => {
-    const StaticModules = await afterLoadStaticFiles(context, eventParams, modules);
+    const StaticModules = await afterLoadStaticFiles(
+      context,
+      eventParams,
+      modules
+    );
     // snapshot the module maps
     expect(StaticModules.modules()).toMatchSnapshot();
   });
@@ -61,7 +70,11 @@ describe("Testing loadStaticFiles hook", () => {
       OTEL_COLLECTOR_PORT_HTTP: 1236,
     };
 
-    const StaticModules = await afterLoadStaticFiles(context, eventParams, modules);
+    const StaticModules = await afterLoadStaticFiles(
+      context,
+      eventParams,
+      modules
+    );
     // snapshot the module maps
     expect(StaticModules.modules()).toMatchSnapshot();
   });

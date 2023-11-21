@@ -26,13 +26,7 @@ As mentioned there are some pre-requisites to be able to starting using this plu
   "Statement": [
     {
       "Effect": "Allow",
-      "Action": [
-        "ecr:CompleteLayerUpload",
-        "ecr:UploadLayerPart",
-        "ecr:InitiateLayerUpload",
-        "ecr:BatchCheckLayerAvailability",
-        "ecr:PutImage"
-      ],
+      "Action": ["ecr:CompleteLayerUpload", "ecr:UploadLayerPart", "ecr:InitiateLayerUpload", "ecr:BatchCheckLayerAvailability", "ecr:PutImage"],
       "Resource": "arn:aws:ecr:region:111122223333:repository/repository-name"
     },
     {
@@ -58,18 +52,13 @@ As mentioned there are some pre-requisites to be able to starting using this plu
       "Sid": "PassRolesInTaskDefinition",
       "Effect": "Allow",
       "Action": ["iam:PassRole"],
-      "Resource": [
-        "arn:aws:iam::<aws_account_id>:role/<task_definition_task_role_name>",
-        "arn:aws:iam::<aws_account_id>:role/<task_definition_task_execution_role_name>"
-      ]
+      "Resource": ["arn:aws:iam::<aws_account_id>:role/<task_definition_task_role_name>", "arn:aws:iam::<aws_account_id>:role/<task_definition_task_execution_role_name>"]
     },
     {
       "Sid": "DeployService",
       "Effect": "Allow",
       "Action": ["ecs:UpdateService", "ecs:DescribeServices"],
-      "Resource": [
-        "arn:aws:ecs:<region>:<aws_account_id>:service/<cluster_name>/<service_name>"
-      ]
+      "Resource": ["arn:aws:ecs:<region>:<aws_account_id>:service/<cluster_name>/<service_name>"]
     }
   ]
 }
@@ -85,14 +74,7 @@ The second scope of permissions is related to the execution of the task. When ru
   "Statement": [
     {
       "Effect": "Allow",
-      "Action": [
-        "ecr:GetAuthorizationToken",
-        "ecr:BatchCheckLayerAvailability",
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:BatchGetImage",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-      ],
+      "Action": ["ecr:GetAuthorizationToken", "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage", "logs:CreateLogStream", "logs:PutLogEvents"],
       "Resource": "*"
     }
   ]

@@ -1,9 +1,6 @@
-import type {
-  AmplicationPlugin,
-  Events,
-} from "@amplication/code-gen-types";
+import type { AmplicationPlugin, Events } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
-import { afterCreateApp, beforeCreatePackageJson,  } from "./events";
+import { afterCreateApp, beforeCreatePackageJson } from "./events";
 
 class ESLintPlugin implements AmplicationPlugin {
   register(): Events {

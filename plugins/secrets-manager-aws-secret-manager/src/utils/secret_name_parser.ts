@@ -1,22 +1,29 @@
+import { SecretsNameKey } from "@amplication/code-gen-types";
+
 function getLastItem(str: string, substring: string): string {
-    return str.split(substring).pop() ?? str
+  return str.split(substring).pop() ?? str;
 }
 
 export function secretNameParser(secretPath: string): Record<string, string> {
-    const delimiter = secretPath.includes(":") ? ":" : "/"
-    const secretName = getLastItem(secretPath, delimiter)
-    
-    return {
-        [secretName]: secretPath
-    }
+  const delimiter = secretPath.includes(":") ? ":" : "/";
+  const secretName = getLastItem(secretPath, delimiter);
+
+  return {
+    [secretName]: secretPath,
+  };
 }
 
-export function secretNamesParser(secretNames: string[]): Record<string, string> {
-    var secretsParsed = {}
+export function secretNamesParser(secretNames: string[]): SecretsNameKey[] {
+  var secretsParsed: SecretsNameKey[] = [];
 
-    secretNames.forEach((secretName) => {
-        secretsParsed = { ...secretsParsed, ...secretNameParser(secretName) }
-    })
+  secretNames.forEach((secretName) => {
+    const [name, key] = Object.entries(secretNameParser(secretName))[0];
 
-    return secretsParsed
+    secretsParsed.push({
+      name,
+      key,
+    });
+  });
+
+  return secretsParsed;
 }

@@ -18,21 +18,21 @@ export function createEnumName(field: EntityField, entity: Entity): string {
 
 export const getSearchableAuthField = (
   entity: Entity,
-  recipe: IRecipe,
+  recipe: IRecipe
 ): EntityField => {
   const { emailFieldName, payloadFieldMapping } = recipe;
   const payloadEmailField = Object.keys(payloadFieldMapping).find(
-    (key) => payloadFieldMapping[key] === "email",
+    (key) => payloadFieldMapping[key] === "email"
   );
   const fallbackEmailField = entity.fields.find(
-    (field) => field.dataType === EnumDataType.Email,
+    (field) => field.dataType === EnumDataType.Email
   );
 
   if (
     emailFieldName &&
     !entity.fields.find(
       (field) =>
-        field.name === emailFieldName && field.dataType === EnumDataType.Email,
+        field.name === emailFieldName && field.dataType === EnumDataType.Email
     )
   ) {
     throw new Error(EmailError(entity.name, emailFieldName, "emailFieldName"));
@@ -42,38 +42,38 @@ export const getSearchableAuthField = (
     !entity.fields.find(
       (field) =>
         field.name === payloadEmailField &&
-        field.dataType === EnumDataType.Email,
+        field.dataType === EnumDataType.Email
     )
   ) {
     throw new Error(
-      EmailError(entity.name, payloadEmailField || "", "payloadFieldMapping"),
+      EmailError(entity.name, payloadEmailField || "", "payloadFieldMapping")
     );
   } else if (!emailFieldName && !payloadFieldMapping && !fallbackEmailField) {
     throw new Error(
-      `The entity ${entity.name} does not have a field with the data type ${EnumDataType.Email}`,
+      `The entity ${entity.name} does not have a field with the data type ${EnumDataType.Email}`
     );
   }
 
   const authEmailField = entity.fields.find(
     (field) =>
       field.name ===
-      (emailFieldName || payloadEmailField || fallbackEmailField?.name),
+      (emailFieldName || payloadEmailField || fallbackEmailField?.name)
   );
 
   if (!authEmailField) {
     throw new Error(
-      `The entity ${entity.name} does not have a field named ${
+      `The Auth entity ${entity.name} does not have a field named ${
         emailFieldName || payloadEmailField || fallbackEmailField?.name
-      }`,
+      }`
     );
   }
   if (authEmailField?.unique === false)
     throw new Error(
-      `The field ${authEmailField.name} in the entity ${entity.name} must be unique`,
+      `The field ${authEmailField.name} in the entity ${entity.name} must be unique`
     );
   else if (authEmailField?.searchable === false)
     throw new Error(
-      `The field ${authEmailField.name} in the entity ${entity.name} must be searchable`,
+      `The field ${authEmailField.name} in the entity ${entity.name} must be searchable`
     );
 
   return authEmailField;

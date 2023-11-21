@@ -5,10 +5,9 @@ module "${{ MODULE_NAME }}" {
   repository_name = "${{ NAME }}"
   repository_type = "${{ TYPE }}"
 
-  repository_force_delete = ${{ CONFIGURATION_FORCE_DELETE }}
-
   create_lifecycle_policy = false
 
+  repository_force_delete           = ${{ CONFIGURATION_FORCE_DELETE }}
   repository_read_access_arns       = []
   repository_read_write_access_arns = []
 }

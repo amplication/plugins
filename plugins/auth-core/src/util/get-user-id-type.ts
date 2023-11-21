@@ -4,7 +4,7 @@ import { AUTH_ENTITY_ERROR, AUTH_ENTITY_LOG_ERROR } from "../constants";
 export const getUserIdType = (dsgContext: DsgContext) => {
   const { entities, resourceInfo } = dsgContext;
   const authEntity = entities?.find(
-    (x) => x.name === resourceInfo?.settings.authEntityName,
+    (x) => x.name === resourceInfo?.settings.authEntityName
   );
 
   if (!authEntity) {
@@ -13,7 +13,7 @@ export const getUserIdType = (dsgContext: DsgContext) => {
   }
 
   const idField = authEntity.fields.find(
-    (field: EntityField) => field.dataType === "Id", // should be fixed moving dataTypes to a shared package
+    (field: EntityField) => field.dataType === "Id" // should be fixed moving dataTypes to a shared package
   );
   if (!idField) {
     throw new Error("User entity must have an id field");

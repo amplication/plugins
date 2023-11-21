@@ -1,8 +1,9 @@
 {
   "name": "@amplication/plugin-provisioning-terraform-aws-database-rds",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "Adds terraform code for provisioning Amazon Web Services Relational Database Service (RDS) as an addition to the 'core' terraform code base.",
   "main": "dist/index.js",
+  "nx": {},
   "scripts": {
     "prepublishOnly": "npm run build",
     "dev": "webpack --watch",

@@ -1,10 +1,10 @@
 export interface Settings {
-    awsRegion: string,
-    fetchMode: string,
-    secretNames: string[]
+  awsRegion: string;
+  fetchMode: string;
+  secretNames: string[];
 }
 
 export enum FetchMode {
-    Startup = "STARTUP",
-    OnDemand = "ON_DEMAND"
+  Startup = "STARTUP",
+  OnDemand = "ON_DEMAND",
 }

@@ -45,4 +45,3 @@ Adds a core networking setup of terraform for Amazon Web Services to the generat
 ## Usage
 
 As this is an addition to the code base, where non of the other code is touched, using the plugin won't impact the final build.
-

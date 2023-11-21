@@ -6,11 +6,11 @@ import { templatesPath } from "../constants";
 const iAuthStrategyPath = join(templatesPath, "IAuthStrategy.template.ts");
 
 export async function createIAuthStrategy(
-  dsgContext: DsgContext,
+  dsgContext: DsgContext
 ): Promise<Module> {
   return await mapAuthTemplate(
     dsgContext,
     iAuthStrategyPath,
-    "IAuthStrategy.ts",
+    "IAuthStrategy.ts"
   );
 }
