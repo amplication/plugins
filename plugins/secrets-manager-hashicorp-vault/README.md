@@ -1,14 +1,16 @@
-# @amplication/plugin-secrets-manager-aws-secret-manager
+# @amplication/plugin-secrets-manager-hashicorp-vault
 
-[![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-aws-secrets-manager)](https://www.npmjs.com/package/@amplication/plugin-secrets-manager-aws-secret-manager)
+[![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-secrets-manager-hashicorp-vault)](https://www.npmjs.com/package/@amplication/plugin-secrets-manager-hashicorp-vault)
 
-Amplication plugin that allows easy management of secrets by using AWS Secrets Manager.
+Amplication plugin that allows easy management of secrets by using HashiCorp Vault.
 
 ## Purpose
 
-This purpose of this plugin is to easily and securely use secrets from AWS Secrets Manager.
+This purpose of this plugin is to easily and securely use secrets from HashiCorp Vault.
 
 ## Configuration
+
+### Plugin Fetch Mode
 
 The plugins are fetched by two methods:
 
@@ -30,6 +32,26 @@ Example:
 
 ```
 
+### Plugin auth mode
+
+The plugin allows authentication by two methods:
+
+- By using root token
+
+  If you want to authenticate by using Root token, choose the `authMode` as `TOKEN`.
+  To use this authentication mode, you need to set your root token inside of the `.env` file
+  
+- By using app role
+  
+  If you want to use AppRole mode, choose the `authMode` as `APPROLE`.
+  To use this authentication mode, you need to set your Role Id and the Secret Id inside of the `.env` file
+
+Example:
+
+```json
+"authMode": "APPROLE/TOKEN",
+```
+
 ## Secret name format
 
 The secret name must be formatted in either of the following way:
@@ -42,9 +64,10 @@ The secret name must be formatted in either of the following way:
 To use this plugin:
 
 1. Enable the plugin in your Amplication app.
-2. Make sure to [setup your credentials](https://docs.aws.amazon.com/sdkref/latest/guide/creds-config-files.html) locally that will be used to fetch the secrets.
+2. If you are using `AppRole` method, enable the AppRole access mode in dashboard.
+3. Create ACL policy for the secrets and attach the policy to the AppRole method.
 
-This plugin will override your default implementation for `SecretsManagerService` to use the secrets from AWS Secrets Manager
+This plugin will override your default implementation for `SecretsManagerService` to use the secrets from HashiCorp Vault
 
 ## Scripts
 
