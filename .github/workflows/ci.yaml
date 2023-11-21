@@ -89,7 +89,7 @@ jobs:
         id: check-version
         run: |
           if [ "${{ steps.get-plugin-version.outputs.version }}" == "${{ steps.get-current-latest-version.outputs.version }}" ]; then
-            echo "❌ Versions are equal. Please bump the version in ${{ inputs.affected-plugin }} 😵"
+            echo "❌ Versions are equal. Please bump the version in ${{ matrix.affected-plugin }} 😵"
             exit 1
           else
             echo "✅ Versions are not equal. All good"
