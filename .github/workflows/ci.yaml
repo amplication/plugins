@@ -61,7 +61,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Plugin Version Validator
     needs: nx
-    if: ${{ needs.nx.outputs.affected-plugins != '[]' && needs.nx.outputs.affected-plugins != '' }}
+    if: ${{ github.event_name == 'pull_request' && needs.nx.outputs.affected-plugins != '[]' && needs.nx.outputs.affected-plugins != '' }}
     strategy:
       matrix:
         affected-plugin: ${{ fromJson(needs.nx.outputs.affected-plugins) }}
@@ -72,7 +72,7 @@ jobs:
       - name: Get plugin version from PR
         id: get-plugin-version
         run: |
-          PLUGIN_PATH="path/to/${{ matrix.affected-plugin }}/package.json"
+          PLUGIN_PATH="plugins/${{ matrix.affected-plugin }}/package.json"
           echo "::set-output name=version::$(cat $PLUGIN_PATH | jq -r '.version')"
 
       - name: Checkout target branch
