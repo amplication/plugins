@@ -4,6 +4,15 @@
     "KEYCLOAK_REALM": "test-realm",
     "KEYCLOAK_CLIENT_ID": "test-client",
     "KEYCLOAK_CLIENT_SECRET": "DEFAULT_CLIENT_SECRET",
-    "KEYCLOAK_CALLBACK_URL": "http://localhost:3000/api/callback"
+    "KEYCLOAK_CALLBACK_URL": "http://localhost:3000/api/callback",
+    "KEYCLOAK_AUTHORIZATION_URL": "http://localhost:3000/authorize",
+    "KEYCLOAK_TOKEN_URL": "http://localhost:3000/token",
+    "KEYCLOAK_USERINFO_URL": "http://localhost:3000/userinfo",
+    "recipe": {
+      "type": "password",
+      "method": "database",
+      "emailFieldName": "email",
+      "payloadFieldMapping": {}
+    }
   }
 }

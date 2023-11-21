@@ -4,6 +4,10 @@ export interface Settings {
   KEYCLOAK_CLIENT_ID: string;
   KEYCLOAK_CLIENT_SECRET: string;
   KEYCLOAK_CALLBACK_URL: string;
+  KEYCLOAK_AUTHORIZATION_URL: string;
+  KEYCLOAK_TOKEN_URL: string;
+  KEYCLOAK_USERINFO_URL: string;
+  recipe: IRecipe;
 }
 
 export interface IRecipe {

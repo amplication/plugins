@@ -5,6 +5,7 @@ import {
   CreateServerDockerComposeParams,
   CreateServerDockerComposeDBParams,
   CreateServerAuthParams,
+  CreateServerPackageJsonParams,
   DsgContext,
   Events,
   ModuleMap,
@@ -21,6 +22,7 @@ import {
 import {
   updateDockerComposeDevProperties,
   updateDockerComposeProperties,
+  serverPackageJsonValues,
 } from "./constants";
 
 class KeycloakAuthPlugin implements AmplicationPlugin {
@@ -31,6 +33,9 @@ class KeycloakAuthPlugin implements AmplicationPlugin {
       },
       CreateServerDotEnv: {
         before: this.beforeCreateServerDotEnv,
+      },
+      CreateServerPackageJson: {
+        before: this.beforeCreateServerPackageJson,
       },
       CreateServerDockerCompose: {
         before: this.beforeCreateServerDockerCompose,
@@ -56,6 +61,13 @@ class KeycloakAuthPlugin implements AmplicationPlugin {
     return eventParams;
   }
 
+  beforeCreateServerPackageJson(
+    context: DsgContext,
+    eventParams: CreateServerPackageJsonParams,
+  ) {
+     eventParams.updateProperties.push(serverPackageJsonValues);
+     return eventParams;
+  }
   beforeCreateAuthModules(
     context: DsgContext,
     eventParams: CreateServerAuthParams,
@@ -125,6 +137,9 @@ class KeycloakAuthPlugin implements AmplicationPlugin {
       KEYCLOAK_CLIENT_ID,
       KEYCLOAK_CLIENT_SECRET,
       KEYCLOAK_CALLBACK_URL,
+      KEYCLOAK_AUTHORIZATION_URL,
+      KEYCLOAK_TOKEN_URL,
+      KEYCLOAK_USERINFO_URL,
     } = getPluginSettings(context.pluginInstallations);
 
     eventParams.envVariables = [
@@ -135,6 +150,9 @@ class KeycloakAuthPlugin implements AmplicationPlugin {
         { KEYCLOAK_CLIENT_ID },
         { KEYCLOAK_CLIENT_SECRET },
         { KEYCLOAK_CALLBACK_URL },
+        { KEYCLOAK_AUTHORIZATION_URL },
+        { KEYCLOAK_TOKEN_URL },
+        { KEYCLOAK_USERINFO_URL }
       ],
     ];
 

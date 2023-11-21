@@ -13,7 +13,10 @@ export class KeycloakStrategyBase extends PassportStrategy(KeycloakStrategy) {
       realm: configService.get("KEYCLOAK_REALM") || process.env.KEYCLOAK_REALM,
       clientID: configService.get("KEYCLOAK_CLIENT_ID") || process.env.KEYCLOAK_CLIENT_ID,
       clientSecret: configService.get("KEYCLOAK_CLIENT_SECRET") || process.env.KEYCLOAK_CLIENT_SECRET,
-      callbackURL: configService.get("KEYCLOAK_CLIENT_SECRET") || process.env.KEYCLOAK_CLIENT_SECRET
+      callbackURL: configService.get("KEYCLOAK_CALLBACK_URL") || process.env.KEYCLOAK_CALLBACK_URL,
+      authorizationURL: configService.get("KEYCLOAK_AUTHORIZATION_URL") || process.env.KEYCLOAK_AUTHORIZATION_URL,
+      tokenURL: configService.get("KEYCLOAK_TOKEN_URL") || process.env.KEYCLOAK_TOKEN_URL,
+      userInfoURL: configService.get("KEYCLOAK_USERINFO_URL") || process.env.KEYCLOAK_USERINFO_URL,
     });
   }
 
