@@ -1,1 +1,3 @@
 node_modules
+plugins/**/dist
+plugins/**/node_modules

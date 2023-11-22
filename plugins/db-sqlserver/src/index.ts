@@ -11,7 +11,6 @@ import {
   EnumDataType,
   Events,
   LookupResolvedProperties,
-  ModuleMap,
   types,
 } from "@amplication/code-gen-types";
 import { getPluginSettings } from "./utils";
@@ -20,7 +19,7 @@ import {
   updateDockerComposeDevProperties,
   updateDockerComposeProperties,
 } from "./constants";
-import { ReferentialActions, ScalarType } from "prisma-schema-dsl-types";
+import { ReferentialActions } from "prisma-schema-dsl-types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import * as PrismaSchemaDSLTypes from "prisma-schema-dsl-types";
 import { camelCase } from "camel-case";
