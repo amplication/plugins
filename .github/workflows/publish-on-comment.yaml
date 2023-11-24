@@ -1,0 +1,78 @@
+name: publish-on-comment
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  check-comment:
+    name: Check comment for /publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check command
+        id: check-command
+        uses: xt0rted/slash-command-action@v1
+        with:
+          command: publish
+          reaction: "true"
+          reaction-type: "eyes"
+          allow-edits: "false"
+          permission-level: write
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+  get-affected-plugins:
+    name: Get affected plugins
+    uses: ./.github/workflows/nx.template.yaml
+    if: ${{ needs.check-comment.outputs.trigger-comment == 'true' }}
+    with:
+      nx-head: ${{ github.head_ref && format('refs/pull/{0}/merge', github.event.number) || github.ref_name  }}
+      nx-base: ${{ github.base_ref || inputs.nx-base || github.event.repository.default_branch }}
+
+  get_last_commit:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '/publish') }}
+    outputs:
+      last_commit_sha: ${{ steps.last_commit.outputs.sha }}
+    steps:
+      - name: Get last commit SHA of the PR
+        id: last_commit
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            return pr.data.head.sha;
+
+  publish:
+    name: Publish beta version
+    needs: [get-affected-plugins, get_last_commit]
+    if: ${{ needs.get-affected-plugins.outputs.affected-plugins != '[]' && needs.get-affected-plugins.outputs.affected-plugins != '' }}
+    uses: ./.github/workflows/publish.template.yaml
+    strategy:
+      matrix:
+        affected-plugin: ${{ fromJson(needs.nx.outputs.affected-plugins) }}
+    with:
+      affected-plugin: ${{ matrix.affected-plugin }}
+      commit-sha: ${{ needs.get_last_commit.outputs.last_commit_sha }}
+      pr-number: ${{ github.event.issue.number }}
+      version-tag: "beta"
+    secrets:
+      NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+
+  create-comment:
+    runs-on: ubuntu-latest
+    name: Create comment
+    needs: [get-affected-plugins, publish]
+    if: ${{ needs.get-affected-plugins.outputs.affected-plugins != '[]' && needs.get-affected-plugins.outputs.affected-plugins != '' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            Publishing beta version for ${{ needs.get-affected-plugins.outputs.affected-plugins }}: ${{ needs.publish.outputs.publish-beta-version }}
+          reactions: "+1"
