@@ -1,5 +1,5 @@
 import { JestConfigWithTsJest } from "ts-jest";
-const jestConfig : JestConfigWithTsJest = {
+const jestConfig: JestConfigWithTsJest = {
   preset: "ts-jest",
   testEnvironment: "node",
   testMatch: ["**/*.spec.ts"],
@@ -12,7 +12,7 @@ const jestConfig : JestConfigWithTsJest = {
     "^@tstatic/(.*)$": "<rootDir>/src/static/$1",
   },
   transform: {
-    "^.+\\.(t|j)s$": "ts-jest"
+    "^.+\\.(t|j)s$": "ts-jest",
   },
   collectCoverage: true,
   collectCoverageFrom: ["src/**/*.ts"],

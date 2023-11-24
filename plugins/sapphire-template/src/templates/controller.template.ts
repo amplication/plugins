@@ -1,5 +1,5 @@
 import * as common from "@nestjs/common";
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags } from "@nestjs/swagger";
 // @ts-ignore
 import { isRecordNotFoundError } from "../prisma.util";
 // @ts-ignore
@@ -24,9 +24,7 @@ declare class ENTITY {}
 declare interface SERVICE {
   create(args: { data: CREATE_INPUT }): Promise<ENTITY>;
   findMany(args: { where: WHERE_INPUT }): Promise<ENTITY[]>;
-  findOne(args: {
-    where: WHERE_UNIQUE_INPUT
-  }): Promise<ENTITY | null>;
+  findOne(args: { where: WHERE_UNIQUE_INPUT }): Promise<ENTITY | null>;
   update(args: {
     where: WHERE_UNIQUE_INPUT;
     data: UPDATE_INPUT;
@@ -37,17 +35,17 @@ declare interface SERVICE {
 declare const CREATE_DATA_MAPPING: CREATE_INPUT;
 declare const UPDATE_DATA_MAPPING: UPDATE_INPUT;
 
-@ApiTags('wished-contacts-v2')
+@ApiTags("wished-contacts-v2")
 @common.Controller(ENTITY_NAME)
 export class CONTROLLER {
   constructor(protected readonly service: SERVICE) {}
-  
+
   @common.Post()
   async CREATE_ENTITY_FUNCTION(
     @common.Body() data: CREATE_INPUT
   ): Promise<ENTITY> {
     return await this.service.create({
-      data: CREATE_DATA_MAPPING
+      data: CREATE_DATA_MAPPING,
     });
   }
 
@@ -57,7 +55,7 @@ export class CONTROLLER {
   ): Promise<ENTITY[]> {
     const args = plainToClass(FIND_MANY_ARGS, request.query);
     return this.service.findMany({
-      ...args
+      ...args,
     });
   }
 
@@ -66,7 +64,7 @@ export class CONTROLLER {
     @common.Param() params: WHERE_UNIQUE_INPUT
   ): Promise<ENTITY | null> {
     const result = await this.service.findOne({
-      where: params
+      where: params,
     });
     if (result === null) {
       throw new errors.NotFoundException(
@@ -84,7 +82,7 @@ export class CONTROLLER {
     try {
       return await this.service.update({
         where: params,
-        data: UPDATE_DATA_MAPPING
+        data: UPDATE_DATA_MAPPING,
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -102,7 +100,7 @@ export class CONTROLLER {
   ): Promise<ENTITY | null> {
     try {
       return await this.service.delete({
-        where: params
+        where: params,
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {

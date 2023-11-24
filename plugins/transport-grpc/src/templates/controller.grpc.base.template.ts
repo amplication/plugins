@@ -10,7 +10,6 @@ import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { GrpcMethod } from "@nestjs/microservices";
 
-
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
 declare interface WHERE_UNIQUE_INPUT {}

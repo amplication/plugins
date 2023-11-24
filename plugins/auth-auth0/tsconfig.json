@@ -1,8 +1,6 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": [
-    "src/**/*.ts"
-  ],
+  "include": ["src/**/*.ts"],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
@@ -14,9 +12,5 @@
       "*": ["*"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "src/static",
-    "src/templates"
-  ]
+  "exclude": ["node_modules", "src/static", "src/templates"]
 }

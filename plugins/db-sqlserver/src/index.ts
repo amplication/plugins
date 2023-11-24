@@ -214,7 +214,7 @@ class MSSQLServerPlugin implements AmplicationPlugin {
           ReferentialActions.NoAction,
           ReferentialActions.NoAction,
           undefined,
-          field.customAttributes || undefined 
+          field.customAttributes || undefined
         ),
         // Prisma Scalar Relation Field
         PrismaSchemaDSL.createScalarField(

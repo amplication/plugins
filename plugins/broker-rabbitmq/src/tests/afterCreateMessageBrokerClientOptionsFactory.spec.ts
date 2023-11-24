@@ -1,36 +1,51 @@
-import { CreateMessageBrokerNestJSModuleParams, DsgContext } from "@amplication/code-gen-types";
+import {
+  CreateMessageBrokerNestJSModuleParams,
+  DsgContext,
+} from "@amplication/code-gen-types";
 import RabbitMQPlugin from "../index";
-import { mock } from "jest-mock-extended"
-import * as utils from "../util/ast"
+import { mock } from "jest-mock-extended";
+import * as utils from "../util/ast";
 import path from "path";
 
 describe("Testing afterCreateMessageBrokerClientOptionsFactory", () => {
-    let plugin: RabbitMQPlugin
-    let context: DsgContext
-    let params: CreateMessageBrokerNestJSModuleParams
+  let plugin: RabbitMQPlugin;
+  let context: DsgContext;
+  let params: CreateMessageBrokerNestJSModuleParams;
 
-    beforeEach(() => {
-        plugin = new RabbitMQPlugin();
-        context = fakeContext()
-        params = mock<CreateMessageBrokerNestJSModuleParams>()
-    })
+  beforeEach(() => {
+    plugin = new RabbitMQPlugin();
+    context = fakeContext();
+    params = mock<CreateMessageBrokerNestJSModuleParams>();
+  });
 
-    it("should correctly add the code for generating rabbitmq Client Options", async () => {
-        const modules = await plugin.afterCreateMessageBrokerClientOptionsFactory(context, params);
+  it("should correctly add the code for generating rabbitmq Client Options", async () => {
+    const modules = await plugin.afterCreateMessageBrokerClientOptionsFactory(
+      context,
+      params
+    );
 
-        const rabbitMqClientOptionsModule = modules.get(path.join("/", "generateRabbitMQClientOptions.ts"));
-        const rabbitMqClientOptionsCode = utils.print(utils.parse(rabbitMqClientOptionsModule.code)).code;
-        const expectedRabbitMqClientOptionsCode = utils.print(utils.parse(expectedRabbitMqClientOptions)).code;
+    const rabbitMqClientOptionsModule = modules.get(
+      path.join("/", "generateRabbitMQClientOptions.ts")
+    );
+    const rabbitMqClientOptionsCode = utils.print(
+      utils.parse(rabbitMqClientOptionsModule.code)
+    ).code;
+    const expectedRabbitMqClientOptionsCode = utils.print(
+      utils.parse(expectedRabbitMqClientOptions)
+    ).code;
 
-        const testModule = modules.get(path.join("/", "generateRabbitMQClientOptions.spec.ts"));
-        const testCode = utils.print(utils.parse(testModule.code)).code;
-        const expectedTestCode = utils.print(utils.parse(expectedTest)).code;
+    const testModule = modules.get(
+      path.join("/", "generateRabbitMQClientOptions.spec.ts")
+    );
+    const testCode = utils.print(utils.parse(testModule.code)).code;
+    const expectedTestCode = utils.print(utils.parse(expectedTest)).code;
 
-        expect(rabbitMqClientOptionsCode).toStrictEqual(expectedRabbitMqClientOptionsCode);
-        expect(testCode).toStrictEqual(expectedTestCode);
-    })
-})
-
+    expect(rabbitMqClientOptionsCode).toStrictEqual(
+      expectedRabbitMqClientOptionsCode
+    );
+    expect(testCode).toStrictEqual(expectedTestCode);
+  });
+});
 
 const expectedTest = `import { ConfigService } from "@nestjs/config"
 import { generateRabbitMQClientOptions } from "./generateRabbitMQClientOptions"
@@ -64,7 +79,7 @@ describe("Testing the RabbitMQ Plugin", () => {
             expect(configGet.mock.calls[1][0]).toBe("RABBITMQ_QUEUE")
         })
     })
-})`
+})`;
 const expectedRabbitMqClientOptions = `import { ConfigService } from "@nestjs/config";
 import { RmqOptions, Transport } from "@nestjs/microservices";
 
@@ -93,17 +108,21 @@ export const generateRabbitMQClientOptions = (
     },
   };
 };
-`
+`;
 
 const fakeContext = () => {
-    return mock<DsgContext>({
-        logger: {
-            warn: async (message: string, params?: Record<string, unknown>, userFriendlyMessage?: string) => {
-                console.log("Warning!", userFriendlyMessage);
-            }
-        },
-        serverDirectories: {
-            messageBrokerDirectory: "/"
-        }
-    });
-}
+  return mock<DsgContext>({
+    logger: {
+      warn: async (
+        message: string,
+        params?: Record<string, unknown>,
+        userFriendlyMessage?: string
+      ) => {
+        console.log("Warning!", userFriendlyMessage);
+      },
+    },
+    serverDirectories: {
+      messageBrokerDirectory: "/",
+    },
+  });
+};

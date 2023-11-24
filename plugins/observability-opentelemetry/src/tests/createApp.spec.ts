@@ -1,4 +1,7 @@
-import { CreateServerAppModuleParams, DsgContext } from "@amplication/code-gen-types";
+import {
+  CreateServerAppModuleParams,
+  DsgContext,
+} from "@amplication/code-gen-types";
 import { beforeCreateServerAppModule } from "@events/createAppModule";
 import { mock } from "jest-mock-extended";
 import { builders } from "ast-types";
@@ -10,18 +13,18 @@ describe("Testing createApp hook", () => {
 
   beforeEach(() => {
     context = mock<DsgContext>({
-      pluginInstallations: [{ npm: "@amplication/plugin-observability-opentelemetry" }],
+      pluginInstallations: [
+        { npm: "@amplication/plugin-observability-opentelemetry" },
+      ],
       resourceInfo: {
         name: "sample-service",
       },
     });
     eventParams = mock<CreateServerAppModuleParams>({
-      template: builders.file(
-        builders.program([]),
-      ),
+      template: builders.file(builders.program([])),
       templateMapping: {
         MODULES: builders.arrayExpression([]),
-      }
+      },
     });
   });
 
@@ -33,7 +36,10 @@ describe("Testing createApp hook", () => {
   });
 
   it("should add the opentelemetry module to the modules list", () => {
-    const { templateMapping } = beforeCreateServerAppModule(context, eventParams);
+    const { templateMapping } = beforeCreateServerAppModule(
+      context,
+      eventParams
+    );
 
     const moduleCode = recast.prettyPrint(templateMapping["MODULES"]).code;
     expect(moduleCode).toMatchSnapshot();
@@ -44,7 +50,10 @@ describe("Testing createApp hook", () => {
       serviceName: "my-service",
     };
 
-    const { templateMapping } = beforeCreateServerAppModule(context, eventParams);
+    const { templateMapping } = beforeCreateServerAppModule(
+      context,
+      eventParams
+    );
 
     const moduleCode = recast.prettyPrint(templateMapping["MODULES"]).code;
     expect(moduleCode.includes("my-service")).toBeTruthy();

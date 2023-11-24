@@ -6,11 +6,11 @@ import { templatesPath } from "../constants";
 const authControllerPath = join(templatesPath, "auth.controller.template.ts");
 
 export async function createAuthController(
-  dsgContext: DsgContext,
+  dsgContext: DsgContext
 ): Promise<Module> {
   return await mapAuthTemplate(
     dsgContext,
     authControllerPath,
-    "auth.controller.ts",
+    "auth.controller.ts"
   );
 }
