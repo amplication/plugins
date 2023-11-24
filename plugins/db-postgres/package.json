@@ -7,8 +7,7 @@
   "scripts": {
     "dev": "webpack --watch",
     "build": "webpack",
-    "test": "jest",
-    "format:write": "prettier --write \"**/*.{js,ts}\""
+    "test": "jest"
   },
   "author": "Amit Barletz",
   "license": "Apache-2.0",

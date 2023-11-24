@@ -7,8 +7,7 @@
   "scripts": {
     "dev": "webpack --watch",
     "build": "webpack",
-    "prebuild": "rimraf dist",
-    "format:write": "prettier --write \"**/*.{js,ts}\""
+    "prebuild": "rimraf dist"
   },
   "author": "Amit Barletz",
   "license": "Apache-2.0",

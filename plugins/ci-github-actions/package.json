@@ -6,8 +6,7 @@
   "nx": {},
   "scripts": {
     "dev": "webpack --watch",
-    "build": "webpack",
-    "format:write": "prettier --write \"**/*.{js,ts}\""
+    "build": "webpack"
   },
   "author": "Levi van Noort <levi@amplication.com>",
   "license": "Apache-2.0",

@@ -9,9 +9,6 @@
     "dev": "webpack --watch",
     "build": "webpack",
     "prebuild": "rimraf dist",
-    "format:write": "prettier --write \"**/*.{js,ts}\"",
-    "lint:fix": "eslint './src/**/*.{ts, tsx}' --fix --c .eslintrc",
-    "lint": "eslint './src/**/*.{ts, tsx}' --c .eslintrc",
     "test": "jest"
   },
   "author": "Ashish Padhy",
