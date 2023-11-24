@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { SecretsManagerServiceBase } from "./base/secretsManager.service.base";
+import { EnumSecretsNameKey } from "./secretsNameKey.enum";
 import {
   GetSecretValueCommand,
   SecretsManagerClient,
@@ -19,8 +20,8 @@ export class SecretsManagerService extends SecretsManagerServiceBase {
     });
   }
 
-  async getSecret<T>(key: string): Promise<T | null> {
-    const [secret_id, secret_name] = key.split(":");
+  async getSecret<T>(key: EnumSecretsNameKey): Promise<T | null> {
+    const [secret_id, secret_name] = key.toString().split(":");
 
     try {
       const response = await this.awsSecretsClient.send(
