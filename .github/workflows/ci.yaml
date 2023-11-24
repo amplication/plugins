@@ -106,5 +106,6 @@ jobs:
         affected-plugin: ${{ fromJson(needs.nx.outputs.affected-plugins) }}
     with:
       affected-plugin: ${{ matrix.affected-plugin }}
+      commit-sha: ${{ github.event.pull_request.head.sha }}
     secrets:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

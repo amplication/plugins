@@ -7,6 +7,14 @@ on:
         type: string
         description: Nx plugins affected by the changes
         required: true
+      pr-number:
+        type: number
+        description: PR number
+        required: false
+      commit-sha:
+        type: string
+        description: Commit SHA
+        required: true
       version-tag:
         type: string
         description: Whether to publish a beta version or latest
@@ -47,13 +55,13 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
 
-      # if the branch is not the default branch, the beta tag is applied
+      # if we comment on a PR, the beta tag is applied
       - name: Publish package on NPM [beta] 📦
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'issue_comment' && contains(github.event.comment.body, '/publish')
         run: |
           VERSION=$(cat package-lock.json | jq -r '.version')
-          SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)
-          npm version $VERSION-beta.pr-${{ github.event.number }}.$SHORT_SHA
+          SHORT_SHA=$(echo ${{ inputs.commit-sha }} | cut -c1-7)
+          npm version $VERSION-beta.pr-${{ inputs.pr-number }}.$SHORT_SHA
           npm publish --access public --tag beta
         working-directory: plugins/${{ inputs.affected-plugin }}
         env:
