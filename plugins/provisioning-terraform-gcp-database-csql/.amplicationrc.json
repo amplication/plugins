@@ -5,6 +5,7 @@
       "region": "europe-west1",
       "zone": "a",
       "availability_type": "ZONAL",
+      "tier": "db-custom-2-3840",
       "disk_size": "10",
       "disk_type": "PD_SSD",
       "charset": "UTF8",
