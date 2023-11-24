@@ -7,6 +7,10 @@ on:
         type: string
         description: Nx plugins affected by the changes
         required: true
+      version-tag:
+        type: string
+        description: Whether to publish a beta version or latest
+        required: false
     secrets:
       NODE_AUTH_TOKEN:
         description: NPM token
@@ -28,6 +32,12 @@ jobs:
       - name: Install dependencies and build 🔧
         run: npm ci && npm run build
         working-directory: plugins/${{ inputs.affected-plugin }}
+
+      - name: Publish version dry-run
+        run: npm publish --access public --tag ${{ inputs.version-tag && 'beta' || 'latest' }} --dry-run
+        working-directory: plugins/${{ inputs.affected-plugin }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
 
       # if the branch is the default branch, the latest tag is applied
       - name: Publish package on NPM [latest] 📦
