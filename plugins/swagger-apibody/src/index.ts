@@ -28,14 +28,14 @@ class SwaggerApiBody implements AmplicationPlugin {
 
   beforeCreateControllerBase(
     context: DsgContext,
-    eventParams: CreateEntityControllerBaseParams
+    eventParams: CreateEntityControllerBaseParams,
   ) {
     const { templateMapping, template, controllerBaseId } = eventParams;
     try {
       interpolate(template, templateMapping);
       const classDeclaration = getClassDeclarationById(
         template,
-        controllerBaseId
+        controllerBaseId,
       );
 
       Object.keys(funcMethodMap).forEach((funcName) => {
@@ -46,19 +46,19 @@ class SwaggerApiBody implements AmplicationPlugin {
           builders.callExpression(
             builders.memberExpression(
               builders.identifier("swagger"),
-              builders.identifier("ApiBody")
+              builders.identifier("ApiBody"),
             ),
             [
               builders.objectExpression([
                 builders.objectProperty(
                   builders.identifier("type"),
                   builders.identifier(
-                    funcMethodMap[funcName as keyof typeof funcMethodMap]
-                  )
+                    funcMethodMap[funcName as keyof typeof funcMethodMap],
+                  ),
                 ),
               ]),
-            ]
-          )
+            ],
+          ),
         );
 
         classMethod?.decorators?.push(currDecorator);
@@ -67,7 +67,7 @@ class SwaggerApiBody implements AmplicationPlugin {
       return eventParams;
     } catch (error) {
       context.logger.error(
-        "Failed to invoke beforeCreateControllerBase event under swagger-api-body plugin"
+        "Failed to invoke beforeCreateControllerBase event under swagger-api-body plugin",
       );
 
       return eventParams;

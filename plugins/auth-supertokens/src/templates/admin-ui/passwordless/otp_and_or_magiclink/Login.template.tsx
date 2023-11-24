@@ -23,7 +23,7 @@ const Login = ({ theme }: any) => {
   const BASE_URI = process.env.REACT_APP_SERVER_URL;
   const submit = async (otp: string) => {
     login({ otp }).catch((err) =>
-      err ? notify(err) : notify("Failed to login")
+      err ? notify(err) : notify("Failed to login"),
     );
   };
   const moveToNextStep = () => {

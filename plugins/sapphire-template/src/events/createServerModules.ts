@@ -7,7 +7,7 @@ import {
 export const afterCreateServerModules = (
   context: DsgContext,
   eventParams: CreateServerParams,
-  modules: Module[]
+  modules: Module[],
 ): Module[] =>
   modules.map((module: Module) => {
     if (!module.path.includes("/base/")) return module;

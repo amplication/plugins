@@ -9,7 +9,7 @@ import { EnumAuthProviderType } from "@amplication/code-gen-types/src/models";
 
 export const beforeCreateAdminAppModule = async (
   context: DsgContext,
-  eventParams: CreateAdminAppModuleParams
+  eventParams: CreateAdminAppModuleParams,
 ): Promise<CreateAdminAppModuleParams> => {
   const { resourceInfo } = context;
   if (resourceInfo) {

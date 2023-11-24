@@ -19,7 +19,7 @@ export class AuthResolver {
   @Query(() => ENTITY_NAME_INFO)
   @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
   async ENTITY_NAME(
-    @UserData() entityInfo: ENTITY_NAME_INFO
+    @UserData() entityInfo: ENTITY_NAME_INFO,
   ): Promise<ENTITY_NAME_INFO> {
     return entityInfo;
   }

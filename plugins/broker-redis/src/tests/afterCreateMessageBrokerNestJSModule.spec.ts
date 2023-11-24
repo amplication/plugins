@@ -25,7 +25,7 @@ describe("Testing afterCreateMessageBrokerNestJSModule hook", () => {
   it("should correctly add the code for generating message broker module", async () => {
     const modules = await plugin.afterCreateMessageBrokerNestJSModule(
       context,
-      params
+      params,
     );
     const module = modules.get("/redis.module.ts");
     const code = utils.print(utils.parse(module.code)).code;

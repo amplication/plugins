@@ -6,11 +6,11 @@ import { mapAuthTemplate } from "@utils/createAuthTemplate";
 const authResolverPath = join(templatesPath, "auth.resolver.template.ts");
 
 export async function createAuthResolver(
-  dsgContext: DsgContext
+  dsgContext: DsgContext,
 ): Promise<Module> {
   return await mapAuthTemplate(
     dsgContext,
     authResolverPath,
-    "auth.resolver.ts"
+    "auth.resolver.ts",
   );
 }

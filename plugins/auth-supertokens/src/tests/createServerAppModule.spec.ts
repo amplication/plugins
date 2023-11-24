@@ -63,7 +63,7 @@ describe("Testing beforeCreateServerAppModule hook", () => {
     const modules = await plugin.afterCreateServerAppModule(
       context,
       params,
-      moduleMap
+      moduleMap,
     );
     let expectedCode = prettyCode(afterGraphqlSetting);
     expect(modules.get("/app.module.ts").code).toBe(expectedCode);
@@ -132,7 +132,7 @@ export const removeSemicolon = (stmt: string) => {
   }
   if (stmt[stmt.length - 1] !== ";") {
     throw new Error(
-      "This statement doesn't end in a semicolon. No semicolon to remove"
+      "This statement doesn't end in a semicolon. No semicolon to remove",
     );
   }
   return stmt.slice(0, -1);

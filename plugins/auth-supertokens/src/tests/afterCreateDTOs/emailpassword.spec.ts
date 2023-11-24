@@ -66,11 +66,11 @@ describe("Testing afterCreateDTOs for emailpassword recipe hook", () => {
     const moduleMap = await plugin.afterCreateDTOs(
       context,
       params,
-      new ModuleMap(context.logger)
+      new ModuleMap(context.logger),
     );
     const expectedSupertokensCode = prettyCode(supertokensService);
     const code = prettyCode(
-      moduleMap.get("/auth/supertokens/supertokens.service.ts").code
+      moduleMap.get("/auth/supertokens/supertokens.service.ts").code,
     );
     expect(code).toStrictEqual(expectedSupertokensCode);
   });

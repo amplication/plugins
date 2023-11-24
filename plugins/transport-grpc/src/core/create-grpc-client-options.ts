@@ -11,12 +11,12 @@ import { DsgContext, Module } from "@amplication/code-gen-types";
 
 const grpcClientOptionsPath = join(
   templatesPath,
-  "grpc.client.options.template.ts"
+  "grpc.client.options.template.ts",
 );
 const fileName = "grpc.client.options.ts";
 
 export async function createGrpcClientOptionsFile(
-  context: DsgContext
+  context: DsgContext,
 ): Promise<Module> {
   const template = await readFile(grpcClientOptionsPath);
   const { serverDirectories, entities } = context;
@@ -34,7 +34,7 @@ export async function createGrpcClientOptionsFile(
     const entityNameLowerCase = entity.name.toLowerCase();
     packages.elements.push(builders.stringLiteral(entityNameLowerCase));
     const entityProtoPath = builders.stringLiteral(
-      `src/${entityNameLowerCase}/${entityNameLowerCase}.proto`
+      `src/${entityNameLowerCase}/${entityNameLowerCase}.proto`,
     );
 
     protoPaths.elements.push(entityProtoPath);

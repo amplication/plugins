@@ -21,23 +21,23 @@ import { camelCase } from "lodash";
 const authServicePath = join(templatesPath, "auth.service.template.ts");
 
 export async function createAuthService(
-  dsgContext: DsgContext
+  dsgContext: DsgContext,
 ): Promise<Module> {
   return await mapAuthServiceTemplate(
     dsgContext,
     authServicePath,
-    "auth.service.ts"
+    "auth.service.ts",
   );
 }
 
 async function mapAuthServiceTemplate(
   context: DsgContext,
   templatePath: string,
-  fileName: string
+  fileName: string,
 ): Promise<Module> {
   const { entities, resourceInfo, serverDirectories } = context;
   const authEntity = entities?.find(
-    (x) => x.name === resourceInfo?.settings.authEntityName
+    (x) => x.name === resourceInfo?.settings.authEntityName,
   );
   if (!authEntity) {
     context.logger.error(AUTH_ENTITY_LOG_ERROR);
@@ -54,21 +54,21 @@ async function mapAuthServiceTemplate(
 
     const entityNameImport = importNames(
       [authEntityNameId],
-      `./${entityInfoName}`
+      `./${entityInfoName}`,
     );
 
     const entityNameToLower = authEntity?.name.toLowerCase();
 
     const entityServiceImport = importNames(
       [authServiceNameId],
-      `../${entityNameToLower}/${entityNameToLower}.service`
+      `../${entityNameToLower}/${entityNameToLower}.service`,
     );
 
     addImports(
       template,
       [entityNameImport, entityServiceImport].filter(
-        (x) => x //remove nulls and undefined
-      ) as namedTypes.ImportDeclaration[]
+        (x) => x, //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[],
     );
 
     const templateMapping = {
@@ -84,18 +84,18 @@ async function mapAuthServiceTemplate(
 
     const classDeclaration = getClassDeclarationById(
       template,
-      builders.identifier("AuthService")
+      builders.identifier("AuthService"),
     );
 
     const entityServiceIdentifier = builders.identifier(
-      `${entityNameToLower}Service`
+      `${entityNameToLower}Service`,
     );
 
     addInjectableDependency(
       classDeclaration,
       entityServiceIdentifier.name,
       builders.identifier(`${authEntity?.name}Service`),
-      "private"
+      "private",
     );
 
     removeTSClassDeclares(template);

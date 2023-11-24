@@ -23,17 +23,17 @@ interface UseCaseObj {
 
 const serviceTemplatePath = join(
   resolve(__dirname, "./templates"),
-  "service.template.ts"
+  "service.template.ts",
 );
 
 const serviceIndexTemplatePath = join(
   resolve(__dirname, "./templates"),
-  "index.template.ts"
+  "index.template.ts",
 );
 
 export const beforeCreateEntityService = async (
   context: DsgContext,
-  eventParams: CreateEntityServiceParams
+  eventParams: CreateEntityServiceParams,
 ) => {
   const { entityName, templateMapping } = eventParams;
   const template = await readFile(serviceTemplatePath);
@@ -60,12 +60,12 @@ export const beforeCreateEntityService = async (
 
   const useCaseImport = builders.importDeclaration(
     getUseCaseImports(useCaseObj),
-    builders.stringLiteral("../use-cases")
+    builders.stringLiteral("../use-cases"),
   );
 
   const entityImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(entityNameToUpper))],
-    ENTITY_PATH
+    ENTITY_PATH,
   );
 
   addImports(template, [useCaseImport, entityImport, ...dtosImport]);
@@ -76,7 +76,7 @@ export const beforeCreateEntityService = async (
 export const afterCreateEntityService = async (
   context: DsgContext,
   eventParams: CreateEntityServiceParams,
-  modules: Module[]
+  modules: Module[],
 ) => {
   try {
     const file = parse(modules[0].code);
@@ -91,12 +91,12 @@ export const afterCreateEntityService = async (
 
     const useCaseModules = await createUseCasesCrud(eventParams.entityName);
     const repositoryModule = await createRepositoryModule(
-      eventParams.entityName
+      eventParams.entityName,
     );
 
     const exportUseCaseName = builders.exportAllDeclaration(
       builders.stringLiteral(`./${eventParams.entityName}.service`),
-      null
+      null,
     );
 
     indexTemplate.program.body.unshift(exportUseCaseName);
@@ -123,7 +123,7 @@ export const setUseCasesObj = (entityName: string) => ({
 
 export const getUseCaseImports = (useCaseObj: UseCaseObj) =>
   Object.values(useCaseObj).map((useCase: string) =>
-    builders.importSpecifier(builders.identifier(useCase))
+    builders.importSpecifier(builders.identifier(useCase)),
   );
 
 const updateControllerImports = (template: namedTypes.File) => {
@@ -142,6 +142,6 @@ const setDtosImports = (dtosArr: IdentifierKind[]) =>
   dtosArr.map((dto: IdentifierKind) =>
     builders.importDeclaration(
       [builders.importSpecifier(dto)],
-      builders.stringLiteral(`../model/dtos/${dto.name}`)
-    )
+      builders.stringLiteral(`../model/dtos/${dto.name}`),
+    ),
   );

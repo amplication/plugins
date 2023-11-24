@@ -7,14 +7,14 @@ export const addSupertokensConfigFile = async (
   srcDirectory: string,
   modules: ModuleMap,
   recipeName: string,
-  logger: BuildLogger
+  logger: BuildLogger,
 ) => {
   logger.info("Adding the SuperTokens configuration module to the admin UI");
   const supertokensConfigPath = resolve(
     staticsPath,
     "admin-ui",
     recipeName,
-    "config.tsx"
+    "config.tsx",
   );
   const file = await readFile(supertokensConfigPath);
   modules.set({

@@ -30,7 +30,7 @@ import { pascalCase } from "pascal-case";
 export async function createGrpcProtoFile(
   context: DsgContext,
   eventParams: CreateEntityGrpcControllerBaseParams,
-  relatedEntities: EntityField[]
+  relatedEntities: EntityField[],
 ): Promise<Module> {
   const { entityName, templateMapping, entity } = eventParams;
   const { serverDirectories } = context;
@@ -46,7 +46,7 @@ export async function createGrpcProtoFile(
       const currentField = createProtobufSchemaFieldsHandler[field.dataType](
         field.name,
         countField,
-        field
+        field,
       );
       if (!currentField) return;
       fields.push(currentField);
@@ -58,17 +58,17 @@ export async function createGrpcProtoFile(
         const currentMethod = ProtobufSchemaDSL.createMethod(
           methodName,
           inputObjectName,
-          outputObjectName
+          outputObjectName,
         );
         methods.push(currentMethod);
-      }
+      },
     );
 
     methodMessages(entityName).forEach(({ name, enumMessageType }) => {
       const currentMessage = createProtobufMessagesHandler[enumMessageType](
         name,
         entityName,
-        fields
+        fields,
       );
       if (!currentMessage) return;
       messages.push(currentMessage);
@@ -104,17 +104,17 @@ export async function createGrpcProtoFile(
             )
               return;
             messages.push(currentMessage);
-          }
+          },
         );
         controllerToManyMethodsIdsActionPairs(
           relatedEntity,
           relatedField.name,
-          pascalCase(entityName)
+          pascalCase(entityName),
         ).forEach(({ methodName, inputObjectName, outputObjectName }) => {
           const currentMethod = ProtobufSchemaDSL.createMethod(
             methodName,
             inputObjectName,
-            outputObjectName
+            outputObjectName,
           );
 
           methods.push(currentMethod);
@@ -124,7 +124,7 @@ export async function createGrpcProtoFile(
     const protobufSchema = ProtobufSchemaDSL.createSchema(
       entityName,
       { name: `${pascalCase(entityName)}Service`, methods: methods },
-      messages
+      messages,
     );
 
     const file = await ProtobufSchemaDSL.print(protobufSchema);
@@ -146,14 +146,14 @@ export async function createGrpcProtoFile(
 export type CreateSchemaFieldHandler = (
   fieldName: string,
   countField: number,
-  field: EntityField
+  field: EntityField,
 ) => ScalarField | ObjectField | null;
 
 export type CreateMessageHandler = (
   messageName: string,
   entityName: string,
   fields: Array<ScalarField | ObjectField>,
-  relatedEntity?: Entity
+  relatedEntity?: Entity,
 ) => Message | null;
 
 export const createProtobufMessagesHandler: {
@@ -162,50 +162,50 @@ export const createProtobufMessagesHandler: {
   [EnumMessageType.Empty]: (
     messageName: string,
     entityName,
-    fields: Array<ScalarField | ObjectField>
+    fields: Array<ScalarField | ObjectField>,
   ) => createMessage(messageName, []),
 
   [EnumMessageType.Create]: (
     messageName: string,
     entityName,
-    fields: Array<ScalarField | ObjectField>
+    fields: Array<ScalarField | ObjectField>,
   ) => createMessage(messageName, fields),
 
   [EnumMessageType.EntityObject]: (
     messageName: string,
     entityName,
-    fields: Array<ScalarField | ObjectField>
+    fields: Array<ScalarField | ObjectField>,
   ) => createMessage(messageName, fields),
 
   [EnumMessageType.EntityUpdateInput]: (
     messageName: string,
     entityName,
-    fields: Array<ScalarField | ObjectField>
+    fields: Array<ScalarField | ObjectField>,
   ) => createMessage(messageName, fields),
 
   [EnumMessageType.EntityWhereInput]: (
     messageName: string,
     entityName,
-    fields: Array<ScalarField | ObjectField>
+    fields: Array<ScalarField | ObjectField>,
   ) => createMessage(messageName, fields),
 
   [EnumMessageType.RelatedEntityObject]: (
     messageName: string,
     entityName,
-    fields: Array<ScalarField | ObjectField>
+    fields: Array<ScalarField | ObjectField>,
   ) => createMessage(messageName, fields),
 
   [EnumMessageType.RelatedEntityWhereInputObject]: (
     messageName: string,
     entityName,
-    fields: Array<ScalarField | ObjectField>
+    fields: Array<ScalarField | ObjectField>,
   ) => createMessage(messageName, fields),
 
   [EnumMessageType.CombineWhereUniqInput]: (
     messageName: string,
     entityName,
     fields: Array<ScalarField | ObjectField>,
-    relatedEntity?: Entity
+    relatedEntity?: Entity,
   ) => {
     if (!relatedEntity) return null;
     return createMessage(messageName, [
@@ -213,13 +213,13 @@ export const createProtobufMessagesHandler: {
         `${entityName}WhereUniqueInput`,
         `${pascalCase(entityName)}WhereUniqueInput`,
         1,
-        false
+        false,
       ),
       createObjectField(
         `${relatedEntity.name.toLowerCase()}WhereUniqueInput`,
         `${relatedEntity.name}WhereUniqueInput`,
         2,
-        false
+        false,
       ),
     ]);
   },
@@ -231,52 +231,52 @@ export const createProtobufSchemaFieldsHandler: {
   [EnumDataType.SingleLineText]: (
     fieldName: string,
     countField: number,
-    field: EntityField
+    field: EntityField,
   ) => createScalarField(fieldName, "string", countField, false),
   [EnumDataType.MultiLineText]: (
     fieldName: string,
     countField: number,
-    field: EntityField
+    field: EntityField,
   ) => createScalarField(fieldName, "string", countField, false),
   [EnumDataType.Email]: (
     fieldName: string,
     countField: number,
-    field: EntityField
+    field: EntityField,
   ) => createScalarField(fieldName, "string", countField, false),
   [EnumDataType.WholeNumber]: (
     fieldName: string,
     countField: number,
-    field: EntityField
+    field: EntityField,
   ) => createScalarField(fieldName, "int32", countField, false),
   [EnumDataType.DateTime]: (
     fieldName: string,
     countField: number,
-    field: EntityField
+    field: EntityField,
   ) => createScalarField(fieldName, "string", countField, false),
   [EnumDataType.DecimalNumber]: (
     fieldName: string,
     countField: number,
-    field: EntityField
+    field: EntityField,
   ) => createScalarField(fieldName, "int32", countField, false),
   [EnumDataType.Boolean]: (
     fieldName: string,
     countField: number,
-    field: EntityField
+    field: EntityField,
   ) => createScalarField(fieldName, "bool", countField, false),
   [EnumDataType.GeographicLocation]: (
     fieldName: string,
     countField: number,
-    field: EntityField
+    field: EntityField,
   ) => createScalarField(fieldName, "string", countField, false),
   [EnumDataType.Json]: (
     fieldName: string,
     countField: number,
-    field: EntityField
+    field: EntityField,
   ) => createScalarField(fieldName, "string", countField, false),
   [EnumDataType.Lookup]: (
     fieldName: string,
     countField: number,
-    field: EntityField
+    field: EntityField,
   ) => {
     const { properties } = field;
     const {
@@ -294,7 +294,7 @@ export const createProtobufSchemaFieldsHandler: {
         fieldName,
         relatedEntity.name,
         countField,
-        !isOneToOneWithoutForeignKey
+        !isOneToOneWithoutForeignKey,
       );
     }
 
@@ -303,17 +303,17 @@ export const createProtobufSchemaFieldsHandler: {
   [EnumDataType.MultiSelectOptionSet]: (
     fieldName: string,
     countField: number,
-    field: EntityField
+    field: EntityField,
   ) => createScalarField(fieldName, "string", countField, true),
   [EnumDataType.OptionSet]: (
     fieldName: string,
     countField: number,
-    field: EntityField
+    field: EntityField,
   ) => createScalarField(fieldName, "string", countField, true),
   [EnumDataType.Id]: (
     fieldName: string,
     countField: number,
-    field: EntityField
+    field: EntityField,
   ) => {
     const { properties } = field;
     const idType = (properties as types.Id)?.idType ?? "CUID";
@@ -322,34 +322,34 @@ export const createProtobufSchemaFieldsHandler: {
       fieldName,
       idTypeToProtobufScalarType[idType],
       countField,
-      false
+      false,
     );
   },
   [EnumDataType.CreatedAt]: (
     fieldName: string,
     countField: number,
-    field: EntityField
+    field: EntityField,
   ) => createScalarField(fieldName, "string", countField, false),
   [EnumDataType.UpdatedAt]: (
     fieldName: string,
     countField: number,
-    field: EntityField
+    field: EntityField,
   ) => createScalarField(fieldName, "string", countField, false),
   [EnumDataType.Roles]: (
     fieldName: string,
     countField: number,
-    field: EntityField
+    field: EntityField,
   ) => createScalarField(fieldName, "string", countField, true),
   [EnumDataType.Username]: (
     fieldName: string,
     countField: number,
-    field: EntityField
+    field: EntityField,
   ) => createScalarField(fieldName, "string", countField, false),
 
   [EnumDataType.Password]: (
     fieldName: string,
     countField: number,
-    field: EntityField
+    field: EntityField,
   ) => createScalarField(fieldName, "string", countField, false),
 };
 

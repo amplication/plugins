@@ -35,7 +35,7 @@ class TerraformAwsDeploymentEcsPlugin implements AmplicationPlugin {
   async afterCreateServer(
     context: DsgContext,
     eventParams: CreateServerParams,
-    modules: ModuleMap
+    modules: ModuleMap,
   ): Promise<ModuleMap> {
     context.logger.info(`Generating Terraform AWS Deployment ECS...`);
 
@@ -44,7 +44,7 @@ class TerraformAwsDeploymentEcsPlugin implements AmplicationPlugin {
     const serviceName = kebabCase(context.resourceInfo?.name);
     if (!serviceName) {
       throw new Error(
-        "TerraformAwsRepositoryEcrPlugin: Service name is undefined"
+        "TerraformAwsRepositoryEcrPlugin: Service name is undefined",
       );
     }
 
@@ -54,7 +54,7 @@ class TerraformAwsDeploymentEcsPlugin implements AmplicationPlugin {
     // an error if the aforementioned plugin wasnt installed.
     const terraformDirectory = getTerraformDirectory(
       context.pluginInstallations,
-      context.serverDirectories.baseDirectory
+      context.serverDirectories.baseDirectory,
     );
 
     // fetch the plugin specific settings and merge them with the defaults
@@ -73,7 +73,7 @@ class TerraformAwsDeploymentEcsPlugin implements AmplicationPlugin {
     const staticPath = resolve(__dirname, "./static");
     const staticFiles = await context.utils.importStaticModules(
       staticPath,
-      terraformDirectory
+      terraformDirectory,
     );
 
     // switch statement for determining capacity provider within the
@@ -105,8 +105,8 @@ class TerraformAwsDeploymentEcsPlugin implements AmplicationPlugin {
     staticFiles.replaceModulesPath((path) =>
       path.replace(
         templateFileName,
-        fileNamePrefix + kebabCase(serviceName) + fileNameSuffix
-      )
+        fileNamePrefix + kebabCase(serviceName) + fileNameSuffix,
+      ),
     );
 
     staticFiles.replaceModulesCode((_path, code) =>
@@ -117,23 +117,23 @@ class TerraformAwsDeploymentEcsPlugin implements AmplicationPlugin {
         .replaceAll(serviceUnderscoreNameKey, underscoreServiceName)
         .replaceAll(
           moduleNameEcsClusterKey,
-          "ecs_cluster_" + underscoreClusterName
+          "ecs_cluster_" + underscoreClusterName,
         )
         .replaceAll(
           moduleNameEcsServiceKey,
-          "ecs_service_" + underscoreServiceName
+          "ecs_service_" + underscoreServiceName,
         )
         .replaceAll(moduleNameEcsAlbKey, "ecs_alb_" + underscoreServiceName)
         .replaceAll(moduleNameEcsSgKey, "ecs_alb_sg_" + underscoreServiceName)
         .replaceAll(clusterCapacityProviderKey, capacityProvider)
         .replaceAll(
           serviceContainerImage,
-          settings.service.container_definitions.image
+          settings.service.container_definitions.image,
         )
         .replaceAll(
           serviceContainerPort,
-          String(settings.service.container_definitions.port)
-        )
+          String(settings.service.container_definitions.port),
+        ),
     );
 
     context.logger.info(`Generated Terraform AWS Deployment ECS...`);

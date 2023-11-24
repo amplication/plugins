@@ -36,7 +36,7 @@ class PrettierPlugin implements AmplicationPlugin {
     return async (
       context: DsgContext,
       eventParams: CreateAdminUIParams | CreateServerParams,
-      modules: ModuleMap
+      modules: ModuleMap,
     ): Promise<ModuleMap> => {
       const { rules } = getPluginSettings(context.pluginInstallations);
       let baseDirectory;
@@ -55,13 +55,13 @@ class PrettierPlugin implements AmplicationPlugin {
 
       const staticFiles = await context.utils.importStaticModules(
         staticFilesPath,
-        baseDirectory
+        baseDirectory,
       );
       staticFiles.replaceModulesCode((_path, code) =>
         code.replaceAll(
           rulesPlaceholder,
-          format(JSON.stringify(rules, null, 2), { parser: "json" })
-        )
+          format(JSON.stringify(rules, null, 2), { parser: "json" }),
+        ),
       );
 
       await modules.merge(staticFiles);
@@ -71,7 +71,7 @@ class PrettierPlugin implements AmplicationPlugin {
 
   beforeCreatePackageJson(
     context: DsgContext,
-    eventParams: CreateServerPackageJsonParams | CreateAdminUIPackageJsonParams
+    eventParams: CreateServerPackageJsonParams | CreateAdminUIPackageJsonParams,
   ): CreateServerPackageJsonParams | CreateAdminUIPackageJsonParams {
     const packageJsonValues = {
       devDependencies: {

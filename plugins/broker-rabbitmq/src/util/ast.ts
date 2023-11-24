@@ -15,7 +15,7 @@ export * from "@amplication/code-gen-utils";
  */
 export function getClassDeclarationById(
   node: ASTNode,
-  id: namedTypes.Identifier
+  id: namedTypes.Identifier,
 ): namedTypes.ClassDeclaration {
   let classDeclaration: namedTypes.ClassDeclaration | null = null;
   recast.visit(node, {
@@ -30,7 +30,7 @@ export function getClassDeclarationById(
 
   if (!classDeclaration) {
     throw new Error(
-      `Could not find class declaration with the identifier ${id.name} in provided AST node`
+      `Could not find class declaration with the identifier ${id.name} in provided AST node`,
     );
   }
 
@@ -39,7 +39,7 @@ export function getClassDeclarationById(
 
 export function getFunctionDeclarationById(
   node: ASTNode,
-  id: namedTypes.Identifier
+  id: namedTypes.Identifier,
 ): namedTypes.FunctionDeclaration {
   let functionDeclaration: namedTypes.FunctionDeclaration | null = null;
   recast.visit(node, {
@@ -54,7 +54,7 @@ export function getFunctionDeclarationById(
 
   if (!functionDeclaration) {
     throw new Error(
-      `Could not find function declaration with the identifier ${id.name} in provided AST node`
+      `Could not find function declaration with the identifier ${id.name} in provided AST node`,
     );
   }
 
@@ -71,7 +71,7 @@ export const prettyCode = (code: string): string => {
  */
 export function interpolate(
   ast: ASTNode,
-  mapping: { [key: string]: ASTNode | undefined }
+  mapping: { [key: string]: ASTNode | undefined },
 ): void {
   return recast.visit(ast, {
     visitIdentifier(path) {
@@ -123,7 +123,7 @@ export function interpolate(
         (expression) =>
           namedTypes.Identifier.check(expression) &&
           expression.name in mapping &&
-          namedTypes.StringLiteral.check(mapping[expression.name])
+          namedTypes.StringLiteral.check(mapping[expression.name]),
       );
       if (canTransformToStringLiteral) {
         path.node.expressions = path.node.expressions.map((expression) => {
@@ -147,20 +147,20 @@ export function interpolate(
 
 export function importNames(
   names: namedTypes.Identifier[],
-  source: string
+  source: string,
 ): namedTypes.ImportDeclaration {
   return builders.importDeclaration(
     names.map((name) => builders.importSpecifier(name)),
-    builders.stringLiteral(source)
+    builders.stringLiteral(source),
   );
 }
 
 function consolidateImports(
-  declarations: namedTypes.ImportDeclaration[]
+  declarations: namedTypes.ImportDeclaration[],
 ): namedTypes.ImportDeclaration[] {
   const moduleToDeclarations = groupBy(
     declarations,
-    (declaration) => declaration.source.value
+    (declaration) => declaration.source.value,
   );
   const moduleToDeclaration = mapValues(
     moduleToDeclarations,
@@ -172,19 +172,19 @@ function consolidateImports(
             return specifier.imported.name;
           }
           return specifier.type;
-        }
+        },
       );
       return builders.importDeclaration(
         specifiers,
-        builders.stringLiteral(module)
+        builders.stringLiteral(module),
       );
-    }
+    },
   );
   return Object.values(moduleToDeclaration);
 }
 
 export function extractImportDeclarations(
-  file: namedTypes.File
+  file: namedTypes.File,
 ): namedTypes.ImportDeclaration[] {
   const newBody = [];
   const imports = [];
@@ -201,7 +201,7 @@ export function extractImportDeclarations(
 
 export function addImports(
   file: namedTypes.File,
-  imports: namedTypes.ImportDeclaration[]
+  imports: namedTypes.ImportDeclaration[],
 ): void {
   const existingImports = extractImportDeclarations(file);
   const consolidatedImports = consolidateImports([
@@ -212,7 +212,7 @@ export function addImports(
 }
 
 export function transformTemplateLiteralToStringLiteral(
-  templateLiteral: namedTypes.TemplateLiteral
+  templateLiteral: namedTypes.TemplateLiteral,
 ): namedTypes.StringLiteral {
   const value = templateLiteral.quasis
     .map((quasie, i) => {
@@ -230,7 +230,7 @@ export function transformTemplateLiteralToStringLiteral(
 
 export function evaluateJSX(
   path: NodePath,
-  mapping: { [key: string]: ASTNode | undefined }
+  mapping: { [key: string]: ASTNode | undefined },
 ): void {
   const childrenPath = path.get("children");
   childrenPath.each(
@@ -242,7 +242,7 @@ export function evaluateJSX(
         | K.JSXElementKind
         | K.JSXFragmentKind
         | K.LiteralKind
-      >
+      >,
     ) => {
       const { node } = childPath;
       if (
@@ -259,6 +259,6 @@ export function evaluateJSX(
           childPath.replace(...mapped.children);
         }
       }
-    }
+    },
   );
 }

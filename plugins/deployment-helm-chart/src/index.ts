@@ -36,7 +36,7 @@ class HelmChartPlugin implements AmplicationPlugin {
   async afterCreateServerDotEnv(
     context: DsgContext,
     eventParams: CreateServerDotEnvParams,
-    modules: ModuleMap
+    modules: ModuleMap,
   ): Promise<ModuleMap> {
     context.logger.info(`Generating Helm Chart...`);
 
@@ -60,7 +60,7 @@ class HelmChartPlugin implements AmplicationPlugin {
     }
 
     const configmapIndentation = "    ";
-    let configmap: string = "";
+    let configmap = "";
 
     variables.forEach((variable) => {
       const [name, value] = Object.entries(variable)[0];
@@ -82,33 +82,33 @@ class HelmChartPlugin implements AmplicationPlugin {
      *         from the static directory via the renderdOutput variable
      */
 
-    let helmDirectoryPath: string = "";
-    const rootDirectoryPath: string = "./";
+    let helmDirectoryPath = "";
+    const rootDirectoryPath = "./";
 
     if (settings.root_level === true) {
       helmDirectoryPath = join(
         rootDirectoryPath,
         settings.directory_name,
-        serviceName
+        serviceName,
       );
     } else if (settings.root_level === false) {
       helmDirectoryPath = join(
         context.serverDirectories.baseDirectory,
         settings.directory_name,
-        serviceName
+        serviceName,
       );
     } else {
       throw new Error(
-        "HelmChartPlugin: Specify true or false for the root_level setting"
+        "HelmChartPlugin: Specify true or false for the root_level setting",
       );
     }
 
-    const chartTemplateDirectory: string = "./static/chart";
+    const chartTemplateDirectory = "./static/chart";
 
     const chartTemplatePath = resolve(__dirname, chartTemplateDirectory);
     const chartTemplateFiles = await context.utils.importStaticModules(
       chartTemplatePath,
-      helmDirectoryPath
+      helmDirectoryPath,
     );
 
     // render the helm chart from the static files in combination with the values provided through

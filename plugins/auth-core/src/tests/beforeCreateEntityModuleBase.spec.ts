@@ -35,7 +35,7 @@ describe("Testing beforeCreateEntityModuleBase hook", () => {
     expect(importsArray).toStrictEqual("[ACLModule]");
     expect(exportsArray).toStrictEqual("[ACLModule]");
     expect(code).toStrictEqual(
-      'import { ACLModule } from "../../auth/acl.module";'
+      'import { ACLModule } from "../../auth/acl.module";',
     );
   });
 });

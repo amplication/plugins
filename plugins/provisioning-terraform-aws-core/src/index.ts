@@ -39,7 +39,7 @@ class TerraformAwsCorePlugin implements AmplicationPlugin {
   async afterCreateServer(
     context: DsgContext,
     eventParams: CreateServerParams,
-    modules: ModuleMap
+    modules: ModuleMap,
   ): Promise<ModuleMap> {
     context.logger.info("Generating Terraform Amazon Web Services Core ...");
 
@@ -96,7 +96,7 @@ class TerraformAwsCorePlugin implements AmplicationPlugin {
     const staticPath = resolve(__dirname, "./static");
     const staticFiles = await context.utils.importStaticModules(
       staticPath,
-      terraformDirectoryPath
+      terraformDirectoryPath,
     );
 
     staticFiles.replaceModulesCode((_path, code) =>
@@ -107,25 +107,25 @@ class TerraformAwsCorePlugin implements AmplicationPlugin {
         .replaceAll(vpcCidrBlockKey, settings.vpc.cidr_block)
         .replaceAll(
           createDatabaseSubnetGroupKey,
-          String(settings.vpc.create_database_subnet_group)
+          String(settings.vpc.create_database_subnet_group),
         )
         .replaceAll(
           enableDnsHostnamesKey,
-          String(settings.vpc.enable_dns_hostnames)
+          String(settings.vpc.enable_dns_hostnames),
         )
         .replaceAll(
           enableDnsSupportKey,
-          String(settings.vpc.enable_dns_support)
+          String(settings.vpc.enable_dns_support),
         )
         .replaceAll(
           enableNatGatewayKey,
-          String(settings.vpc.enable_nat_gateway)
+          String(settings.vpc.enable_nat_gateway),
         )
         .replaceAll(
           singleNatGatewayKey,
-          String(settings.vpc.single_nat_gateway)
+          String(settings.vpc.single_nat_gateway),
         )
-        .replaceAll(backendKey, backendConfiguration)
+        .replaceAll(backendKey, backendConfiguration),
     );
 
     context.logger.info("Generated Terraform Amazon Web Services Core ...");

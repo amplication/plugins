@@ -38,10 +38,10 @@ class GithubActionsAwsEcsPlugin implements AmplicationPlugin {
   async afterCreateServer(
     context: DsgContext,
     eventParams: CreateServerParams,
-    modules: ModuleMap
+    modules: ModuleMap,
   ): Promise<ModuleMap> {
     context.logger.info(
-      "Generating Github Actions deploy to Amazon ECS workflow ..."
+      "Generating Github Actions deploy to Amazon ECS workflow ...",
     );
 
     // determine the name of the service which will be used as the name for the workflow
@@ -53,16 +53,16 @@ class GithubActionsAwsEcsPlugin implements AmplicationPlugin {
     }
 
     // template file names
-    const templateWorkflowFileName: string = "workflow.yaml";
-    const templateTaskDefinitionFileName: string = "task-definition.json";
+    const templateWorkflowFileName = "workflow.yaml";
+    const templateTaskDefinitionFileName = "task-definition.json";
 
     // output file name prefix & suffixes
-    const fileNamePrefix: string = "cd-";
-    const workflowFileNameSuffix: string = "-aws-ecs.yaml";
-    const taskDefinitionFileNameSuffix: string = "-aws-ecs.json";
+    const fileNamePrefix = "cd-";
+    const workflowFileNameSuffix = "-aws-ecs.yaml";
+    const taskDefinitionFileNameSuffix = "-aws-ecs.json";
 
     // ouput directory base & file specific suffix
-    const outputDirectoryBase: string = ".github/workflows";
+    const outputDirectoryBase = ".github/workflows";
     const outputSuffixWorkflow: string =
       "/" + fileNamePrefix + serviceName + workflowFileNameSuffix;
     const outputSuffixTaskDefinition: string =
@@ -77,13 +77,13 @@ class GithubActionsAwsEcsPlugin implements AmplicationPlugin {
 
     const staticFiles = await context.utils.importStaticModules(
       staticPath,
-      "./" + outputDirectoryBase
+      "./" + outputDirectoryBase,
     );
 
     staticFiles.replaceModulesPath((path) =>
       path
         .replace(templateWorkflowFileName, outputSuffixWorkflow)
-        .replace(templateTaskDefinitionFileName, outputSuffixTaskDefinition)
+        .replace(templateTaskDefinitionFileName, outputSuffixTaskDefinition),
     );
 
     staticFiles.replaceModulesCode((_path, code) =>
@@ -97,7 +97,7 @@ class GithubActionsAwsEcsPlugin implements AmplicationPlugin {
         .replaceAll(ecsRoleNameKey, settings.ecs_role_name)
         .replaceAll(
           ecsTaskDefinitionPathKey,
-          outputDirectoryBase + outputSuffixTaskDefinition
+          outputDirectoryBase + outputSuffixTaskDefinition,
         )
         .replaceAll(smSecretNameKey, settings.sm_secret_name)
         .replaceAll(resourcesCpuKey, settings.resources.cpu)
@@ -105,13 +105,13 @@ class GithubActionsAwsEcsPlugin implements AmplicationPlugin {
         .replaceAll(runtimeOsFamilyKey, settings.runtime.os_family)
         .replaceAll(
           runtimeCpuArchitectureKey,
-          settings.runtime.cpu_architecture
+          settings.runtime.cpu_architecture,
         )
-        .replaceAll(dockerFilePathKey, context.serverDirectories.baseDirectory)
+        .replaceAll(dockerFilePathKey, context.serverDirectories.baseDirectory),
     );
 
     context.logger.info(
-      "Generated Github Actions deploy to Amazon ECS workflow..."
+      "Generated Github Actions deploy to Amazon ECS workflow...",
     );
 
     await modules.merge(staticFiles);

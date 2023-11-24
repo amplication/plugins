@@ -23,12 +23,12 @@ export function setEndpointPermissions(
   classDeclaration: namedTypes.ClassDeclaration,
   methodId: namedTypes.Identifier,
   action: EnumEntityAction,
-  entity: Entity
+  entity: Entity,
 ): void {
   const publicAction = entity.permissions.find(
     (entityPermission) =>
       entityPermission.action === action &&
-      entityPermission.type === EnumEntityPermissionType.Public
+      entityPermission.type === EnumEntityPermissionType.Public,
   );
 
   if (!publicAction) return;
@@ -39,7 +39,7 @@ export function setEndpointPermissions(
   if (action === EnumEntityAction.Search || action === EnumEntityAction.View) {
     removeIdentifierFromUseInterceptorDecorator(
       classMethod,
-      ACL_FILTER_RESPONSE_INTERCEPTOR_NAME
+      ACL_FILTER_RESPONSE_INTERCEPTOR_NAME,
     );
   }
 
@@ -49,7 +49,7 @@ export function setEndpointPermissions(
   ) {
     removeIdentifierFromUseInterceptorDecorator(
       classMethod,
-      ACL_VALIDATE_REQUEST_INTERCEPTOR_NAME
+      ACL_VALIDATE_REQUEST_INTERCEPTOR_NAME,
     );
   }
 

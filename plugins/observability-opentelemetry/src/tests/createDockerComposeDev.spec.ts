@@ -23,7 +23,7 @@ describe("Testing beforeCreateServerDockeCompose hook", () => {
   it("should add required values to docker-compose.yml", () => {
     const { updateProperties } = beforeCreateServerDockerComposeDev(
       context,
-      eventParams
+      eventParams,
     );
 
     expect(updateProperties[0]).toEqual({

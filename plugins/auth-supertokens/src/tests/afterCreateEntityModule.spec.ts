@@ -61,7 +61,7 @@ describe("Testing afterCreateEntityModule hook", () => {
     const modules = await plugin.afterCreateEntityModule(
       context,
       params,
-      moduleMap
+      moduleMap,
     );
     let expectedCode = prettyCode(authModuleRaw);
     const code = prettyCode(modules.get("/auth/auth.module.ts").code);

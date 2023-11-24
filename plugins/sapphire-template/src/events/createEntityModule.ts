@@ -12,13 +12,13 @@ import { getUseCaseImports, setUseCasesObj } from "./createService";
 
 const entityModuleTemplatePath = join(
   resolve(__dirname, "./templates"),
-  "entityModule.template.ts"
+  "entityModule.template.ts",
 );
 
 export const afterCreateEntityModule = async (
   context: DsgContext,
   eventParams: CreateEntityModuleParams,
-  modules: Module[]
+  modules: Module[],
 ) => {
   const { entityName, templateMapping } = eventParams;
   const camelCaseEntityName = `${entityName
@@ -29,12 +29,12 @@ export const afterCreateEntityModule = async (
 
   Object.assign(templateMapping, {
     ENTITY_MODULE_CLASS: builders.identifier(
-      `Sapphire${camelCaseEntityName}Module`
+      `Sapphire${camelCaseEntityName}Module`,
     ),
     ENTITY_CONTROLLER: builders.identifier(`${camelCaseEntityName}Controller`),
     ENTITY_REPOSITORY: builders.identifier(`${camelCaseEntityName}Repository`),
     ENTITY_REPOSITORY_INTERFACE: builders.identifier(
-      `I${camelCaseEntityName}Repository`
+      `I${camelCaseEntityName}Repository`,
     ),
     ENTITY_SERVICE: builders.identifier(`${camelCaseEntityName}Service`),
     CREATE_USE_CASE: builders.identifier(useCasesObj.CREATE_USE_CASE),
@@ -59,33 +59,33 @@ const createClassImport = (template: namedTypes.File, entityName: string) => {
   const controllerImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(`${entityName}Controller`))],
     builders.stringLiteral(
-      `../../web-server/${entityName.toLowerCase()}.controller`
-    )
+      `../../web-server/${entityName.toLowerCase()}.controller`,
+    ),
   );
 
   const repositoryImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(`${entityName}Repository`))],
     builders.stringLiteral(
-      `./repositories/${entityName.toLowerCase()}.repository`
-    )
+      `./repositories/${entityName.toLowerCase()}.repository`,
+    ),
   );
 
   const serviceImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(`${entityName}Service`))],
-    builders.stringLiteral(`./services`)
+    builders.stringLiteral(`./services`),
   );
 
   const useCasesObj = setUseCasesObj(entityName);
   const useCasesImport = builders.importDeclaration(
     getUseCaseImports(useCasesObj),
-    builders.stringLiteral("./use-cases")
+    builders.stringLiteral("./use-cases"),
   );
 
   const repositoryInterfaceImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(`I${entityName}Repository`))],
     builders.stringLiteral(
-      `./model/interfaces/repositories/${entityName.toLowerCase()}-repository.interface`
-    )
+      `./model/interfaces/repositories/${entityName.toLowerCase()}-repository.interface`,
+    ),
   );
 
   addImports(template, [

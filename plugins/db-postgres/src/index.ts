@@ -37,10 +37,10 @@ class PostgresPlugin implements AmplicationPlugin {
 
   beforeCreateServerDotEnv(
     context: DsgContext,
-    eventParams: CreateServerDotEnvParams
+    eventParams: CreateServerDotEnvParams,
   ) {
     const { port, password, user, host, dbName } = getPluginSettings(
-      context.pluginInstallations
+      context.pluginInstallations,
     );
 
     eventParams.envVariables = [
@@ -61,7 +61,7 @@ class PostgresPlugin implements AmplicationPlugin {
 
   beforeCreateServerDockerCompose(
     context: DsgContext,
-    eventParams: CreateServerDockerComposeParams
+    eventParams: CreateServerDockerComposeParams,
   ) {
     eventParams.updateProperties.push(...updateDockerComposeProperties);
     return eventParams;
@@ -69,7 +69,7 @@ class PostgresPlugin implements AmplicationPlugin {
 
   beforeCreateServerDockerComposeDev(
     context: DsgContext,
-    eventParams: CreateServerDockerComposeDBParams
+    eventParams: CreateServerDockerComposeDBParams,
   ) {
     eventParams.updateProperties.push(...updateDockerComposeDevProperties);
     return eventParams;
@@ -77,7 +77,7 @@ class PostgresPlugin implements AmplicationPlugin {
 
   beforeCreatePrismaSchema(
     context: DsgContext,
-    eventParams: CreatePrismaSchemaParams
+    eventParams: CreatePrismaSchemaParams,
   ) {
     const { entities } = eventParams;
     entities.forEach((entity) => {
@@ -85,7 +85,7 @@ class PostgresPlugin implements AmplicationPlugin {
         if (field.customAttributes) {
           field.customAttributes = field.customAttributes.replace(
             /@([\w]+)\./g,
-            `@${dataSource.name}.`
+            `@${dataSource.name}.`,
           );
         }
       });

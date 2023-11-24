@@ -57,7 +57,7 @@ describe("Testing beforeCreateEntityResolverToOneRelationMethods hook", () => {
   it("should correctly alter the resolver to many relations template", () => {
     const { toOneFile } = plugin.beforeCreateEntityResolverToOneRelationMethods(
       context,
-      params
+      params,
     );
     const code = prettyPrint(toOneFile).code;
     const expectedCode = prettyCode(correctOutputTemplate);

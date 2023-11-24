@@ -115,7 +115,7 @@ describe("Testing beforeCreateControllerBaseModule hook", () => {
   it("should correctly alter the controller base module", () => {
     const { template } = plugin.beforeCreateControllerBaseModule(
       context,
-      params
+      params,
     );
     const code = prettyPrint(template).code;
     const expectedCode = prettyCode(correctOutputTemplate);

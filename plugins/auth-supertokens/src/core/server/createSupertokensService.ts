@@ -29,10 +29,10 @@ export const createSupertokensService = async (
   modules: ModuleMap,
   authEntityCreateInput: NamedClassDeclaration,
   supertokensIdFieldName: string,
-  logger: BuildLogger
+  logger: BuildLogger,
 ) => {
   logger.info(
-    "Creating the SuperTokens service file in the server's src/auth/supertokens directory"
+    "Creating the SuperTokens service file in the server's src/auth/supertokens directory",
   );
   const createFunc = baseCreateSupertokensService(
     authDirectory,
@@ -40,7 +40,7 @@ export const createSupertokensService = async (
     authEntityName,
     modules,
     authEntityCreateInput,
-    supertokensIdFieldName
+    supertokensIdFieldName,
   );
   if (recipeSettings.name === "emailpassword") {
     await createFunc(resolve(constants.templatesPath, "emailpassword"), {});
@@ -58,7 +58,7 @@ export const createSupertokensService = async (
       resolve(constants.templatesPath, "thirdpartyemailpassword"),
       {
         THIRD_PARTY_PROVIDERS: thirdPartyProvidersArray(recipeSettings),
-      }
+      },
     );
   } else if (recipeSettings.name === "thirdpartypasswordless") {
     await createFunc(
@@ -67,12 +67,12 @@ export const createSupertokensService = async (
         FLOW_TYPE: builders.stringLiteral(recipeSettings.flowType),
         CONTACT_METHOD: builders.stringLiteral(recipeSettings.contactMethod),
         THIRD_PARTY_PROVIDERS: thirdPartyProvidersArray(recipeSettings),
-      }
+      },
     );
   } else if (recipeSettings.name === "phonepassword") {
     await createFunc(resolve(constants.templatesPath, "phonepassword"), {});
     const newModule = modules.get(
-      join(authDirectory, "supertokens", "supertokens.service.ts")
+      join(authDirectory, "supertokens", "supertokens.service.ts"),
     );
     const code = parse(newModule.code);
     appendImports(code, [phoneVerifiedClaimImport()]);
@@ -89,16 +89,16 @@ const baseCreateSupertokensService = (
   authEntityName: string,
   modules: ModuleMap,
   authEntityCreateInput: NamedClassDeclaration,
-  supertokensIdFieldName: string
+  supertokensIdFieldName: string,
 ) => {
   return async (
     templateDir: string,
     baseTemplateMapping: { [key: string]: namedTypes.ASTNode },
-    skipDefaultCreation?: string[]
+    skipDefaultCreation?: string[],
   ) => {
     const templatePath = resolve(
       templateDir,
-      "supertokens.service.template.ts"
+      "supertokens.service.template.ts",
     );
     const template = await readFile(templatePath);
     const templateMapping = {
@@ -125,7 +125,7 @@ const baseCreateSupertokensService = (
 
 const getDefaultCreateValues = (
   createInput: NamedClassDeclaration,
-  skipDefaultCreation?: string[]
+  skipDefaultCreation?: string[],
 ): namedTypes.ObjectExpression => {
   const defaultValues: namedTypes.ObjectProperty[] = [];
   visit(createInput, {
@@ -147,22 +147,22 @@ const getDefaultCreateValues = (
         const propType = prop.typeAnnotation.typeAnnotation;
         if (!propType || !propType.type) {
           throw new Error(
-            `Failed to find the type annotation of the auth entity create input property: ${propName}`
+            `Failed to find the type annotation of the auth entity create input property: ${propName}`,
           );
         }
         if (propName === "roles") {
           defaultValues.push(
             builders.objectProperty(
               builders.identifier("roles"),
-              builders.arrayExpression([])
-            )
+              builders.arrayExpression([]),
+            ),
           );
         } else {
           defaultValues.push(
             builders.objectProperty(
               builders.identifier(propName),
-              getDefaultValueForType(propType as any)
-            )
+              getDefaultValueForType(propType as any),
+            ),
           );
         }
       }
@@ -173,7 +173,7 @@ const getDefaultCreateValues = (
 };
 
 const getDefaultValueForType = (
-  propType: namedTypes.TSTypeAnnotation["typeAnnotation"]
+  propType: namedTypes.TSTypeAnnotation["typeAnnotation"],
 ): any => {
   switch (propType.type) {
     case "TSArrayType":
@@ -205,18 +205,18 @@ const getDefaultValueForType = (
           return builders.unaryExpression(
             lit.operator,
             lit.argument,
-            lit.prefix
+            lit.prefix,
           );
         default:
           throw new Error(
-            "Failed to determine the default value of a TS literal type"
+            "Failed to determine the default value of a TS literal type",
           );
       }
     case "TSTypeReference":
       const name = propType.typeName;
       if (name.type !== "Identifier") {
         throw new Error(
-          `Can't figure out default value for property with type ${propType.type}: ${name}`
+          `Can't figure out default value for property with type ${propType.type}: ${name}`,
         );
       }
       switch (name.name) {
@@ -232,20 +232,20 @@ const getDefaultValueForType = (
           return builders.arrayExpression([]);
         default:
           throw new Error(
-            `Can't figure out default value for property with type ${propType.type}: ${name.name}`
+            `Can't figure out default value for property with type ${propType.type}: ${name.name}`,
           );
       }
     case "TSUnionType":
       return getDefaultValueForType(propType.types[0]);
     default:
       throw new Error(
-        `Can't figure out default value for property with type ${propType.type}`
+        `Can't figure out default value for property with type ${propType.type}`,
       );
   }
 };
 
 const getAuthEntityServiceId = (
-  authEntityName: string
+  authEntityName: string,
 ): namedTypes.Identifier => {
   return builders.identifier(`${authEntityName}Service`);
 };
@@ -253,10 +253,10 @@ const getAuthEntityServiceId = (
 const getAuthEntityIdPath = (
   authEntityName: string,
   srcDirectory: string,
-  authDirectory: string
+  authDirectory: string,
 ): namedTypes.StringLiteral => {
   const entityPath = `${srcDirectory}/${camelCase(
-    authEntityName
+    authEntityName,
   )}/base/${authEntityName}`;
   const supertokensDir = `${authDirectory}/supertokens`;
   return builders.stringLiteral(relative(supertokensDir, entityPath));
@@ -265,10 +265,10 @@ const getAuthEntityIdPath = (
 const getAuthEntityServicePath = (
   srcDirectory: string,
   authDirectory: string,
-  authEntityName: string
+  authEntityName: string,
 ): namedTypes.StringLiteral => {
   const servicePath = `${srcDirectory}/${camelCase(authEntityName)}/${camelCase(
-    authEntityName
+    authEntityName,
   )}.service`;
   const supertokensDir = `${authDirectory}/supertokens`;
   return builders.stringLiteral(relative(supertokensDir, servicePath));
@@ -277,29 +277,29 @@ const getAuthEntityServicePath = (
 const authEntityServiceImport = (
   srcDirectory: string,
   authDirectory: string,
-  authEntityName: string
+  authEntityName: string,
 ): namedTypes.ImportDeclaration => {
   return builders.importDeclaration(
     [builders.importSpecifier(getAuthEntityServiceId(authEntityName))],
-    getAuthEntityServicePath(srcDirectory, authDirectory, authEntityName)
+    getAuthEntityServicePath(srcDirectory, authDirectory, authEntityName),
   );
 };
 
 const authEntityImport = (
   srcDirectory: string,
   authDirectory: string,
-  authEntityName: string
+  authEntityName: string,
 ): namedTypes.ImportDeclaration => {
   return builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(authEntityName))],
-    getAuthEntityIdPath(authEntityName, srcDirectory, authDirectory)
+    getAuthEntityIdPath(authEntityName, srcDirectory, authDirectory),
   );
 };
 
 const phoneVerifiedClaimImport = () => {
   return builders.importDeclaration(
     [builders.importSpecifier(builders.identifier("PhoneVerifiedClaim"))],
-    builders.stringLiteral("./phoneVerifiedClaim")
+    builders.stringLiteral("./phoneVerifiedClaim"),
   );
 };
 
@@ -350,7 +350,7 @@ const thirdPartyProvidersArray = (recipeSettings: Settings["recipe"]) => {
                     ${
                       providerSetting.additionalConfig
                         ? `additionalConfig: ${JSON.stringify(
-                            providerSetting.additionalConfig
+                            providerSetting.additionalConfig,
                           )}`
                         : ""
                     }

@@ -16,7 +16,7 @@ export class BasicStrategyBase
 
   async validate(
     username: string,
-    password: string
+    password: string,
   ): Promise<ENTITY_NAME_INFO> {
     const user = await this.authService.validateUser(username, password);
     if (!user) {

@@ -22,13 +22,13 @@ describe("Testing afterCreateMessageBrokerNestJSModule", () => {
   it("should correctly add the code for generating rabbitmq module", async () => {
     const modules = await plugin.afterCreateMessageBrokerNestJSModule(
       context,
-      params
+      params,
     );
 
     const rabbitMqModule = modules.get(path.join("/", "rabbitmq.module.ts"));
     const rabbitMqCode = utils.print(utils.parse(rabbitMqModule.code)).code;
     const expectedRabbitMqCode = utils.print(
-      utils.parse(expectedRabbitMq)
+      utils.parse(expectedRabbitMq),
     ).code;
 
     expect(rabbitMqCode).toStrictEqual(expectedRabbitMqCode);
@@ -69,7 +69,7 @@ const fakeContext = () => {
       warn: async (
         message: string,
         params?: Record<string, unknown>,
-        userFriendlyMessage?: string
+        userFriendlyMessage?: string,
       ) => {
         console.log("Warning!", userFriendlyMessage);
       },

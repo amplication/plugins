@@ -48,22 +48,22 @@ const createDefaultAuth0UserFields = (
   recipe: IRecipe,
   defaultUser: Record<string, unknown> | undefined,
   entityFields: namedTypes.Identifier,
-  authEmailField: EntityField
+  authEmailField: EntityField,
 ) => {
   const { payloadFieldMapping } = recipe;
 
   if (authEmailField?.unique === false)
     throw new Error(
-      `The field ${authEmailField.name} in the entity ${entity.name} must be unique`
+      `The field ${authEmailField.name} in the entity ${entity.name} must be unique`,
     );
   else if (authEmailField?.searchable === false)
     throw new Error(
-      `The field ${authEmailField.name} in the entity ${entity.name} must be searchable`
+      `The field ${authEmailField.name} in the entity ${entity.name} must be searchable`,
     );
 
   const emailProperty = builders.objectProperty(
     builders.identifier(authEmailField?.name || "email"),
-    memberExpression`${entityFields}.${builders.identifier("email")}`
+    memberExpression`${entityFields}.${builders.identifier("email")}`,
   );
 
   const payloadProperties = Object.entries(payloadFieldMapping || {})
@@ -71,30 +71,30 @@ const createDefaultAuth0UserFields = (
     .map(([key, value]) => {
       if (!Auth0Fields.has(value)) {
         throw new Error(
-          `The field ${value} is not a valid Auth0 payload field`
+          `The field ${value} is not a valid Auth0 payload field`,
         );
       }
 
       if (!entity.fields.find((field) => field.name === key)) {
         throw new Error(
-          `The entity ${entity.name} does not have a field named ${key} which is mapped to ${value} in the payloadFieldMapping property`
+          `The entity ${entity.name} does not have a field named ${key} which is mapped to ${value} in the payloadFieldMapping property`,
         );
       }
 
       return builders.objectProperty(
         builders.identifier(key),
-        memberExpression`${entityFields}.${builders.identifier(value)}`
+        memberExpression`${entityFields}.${builders.identifier(value)}`,
       );
     });
 
   const remainingFields = entity.fields.filter(
     (field) =>
       !Object.keys(payloadFieldMapping || {}).includes(field.name) &&
-      field.name !== "email"
+      field.name !== "email",
   );
   const defaultProperties = createAuthEntityObjectCustomProperties(
     { ...entity, fields: remainingFields },
-    defaultUser || {}
+    defaultUser || {},
   );
 
   return [emailProperty, ...payloadProperties, ...defaultProperties];
@@ -107,17 +107,17 @@ export const createJwtStrategy = async (context: DsgContext) => {
 const mapJwtStrategyTemplate = async (
   context: DsgContext,
   templatePath: string,
-  fileName: string
+  fileName: string,
 ): Promise<{
   module: Module;
   searchableAuthField: EntityField;
 }> => {
   const { entities, resourceInfo, serverDirectories, DTOs } = context;
   const { recipe, defaultUser } = getPluginSettings(
-    context.pluginInstallations
+    context.pluginInstallations,
   );
   const authEntity = entities?.find(
-    (x) => x.name === resourceInfo?.settings.authEntityName
+    (x) => x.name === resourceInfo?.settings.authEntityName,
   );
 
   context.logger.info(`Creating ${fileName} file...`);
@@ -132,7 +132,7 @@ const mapJwtStrategyTemplate = async (
     const entityServiceName = `${authEntity?.name}Service`;
     const entityNameToLower = `${authEntity?.name.toLowerCase()}`;
     const entityServiceIdentifier = builders.identifier(
-      `${entityNameToLower}Service`
+      `${entityNameToLower}Service`,
     );
 
     const template = await readFile(templatePath);
@@ -144,12 +144,12 @@ const mapJwtStrategyTemplate = async (
     // Making the imports for authetication entity
     const entityNameImport = importNames(
       [entityNameId],
-      `../${entityInfoName}`
+      `../${entityInfoName}`,
     );
 
     const entityServiceImport = importNames(
       [entityServiceNameId],
-      `src/${entityNameToLower}/${entityNameToLower}.service`
+      `src/${entityNameToLower}/${entityNameToLower}.service`,
     );
 
     const searchableAuthField = getSearchableAuthField(authEntity, recipe);
@@ -168,8 +168,8 @@ const mapJwtStrategyTemplate = async (
           recipe,
           defaultUser,
           entityFields,
-          searchableAuthField
-        )
+          searchableAuthField,
+        ),
       ),
     };
 
@@ -179,14 +179,14 @@ const mapJwtStrategyTemplate = async (
 
     const classDeclaration = getClassDeclarationById(
       template,
-      builders.identifier("JwtStrategy")
+      builders.identifier("JwtStrategy"),
     );
 
     addInjectableDependency(
       classDeclaration,
       entityServiceIdentifier.name,
       builders.identifier(`${authEntity?.name}Service`),
-      "protected"
+      "protected",
     );
 
     removeTSClassDeclares(template);
@@ -195,7 +195,7 @@ const mapJwtStrategyTemplate = async (
     const dtoNameToPath = getDTONameToPath(context, DTOs);
     const dtoImports = importContainedIdentifiers(
       template,
-      getImportableDTOs(filePath, dtoNameToPath)
+      getImportableDTOs(filePath, dtoNameToPath),
     );
 
     addImports(template, dtoImports);
@@ -213,7 +213,7 @@ const mapJwtStrategyTemplate = async (
       (error as Error).message,
       undefined,
       undefined,
-      error as Error
+      error as Error,
     );
     context.utils.abortGeneration((error as Error).message);
     throw error;

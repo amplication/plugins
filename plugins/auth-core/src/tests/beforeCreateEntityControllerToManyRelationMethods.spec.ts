@@ -159,13 +159,13 @@ describe("Testing beforeCreateEntityControllerToManyRelationMethods hook", () =>
     (params.toManyFile = parse(initialTemplate)),
       (params.toManyMapping = {
         RELATED_ENTITY_WHERE_UNIQUE_INPUT: builders.identifier(
-          "TheRelatedEntityWhereUniqueInput"
+          "TheRelatedEntityWhereUniqueInput",
         ),
         RELATED_ENTITY_WHERE_INPUT: builders.identifier(
-          "TheRelatedEntityWhereInput"
+          "TheRelatedEntityWhereInput",
         ),
         RELATED_ENTITY_FIND_MANY_ARGS: builders.identifier(
-          "TheRelatedEntityFindManyArgs"
+          "TheRelatedEntityFindManyArgs",
         ),
         RELATED_ENTITY: builders.identifier("TheEntity"),
         RELATED_ENTITY_NAME: builders.stringLiteral("TheEntity"),

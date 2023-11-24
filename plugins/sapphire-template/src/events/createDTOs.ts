@@ -9,7 +9,7 @@ import { namedTypes, visit } from "ast-types";
 export const afterCreateDTOs = (
   context: DsgContext,
   eventParams: CreateDTOsParams,
-  modules: Module[]
+  modules: Module[],
 ): Module[] =>
   modules.map((module: Module) => {
     const file = parse(module.code);
@@ -36,7 +36,7 @@ const updateDtoImportPath = (template: namedTypes.File) => {
 
             return finalPath;
           },
-          "../"
+          "../",
         );
 
         path.value.source.value = manipulatedPath.slice(0, -1);

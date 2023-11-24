@@ -8,7 +8,7 @@ import { getPluginSettings } from "@utils/getPluginSettings";
 
 export const beforeCreateServerDotEnv = async (
   context: DsgContext,
-  eventParams: CreateServerDotEnvParams
+  eventParams: CreateServerDotEnvParams,
 ): Promise<CreateServerDotEnvParams> => {
   const pluginSettings = getPluginSettings(context.pluginInstallations);
 
@@ -20,7 +20,7 @@ export const beforeCreateServerDotEnv = async (
       context.logger.error(
         "Management API Access Token is required if you want to use the Management API.",
         {},
-        "Kindly add the Management API Access Token in the plugin settings' managementParams field."
+        "Kindly add the Management API Access Token in the plugin settings' managementParams field.",
       );
       throw new Error("Auth0 environment creation failed.");
     }
@@ -29,7 +29,7 @@ export const beforeCreateServerDotEnv = async (
       context.logger.error(
         "Management API Identifier is required if you want to use the Management API.",
         {},
-        "Kindly add the Management API Identifier in the plugin settings' managementParams field."
+        "Kindly add the Management API Identifier in the plugin settings' managementParams field.",
       );
       throw new Error("Auth0 environment creation failed.");
     }
@@ -45,7 +45,7 @@ export const beforeCreateServerDotEnv = async (
     context.logger.error(
       "Audience and Issuer URL are required.",
       {},
-      "Kindly add the Audience and Issuer URL in the plugin settings or provide the Management API Access Token and Identifier in the plugin settings' managementParams field, and make useManagementApi true."
+      "Kindly add the Audience and Issuer URL in the plugin settings or provide the Management API Access Token and Identifier in the plugin settings' managementParams field, and make useManagementApi true.",
     );
     throw new Error("Auth0 environment creation failed.");
   }
@@ -57,7 +57,7 @@ export const beforeCreateServerDotEnv = async (
   };
 
   eventParams.envVariables = eventParams.envVariables.concat(
-    convertToVarDict(envVariables)
+    convertToVarDict(envVariables),
   );
 
   return eventParams;

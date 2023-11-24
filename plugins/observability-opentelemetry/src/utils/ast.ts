@@ -16,11 +16,11 @@ export class ParseError extends SyntaxError {
  * @returns consolidated array of import declarations
  */
 function consolidateImports(
-  declarations: namedTypes.ImportDeclaration[]
+  declarations: namedTypes.ImportDeclaration[],
 ): namedTypes.ImportDeclaration[] {
   const moduleToDeclarations = groupBy(
     declarations,
-    (declaration) => declaration.source.value
+    (declaration) => declaration.source.value,
   );
   const moduleToDeclaration = mapValues(
     moduleToDeclarations,
@@ -32,13 +32,13 @@ function consolidateImports(
             return specifier.imported.name;
           }
           return specifier.type;
-        }
+        },
       );
       return builders.importDeclaration(
         specifiers,
-        builders.stringLiteral(module)
+        builders.stringLiteral(module),
       );
-    }
+    },
   );
   return Object.values(moduleToDeclaration);
 }
@@ -49,7 +49,7 @@ function consolidateImports(
  * @returns array of import declarations ast nodes
  */
 export function extractImportDeclarations(
-  file: namedTypes.File
+  file: namedTypes.File,
 ): namedTypes.ImportDeclaration[] {
   const newBody = [];
   const imports = [];
@@ -66,17 +66,17 @@ export function extractImportDeclarations(
 
 export function importNames(
   names: namedTypes.Identifier[],
-  source: string
+  source: string,
 ): namedTypes.ImportDeclaration {
   return builders.importDeclaration(
     names.map((name) => builders.importSpecifier(name)),
-    builders.stringLiteral(source)
+    builders.stringLiteral(source),
   );
 }
 
 export function addImports(
   file: namedTypes.File,
-  imports: namedTypes.ImportDeclaration[]
+  imports: namedTypes.ImportDeclaration[],
 ): void {
   const existingImports = extractImportDeclarations(file);
   const consolidatedImports = consolidateImports([
@@ -109,7 +109,7 @@ export function expression(
   const stat = statement(strings, ...values);
   if (!namedTypes.ExpressionStatement.check(stat)) {
     throw new Error(
-      "Code must define a single statement expression at the top level"
+      "Code must define a single statement expression at the top level",
     );
   }
   return stat.expression;

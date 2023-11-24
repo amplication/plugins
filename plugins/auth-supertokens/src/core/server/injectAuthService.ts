@@ -6,7 +6,7 @@ import { visit } from "recast";
 export const injectAuthService = (
   template: namedTypes.File,
   directoriesBackToSrc: number,
-  logger: BuildLogger
+  logger: BuildLogger,
 ) => {
   logger.info(`Adding the auth service as a dependency to ${template.name}`);
   appendImports(template, [authServiceImport(directoriesBackToSrc)]);
@@ -20,13 +20,13 @@ export const injectAuthService = (
         return false;
       }
       const authServiceParam = builders.tsParameterProperty(
-        builders.identifier("authService")
+        builders.identifier("authService"),
       );
       authServiceParam.readonly = true;
       authServiceParam.accessibility = "protected";
       const id = authServiceParam.parameter as namedTypes.Identifier;
       id.typeAnnotation = builders.tsTypeAnnotation(
-        builders.tsTypeReference(builders.identifier("AuthService"))
+        builders.tsTypeReference(builders.identifier("AuthService")),
       );
       method.params.push(authServiceParam);
       this.traverse(path);
@@ -43,7 +43,7 @@ export const injectAuthService = (
 };
 
 const authServiceImport = (
-  directoriesBackToSrc: number
+  directoriesBackToSrc: number,
 ): namedTypes.ImportDeclaration => {
   let path = "";
   for (let i = 0; i < directoriesBackToSrc; i++) {
@@ -52,6 +52,6 @@ const authServiceImport = (
   path += "auth/auth.service";
   return builders.importDeclaration(
     [builders.importSpecifier(builders.identifier("AuthService"))],
-    builders.stringLiteral(path)
+    builders.stringLiteral(path),
   );
 };

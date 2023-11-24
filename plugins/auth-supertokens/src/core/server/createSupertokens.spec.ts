@@ -81,10 +81,10 @@ describe("createSupertokensService tests", () => {
       modules,
       authEntityCreateInput,
       "SuperTokensId",
-      mock<BuildLogger>()
+      mock<BuildLogger>(),
     );
     const code = prettyCode(
-      modules.get(`${authDirectory}/supertokens/supertokens.service.ts`).code
+      modules.get(`${authDirectory}/supertokens/supertokens.service.ts`).code,
     );
     const expectedCode = prettyCode(expectedThirdPartySupertokensRawCode);
     expect(code).toStrictEqual(expectedCode);

@@ -32,7 +32,7 @@ describe("Testing beforeCreateConnectMicroservices", () => {
   it("should add the necessary code to connect the rabbitmq microservice", () => {
     const { template } = plugin.beforeCreateConnectMicroservices(
       context,
-      params
+      params,
     );
     const expectedCode = utils.prettyCode(`
         import { INestApplication } from "@nestjs/common";

@@ -1,7 +1,5 @@
 node_modules
 **/node_modules
 **/dist
-**/templates
 **/static
-
 **/ast.ts

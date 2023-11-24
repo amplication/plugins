@@ -7,7 +7,7 @@ export class SERVICE {
     private findOneUseCase: FIND_ONE_USE_CASE,
     private createUseCase: CREATE_USE_CASE,
     private updateUseCase: UPDATE_USE_CASE,
-    private deleteUseCase: DELETE_USE_CASE
+    private deleteUseCase: DELETE_USE_CASE,
   ) {}
 
   async findMany(args: FIND_MANY_ARGS): Promise<ENTITY[]> {

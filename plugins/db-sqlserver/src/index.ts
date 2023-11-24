@@ -51,13 +51,13 @@ class MSSQLServerPlugin implements AmplicationPlugin {
     const generateErrorMessageForEnums = (
       fieldType: string,
       entityName: string,
-      fieldName: string
+      fieldName: string,
     ) => `${fieldType} (list of primitives type) on entity: ${entityName}, field: ${fieldName}, is not supported by SQL Server prisma provider. 
     You can select another data type or change your DB to PostgreSQL`;
 
     const generateErrorMessageForJson = (
       entityName: string,
-      fieldName: string
+      fieldName: string,
     ) => `field type JSON on entity: ${entityName}, field: ${fieldName}, is not supported by SQL Server prisma provider. 
     You can select another data type or change your DB provider`;
 
@@ -65,25 +65,25 @@ class MSSQLServerPlugin implements AmplicationPlugin {
       const enumField = fields.find(
         ({ dataType }) =>
           dataType === EnumDataType.MultiSelectOptionSet ||
-          dataType === EnumDataType.OptionSet
+          dataType === EnumDataType.OptionSet,
       );
       if (enumField) {
         const errorMessage = generateErrorMessageForEnums(
           enumField.dataType as string,
           entityName,
-          enumField.name
+          enumField.name,
         );
         context.logger.error(errorMessage);
         throw new Error(errorMessage);
       }
 
       const jsonField = fields.find(
-        ({ dataType }) => dataType === EnumDataType.Json
+        ({ dataType }) => dataType === EnumDataType.Json,
       );
       if (jsonField) {
         const errorMessage = generateErrorMessageForJson(
           entityName,
-          jsonField.name
+          jsonField.name,
         );
         context.logger.error(errorMessage);
         throw new Error(errorMessage);
@@ -95,10 +95,10 @@ class MSSQLServerPlugin implements AmplicationPlugin {
 
   beforeCreateServerDotEnv(
     context: DsgContext,
-    eventParams: CreateServerDotEnvParams
+    eventParams: CreateServerDotEnvParams,
   ) {
     const { port, password, user, host, dbName } = getPluginSettings(
-      context.pluginInstallations
+      context.pluginInstallations,
     );
 
     eventParams.envVariables = [
@@ -119,7 +119,7 @@ class MSSQLServerPlugin implements AmplicationPlugin {
 
   beforeCreateServerDockerCompose(
     context: DsgContext,
-    eventParams: CreateServerDockerComposeParams
+    eventParams: CreateServerDockerComposeParams,
   ) {
     eventParams.updateProperties.push(...updateDockerComposeProperties);
     return eventParams;
@@ -127,7 +127,7 @@ class MSSQLServerPlugin implements AmplicationPlugin {
 
   beforeCreateServerDockerComposeDev(
     context: DsgContext,
-    eventParams: CreateServerDockerComposeDBParams
+    eventParams: CreateServerDockerComposeDBParams,
   ) {
     eventParams.updateProperties.push(...updateDockerComposeDevProperties);
     return eventParams;
@@ -135,7 +135,7 @@ class MSSQLServerPlugin implements AmplicationPlugin {
 
   beforeCreatePrismaSchema(
     context: DsgContext,
-    eventParams: CreatePrismaSchemaParams
+    eventParams: CreatePrismaSchemaParams,
   ) {
     const { entities } = eventParams;
     entities.forEach((entity) => {
@@ -143,7 +143,7 @@ class MSSQLServerPlugin implements AmplicationPlugin {
         if (field.customAttributes) {
           field.customAttributes = field.customAttributes.replace(
             /@([\w]+)\./g,
-            `@${dataSource.name}.`
+            `@${dataSource.name}.`,
           );
         }
       });
@@ -152,7 +152,7 @@ class MSSQLServerPlugin implements AmplicationPlugin {
     eventParams.createFieldsHandlers[EnumDataType.Lookup] = (
       field: EntityField,
       entity: Entity,
-      fieldNamesCount: Record<string, number> = {}
+      fieldNamesCount: Record<string, number> = {},
     ) => {
       const { name, properties } = field;
       const {
@@ -165,7 +165,7 @@ class MSSQLServerPlugin implements AmplicationPlugin {
         (entityField) =>
           entityField.id !== field.id &&
           entityField.dataType === EnumDataType.Lookup &&
-          entityField.properties.relatedEntity.name === relatedEntity.name
+          entityField.properties.relatedEntity.name === relatedEntity.name,
       );
 
       const relationName = !hasAnotherRelation
@@ -176,7 +176,7 @@ class MSSQLServerPlugin implements AmplicationPlugin {
             relatedEntity,
             relatedField,
             fieldNamesCount[field.name] === 1,
-            fieldNamesCount[relatedField.name] === 1
+            fieldNamesCount[relatedField.name] === 1,
           );
 
       if (allowMultipleSelection || isOneToOneWithoutForeignKey) {
@@ -186,7 +186,7 @@ class MSSQLServerPlugin implements AmplicationPlugin {
             relatedEntity.name,
             !isOneToOneWithoutForeignKey,
             allowMultipleSelection || false,
-            relationName
+            relationName,
           ),
         ];
       }
@@ -194,7 +194,7 @@ class MSSQLServerPlugin implements AmplicationPlugin {
       const scalarRelationFieldName = field.properties.fkFieldName;
 
       const relatedEntityFiledId = relatedEntity.fields?.find(
-        (relatedEntityField) => relatedEntityField.dataType === EnumDataType.Id
+        (relatedEntityField) => relatedEntityField.dataType === EnumDataType.Id,
       );
 
       const idType =
@@ -214,7 +214,7 @@ class MSSQLServerPlugin implements AmplicationPlugin {
           ReferentialActions.NoAction,
           ReferentialActions.NoAction,
           undefined,
-          field.customAttributes || undefined
+          field.customAttributes || undefined,
         ),
         // Prisma Scalar Relation Field
         PrismaSchemaDSL.createScalarField(
@@ -232,7 +232,7 @@ class MSSQLServerPlugin implements AmplicationPlugin {
           undefined,
           undefined,
           undefined,
-          field.customAttributes || undefined
+          field.customAttributes || undefined,
         ),
       ];
     };
@@ -261,7 +261,7 @@ class MSSQLServerPlugin implements AmplicationPlugin {
     relatedEntity: Entity,
     relatedField: EntityField,
     fieldHasUniqueName: boolean,
-    relatedFieldHasUniqueName: boolean
+    relatedFieldHasUniqueName: boolean,
   ): string {
     const relatedEntityNames = [
       relatedEntity.name,
@@ -269,10 +269,10 @@ class MSSQLServerPlugin implements AmplicationPlugin {
     ];
     const entityNames = [entity.name, pascalCase(entity.pluralName)];
     const matchingRelatedEntityName = relatedEntityNames.find(
-      (name) => field.name === camelCase(name)
+      (name) => field.name === camelCase(name),
     );
     const matchingEntityName = entityNames.find(
-      (name) => relatedField.name === camelCase(name)
+      (name) => relatedField.name === camelCase(name),
     );
     if (matchingRelatedEntityName && matchingEntityName) {
       const names = [matchingRelatedEntityName, matchingEntityName];
@@ -294,7 +294,7 @@ class MSSQLServerPlugin implements AmplicationPlugin {
     }
     const entityAndField = [entity.name, field.name].join(" ");
     const relatedEntityAndField = [relatedEntity.name, relatedField.name].join(
-      " "
+      " ",
     );
     const parts = [entityAndField, relatedEntityAndField];
     // Sort parts for deterministic results regardless of entity and related order

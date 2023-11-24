@@ -12,7 +12,7 @@ export const afterCreateApp = (event: "server" | "client") => {
   return async (
     context: DsgContext,
     eventParams: CreateAdminUIParams | CreateServerParams,
-    modules: ModuleMap
+    modules: ModuleMap,
   ): Promise<ModuleMap> => {
     const { rules, formatter } = getPluginSettings(context.pluginInstallations);
     let staticFilesPath, baseDirectory;
@@ -30,7 +30,7 @@ export const afterCreateApp = (event: "server" | "client") => {
 
     const staticFiles = await context.utils.importStaticModules(
       staticFilesPath,
-      baseDirectory
+      baseDirectory,
     );
 
     const extendsValue = formatter === "prettier" ? "prettier" : null;
@@ -49,9 +49,9 @@ export const afterCreateApp = (event: "server" | "client") => {
               rules: rules,
             },
             null,
-            2
+            2,
           ),
-          { parser: "json" }
+          { parser: "json" },
         );
 
         module.code = code;

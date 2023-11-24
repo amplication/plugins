@@ -6,7 +6,7 @@ import { packageJsonValues } from "@/constants";
 
 export const beforeCreateServerPackageJson = (
   context: DsgContext,
-  eventParams: CreateServerPackageJsonParams
+  eventParams: CreateServerPackageJsonParams,
 ): CreateServerPackageJsonParams => {
   eventParams.updateProperties.push(packageJsonValues);
 

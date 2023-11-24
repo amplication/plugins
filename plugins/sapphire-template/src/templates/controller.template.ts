@@ -42,7 +42,7 @@ export class CONTROLLER {
 
   @common.Post()
   async CREATE_ENTITY_FUNCTION(
-    @common.Body() data: CREATE_INPUT
+    @common.Body() data: CREATE_INPUT,
   ): Promise<ENTITY> {
     return await this.service.create({
       data: CREATE_DATA_MAPPING,
@@ -51,7 +51,7 @@ export class CONTROLLER {
 
   @common.Get()
   async FIND_MANY_ENTITY_FUNCTION(
-    @common.Req() request: Request
+    @common.Req() request: Request,
   ): Promise<ENTITY[]> {
     const args = plainToClass(FIND_MANY_ARGS, request.query);
     return this.service.findMany({
@@ -61,14 +61,14 @@ export class CONTROLLER {
 
   @common.Get(FINE_ONE_PATH)
   async FIND_ONE_ENTITY_FUNCTION(
-    @common.Param() params: WHERE_UNIQUE_INPUT
+    @common.Param() params: WHERE_UNIQUE_INPUT,
   ): Promise<ENTITY | null> {
     const result = await this.service.findOne({
       where: params,
     });
     if (result === null) {
       throw new errors.NotFoundException(
-        `No resource was found for ${JSON.stringify(params)}`
+        `No resource was found for ${JSON.stringify(params)}`,
       );
     }
     return result;
@@ -77,7 +77,7 @@ export class CONTROLLER {
   @common.Patch(UPDATE_PATH)
   async UPDATE_ENTITY_FUNCTION(
     @common.Param() params: WHERE_UNIQUE_INPUT,
-    @common.Body() data: UPDATE_INPUT
+    @common.Body() data: UPDATE_INPUT,
   ): Promise<ENTITY | null> {
     try {
       return await this.service.update({
@@ -87,7 +87,7 @@ export class CONTROLLER {
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(
-          `No resource was found for ${JSON.stringify(params)}`
+          `No resource was found for ${JSON.stringify(params)}`,
         );
       }
       throw error;
@@ -96,7 +96,7 @@ export class CONTROLLER {
 
   @common.Delete(DELETE_PATH)
   async DELETE_ENTITY_FUNCTION(
-    @common.Param() params: WHERE_UNIQUE_INPUT
+    @common.Param() params: WHERE_UNIQUE_INPUT,
   ): Promise<ENTITY | null> {
     try {
       return await this.service.delete({
@@ -105,7 +105,7 @@ export class CONTROLLER {
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(
-          `No resource was found for ${JSON.stringify(params)}`
+          `No resource was found for ${JSON.stringify(params)}`,
         );
       }
       throw error;

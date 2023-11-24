@@ -11,7 +11,7 @@ const controllerGrpcPath = join(templatesPath, "controller.grpc.template.ts");
 
 export async function createGrpcController(
   context: DsgContext,
-  eventParams: CreateEntityGrpcControllerParams
+  eventParams: CreateEntityGrpcControllerParams,
 ): Promise<void> {
   try {
     const controllerGrpcTemplate = await readFile(controllerGrpcPath);

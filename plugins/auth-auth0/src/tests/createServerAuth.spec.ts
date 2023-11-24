@@ -94,7 +94,7 @@ describe("Testing afterCreateApp hook", () => {
                 path: module.replace(directory, basePath ? basePath + "/" : ""),
                 code: await fs.promises.readFile(module, "utf-8"),
               };
-            })
+            }),
           );
 
           const moduleMap: ModuleMap = new ModuleMap(logger);

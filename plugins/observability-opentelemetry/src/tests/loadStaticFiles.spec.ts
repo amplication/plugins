@@ -36,7 +36,7 @@ describe("Testing loadStaticFiles hook", () => {
                 path: module.replace(directory, basePath ? basePath + "/" : ""),
                 code: await fs.promises.readFile(module, "utf-8"),
               };
-            })
+            }),
           );
 
           const moduleMap: ModuleMap = new ModuleMap(logger);
@@ -57,7 +57,7 @@ describe("Testing loadStaticFiles hook", () => {
     const StaticModules = await afterLoadStaticFiles(
       context,
       eventParams,
-      modules
+      modules,
     );
     // snapshot the module maps
     expect(StaticModules.modules()).toMatchSnapshot();
@@ -73,7 +73,7 @@ describe("Testing loadStaticFiles hook", () => {
     const StaticModules = await afterLoadStaticFiles(
       context,
       eventParams,
-      modules
+      modules,
     );
     // snapshot the module maps
     expect(StaticModules.modules()).toMatchSnapshot();

@@ -25,10 +25,10 @@ declare class ENTITY_MODULE {}
       inject: [SecretsManagerService, ConfigService],
       useFactory: async (
         secretsService: SecretsManagerService,
-        configService: ConfigService
+        configService: ConfigService,
       ) => {
         const secret = await secretsService.getSecret<string>(
-          EnumSecretsNameKey.JwtSecretKey
+          EnumSecretsNameKey.JwtSecretKey,
         );
         const expiresIn = configService.get(JWT_EXPIRATION);
         if (!secret) {

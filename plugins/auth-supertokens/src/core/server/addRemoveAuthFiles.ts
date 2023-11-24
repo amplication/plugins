@@ -10,7 +10,7 @@ import { getPluginSettings } from "../../utils";
 
 export const addRemoveAuthFiles = async (
   context: DsgContext,
-  modules: ModuleMap
+  modules: ModuleMap,
 ) => {
   const { logger } = context;
   const { authDirectory, srcDirectory } = context.serverDirectories;
@@ -20,7 +20,7 @@ export const addRemoveAuthFiles = async (
     context,
     modules,
     authDirectory,
-    srcDirectory
+    srcDirectory,
   );
 
   const supertokensDirectory = join(authDirectory, "supertokens");
@@ -31,7 +31,7 @@ export const addRemoveAuthFiles = async (
   const settings = getPluginSettings(context.pluginInstallations);
   if (settings.recipe.name === "phonepassword") {
     logger.info(
-      "Adding phone-password recipe specific files to the server auth directory"
+      "Adding phone-password recipe specific files to the server auth directory",
     );
     await addPhonePasswordSpecificFiles(newModules, supertokensDirectory);
   }
@@ -46,7 +46,7 @@ const removeUnneededFiles = (
   context: DsgContext,
   modules: ModuleMap,
   authDirectory: string,
-  srcDirectory: string
+  srcDirectory: string,
 ) => {
   const unneededInAuth = [
     "token.service.ts",
@@ -66,7 +66,7 @@ const removeUnneededFiles = (
   for (const module of modules.modules()) {
     if (
       unneededInAuth.find(
-        (filename) => `${authDirectory}/${filename}` === module.path
+        (filename) => `${authDirectory}/${filename}` === module.path,
       )
     ) {
       continue;
@@ -82,7 +82,7 @@ const removeUnneededFiles = (
 
 const addSupertokensFiles = async (
   newModules: ModuleMap,
-  supertokensDirectory: string
+  supertokensDirectory: string,
 ) => {
   const fileNames = [
     "auth.filter.ts",
@@ -106,14 +106,14 @@ const addSupertokensFiles = async (
 
 const addPhonePasswordSpecificFiles = async (
   newModules: ModuleMap,
-  supertokensDirectory: string
+  supertokensDirectory: string,
 ) => {
   const name = "phoneVerifiedClaim.ts";
   const filePath = resolve(
     constants.staticsPath,
     "supertokens",
     "phonepassword",
-    name
+    name,
   );
   const file = await readFile(filePath);
   await newModules.set({
@@ -124,7 +124,7 @@ const addPhonePasswordSpecificFiles = async (
 
 const addOtherAuthFiles = async (
   newModules: ModuleMap,
-  authDirectory: string
+  authDirectory: string,
 ) => {
   const authGuardFileName = "defaultAuth.guard.ts";
   const filePath = resolve(constants.staticsPath, authGuardFileName);

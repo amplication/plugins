@@ -31,7 +31,7 @@ class GithubActionsPlugin implements AmplicationPlugin {
   async afterCreateServer(
     context: DsgContext,
     eventParams: CreateServerParams,
-    modules: ModuleMap
+    modules: ModuleMap,
   ): Promise<ModuleMap> {
     context.logger.info(`Generating GitHub Actions workflow...`);
 
@@ -63,21 +63,21 @@ class GithubActionsPlugin implements AmplicationPlugin {
     let staticPath;
     let staticFiles;
 
-    const templateFileName: string = "workflow.yaml";
-    const workflowFileNamePrefix: string = "ci-";
-    const workflowFileNameSuffix: string = ".yaml";
-    const outputDirectory: string = "./.github/workflows/";
+    const templateFileName = "workflow.yaml";
+    const workflowFileNamePrefix = "ci-";
+    const workflowFileNameSuffix = ".yaml";
+    const outputDirectory = "./.github/workflows/";
 
-    const succesfullPluginCodeGeneration: string =
+    const succesfullPluginCodeGeneration =
       "Generated GitHub Actions workflow...";
 
     if (settings.registry == RegistryProviders.GitHub) {
-      const githubStaticFiles: string = "./static/github/";
+      const githubStaticFiles = "./static/github/";
 
       staticPath = resolve(__dirname, githubStaticFiles);
       staticFiles = await context.utils.importStaticModules(
         staticPath,
-        outputDirectory
+        outputDirectory,
       );
 
       // set the registry to the github packages registry url and
@@ -109,8 +109,8 @@ class GithubActionsPlugin implements AmplicationPlugin {
       staticFiles.replaceModulesPath((path) =>
         path.replace(
           templateFileName,
-          workflowFileNamePrefix + serviceName + workflowFileNameSuffix
-        )
+          workflowFileNamePrefix + serviceName + workflowFileNameSuffix,
+        ),
       );
       staticFiles.replaceModulesCode((_path, code) =>
         code
@@ -120,30 +120,30 @@ class GithubActionsPlugin implements AmplicationPlugin {
           .replaceAll(authenticationPasswordKey, authenticationPassword)
           .replaceAll(
             serviceWorkingDirectoryKey,
-            context.serverDirectories.baseDirectory
-          )
+            context.serverDirectories.baseDirectory,
+          ),
       );
     } else {
-      const defaultStaticFiles: string = "./static/default/";
+      const defaultStaticFiles = "./static/default/";
 
       staticPath = resolve(__dirname, defaultStaticFiles);
       staticFiles = await context.utils.importStaticModules(
         staticPath,
-        outputDirectory
+        outputDirectory,
       );
       staticFiles.replaceModulesPath((path) =>
         path.replace(
           templateFileName,
-          workflowFileNamePrefix + serviceName + workflowFileNameSuffix
-        )
+          workflowFileNamePrefix + serviceName + workflowFileNameSuffix,
+        ),
       );
       staticFiles.replaceModulesCode((_path, code) =>
         code
           .replaceAll(serviceNameKey, serviceName)
           .replaceAll(
             serviceWorkingDirectoryKey,
-            context.serverDirectories.baseDirectory
-          )
+            context.serverDirectories.baseDirectory,
+          ),
       );
     }
     context.logger.info(succesfullPluginCodeGeneration);

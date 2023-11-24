@@ -8,11 +8,11 @@ import {
 export const afterLoadStaticFiles = async (
   context: DsgContext,
   eventParams: LoadStaticFilesParams,
-  modules: Module[]
+  modules: Module[],
 ) => {
   const filteredStaticModules = modules.filter((module: Module) => {
     return /(?:\/src\/util\/+)|(?:\/src\/errors\.ts+)|(?:\/src\/prisma\.util\.ts+)|(?:\/src\/types\.ts+)/gm.test(
-      module.path
+      module.path,
     );
   });
   const prismaStaticPath = resolve(__dirname, "./static/prisma");
@@ -26,34 +26,34 @@ export const afterLoadStaticFiles = async (
   const infraStaticPath = resolve(__dirname, "./static/infraFiles");
   const infraStaticsFile = await context.utils.importStaticModules(
     infraStaticPath,
-    context.serverDirectories.srcDirectory
+    context.serverDirectories.srcDirectory,
   );
 
   const mainStaticsFile = await context.utils.importStaticModules(
     mainStaticPath,
-    context.serverDirectories.srcDirectory
+    context.serverDirectories.srcDirectory,
   );
 
   const configStaticsFiles = await context.utils.importStaticModules(
     configStaticPath,
-    `${context.serverDirectories.baseDirectory}/config`
+    `${context.serverDirectories.baseDirectory}/config`,
   );
 
   const docsStaticsFiles = await context.utils.importStaticModules(
     docsStaticPath,
-    `${context.serverDirectories.baseDirectory}/docs`
+    `${context.serverDirectories.baseDirectory}/docs`,
   );
 
   const prismaStaticsFiles = await context.utils.importStaticModules(
     prismaStaticPath,
-    `${context.serverDirectories.srcDirectory}/app/prisma`
+    `${context.serverDirectories.srcDirectory}/app/prisma`,
   );
 
   //implemented here because this modules are not formatted at all.
 
   const baseStaticsFiles = await context.utils.importStaticModules(
     baseStaticPath,
-    context.serverDirectories.baseDirectory
+    context.serverDirectories.baseDirectory,
   );
 
   return [

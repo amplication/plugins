@@ -23,7 +23,7 @@ describe("Testing afterCreateMessageBrokerService hook", () => {
     params = mock<CreateMessageBrokerTopicsEnumParams>();
     topicsPath = join(
       context.serverDirectories.messageBrokerDirectory,
-      "topics.ts"
+      "topics.ts",
     );
     moduleMap = new ModuleMap(context.logger);
     moduleMap.set({
@@ -35,7 +35,7 @@ describe("Testing afterCreateMessageBrokerService hook", () => {
     const modules = await plugin.afterCreateMessageBrokerTopicsEnum(
       context,
       params,
-      moduleMap
+      moduleMap,
     );
     const topicsModule = modules.get(topicsPath);
     const topicsCode = utils.print(utils.parse(topicsModule.code)).code;
@@ -72,7 +72,7 @@ const fakeContext = () => {
       warn: async (
         message: string,
         params?: Record<string, unknown>,
-        userFriendlyMessage?: string
+        userFriendlyMessage?: string,
       ) => {
         console.log("Warning!", userFriendlyMessage);
       },

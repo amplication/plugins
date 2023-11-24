@@ -11,12 +11,12 @@ import { addImports, interpolate } from "../util/ast";
 
 const appModuleTemplatePath = join(
   resolve(__dirname, "./templates"),
-  "appModule.template.ts"
+  "appModule.template.ts",
 );
 
 export const beforeCreateAppModule = (
   context: DsgContext,
-  eventParams: CreateServerAppModuleParams
+  eventParams: CreateServerAppModuleParams,
 ) => {
   context.utils.skipDefaultBehavior = true;
 
@@ -26,7 +26,7 @@ export const beforeCreateAppModule = (
 export const afterCreateAppModule = async (
   context: DsgContext,
   eventParams: CreateServerAppModuleParams,
-  modules: Module[]
+  modules: Module[],
 ) => {
   const { DTOs } = context;
   const entitiesDtos = Object.keys(DTOs);
@@ -38,7 +38,7 @@ export const afterCreateAppModule = async (
     MODULES: builders.arrayExpression([
       builders.identifier("PrismaModule"),
       ...entitiesDtos.map((entity) =>
-        builders.identifier(`Sapphire${entity}Module`)
+        builders.identifier(`Sapphire${entity}Module`),
       ),
       builders.identifier("ConfigModule"),
     ]),
@@ -55,17 +55,17 @@ export const afterCreateAppModule = async (
 
 const createClassImport = (
   template: namedTypes.File,
-  entitiesDtos: string[]
+  entitiesDtos: string[],
 ) => {
   const entitiesImportArr = entitiesDtos.map((entityName: string) =>
     builders.importDeclaration(
       [
         builders.importSpecifier(
-          builders.identifier(`Sapphire${entityName}Module`)
+          builders.identifier(`Sapphire${entityName}Module`),
         ),
       ],
-      builders.stringLiteral(`./app/${entityName}/${entityName}.module`)
-    )
+      builders.stringLiteral(`./app/${entityName}/${entityName}.module`),
+    ),
   );
 
   addImports(template, entitiesImportArr);
@@ -75,23 +75,23 @@ const createObjectExpression = (entityName: string) =>
   builders.objectExpression([
     builders.objectProperty(
       builders.identifier("path"),
-      builders.stringLiteral(`/Sapphire-${entityName}`)
+      builders.stringLiteral(`/Sapphire-${entityName}`),
     ),
     builders.objectProperty(
       builders.identifier("method"),
       builders.memberExpression(
         builders.identifier("RequestMethod"),
-        builders.identifier("ALL")
-      )
+        builders.identifier("ALL"),
+      ),
     ),
   ]);
 
 const createEntitiesRoutes = (
   template: namedTypes.File,
-  entityArr: string[]
+  entityArr: string[],
 ) => {
   const objectExpressionArr = entityArr.map((entity: string) =>
-    createObjectExpression(entity)
+    createObjectExpression(entity),
   );
   recast.visit(template, {
     visitClassMethod(path) {

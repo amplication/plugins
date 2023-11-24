@@ -5,21 +5,21 @@ import { camelCase } from "./helpers";
 
 export function getDTONameToPath(
   context: DsgContext,
-  dtos: DTOs
+  dtos: DTOs,
 ): Record<string, string> {
   return Object.fromEntries(
     Object.entries(dtos).flatMap(([entityName, entityDTOs]) =>
       Object.values(entityDTOs).map((dto) => [
         dto.id.name,
         createDTOModulePath(context, camelCase(entityName), dto.id.name),
-      ])
-    )
+      ]),
+    ),
   );
 }
 
 export function getImportableDTOs(
   modulePath: string,
-  dtoNameToPath: Record<string, string>
+  dtoNameToPath: Record<string, string>,
 ): Record<string, namedTypes.Identifier[]> {
   return Object.fromEntries(
     Object.entries(dtoNameToPath)
@@ -29,14 +29,14 @@ export function getImportableDTOs(
           relativeImportPath(modulePath, path),
           [builders.identifier(dtoName)],
         ];
-      })
+      }),
   );
 }
 
 export function createDTOModulePath(
   context: DsgContext,
   entityDirectory: string,
-  dtoName: string
+  dtoName: string,
 ): string {
   const { serverDirectories } = context;
   return `${serverDirectories.srcDirectory}/${entityDirectory}/base/${dtoName}.ts`;

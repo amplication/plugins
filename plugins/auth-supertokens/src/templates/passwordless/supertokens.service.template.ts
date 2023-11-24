@@ -15,7 +15,7 @@ import { AuthError } from "./auth.error";
 export class SupertokensService {
   constructor(
     protected readonly configService: ConfigService,
-    protected readonly userService: AUTH_ENTITY_SERVICE_ID
+    protected readonly userService: AUTH_ENTITY_SERVICE_ID,
   ) {
     supertokens.init({
       ...generateSupertokensOptions(configService),
@@ -65,12 +65,12 @@ export class SupertokensService {
                   });
                   if (!user) {
                     throw new Error(
-                      "Failed to find a user with the corresponding supertokens ID"
+                      "Failed to find a user with the corresponding supertokens ID",
                     );
                   }
                   const userInfo = await supertokens.getUser(
                     input.userId,
-                    input.userContext
+                    input.userContext,
                   );
                   return originalImplementation.createNewSession({
                     ...input,
@@ -92,7 +92,7 @@ export class SupertokensService {
   }
 
   async getUserBySupertokensId(
-    supertokensId: string
+    supertokensId: string,
   ): Promise<AUTH_ENTITY_ID | null> {
     return await this.userService.findOne({
       where: {
@@ -103,7 +103,7 @@ export class SupertokensService {
 
   async createSupertokensUser(
     email: string | undefined,
-    phoneNumber: string | undefined
+    phoneNumber: string | undefined,
   ): Promise<string> {
     let userInfo;
     if (email) {
@@ -112,7 +112,7 @@ export class SupertokensService {
       userInfo = { phoneNumber };
     } else {
       throw new Error(
-        "An email or a phone number must be supplied to create a user"
+        "An email or a phone number must be supplied to create a user",
       );
     }
     const resp = await Passwordless.signInUp({
@@ -139,7 +139,7 @@ export class SupertokensService {
   async updateSupertokensUser(
     recipeUserId: RecipeUserId,
     email?: string,
-    phoneNumber?: string
+    phoneNumber?: string,
   ): Promise<void> {
     const resp = await Passwordless.updateUser({
       recipeUserId,
@@ -154,7 +154,7 @@ export class SupertokensService {
         throw new AuthError(resp.status);
       case "UNKNOWN_USER_ID_ERROR":
         throw new AuthError(
-          "SUPERTOKENS_ID_WITH_NO_CORRESPONDING_SUPERTOKENS_USER"
+          "SUPERTOKENS_ID_WITH_NO_CORRESPONDING_SUPERTOKENS_USER",
         );
       case "OK":
         return;
@@ -167,7 +167,7 @@ export class SupertokensService {
     const user = await supertokens.getUser(supertokensId);
     if (!user) {
       throw new AuthError(
-        "SUPERTOKENS_ID_WITH_NO_CORRESPONDING_SUPERTOKENS_USER"
+        "SUPERTOKENS_ID_WITH_NO_CORRESPONDING_SUPERTOKENS_USER",
       );
     }
     return user;
@@ -176,7 +176,7 @@ export class SupertokensService {
   async getRecipeUserId(supertokensId: string): Promise<RecipeUserId> {
     const user = await this.getSupertokensUserInfo(supertokensId);
     const loginMethod = user.loginMethods.find(
-      (lm) => lm.recipeId === "passwordless"
+      (lm) => lm.recipeId === "passwordless",
     );
     if (!loginMethod) {
       throw new Error("Failed to find the login method");

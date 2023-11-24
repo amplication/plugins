@@ -37,7 +37,7 @@ export function relativeImportPath(from: string, to: string): string {
  * @returns array of import declarations ast nodes
  */
 export function extractImportDeclarations(
-  file: namedTypes.File
+  file: namedTypes.File,
 ): namedTypes.ImportDeclaration[] {
   const newBody = [];
   const imports = [];
@@ -60,11 +60,11 @@ export function extractImportDeclarations(
  * @returns consolidated array of import declarations
  */
 function consolidateImports(
-  declarations: namedTypes.ImportDeclaration[]
+  declarations: namedTypes.ImportDeclaration[],
 ): namedTypes.ImportDeclaration[] {
   const moduleToDeclarations = groupBy(
     declarations,
-    (declaration) => declaration.source.value
+    (declaration) => declaration.source.value,
   );
   const moduleToDeclaration = mapValues(
     moduleToDeclarations,
@@ -76,20 +76,20 @@ function consolidateImports(
             return specifier.imported.name;
           }
           return specifier.type;
-        }
+        },
       );
       return builders.importDeclaration(
         specifiers,
-        builders.stringLiteral(module)
+        builders.stringLiteral(module),
       );
-    }
+    },
   );
   return Object.values(moduleToDeclaration);
 }
 
 export function addImports(
   file: namedTypes.File,
-  imports: namedTypes.ImportDeclaration[]
+  imports: namedTypes.ImportDeclaration[],
 ): void {
   const existingImports = extractImportDeclarations(file);
   const consolidatedImports = consolidateImports([
@@ -101,7 +101,7 @@ export function addImports(
 
 export function removeDecoratorByName(
   node: ASTNode,
-  decoratorName: string
+  decoratorName: string,
 ): boolean {
   let decorator: namedTypes.ClassDeclaration | null = null;
   visit(node, {
@@ -145,11 +145,11 @@ export function removeDecoratorByName(
  * @param classDeclaration
  */
 export function findConstructor(
-  classDeclaration: namedTypes.ClassDeclaration
+  classDeclaration: namedTypes.ClassDeclaration,
 ): namedTypes.ClassMethod | undefined {
   return classDeclaration.body.body.find(
     (member): member is namedTypes.ClassMethod =>
-      namedTypes.ClassMethod.check(member) && isConstructor(member)
+      namedTypes.ClassMethod.check(member) && isConstructor(member),
   );
 }
 
@@ -159,7 +159,7 @@ export function findConstructor(
  */
 export function findFirstDecoratorByName(
   node: ASTNode,
-  decoratorName: string
+  decoratorName: string,
 ): namedTypes.Decorator {
   let decorator: namedTypes.ClassDeclaration | null = null;
   visit(node, {
@@ -193,7 +193,7 @@ export function findFirstDecoratorByName(
 
   if (!decorator) {
     throw new Error(
-      `Could not find class decorator with the name ${decoratorName} in provided AST node`
+      `Could not find class decorator with the name ${decoratorName} in provided AST node`,
     );
   }
 
@@ -202,10 +202,10 @@ export function findFirstDecoratorByName(
 
 export function findContainedIdentifiers(
   node: ASTNode,
-  identifiers: Iterable<namedTypes.Identifier>
+  identifiers: Iterable<namedTypes.Identifier>,
 ): namedTypes.Identifier[] {
   const nameToIdentifier = Object.fromEntries(
-    Array.from(identifiers, (identifier) => [identifier.name, identifier])
+    Array.from(identifiers, (identifier) => [identifier.name, identifier]),
   );
   const contained: namedTypes.Identifier[] = [];
   visit(node, {
@@ -239,15 +239,18 @@ export function findContainedIdentifiers(
 
 export function importContainedIdentifiers(
   node: ASTNode,
-  moduleToIdentifiers: Record<string, namedTypes.Identifier[]>
+  moduleToIdentifiers: Record<string, namedTypes.Identifier[]>,
 ): namedTypes.ImportDeclaration[] {
   const idToModule = new Map(
     Object.entries(moduleToIdentifiers).flatMap(([key, values]) =>
-      values.map((value) => [value, key])
-    )
+      values.map((value) => [value, key]),
+    ),
   );
   const nameToId = Object.fromEntries(
-    Array.from(idToModule.keys(), (identifier) => [identifier.name, identifier])
+    Array.from(idToModule.keys(), (identifier) => [
+      identifier.name,
+      identifier,
+    ]),
   );
   const containedIds = findContainedIdentifiers(node, idToModule.keys());
   const moduleToContainedIds = groupBy(containedIds, (id) => {
@@ -256,12 +259,12 @@ export function importContainedIdentifiers(
     return module;
   });
   return Object.entries(moduleToContainedIds).map(([module, containedIds]) =>
-    importNames(containedIds, module)
+    importNames(containedIds, module),
   );
 }
 
 export function transformTemplateLiteralToStringLiteral(
-  templateLiteral: namedTypes.TemplateLiteral
+  templateLiteral: namedTypes.TemplateLiteral,
 ): namedTypes.StringLiteral {
   const value = templateLiteral.quasis
     .map((quasie, i) => {
@@ -279,11 +282,11 @@ export function transformTemplateLiteralToStringLiteral(
 
 export function importNames(
   names: namedTypes.Identifier[],
-  source: string
+  source: string,
 ): namedTypes.ImportDeclaration {
   return builders.importDeclaration(
     names.map((name) => builders.importSpecifier(name)),
-    builders.stringLiteral(source)
+    builders.stringLiteral(source),
   );
 }
 
@@ -365,7 +368,7 @@ export function removeTSClassDeclares(ast: ASTNode): void {
 
 export function evaluateJSX(
   path: NodePath,
-  mapping: { [key: string]: ASTNode | undefined }
+  mapping: { [key: string]: ASTNode | undefined },
 ): void {
   const childrenPath = path.get("children");
   childrenPath.each(
@@ -377,7 +380,7 @@ export function evaluateJSX(
         | K.JSXElementKind
         | K.JSXFragmentKind
         | K.LiteralKind
-      >
+      >,
     ) => {
       const { node } = childPath;
       if (
@@ -394,7 +397,7 @@ export function evaluateJSX(
           childPath.replace(...mapped.children);
         }
       }
-    }
+    },
   );
 }
 
@@ -406,17 +409,17 @@ export function isConstructor(method: namedTypes.ClassMethod): boolean {
 }
 
 export function getMethods(
-  classDeclaration: namedTypes.ClassDeclaration
+  classDeclaration: namedTypes.ClassDeclaration,
 ): namedTypes.ClassMethod[] {
   return classDeclaration.body.body.filter(
     (member): member is namedTypes.ClassMethod =>
-      namedTypes.ClassMethod.check(member) && !isConstructor(member)
+      namedTypes.ClassMethod.check(member) && !isConstructor(member),
   );
 }
 
 export function getClassMethodById(
   classDeclaration: namedTypes.ClassDeclaration,
-  methodId: namedTypes.Identifier
+  methodId: namedTypes.Identifier,
 ): namedTypes.ClassMethod | null {
   const allMethodWithoutConstructor = getMethods(classDeclaration);
   return (
@@ -432,7 +435,7 @@ export function getClassMethodById(
  */
 export function interpolate(
   ast: ASTNode,
-  mapping: { [key: string]: ASTNode | undefined }
+  mapping: { [key: string]: ASTNode | undefined },
 ): void {
   return visit(ast, {
     visitIdentifier(path) {
@@ -484,7 +487,7 @@ export function interpolate(
         (expression) =>
           namedTypes.Identifier.check(expression) &&
           expression.name in mapping &&
-          namedTypes.StringLiteral.check(mapping[expression.name])
+          namedTypes.StringLiteral.check(mapping[expression.name]),
       );
       if (canTransformToStringLiteral) {
         path.node.expressions = path.node.expressions.map((expression) => {
@@ -493,8 +496,8 @@ export function interpolate(
         });
         path.replace(
           transformTemplateLiteralToStringLiteral(
-            path.node as namedTypes.TemplateLiteral
-          )
+            path.node as namedTypes.TemplateLiteral,
+          ),
         );
       }
       this.traverse(path);
@@ -518,7 +521,7 @@ export function interpolate(
  */
 export function getClassDeclarationById(
   node: ASTNode,
-  id: namedTypes.Identifier
+  id: namedTypes.Identifier,
 ): namedTypes.ClassDeclaration {
   let classDeclaration: namedTypes.ClassDeclaration | null = null;
   visit(node, {
@@ -533,7 +536,7 @@ export function getClassDeclarationById(
 
   if (!classDeclaration) {
     throw new Error(
-      `Could not find class declaration with the identifier ${id.name} in provided AST node`
+      `Could not find class declaration with the identifier ${id.name} in provided AST node`,
     );
   }
 

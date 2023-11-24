@@ -19,7 +19,7 @@ import { AuthError } from "./auth.error";
 export class SupertokensService {
   constructor(
     protected readonly configService: ConfigService,
-    protected readonly userService: AUTH_ENTITY_SERVICE_ID
+    protected readonly userService: AUTH_ENTITY_SERVICE_ID,
   ) {
     supertokens.init({
       ...generateSupertokensOptions(configService),
@@ -54,7 +54,7 @@ export class SupertokensService {
                     console.log("The user's phone number:", input.user.email);
                     console.log(
                       "The password reset link:",
-                      input.passwordResetLink
+                      input.passwordResetLink,
                     );
                   } else {
                     return originalImplementation.sendEmail(input);
@@ -65,7 +65,7 @@ export class SupertokensService {
           },
           override: {
             functions: (
-              originalImplementation: RecipeInterface
+              originalImplementation: RecipeInterface,
             ): RecipeInterface => {
               return {
                 ...originalImplementation,
@@ -108,12 +108,12 @@ export class SupertokensService {
                   });
                   if (!user) {
                     throw new Error(
-                      "Failed to find a user with the corresponding supertokens ID"
+                      "Failed to find a user with the corresponding supertokens ID",
                     );
                   }
                   let userInfo = await supertokens.getUser(
                     input.userId,
-                    input.userContext
+                    input.userContext,
                   );
                   return originalImplementation.createNewSession({
                     ...input,
@@ -123,7 +123,7 @@ export class SupertokensService {
                         input.userId,
                         input.recipeUserId,
                         input.tenantId,
-                        input.userContext
+                        input.userContext,
                       ),
                       phoneNumber: userInfo?.emails[0],
                       userId: user.id,
@@ -148,7 +148,7 @@ export class SupertokensService {
                 createCodePOST: async function (input) {
                   if (originalImplementation.createCodePOST === undefined) {
                     throw new Error(
-                      "original implementation's createCodePOST is undefined"
+                      "original implementation's createCodePOST is undefined",
                     );
                   }
                   let session = await Session.getSession(
@@ -156,7 +156,7 @@ export class SupertokensService {
                     input.options.res,
                     {
                       overrideGlobalClaimValidators: () => [],
-                    }
+                    },
                   );
                   let phoneNumber: string =
                     session.getAccessTokenPayload().phoneNumber;
@@ -171,7 +171,7 @@ export class SupertokensService {
                 consumeCodePOST: async function (input) {
                   if (originalImplementation.consumeCodePOST === undefined) {
                     throw new Error(
-                      "original implementation's consumeCodePOST is undefined"
+                      "original implementation's consumeCodePOST is undefined",
                     );
                   }
                   let session = await Session.getSession(
@@ -179,17 +179,16 @@ export class SupertokensService {
                     input.options.res,
                     {
                       overrideGlobalClaimValidators: () => [],
-                    }
+                    },
                   );
                   input.userContext.session = session;
-                  let resp = await originalImplementation.consumeCodePOST(
-                    input
-                  );
+                  let resp =
+                    await originalImplementation.consumeCodePOST(input);
                   if (resp.status === "OK") {
                     await session.setClaimValue(
                       PhoneVerifiedClaim,
                       true,
-                      input.userContext
+                      input.userContext,
                     );
                   }
                   return resp;
@@ -204,7 +203,7 @@ export class SupertokensService {
   }
 
   async getUserBySupertokensId(
-    supertokensId: string
+    supertokensId: string,
   ): Promise<AUTH_ENTITY_ID | null> {
     return await this.userService.findOne({
       where: {
@@ -215,7 +214,7 @@ export class SupertokensService {
 
   async createSupertokensUser(
     email: string,
-    password: string
+    password: string,
   ): Promise<string> {
     const resp = await EmailPassword.signUp("public", email, password, {
       skipDefaultPostUserSignUp: true,
@@ -239,7 +238,7 @@ export class SupertokensService {
   async updateSupertokensUser(
     recipeUserId: RecipeUserId,
     email?: string,
-    password?: string
+    password?: string,
   ): Promise<void> {
     const resp = await EmailPassword.updateEmailOrPassword({
       recipeUserId,
@@ -253,7 +252,7 @@ export class SupertokensService {
         throw new AuthError("SUPERTOKENS_PASSWORD_POLICY_VIOLATED_ERROR");
       case "UNKNOWN_USER_ID_ERROR":
         throw new AuthError(
-          "SUPERTOKENS_ID_WITH_NO_CORRESPONDING_SUPERTOKENS_USER"
+          "SUPERTOKENS_ID_WITH_NO_CORRESPONDING_SUPERTOKENS_USER",
         );
       case "OK":
         return;
@@ -266,7 +265,7 @@ export class SupertokensService {
     const user = await supertokens.getUser(supertokensId);
     if (!user) {
       throw new AuthError(
-        "SUPERTOKENS_ID_WITH_NO_CORRESPONDING_SUPERTOKENS_USER"
+        "SUPERTOKENS_ID_WITH_NO_CORRESPONDING_SUPERTOKENS_USER",
       );
     }
     return user;
@@ -275,7 +274,7 @@ export class SupertokensService {
   async getRecipeUserId(supertokensId: string): Promise<RecipeUserId> {
     const user = await this.getSupertokensUserInfo(supertokensId);
     const loginMethod = user.loginMethods.find(
-      (lm) => lm.recipeId === "emailpassword"
+      (lm) => lm.recipeId === "emailpassword",
     );
     if (!loginMethod) {
       throw new Error("Failed to find the login method");

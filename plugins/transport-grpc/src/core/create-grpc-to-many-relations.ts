@@ -16,33 +16,33 @@ import { buildGrpcMethodDecorator } from "./create-base-grpc-controller";
 
 const toManyRelationMethodsGrpcPath = join(
   templatesPath,
-  "to-many.grpc.template.ts"
+  "to-many.grpc.template.ts",
 );
 
 export async function createGrpcControllerToManyRelationMethods(
   context: DsgContext,
-  eventParams: CreateEntityGrpcControllerToManyRelationMethodsParams
+  eventParams: CreateEntityGrpcControllerToManyRelationMethodsParams,
 ): Promise<void> {
   try {
     const { toManyMapping, field, entity } = eventParams;
 
     const toManyRelationMethodsGrpcPathTemplate = await readFile(
-      toManyRelationMethodsGrpcPath
+      toManyRelationMethodsGrpcPath,
     );
     interpolate(toManyRelationMethodsGrpcPathTemplate, toManyMapping);
 
     const classDeclaration = getClassDeclarationById(
       toManyRelationMethodsGrpcPathTemplate,
-      builders.identifier("Mixin")
+      builders.identifier("Mixin"),
     );
 
     controllerToManyIdsActionPairs(toManyMapping, field.name).forEach(
       ({ methodId, methodName }) => {
         const classMethod = getClassMethodByIdName(classDeclaration, methodId);
         classMethod?.decorators?.push(
-          buildGrpcMethodDecorator(entity.name, methodName)
+          buildGrpcMethodDecorator(entity.name, methodName),
         );
-      }
+      },
     );
 
     eventParams.toManyFile = toManyRelationMethodsGrpcPathTemplate;

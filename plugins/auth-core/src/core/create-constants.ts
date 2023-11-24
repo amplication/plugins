@@ -14,12 +14,12 @@ import { templatesPath } from "../constants";
 const templatePath = join(templatesPath, "create-constants.template.ts");
 
 export async function createAuthConstants(
-  dsgContext: DsgContext
+  dsgContext: DsgContext,
 ): Promise<Module> {
   const { serverDirectories, entities, resourceInfo } = dsgContext;
   try {
     const authEntity = entities?.find(
-      (x) => x.name === resourceInfo?.settings.authEntityName
+      (x) => x.name === resourceInfo?.settings.authEntityName,
     );
     const serverAuthTestDir = `${serverDirectories.srcDirectory}/tests/auth`;
     const template = await readFile(templatePath);
@@ -29,14 +29,14 @@ export async function createAuthConstants(
 
     const entityNameInfoImport = importNames(
       [entityNameInfoId],
-      `../../auth/${authEntity?.name}Info`
+      `../../auth/${authEntity?.name}Info`,
     );
 
     addImports(
       template,
       [entityNameInfoImport].filter(
-        (x) => x //remove nulls and undefined
-      ) as namedTypes.ImportDeclaration[]
+        (x) => x, //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[],
     );
 
     const idType = getUserIdType(dsgContext);
@@ -63,7 +63,7 @@ const idTypeTSOptions: {
 
 function prepareTemplateMapping(
   idType: types.Id["idType"],
-  entityServiceName: string
+  entityServiceName: string,
 ) {
   return {
     ID_TYPE: idTypeTSOptions[idType],

@@ -6,7 +6,7 @@ import { NodePath } from "ast-types/lib/node-path";
 const CONSTRUCTOR_NAME = "constructor";
 
 export function transformTemplateLiteralToStringLiteral(
-  templateLiteral: namedTypes.TemplateLiteral
+  templateLiteral: namedTypes.TemplateLiteral,
 ): namedTypes.StringLiteral {
   const value = templateLiteral.quasis
     .map((quasie, i) => {
@@ -24,7 +24,7 @@ export function transformTemplateLiteralToStringLiteral(
 
 export function evaluateJSX(
   path: NodePath,
-  mapping: { [key: string]: ASTNode | undefined }
+  mapping: { [key: string]: ASTNode | undefined },
 ): void {
   const childrenPath = path.get("children");
   childrenPath.each(
@@ -36,7 +36,7 @@ export function evaluateJSX(
         | K.JSXElementKind
         | K.JSXFragmentKind
         | K.LiteralKind
-      >
+      >,
     ) => {
       const { node } = childPath;
       if (
@@ -53,7 +53,7 @@ export function evaluateJSX(
           childPath.replace(...mapped.children);
         }
       }
-    }
+    },
   );
 }
 
@@ -65,17 +65,17 @@ export function isConstructor(method: namedTypes.ClassMethod): boolean {
 }
 
 export function getMethods(
-  classDeclaration: namedTypes.ClassDeclaration
+  classDeclaration: namedTypes.ClassDeclaration,
 ): namedTypes.ClassMethod[] {
   return classDeclaration.body.body.filter(
     (member): member is namedTypes.ClassMethod =>
-      namedTypes.ClassMethod.check(member) && !isConstructor(member)
+      namedTypes.ClassMethod.check(member) && !isConstructor(member),
   );
 }
 
 export function getClassMethodById(
   classDeclaration: namedTypes.ClassDeclaration,
-  methodId: namedTypes.Identifier
+  methodId: namedTypes.Identifier,
 ): namedTypes.ClassMethod | null {
   const allMethodWithoutConstructor = getMethods(classDeclaration);
   return (
@@ -91,7 +91,7 @@ export function getClassMethodById(
  */
 export function interpolate(
   ast: ASTNode,
-  mapping: { [key: string]: ASTNode | undefined }
+  mapping: { [key: string]: ASTNode | undefined },
 ): void {
   return visit(ast, {
     visitIdentifier(path) {
@@ -143,7 +143,7 @@ export function interpolate(
         (expression) =>
           namedTypes.Identifier.check(expression) &&
           expression.name in mapping &&
-          namedTypes.StringLiteral.check(mapping[expression.name])
+          namedTypes.StringLiteral.check(mapping[expression.name]),
       );
       if (canTransformToStringLiteral) {
         path.node.expressions = path.node.expressions.map((expression) => {
@@ -152,8 +152,8 @@ export function interpolate(
         });
         path.replace(
           transformTemplateLiteralToStringLiteral(
-            path.node as namedTypes.TemplateLiteral
-          )
+            path.node as namedTypes.TemplateLiteral,
+          ),
         );
       }
       this.traverse(path);
@@ -177,7 +177,7 @@ export function interpolate(
  */
 export function getClassDeclarationById(
   node: ASTNode,
-  id: namedTypes.Identifier
+  id: namedTypes.Identifier,
 ): namedTypes.ClassDeclaration {
   let classDeclaration: namedTypes.ClassDeclaration | null = null;
   visit(node, {
@@ -192,7 +192,7 @@ export function getClassDeclarationById(
 
   if (!classDeclaration) {
     throw new Error(
-      `Could not find class declaration with the identifier ${id.name} in provided AST node`
+      `Could not find class declaration with the identifier ${id.name} in provided AST node`,
     );
   }
 

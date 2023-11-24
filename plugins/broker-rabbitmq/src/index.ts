@@ -81,17 +81,17 @@ class RabbitMQPlugin implements AmplicationPlugin {
   async afterCreateMessageBrokerTopicsEnum(
     context: DsgContext,
     eventParams: CreateMessageBrokerTopicsEnumParams,
-    modules: ModuleMap
+    modules: ModuleMap,
   ): Promise<ModuleMap> {
     const { serverDirectories } = context;
     const topicsPath = join(
       serverDirectories.messageBrokerDirectory,
-      "topics.ts"
+      "topics.ts",
     );
     const topicsModule = modules.get(topicsPath);
     if (!topicsModule) {
       throw new Error(
-        "Failed to find the topics.ts file for the message broker topics enum"
+        "Failed to find the topics.ts file for the message broker topics enum",
       );
     }
 
@@ -106,7 +106,7 @@ class RabbitMQPlugin implements AmplicationPlugin {
           topicEnumNames.push(stmt.declaration.id.name);
         } else {
           throw new Error(
-            "Couldn't find the name of an enum in the message broker topics file"
+            "Couldn't find the name of an enum in the message broker topics file",
           );
         }
       }
@@ -115,7 +115,7 @@ class RabbitMQPlugin implements AmplicationPlugin {
       allMessageBrokerTopicsTypeDeclaration(topicEnumNames);
     topicsFile.program.body.push(
       builders.emptyStatement(),
-      umbrellaTypeDeclaration
+      umbrellaTypeDeclaration,
     );
 
     await modules.set({
@@ -127,31 +127,31 @@ class RabbitMQPlugin implements AmplicationPlugin {
 
   async afterCreateMessageBrokerClientOptionsFactory(
     context: DsgContext,
-    eventParams: CreateMessageBrokerClientOptionsFactoryParams
+    eventParams: CreateMessageBrokerClientOptionsFactoryParams,
   ): Promise<ModuleMap> {
     const { serverDirectories } = context;
     const filePath = resolve(
       staticDirectory,
-      "generateRabbitMQClientOptions.ts"
+      "generateRabbitMQClientOptions.ts",
     );
     const file = await readFile(filePath);
     const generateFileName = "generateRabbitMQClientOptions.ts";
 
     const path = join(
       serverDirectories.messageBrokerDirectory,
-      generateFileName
+      generateFileName,
     );
 
     const testFilePath = resolve(
       staticDirectory,
-      "generateRabbitMQClientOptions.testfile.ts"
+      "generateRabbitMQClientOptions.testfile.ts",
     );
     const testFile = await readFile(testFilePath);
     const testGenerateFileName = "generateRabbitMQClientOptions.spec.ts";
 
     const testPath = join(
       serverDirectories.messageBrokerDirectory,
-      testGenerateFileName
+      testGenerateFileName,
     );
 
     const modules = new ModuleMap(context.logger);
@@ -162,18 +162,18 @@ class RabbitMQPlugin implements AmplicationPlugin {
 
   beforeCreateBroker(
     dsgContext: DsgContext,
-    eventParams: CreateMessageBrokerParams
+    eventParams: CreateMessageBrokerParams,
   ): CreateMessageBrokerParams {
     dsgContext.serverDirectories.messageBrokerDirectory = join(
       dsgContext.serverDirectories.srcDirectory,
-      "rabbitmq"
+      "rabbitmq",
     );
     return eventParams;
   }
 
   async afterCreateMessageBrokerNestJSModule(
     context: DsgContext,
-    eventParams: CreateMessageBrokerNestJSModuleParams
+    eventParams: CreateMessageBrokerNestJSModuleParams,
   ): Promise<ModuleMap> {
     const filePath = resolve(staticDirectory, "rabbitmq.module.ts");
 
@@ -194,12 +194,12 @@ class RabbitMQPlugin implements AmplicationPlugin {
 
   beforeCreateServerDotEnv(
     context: DsgContext,
-    eventParams: CreateServerDotEnvParams
+    eventParams: CreateServerDotEnvParams,
   ): CreateServerDotEnvParams {
     const resourceName = context.resourceInfo?.name;
 
     const { host, port, user, password } = getPluginSettings(
-      context.pluginInstallations
+      context.pluginInstallations,
     );
 
     const vars = {
@@ -215,7 +215,7 @@ class RabbitMQPlugin implements AmplicationPlugin {
 
   beforeCreateServerPackageJson(
     context: DsgContext,
-    eventParams: CreateServerPackageJsonParams
+    eventParams: CreateServerPackageJsonParams,
   ): CreateServerPackageJsonParams {
     const myValues = {
       dependencies: {
@@ -226,7 +226,7 @@ class RabbitMQPlugin implements AmplicationPlugin {
     };
 
     eventParams.updateProperties.forEach((updateProperty) =>
-      merge(updateProperty, myValues)
+      merge(updateProperty, myValues),
     );
 
     return eventParams;
@@ -234,41 +234,41 @@ class RabbitMQPlugin implements AmplicationPlugin {
 
   async afterCreateMessageBrokerService(
     context: DsgContext,
-    eventParams: CreateMessageBrokerServiceParams
+    eventParams: CreateMessageBrokerServiceParams,
   ): Promise<ModuleMap> {
     const { serverDirectories, utils } = context;
     const { messageBrokerDirectory } = serverDirectories;
 
     const serviceFilePath = resolve(
       staticDirectory,
-      `rabbitmq.producer.service.ts`
+      `rabbitmq.producer.service.ts`,
     );
     const serviceFile = await readFile(serviceFilePath);
     const servicePath = join(
       messageBrokerDirectory,
-      `rabbitmq.producer.service.ts`
+      `rabbitmq.producer.service.ts`,
     );
 
     const rabbitmqMessageFilePath = resolve(
       `${staticDirectory}/contracts`,
-      `RabbitMQMessage.ts`
+      `RabbitMQMessage.ts`,
     );
     const rabbitmqMessageFile = await readFile(rabbitmqMessageFilePath);
     const rabbitmqMessagePath = join(
       messageBrokerDirectory,
-      `RabbitMQMessage.ts`
+      `RabbitMQMessage.ts`,
     );
 
     const rabbitmqMessageHeaderFilePath = resolve(
       `${staticDirectory}/contracts`,
-      `RabbitMQMessageHeaders.ts`
+      `RabbitMQMessageHeaders.ts`,
     );
     const rabbitmqMessageHeaderFile = await readFile(
-      rabbitmqMessageHeaderFilePath
+      rabbitmqMessageHeaderFilePath,
     );
     const rabbitmqMessageHeaderPath = join(
       messageBrokerDirectory,
-      `RabbitMQMessageHeaders.ts`
+      `RabbitMQMessageHeaders.ts`,
     );
 
     const modules = new ModuleMap(context.logger);
@@ -287,10 +287,10 @@ class RabbitMQPlugin implements AmplicationPlugin {
 
   beforeCreateDockerComposeFile(
     dsgContext: DsgContext,
-    eventParams: CreateServerDockerComposeDevParams
+    eventParams: CreateServerDockerComposeDevParams,
   ): CreateServerDockerComposeDevParams {
     const { password, user } = getPluginSettings(
-      dsgContext.pluginInstallations
+      dsgContext.pluginInstallations,
     );
     const RABBITMQ_NAME = "rabbitmq";
     const RABBITMQ_PORT = "5672";
@@ -317,7 +317,7 @@ class RabbitMQPlugin implements AmplicationPlugin {
 
   beforeCreateServerAppModule(
     dsgContext: DsgContext,
-    eventParams: CreateServerAppModuleParams
+    eventParams: CreateServerAppModuleParams,
   ) {
     const file = RabbitMQPlugin.moduleFile;
     if (!file) {
@@ -344,7 +344,7 @@ class RabbitMQPlugin implements AmplicationPlugin {
   async afterCreateServerAuth(
     context: DsgContext,
     eventParams: CreateServerAuthParams,
-    modules: ModuleMap
+    modules: ModuleMap,
   ): Promise<ModuleMap> {
     const templatePath = join(templatesPath, "controller.template.ts");
     const template = await readFile(templatePath);
@@ -367,17 +367,17 @@ class RabbitMQPlugin implements AmplicationPlugin {
         const eventPatternDecorator = builders.decorator(
           builders.callExpression(builders.identifier("EventPattern"), [
             builders.stringLiteral(topic.topicName),
-          ])
+          ]),
         );
 
         const payloadDecorator = builders.decorator(
-          builders.callExpression(builders.identifier("Payload"), [])
+          builders.callExpression(builders.identifier("Payload"), []),
         );
 
         const messageId = builders.identifier.from({
           name: "message",
           typeAnnotation: builders.tsTypeAnnotation(
-            builders.tsTypeReference(builders.identifier("RabbitMQMessage"))
+            builders.tsTypeReference(builders.identifier("RabbitMQMessage")),
           ),
         });
 
@@ -395,8 +395,8 @@ class RabbitMQPlugin implements AmplicationPlugin {
           returnType: builders.tsTypeAnnotation(
             builders.tsTypeReference(
               builders.identifier("Promise"),
-              builders.tsTypeParameterInstantiation([builders.tsVoidKeyword()])
-            )
+              builders.tsTypeParameterInstantiation([builders.tsVoidKeyword()]),
+            ),
           ),
           decorators: [eventPatternDecorator],
         });
@@ -407,7 +407,7 @@ class RabbitMQPlugin implements AmplicationPlugin {
     const filePath = join(
       context.serverDirectories.srcDirectory,
       "rabbitmq",
-      "rabbitmq.controller.ts"
+      "rabbitmq.controller.ts",
     );
 
     const controllerFile = { code: print(template).code, path: filePath };
@@ -418,25 +418,25 @@ class RabbitMQPlugin implements AmplicationPlugin {
 
   beforeCreateConnectMicroservices(
     context: DsgContext,
-    eventParams: CreateConnectMicroservicesParams
+    eventParams: CreateConnectMicroservicesParams,
   ): CreateConnectMicroservicesParams {
     const { template } = eventParams;
 
     const generateRabbitMQClientOptionsImport = importNames(
       [builders.identifier("generateRabbitMQClientOptions")],
-      "./rabbitmq/generateRabbitMQClientOptions"
+      "./rabbitmq/generateRabbitMQClientOptions",
     );
 
     const MicroserviceOptionsImport = importNames(
       [builders.identifier("MicroserviceOptions")],
-      "@nestjs/microservices"
+      "@nestjs/microservices",
     );
 
     addImports(
       template,
       [generateRabbitMQClientOptionsImport, MicroserviceOptionsImport].filter(
-        (x) => x //remove nulls and undefined
-      ) as namedTypes.ImportDeclaration[]
+        (x) => x, //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[],
     );
 
     const typeArguments = builders.tsTypeParameterInstantiation([
@@ -446,14 +446,14 @@ class RabbitMQPlugin implements AmplicationPlugin {
     const appExpression = builders.callExpression(
       builders.memberExpression(
         builders.identifier("app"),
-        builders.identifier("connectMicroservice")
+        builders.identifier("connectMicroservice"),
       ),
       [
         builders.callExpression(
           builders.identifier("generateRabbitMQClientOptions"),
-          [builders.identifier("configService")]
+          [builders.identifier("configService")],
         ),
-      ]
+      ],
     );
 
     appExpression.typeArguments =
@@ -464,7 +464,7 @@ class RabbitMQPlugin implements AmplicationPlugin {
 
     const functionDeclaration = getFunctionDeclarationById(
       template,
-      builders.identifier("connectMicroservices")
+      builders.identifier("connectMicroservices"),
     );
 
     functionDeclaration.body.body.push(rabbitmqServiceExpression);
@@ -474,25 +474,25 @@ class RabbitMQPlugin implements AmplicationPlugin {
 }
 
 const rabbitModuleImport = (
-  rabbitMqModuleName: string
+  rabbitMqModuleName: string,
 ): namedTypes.ImportDeclaration => {
   return builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(rabbitMqModuleName))],
-    builders.stringLiteral("./rabbitmq/rabbitmq.module")
+    builders.stringLiteral("./rabbitmq/rabbitmq.module"),
   );
 };
 
 const allMessageBrokerTopicsTypeDeclaration = (topicEnumNames: string[]) => {
   const enumTypes: namedTypes.TSTypeReference[] = topicEnumNames.map(
-    (enumName) => builders.tsTypeReference(builders.identifier(enumName))
+    (enumName) => builders.tsTypeReference(builders.identifier(enumName)),
   );
   const declaration = (rightSide: any) => {
     return builders.exportDeclaration(
       false,
       builders.tsTypeAliasDeclaration(
         builders.identifier("AllMessageBrokerTopics"),
-        rightSide
-      )
+        rightSide,
+      ),
     );
   };
   if (enumTypes.length === 0) {

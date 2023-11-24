@@ -109,7 +109,7 @@ export class InvalidDataTypeError extends Error {
     super(
       `Invalid fields data types: ${fields
         .map((field) => `${field.name} data type should be ${field.dataType}`)
-        .join(", ")}`
+        .join(", ")}`,
     );
   }
 }

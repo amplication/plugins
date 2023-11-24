@@ -11,7 +11,7 @@ export const createAuthService = async (
   srcDirectory: string,
   authDirectory: string,
   authEntityName: string,
-  logger: BuildLogger
+  logger: BuildLogger,
 ) => {
   logger.info("Creating a new auth service file for the server");
   const templatePath = resolve(templatesPath, "auth.service.template.ts");
@@ -31,7 +31,7 @@ export const createAuthService = async (
 };
 
 const getAuthEntityServiceId = (
-  authEntityName: string
+  authEntityName: string,
 ): namedTypes.Identifier => {
   return builders.identifier(`${authEntityName}Service`);
 };
@@ -39,21 +39,21 @@ const getAuthEntityServiceId = (
 const authEntityServiceImport = (
   srcDirectory: string,
   authDirectory: string,
-  authEntityName: string
+  authEntityName: string,
 ): namedTypes.ImportDeclaration => {
   return builders.importDeclaration(
     [builders.importSpecifier(getAuthEntityServiceId(authEntityName))],
-    getAuthEntityServicePath(srcDirectory, authDirectory, authEntityName)
+    getAuthEntityServicePath(srcDirectory, authDirectory, authEntityName),
   );
 };
 
 const getAuthEntityServicePath = (
   srcDirectory: string,
   authDirectory: string,
-  authEntityName: string
+  authEntityName: string,
 ): namedTypes.StringLiteral => {
   const servicePath = `${srcDirectory}/${camelCase(authEntityName)}/${camelCase(
-    authEntityName
+    authEntityName,
   )}.service`;
   return builders.stringLiteral(relative(authDirectory, servicePath));
 };

@@ -51,7 +51,7 @@ class TransportGrpcPlugin implements AmplicationPlugin {
 
   beforeCreateServerDotEnv(
     context: DsgContext,
-    eventParams: CreateServerDotEnvParams
+    eventParams: CreateServerDotEnvParams,
   ) {
     eventParams.envVariables = [...eventParams.envVariables, ...envVariables];
 
@@ -60,7 +60,7 @@ class TransportGrpcPlugin implements AmplicationPlugin {
 
   beforeCreateServerPackageJson(
     context: DsgContext,
-    eventParams: CreateServerPackageJsonParams
+    eventParams: CreateServerPackageJsonParams,
   ) {
     const myValues = {
       dependencies: {
@@ -71,7 +71,7 @@ class TransportGrpcPlugin implements AmplicationPlugin {
     };
 
     eventParams.updateProperties.forEach((updateProperty) =>
-      merge(updateProperty, myValues)
+      merge(updateProperty, myValues),
     );
 
     return eventParams;
@@ -79,7 +79,7 @@ class TransportGrpcPlugin implements AmplicationPlugin {
 
   async beforeCreateEntityGrpcController(
     context: DsgContext,
-    eventParams: CreateEntityGrpcControllerParams
+    eventParams: CreateEntityGrpcControllerParams,
   ) {
     await createGrpcController(context, eventParams);
 
@@ -88,7 +88,7 @@ class TransportGrpcPlugin implements AmplicationPlugin {
 
   async beforeCreateEntityGrpcControllerBase(
     context: DsgContext,
-    eventParams: CreateEntityGrpcControllerBaseParams
+    eventParams: CreateEntityGrpcControllerBaseParams,
   ) {
     await createGrpcControllerBase(context, eventParams);
     return eventParams;
@@ -96,7 +96,7 @@ class TransportGrpcPlugin implements AmplicationPlugin {
 
   async beforeCreateEntityGrpcControllerToManyRelationMethods(
     context: DsgContext,
-    eventParams: CreateEntityGrpcControllerToManyRelationMethodsParams
+    eventParams: CreateEntityGrpcControllerToManyRelationMethodsParams,
   ) {
     await createGrpcControllerToManyRelationMethods(context, eventParams);
     return eventParams;
@@ -104,7 +104,7 @@ class TransportGrpcPlugin implements AmplicationPlugin {
 
   async beforeCreateConnectMicroservices(
     context: DsgContext,
-    eventParams: CreateConnectMicroservicesParams
+    eventParams: CreateConnectMicroservicesParams,
   ) {
     const { template } = eventParams;
 
@@ -115,7 +115,7 @@ class TransportGrpcPlugin implements AmplicationPlugin {
   async afterCreateConnectMicroservices(
     context: DsgContext,
     eventParams: CreateConnectMicroservicesParams,
-    modules: ModuleMap
+    modules: ModuleMap,
   ): Promise<ModuleMap> {
     const grpcClientOptions = await createGrpcClientOptionsFile(context);
 
@@ -127,19 +127,19 @@ class TransportGrpcPlugin implements AmplicationPlugin {
   async afterCreateGrpcControllerBaseModules(
     context: DsgContext,
     eventParams: CreateEntityGrpcControllerBaseParams,
-    modules: ModuleMap
+    modules: ModuleMap,
   ): Promise<ModuleMap> {
     const relatedEntities = eventParams.entity.fields.filter(
       (field) =>
         field.dataType === EnumDataType.Lookup &&
-        field.properties?.allowMultipleSelection
+        field.properties?.allowMultipleSelection,
     );
 
     // create proto file
     const protoFile = await createGrpcProtoFile(
       context,
       eventParams,
-      relatedEntities
+      relatedEntities,
     );
 
     await modules.set(protoFile);

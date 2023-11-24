@@ -24,7 +24,7 @@ describe("Testing beforeServerPackageJson hook", () => {
   it("should add required dependencies to package.json", () => {
     const { updateProperties } = beforeCreateServerPackageJson(
       context,
-      eventParams
+      eventParams,
     );
 
     expect(updateProperties).toStrictEqual([

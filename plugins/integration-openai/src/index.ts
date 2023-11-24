@@ -28,7 +28,7 @@ class IntegrationOpenaiPlugin implements AmplicationPlugin {
   //adds the openai dependency to the package.json file
   beforeCreateServerPackageJson(
     context: DsgContext,
-    eventParams: CreateServerPackageJsonParams
+    eventParams: CreateServerPackageJsonParams,
   ) {
     eventParams.updateProperties.push(dependencies);
 
@@ -38,7 +38,7 @@ class IntegrationOpenaiPlugin implements AmplicationPlugin {
   //adds the openai api key to the .env file
   beforeCreateServerDotEnv(
     context: DsgContext,
-    eventParams: CreateServerDotEnvParams
+    eventParams: CreateServerDotEnvParams,
   ) {
     eventParams.envVariables = [...eventParams.envVariables, ...envVariables];
 
@@ -49,12 +49,12 @@ class IntegrationOpenaiPlugin implements AmplicationPlugin {
   async afterCreateServer(
     context: DsgContext,
     eventParams: CreateServerParams,
-    modules: ModuleMap
+    modules: ModuleMap,
   ): Promise<ModuleMap> {
     const staticPath = resolve(__dirname, "./static");
     const staticsFiles = await context.utils.importStaticModules(
       staticPath,
-      context.serverDirectories.baseDirectory
+      context.serverDirectories.baseDirectory,
     );
 
     await modules.merge(staticsFiles);

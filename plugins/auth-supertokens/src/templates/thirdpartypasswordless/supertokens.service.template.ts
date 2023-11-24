@@ -15,7 +15,7 @@ import { AuthError } from "./auth.error";
 export class SupertokensService {
   constructor(
     protected readonly configService: ConfigService,
-    protected readonly userService: AUTH_ENTITY_SERVICE_ID
+    protected readonly userService: AUTH_ENTITY_SERVICE_ID,
   ) {
     supertokens.init({
       ...generateSupertokensOptions(configService),
@@ -47,9 +47,8 @@ export class SupertokensService {
                   return resp;
                 },
                 thirdPartySignInUp: async function (input) {
-                  let resp = await originalImplementation.thirdPartySignInUp(
-                    input
-                  );
+                  let resp =
+                    await originalImplementation.thirdPartySignInUp(input);
 
                   if (
                     resp.status === "OK" &&
@@ -87,12 +86,12 @@ export class SupertokensService {
                   });
                   if (!user) {
                     throw new Error(
-                      "Failed to find a user with the corresponding supertokens ID"
+                      "Failed to find a user with the corresponding supertokens ID",
                     );
                   }
                   const userInfo = await supertokens.getUser(
                     input.userId,
-                    input.userContext
+                    input.userContext,
                   );
                   return originalImplementation.createNewSession({
                     ...input,
@@ -113,7 +112,7 @@ export class SupertokensService {
   }
 
   async getUserBySupertokensId(
-    supertokensId: string
+    supertokensId: string,
   ): Promise<AUTH_ENTITY_ID | null> {
     return await this.userService.findOne({
       where: {
@@ -125,7 +124,7 @@ export class SupertokensService {
   async createSupertokensUser(
     email: string | undefined,
     phoneNumber: string | undefined,
-    thirdPartyId: string | undefined
+    thirdPartyId: string | undefined,
   ): Promise<string> {
     let resp;
     const userContext = {
@@ -138,7 +137,7 @@ export class SupertokensService {
         "",
         email,
         false,
-        userContext
+        userContext,
       );
     } else if (email) {
       resp = await ThirdPartyPasswordless.passwordlessSignInUp({
@@ -154,7 +153,7 @@ export class SupertokensService {
       });
     } else {
       throw new Error(
-        "Either a third party ID and email or an email or a phone number must be provided with the email to create a user"
+        "Either a third party ID and email or an email or a phone number must be provided with the email to create a user",
       );
     }
     switch (resp.status) {
@@ -179,7 +178,7 @@ export class SupertokensService {
     email: string | undefined,
     thirdPartyId: string | undefined,
     phoneNumber: string | undefined,
-    supertokensId: string
+    supertokensId: string,
   ): Promise<void> {
     if (!email) {
       throw new Error("An email must be supplied to update a user");
@@ -188,19 +187,19 @@ export class SupertokensService {
     if (thirdPartyId && email) {
       const user = await this.getSupertokensUserInfo(supertokensId);
       const thirdPartyData = user.thirdParty.find(
-        (tp) => tp.id === thirdPartyId
+        (tp) => tp.id === thirdPartyId,
       );
       if (!thirdPartyData) {
         throw new Error(
-          `The user doesn't have a third party login with ${thirdPartyId}`
+          `The user doesn't have a third party login with ${thirdPartyId}`,
         );
       }
       const thirdPartyMethod = user.loginMethods.find(
-        (lm) => lm.recipeId === "thirdparty"
+        (lm) => lm.recipeId === "thirdparty",
       );
       if (thirdPartyMethod === undefined) {
         throw new Error(
-          "Failed to find information on the user's third party login"
+          "Failed to find information on the user's third party login",
         );
       }
       resp = await ThirdPartyPasswordless.thirdPartyManuallyCreateOrUpdateUser(
@@ -208,7 +207,7 @@ export class SupertokensService {
         thirdPartyId,
         thirdPartyData.userId,
         email,
-        thirdPartyMethod.verified
+        thirdPartyMethod.verified,
       );
     } else if (email || phoneNumber) {
       resp = await ThirdPartyPasswordless.updatePasswordlessUser({
@@ -218,7 +217,7 @@ export class SupertokensService {
       });
     } else {
       throw new Error(
-        "Either a third party ID and email or an email or a phone number must be supplied to update the SuperTokens user"
+        "Either a third party ID and email or an email or a phone number must be supplied to update the SuperTokens user",
       );
     }
     switch (resp.status) {
@@ -230,7 +229,7 @@ export class SupertokensService {
         throw new AuthError(resp.status);
       case "UNKNOWN_USER_ID_ERROR":
         throw new AuthError(
-          "SUPERTOKENS_ID_WITH_NO_CORRESPONDING_SUPERTOKENS_USER"
+          "SUPERTOKENS_ID_WITH_NO_CORRESPONDING_SUPERTOKENS_USER",
         );
       case "OK":
         return;
@@ -243,7 +242,7 @@ export class SupertokensService {
     const user = await supertokens.getUser(supertokensId);
     if (!user) {
       throw new AuthError(
-        "SUPERTOKENS_ID_WITH_NO_CORRESPONDING_SUPERTOKENS_USER"
+        "SUPERTOKENS_ID_WITH_NO_CORRESPONDING_SUPERTOKENS_USER",
       );
     }
     return user;
@@ -252,7 +251,7 @@ export class SupertokensService {
   async getRecipeUserId(supertokensId: string): Promise<RecipeUserId> {
     const user = await this.getSupertokensUserInfo(supertokensId);
     const loginMethod = user.loginMethods.find(
-      (lm) => lm.recipeId === "passwordless"
+      (lm) => lm.recipeId === "passwordless",
     );
     if (!loginMethod) {
       throw new Error("Failed to find the login method");

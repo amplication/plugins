@@ -26,7 +26,7 @@ export function setAuthPermissions(
   createSwaggerDecorator: boolean,
   templateType: EnumTemplateType,
   permissionType?: EnumEntityPermissionType,
-  methodName?: string
+  methodName?: string,
 ): void {
   const classMethod = getClassMethodById(classDeclaration, methodId);
   if (!classMethod) {
@@ -42,7 +42,7 @@ export function setAuthPermissions(
 
   if (isActionSearchOrView) {
     const filterResponseInterceptor = buildNessJsInterceptorDecorator(
-      builders.identifier(ACL_FILTER_RESPONSE_INTERCEPTOR_NAME)
+      builders.identifier(ACL_FILTER_RESPONSE_INTERCEPTOR_NAME),
     );
     classMethod.decorators?.unshift(filterResponseInterceptor);
   }
@@ -53,7 +53,7 @@ export function setAuthPermissions(
     templateType !== EnumTemplateType.controllerToManyMethods
   ) {
     const AclValidateRequestInterceptor = buildNessJsInterceptorDecorator(
-      builders.identifier(ACL_VALIDATE_REQUEST_INTERCEPTOR_NAME)
+      builders.identifier(ACL_VALIDATE_REQUEST_INTERCEPTOR_NAME),
     );
     classMethod.decorators?.unshift(AclValidateRequestInterceptor);
   }
@@ -69,8 +69,8 @@ export function setAuthPermissions(
     buildNestAccessControlDecorator(
       entityName,
       isActionSearchOrView ? "read" : action.toLocaleLowerCase(),
-      possessionType
-    )
+      possessionType,
+    ),
   );
 
   if (

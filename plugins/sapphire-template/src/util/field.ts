@@ -10,13 +10,13 @@ import {
 } from "@amplication/code-gen-types";
 
 export function isRelationField(
-  field: EntityField
+  field: EntityField,
 ): field is EntityLookupField {
   return field.dataType === EnumDataType.Lookup;
 }
 
 export function isOneToOneRelationField(
-  field: EntityField
+  field: EntityField,
 ): field is EntityLookupField {
   if (!isRelationField(field)) {
     return false;
@@ -26,7 +26,7 @@ export function isOneToOneRelationField(
 }
 
 export function isToManyRelationField(
-  field: EntityField
+  field: EntityField,
 ): field is EntityLookupField {
   return isRelationField(field) && !isOneToOneRelationField(field);
 }

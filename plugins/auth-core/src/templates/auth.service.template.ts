@@ -12,12 +12,12 @@ declare class ENTITY_SERVICE {}
 export class AuthService {
   constructor(
     private readonly passwordService: PasswordService,
-    private readonly tokenService: TokenService
+    private readonly tokenService: TokenService,
   ) {}
 
   async validateUser(
     username: string,
-    password: string
+    password: string,
   ): Promise<ENTITY_NAME_INFO | null> {
     const user = await this.ENTITY_SERVICE.FIND_ONE_FUNCTION({
       where: { username },
@@ -33,7 +33,7 @@ export class AuthService {
     const { username, password } = credentials;
     const user = await this.validateUser(
       credentials.username,
-      credentials.password
+      credentials.password,
     );
     if (!user) {
       throw new UnauthorizedException("The passed credentials are incorrect");

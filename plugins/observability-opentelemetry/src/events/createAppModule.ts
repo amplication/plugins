@@ -61,12 +61,12 @@ const generateImports = (): namedTypes.ImportDeclaration[] => {
         GRAPHQL_RESOLVER_INJECTOR,
         GUARD_INJECTOR,
       ],
-      "@amplication/opentelemetry-nestjs"
+      "@amplication/opentelemetry-nestjs",
     ),
     importNames([HTTP_INSTRUMENTATION], "@opentelemetry/instrumentation-http"),
     importNames(
       [OTLP_TRACE_EXPORTER],
-      "@opentelemetry/exporter-trace-otlp-grpc"
+      "@opentelemetry/exporter-trace-otlp-grpc",
     ),
     importNames([BATCH_SPAN_PROCESSOR], "@opentelemetry/sdk-trace-node"),
   ];
@@ -74,7 +74,7 @@ const generateImports = (): namedTypes.ImportDeclaration[] => {
 
 export const beforeCreateServerAppModule = (
   context: DsgContext,
-  eventParams: CreateServerAppModuleParams
+  eventParams: CreateServerAppModuleParams,
 ): CreateServerAppModuleParams => {
   const { templateMapping, template } = eventParams;
 
@@ -83,7 +83,7 @@ export const beforeCreateServerAppModule = (
   templateMapping["MODULES"] = builders.arrayExpression([
     ...templateMapping["MODULES"].elements,
     opentelemetryModule(
-      serviceName || context.resourceInfo?.name || "sample-service"
+      serviceName || context.resourceInfo?.name || "sample-service",
     ),
   ]);
 

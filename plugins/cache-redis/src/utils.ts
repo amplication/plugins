@@ -12,10 +12,10 @@ import * as recastBabelParser from "recast/parsers/babel";
 import getBabelOptions, { Overrides } from "recast/parsers/_babel_options";
 
 export const getPluginSettings = (
-  pluginInstallations: PluginInstallation[]
+  pluginInstallations: PluginInstallation[],
 ): Settings => {
   const plugin = pluginInstallations.find(
-    (plugin) => plugin.npm === PackageName
+    (plugin) => plugin.npm === PackageName,
   );
 
   const userSettings = plugin?.settings ?? {};
@@ -64,7 +64,7 @@ export const removeSemicolon = (stmt: string) => {
   }
   if (stmt[stmt.length - 1] !== ";") {
     throw new Error(
-      "This statement doesn't end in a semicolon. No semicolon to remove"
+      "This statement doesn't end in a semicolon. No semicolon to remove",
     );
   }
   return stmt.slice(0, -1);
@@ -72,7 +72,7 @@ export const removeSemicolon = (stmt: string) => {
 
 export function addImport(
   file: namedTypes.File,
-  newImport: namedTypes.ImportDeclaration
+  newImport: namedTypes.ImportDeclaration,
 ): void {
   const imports = extractImportDeclarations(file);
   imports.push(newImport);
@@ -85,7 +85,7 @@ export function addImport(
  * @returns array of import declarations ast nodes
  */
 export function extractImportDeclarations(
-  file: namedTypes.File
+  file: namedTypes.File,
 ): namedTypes.ImportDeclaration[] {
   const newBody = [];
   const imports = [];

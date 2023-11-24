@@ -5,7 +5,7 @@ import { join } from "path";
 import { templatesPath } from "../constants";
 
 export async function createTokenServiceTests(
-  dsgContext: DsgContext
+  dsgContext: DsgContext,
 ): Promise<Module> {
   const { serverDirectories, resourceInfo } = dsgContext;
   const authTestsDir = `${serverDirectories.srcDirectory}/tests/auth`;
@@ -16,7 +16,7 @@ export async function createTokenServiceTests(
 
   const templatePath = join(
     templatesPath,
-    `create-token/${name.toLowerCase()}/${name.toLowerCase()}Token.service.spec.template.ts`
+    `create-token/${name.toLowerCase()}/${name.toLowerCase()}Token.service.spec.template.ts`,
   );
 
   const file = await readFile(templatePath);

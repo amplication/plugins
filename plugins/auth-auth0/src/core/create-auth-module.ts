@@ -16,7 +16,7 @@ import { addImports, importNames, interpolate } from "@utils/ast";
 const authModulePath = join(templatesPath, "auth.module.template.ts");
 
 export const createAuthModule = async (
-  context: DsgContext
+  context: DsgContext,
 ): Promise<Module> => {
   return await mapAuthModuleTemplate(context, authModulePath, "auth.module.ts");
 };
@@ -24,11 +24,11 @@ export const createAuthModule = async (
 const mapAuthModuleTemplate = async (
   context: DsgContext,
   templatePath: string,
-  fileName: string
+  fileName: string,
 ): Promise<Module> => {
   const { entities, resourceInfo, serverDirectories } = context;
   const authEntity = entities?.find(
-    (x) => x.name === resourceInfo?.settings.authEntityName
+    (x) => x.name === resourceInfo?.settings.authEntityName,
   );
 
   context.logger.info(`Creating ${fileName} file...`);
@@ -46,7 +46,7 @@ const mapAuthModuleTemplate = async (
     const template = await readFile(templatePath);
     const authModuleImport = importNames(
       [authModuleNameId],
-      `../${entityNameToLower}/${entityNameToLower}.module`
+      `../${entityNameToLower}/${entityNameToLower}.module`,
     );
 
     addImports(template, [authModuleImport]);
