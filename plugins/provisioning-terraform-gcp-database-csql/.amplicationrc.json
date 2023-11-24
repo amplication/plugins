@@ -1,0 +1,22 @@
+{
+  "settings": {
+    "global": {
+      "name": "",
+      "region": "europe-west1",
+      "zone": "a",
+      "availability_type": "ZONAL",
+      "disk_size": "10",
+      "disk_type": "PD_SSD",
+      "charset": "UTF8",
+      "collation": "en_US.UTF8",
+      "deletion_protection": "true",
+      "version": "POSTGRES_15"
+    },
+    "configuration": {
+      "type": "postgres"
+    }
+  },
+  "systemSettings": {
+    "requireAuthenticationEntity": "false"
+  }
+}
