@@ -65,5 +65,5 @@ jobs:
         id: filtered-affected-plugins
         run: |
           EXCLUDED_PACKAGE='plugin-template'
-          FILTERED_PROJECTS=$(echo ${{ steps.all-affected.outputs.all-affected-plugins }} | jq '[.projects[] | select(.name != "'$EXCLUDED_PACKAGE'")]' -c)
-          echo affected-plugins=${FILTERED_PROJECTS} >> $GITHUB_OUTPUT
+          FILTERED_PROJECTS=$(echo ${{ steps.all-affected.outputs.all-affected-plugins }} | jq '[.[] | select(. != "'$EXCLUDED_PACKAGE'")]' -c)
+          echo "affected-plugins=$FILTERED_PROJECTS" >> $GITHUB_OUTPUT
