@@ -57,7 +57,13 @@ jobs:
         run: bun i --lockfile package-lock.json
 
       - name: Evaluate affected projects
-        id: configure-nx
+        id: all-affected
         run: |
-          echo affected-plugins=$(bunx nx show projects --affected --json) >> $GITHUB_OUTPUT
-          cat $GITHUB_OUTPUT | grep affected
+          echo all-affected-plugins=$(bunx nx show projects --affected --json) >> $GITHUB_OUTPUT
+
+      - name: Exclude plugin-template
+        id: filtered-affected-plugins
+        run: |
+          EXCLUDED_PACKAGE='plugin-template'
+          FILTERED_PROJECTS=$(echo ${{ steps.all-affected.outputs.all-affected-plugins }} | jq '[.projects[] | select(.name != "'$EXCLUDED_PACKAGE'")]' -c)
+          echo affected-plugins=${FILTERED_PROJECTS} >> $GITHUB_OUTPUT
