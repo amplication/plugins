@@ -4,7 +4,7 @@ import {
   SecretsManagerClient,
 } from "@aws-sdk/client-secrets-manager";
 import { Logger } from "@nestjs/common";
-import { Secrets } from "./secrets";
+import { EnumSecretsNameKey } from "./secretsNameKey.enum";
 
 export const secretsManagerFactory = {
   provide: "AWS_SECRETS_MANAGER",
@@ -15,14 +15,14 @@ export const secretsManagerFactory = {
       region: configService.get("AWS_REGION"),
     });
 
-    var secrets: Partial<Record<Secrets, unknown>> = {};
+    var secrets: Partial<Record<EnumSecretsNameKey, unknown>> = {};
 
-    for (const path of Object.values(Secrets)) {
-      const [secret_id, secret_name] = path.split(":");
+    for (const path of Object.values(EnumSecretsNameKey)) {
+      const [secret_id, secret_name] = path.toString().split(":");
 
       try {
         const response = await client.send(
-          new GetSecretValueCommand({ SecretId: secret_id })
+          new GetSecretValueCommand({ SecretId: secret_id }),
         );
 
         const secrets_list: Record<string, string> = JSON.parse(
@@ -35,7 +35,9 @@ export const secretsManagerFactory = {
 
         secrets = {
           ...secrets,
-          [path]: secret_name ? secrets_list[secret_name] : secrets_list,
+          [path.toString()]: secret_name
+            ? secrets_list[secret_name]
+            : secrets_list,
         };
       } catch (err: unknown) {
         if (err instanceof Error) {
