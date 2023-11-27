@@ -23,10 +23,10 @@ env:
 
 jobs:
   nx:
-    name: Nx Affected
+    name: Nx Affected Publishable Plugins
     runs-on: ubuntu-20.04
     outputs:
-      affected-plugins: ${{ steps.configure-nx.outputs.affected-plugins }}
+      affected-plugins: ${{ steps.calculate-affected.outputs.affected-plugins }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -57,13 +57,7 @@ jobs:
         run: bun i --lockfile package-lock.json
 
       - name: Evaluate affected projects
-        id: all-affected
+        id: calculate-affected
         run: |
-          echo all-affected-plugins=$(bunx nx show projects --affected --json) >> $GITHUB_OUTPUT
-
-      - name: Exclude plugin-template
-        id: filtered-affected-plugins
-        run: |
-          EXCLUDED_PACKAGE='plugin-template'
-          FILTERED_PROJECTS=$(echo ${{ steps.all-affected.outputs.all-affected-plugins }} | jq '[.[] | select(. != "'$EXCLUDED_PACKAGE'")]' -c)
-          echo "affected-plugins=$FILTERED_PROJECTS" >> $GITHUB_OUTPUT
+          echo affected-plugins=$(bunx nx show projects --affected --with-target npm:publish --json) >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT | grep affected
