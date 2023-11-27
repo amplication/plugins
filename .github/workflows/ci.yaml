@@ -100,7 +100,7 @@ jobs:
   publish:
     name: Publish
     needs: nx
-    if: ${{ needs.nx.outputs.affected-plugins != '[]' && needs.nx.outputs.affected-plugins != '' }}
+    if: ${{ github.event_name == 'push' && needs.nx.outputs.affected-plugins != '[]' && needs.nx.outputs.affected-plugins != '' }}
     uses: ./.github/workflows/publish.template.yaml
     strategy:
       matrix:
