@@ -99,7 +99,7 @@ jobs:
 
   publish:
     name: Publish
-    needs: [nx, plugin-version-validator]
+    needs: nx
     if: ${{ needs.nx.outputs.affected-plugins != '[]' && needs.nx.outputs.affected-plugins != '' }}
     uses: ./.github/workflows/publish.template.yaml
     strategy:
