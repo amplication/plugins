@@ -17,6 +17,7 @@ jobs:
         with:
           trigger: "/publish"
           prefix_only: "true"
+          reaction: "rocket"
 
   get-affected-plugins:
     name: Get affected plugins
@@ -29,7 +30,7 @@ jobs:
 
   get_last_commit:
     runs-on: ubuntu-latest
-    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '/publish') }}
+    if: ${{ github.event.issue.pull_request }}
     outputs:
       last_commit_sha: ${{ steps.last_commit.outputs.sha }}
     steps:
@@ -74,5 +75,4 @@ jobs:
         with:
           issue-number: ${{ github.event.issue.number }}
           body: |
-            Publishing beta version for ${{ needs.get-affected-plugins.outputs.affected-plugins }}: ${{ needs.publish.outputs.publish-beta-version }}
-          reactions: "+1"
+            Publishing beta version for ${{ needs.get-affected-plugins.outputs.affected-plugins }}
