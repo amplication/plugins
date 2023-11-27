@@ -1,6 +1,7 @@
 {
   "targets": {
     "install": {},
-    "lint": {}
+    "lint": {},
+    "npm:publish": {}
   }
 }
