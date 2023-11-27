@@ -12,7 +12,10 @@ module "host_project_logging" {
 
   billing_account = var.billing_account
 
-  activate_apis = []
+  activate_apis = [
+    "storage.googleapis.com",
+    "logging.googleapis.com"
+  ]
 
   depends_on = [
     module.folders_top_level,
@@ -33,7 +36,10 @@ module "host_project_monitoring" {
 
   billing_account = var.billing_account
 
-  activate_apis = []
+  activate_apis = [
+    "storage.googleapis.com",
+    "monitoring.googleapis.com"
+  ]
 
   depends_on = [
     module.folders_top_level,
@@ -58,7 +64,10 @@ module "host_project_environments" {
 
   billing_account = var.billing_account
 
-  activate_apis = []
+  activate_apis = [
+    "storage.googleapis.com",
+    "compute.googleapis.com"
+  ]
 
   depends_on = [
     module.folders_top_level,
