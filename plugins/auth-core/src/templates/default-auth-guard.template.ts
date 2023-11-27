@@ -6,7 +6,7 @@ import { IS_PUBLIC_KEY } from "../decorators/public.decorator";
 declare class GUARD {
   canActivate(
     context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<any>;
+  ): boolean | Promise<boolean> | Observable<boolean>;
 }
 
 @Injectable()
@@ -17,7 +17,7 @@ export class DefaultAuthGuard extends GUARD {
 
   canActivate(
     context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<any> {
+  ): boolean | Promise<boolean> | Observable<boolean> {
     const isPublic = this.reflector.get<boolean>(
       IS_PUBLIC_KEY,
       context.getHandler(),

@@ -542,6 +542,7 @@ class AuthCorePlugin implements AmplicationPlugin {
       ),
     );
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     classDeclaration.decorators = [swaggerDecorator, guardDecorator];
 
@@ -757,6 +758,7 @@ class AuthCorePlugin implements AmplicationPlugin {
       ),
     );
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     classDeclaration.decorators = [guardDecorator, resolverDecorator];
 
@@ -911,6 +913,7 @@ class AuthCorePlugin implements AmplicationPlugin {
       ),
     );
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     classDeclaration.decorators = [guardDecorator, resolverDecorator];
 
