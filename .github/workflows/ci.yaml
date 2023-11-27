@@ -99,8 +99,16 @@ jobs:
 
   publish:
     name: Publish
-    needs: nx
-    if: ${{ needs.nx.outputs.affected-plugins != '[]' && needs.nx.outputs.affected-plugins != '' }}
+    needs: [nx, plugin-version-validator]
+    if: >-
+      (
+        github.event_name == 'pull_request' && 
+        needs.plugin-version-validator.result == 'success' &&
+        needs.nx.outputs.affected-plugins != '[]' && 
+        needs.nx.outputs.affected-plugins != ''
+      ) || (
+        github.event_name != 'pull_request'
+      )
     uses: ./.github/workflows/publish.template.yaml
     strategy:
       matrix:
