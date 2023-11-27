@@ -1,4 +1,5 @@
 name: publish-on-comment
+
 on:
   issue_comment:
     types: [created]
@@ -7,20 +8,20 @@ jobs:
   check-comment:
     name: Check comment for /publish
     runs-on: ubuntu-latest
+    if: ${{ github.event.issue.pull_request }}
+    outputs:
+      trigger-comment: ${{ steps.check.outputs.triggered }}
     steps:
-      - name: Check command
-        id: check-command
-        uses: xt0rted/slash-command-action@v1
+      - uses: khan/pull-request-comment-trigger@v1.1.0
+        id: check
         with:
-          command: publish
-          reaction: "true"
-          reaction-type: "eyes"
-          allow-edits: "false"
-          permission-level: write
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          trigger: "/publish"
+          prefix_only: "true"
 
   get-affected-plugins:
     name: Get affected plugins
+    needs: check-comment
+    if: ${{ needs.check-comment.outputs.trigger-comment == 'true' }}
     uses: ./.github/workflows/nx.template.yaml
     with:
       nx-head: ${{ github.head_ref && format('refs/pull/{0}/merge', github.event.number) || github.ref_name  }}
@@ -61,15 +62,15 @@ jobs:
       NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
 
   create-comment:
-    runs-on: ubuntu-latest
     name: Create comment
+    runs-on: ubuntu-latest
     needs: [get-affected-plugins, publish]
     if: ${{ needs.get-affected-plugins.outputs.affected-plugins != '[]' && needs.get-affected-plugins.outputs.affected-plugins != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Create comment
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v3
         with:
           issue-number: ${{ github.event.issue.number }}
           body: |
