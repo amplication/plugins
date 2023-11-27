@@ -3,7 +3,7 @@
     "root_level": true,
     "directory_name": "terraform",
     "global":{
-      "organization_id": "510540377599",
+      "organization_id": "123456789012",
       "billing_account": "012A34-B56C57-890DEF",
       "billing_project": "billing-012345",
       "domain": "example.com",
@@ -11,11 +11,11 @@
     },
     "environments": {
       "production": {
-        "cidr": "10.10.0.0/24",
+        "cidr": "10.10.0.0/16",
         "teams": ["operations"]
       },
       "non-production": {
-        "cidr": "10.20.0.0/24",
+        "cidr": "10.20.0.0/16",
         "teams": ["development", "operations"]
       }
     },
