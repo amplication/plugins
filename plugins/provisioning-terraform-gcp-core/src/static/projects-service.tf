@@ -18,6 +18,7 @@ module "service_project_teams" {
 
   activate_apis = [
     "storage.googleapis.com",
+    "servicenetworking.googleapis.com",
     "artifactregistry.googleapis.com",
     "sql.googleapis.com",
     "compute.googleapis.com",
