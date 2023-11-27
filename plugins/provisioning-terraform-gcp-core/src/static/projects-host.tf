@@ -55,8 +55,8 @@ module "host_project_environments" {
 
   random_project_id = true
 
-  name       = format("%s-shared-host", each.key)
-  project_id = format("%s-shared-host", each.key)
+  name       = format("%s-hst", each.key)
+  project_id = format("%s-hst", each.key)
   org_id     = var.organization_id
   folder_id  = module.folders_top_level.ids["common"]
 
