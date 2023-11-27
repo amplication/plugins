@@ -25,7 +25,8 @@
       "files": ["*.ts", "*.tsx"],
       "extends": ["plugin:@nx/typescript"],
       "rules": {
-        "no-prototype-builtins": "warn"
+        "no-prototype-builtins": "warn",
+        "@typescript-eslint/no-unused-vars": "warn"
       }
     },
     {
@@ -38,7 +39,11 @@
       "env": {
         "jest": true
       },
-      "rules": {}
+      "rules": {
+        "@typescript-eslint/ban-ts-comment": "warn",
+        "@typescript-eslint/no-unused-vars": "warn",
+        "@typescript-eslint/no-explicit-any": "warn"
+      }
     }
   ]
 }
