@@ -14,7 +14,7 @@ import { resolve } from "path";
 import { getPluginSettings } from "./utils";
 import { secretNamesParser } from "./utils/secret_name_parser";
 
-class AwsSecretsManagerPlugin implements AmplicationPlugin {
+class GoogleSecretsManager implements AmplicationPlugin {
     register(): Events {
         return {
             [EventNames.CreateServerPackageJson]: {
@@ -81,4 +81,4 @@ class AwsSecretsManagerPlugin implements AmplicationPlugin {
     }
 }
 
-export default AwsSecretsManagerPlugin;
+export default GoogleSecretsManager;
