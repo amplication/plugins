@@ -75,4 +75,4 @@ jobs:
         with:
           issue-number: ${{ github.event.issue.number }}
           body: |
-            Publishing beta version for ${{ needs.get-affected-plugins.outputs.affected-plugins }}
+            Published beta version for ${{ needs.get-affected-plugins.outputs.affected-plugins }}
