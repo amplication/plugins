@@ -3,10 +3,10 @@ module "groups" {
   source  = "terraform-google-modules/group/google"
   version = "~> 0.5"
 
-  for_each = toset([for group in local.groups : group.team])
+  for_each = local.teams
 
-  id           = format("%s@%s", each.value.team, var.domain)
-  display_name = format("%s@%s", each.value.team, var.domain)
+  id           = format("%s@%s", each.value, var.domain)
+  display_name = format("%s@%s", each.value, var.domain)
   customer_id  = data.google_organization.organization.directory_customer_id
 
   types = [
