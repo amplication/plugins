@@ -34,8 +34,8 @@ Example:
 
 The secret name must be formatted in either of the following way:
 
-- `<secret_name>:<secret_version>` - This format specifies that a secret named `secret_name` and version `secret_version` needs to be loaded [applies to both fetch mode].
-- `<secret_name>` - This format specifies that the secret named `secret_name` of latest version  needs to be loaded [only applies to `STARTUP` fetch mode].
+- `<secret_name>:<secret_version>` - This format specifies that a secret named `secret_name` and version `secret_version` needs to be loaded.
+- `<secret_name>` - This format specifies that the secret named `secret_name` of latest version  needs to be loaded.
 
 ## Usage
 
