@@ -26,8 +26,8 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.issue.pull_request }}
     outputs:
-      head: ${{ steps.head.outputs.head }}
-      base: ${{ steps.base.outputs.base }}
+      head: ${{ steps.head.outputs.result }}
+      base: ${{ steps.base.outputs.result }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
