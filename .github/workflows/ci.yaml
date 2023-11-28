@@ -83,7 +83,8 @@ jobs:
       - name: Get current latest plugin version from the base branch
         id: get-current-latest-version
         run: |
-          echo "version=$(cat package-lock.json | jq -r '.version')" >> $GITHUB_OUTPUT
+          PLUGIN_PATH="plugins/${{ matrix.affected-plugin }}/package.json" 
+          echo "version=$(cat $PLUGIN_PATH | jq -r '.version')" >> $GITHUB_OUTPUT
 
       - name: Check if versions are equal
         id: check-version
@@ -95,11 +96,11 @@ jobs:
             echo "✅ Versions are not equal. All good"
             exit 0
           fi
-    
+
   publish:
     name: Publish
-    needs: [nx, plugin-version-validator]
-    if: ${{ needs.nx.outputs.affected-plugins != '[]' && needs.nx.outputs.affected-plugins != '' }}
+    needs: nx
+    if: ${{ github.event_name == 'push' && needs.nx.outputs.affected-plugins != '[]' && needs.nx.outputs.affected-plugins != '' }}
     uses: ./.github/workflows/publish.template.yaml
     strategy:
       matrix:
