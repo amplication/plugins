@@ -88,7 +88,6 @@ jobs:
     name: Create comment
     runs-on: ubuntu-latest
     needs: [get-affected-plugins, publish]
-    if: ${{ needs.get-affected-plugins.outputs.affected-plugins != '[]' && needs.get-affected-plugins.outputs.affected-plugins != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
