@@ -19,14 +19,49 @@ jobs:
           prefix_only: "true"
           reaction: "rocket"
 
+  get-refs:
+    name: Resolve PR refs
+    runs-on: ubuntu-latest
+    if: ${{ github.event.issue.pull_request }}
+    outputs:
+      head: ${{ steps.head.outputs.head }}
+      base: ${{ steps.base.outputs.base }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get head
+        id: head
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            return pr.data.head.ref;
+
+      - name: Get base
+        id: base
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            return pr.data.base.ref;
+
   get-affected-plugins:
     name: Get affected plugins
-    needs: check-comment
+    needs: [check-comment, get-refs]
     if: ${{ needs.check-comment.outputs.trigger-comment == 'true' }}
     uses: ./.github/workflows/nx.template.yaml
     with:
-      nx-head: ${{ github.head_ref || inputs.nx-head || github.event.pull_request.head.ref }}
-      nx-base: ${{ github.base_ref || inputs.nx-base || github.event.repository.default_branch }}
+      nx-head: ${{ needs.get-refs.outputs.head }}
+      nx-base: ${{ needs.get-refs.outputs.base }}
 
   get-last-commit:
     name: Get last commit short SHA of the PR
