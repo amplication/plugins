@@ -7,8 +7,7 @@
     "prepublishOnly": "npm run build",
     "dev": "webpack --watch",
     "build": "webpack",
-    "prebuild": "rimraf dist",
-    "format:write": "prettier --write \"**/*.{js,ts}\""
+    "prebuild": "rimraf dist"
   },
   "author": "ChenemiKen <chenemiken15@gmail.com>",
   "license": "Apache-2.0",

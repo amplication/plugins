@@ -30,15 +30,15 @@ Example:
 ]
 
 ```
+
 ## Usage
 
 1. Enable the plugin from your Amplication app
-when enabled, This plugin will override your default implementation for `SecretsManagerService` to use the Bitwarden secrets manager.
+   when enabled, This plugin will override your default implementation for `SecretsManagerService` to use the Bitwarden secrets manager.
 
 2. Make sure to set your Bitwarden credentials(`access_token` and `organisation_id`) correctly.
 
 3. Set your preffered `fetchMode` and specify your `secretNames` if your preferred fetchMode is `STARTUP`.
-
 
 ## Scripts
 
@@ -49,6 +49,3 @@ Running `npm run build` will bundle your plugin with Webpack for production.
 ### `dev`
 
 Running `npm run dev` will watch your plugin's source code and automatically bundle it with every change.
-
-
-

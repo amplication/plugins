@@ -29,50 +29,64 @@ class BitWardenSecretsManagerPlugin implements AmplicationPlugin {
         after: this.AfterCreateServer,
       },
       [EventNames.CreateServerSecretsManager]: {
-        before: this.beforeCreateServerSecretsManager
-      }
+        before: this.beforeCreateServerSecretsManager,
+      },
     };
   }
   // You can combine many events in one plugin in order to change the related files.
-  beforeCreatePackageJson(_: DsgContext, eventParams: CreateServerPackageJsonParams)
-    : CreateServerPackageJsonParams {
-    eventParams.updateProperties.push(dependencies)
-    return eventParams
+  beforeCreatePackageJson(
+    _: DsgContext,
+    eventParams: CreateServerPackageJsonParams,
+  ): CreateServerPackageJsonParams {
+    eventParams.updateProperties.push(dependencies);
+    return eventParams;
   }
 
-  beforeCreateServerDotEnv(context: DsgContext, eventParams: CreateServerDotEnvParams)
-    : CreateServerDotEnvParams {
-    const { BITWARDEN_ACCESS_TOKEN, BITWARDEN_ORGANISATION_ID } = getPluginSettings(context.pluginInstallations).settings
+  beforeCreateServerDotEnv(
+    context: DsgContext,
+    eventParams: CreateServerDotEnvParams,
+  ): CreateServerDotEnvParams {
+    const { BITWARDEN_ACCESS_TOKEN, BITWARDEN_ORGANISATION_ID } =
+      getPluginSettings(context.pluginInstallations).settings;
     eventParams.envVariables = [
       ...eventParams.envVariables,
       ...[
         { BITWARDEN_ACCESS_TOKEN: BITWARDEN_ACCESS_TOKEN },
         { BITWARDEN_ORGANISATION_ID: BITWARDEN_ORGANISATION_ID },
       ],
-      ...envVariables
-    ]
-    return eventParams
+      ...envVariables,
+    ];
+    return eventParams;
   }
 
-  async AfterCreateServer(context: DsgContext, _: CreateServerParams, modules: ModuleMap)
-    : Promise<ModuleMap> {
-    const { fetchMode, secretNames } = getPluginSettings(context.pluginInstallations).settings
-    const staticPath = resolve(__dirname, "static", fetchMode.toLowerCase())
+  async AfterCreateServer(
+    context: DsgContext,
+    _: CreateServerParams,
+    modules: ModuleMap,
+  ): Promise<ModuleMap> {
+    const { fetchMode, secretNames } = getPluginSettings(
+      context.pluginInstallations,
+    ).settings;
+    const staticPath = resolve(__dirname, "static", fetchMode.toLowerCase());
 
     const staticFiles = await context.utils.importStaticModules(
       staticPath,
-      context.serverDirectories.srcDirectory
-    )
+      context.serverDirectories.srcDirectory,
+    );
 
-    await modules.merge(staticFiles)
+    await modules.merge(staticFiles);
 
-    return modules
+    return modules;
   }
-  async beforeCreateServerSecretsManager(context: DsgContext, eventParams: CreateServerSecretsManagerParams)
-    : Promise<CreateServerSecretsManagerParams> {
-    const { secretNames } = getPluginSettings(context.pluginInstallations).settings
-    eventParams.secretsNameKey.push(...secretNamesParser(secretNames))
-    return eventParams
+  async beforeCreateServerSecretsManager(
+    context: DsgContext,
+    eventParams: CreateServerSecretsManagerParams,
+  ): Promise<CreateServerSecretsManagerParams> {
+    const { secretNames } = getPluginSettings(
+      context.pluginInstallations,
+    ).settings;
+    eventParams.secretsNameKey.push(...secretNamesParser(secretNames));
+    return eventParams;
   }
 }
 

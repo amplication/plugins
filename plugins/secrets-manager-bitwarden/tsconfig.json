@@ -8,9 +8,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "lib": [
-      "es2021"
-    ],
+    "lib": ["es2021"],
     "module": "commonjs",
     "target": "es2021",
     "skipLibCheck": true,
@@ -25,8 +23,5 @@
     "resolveJsonModule": true,
     "strictNullChecks": true
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }

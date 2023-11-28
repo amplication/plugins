@@ -1,13 +1,13 @@
 export interface Settings {
   settings: {
-    BITWARDEN_ACCESS_TOKEN: string
-    BITWARDEN_ORGANISATION_ID: string
-    fetchMode: FetchMode,
-    secretNames: string[]
-  },
+    BITWARDEN_ACCESS_TOKEN: string;
+    BITWARDEN_ORGANISATION_ID: string;
+    fetchMode: FetchMode;
+    secretNames: string[];
+  };
   systemSettings: {
-    requireAuthenticationEntity: string
-  }
+    requireAuthenticationEntity: string;
+  };
 }
 
 export enum FetchMode {
