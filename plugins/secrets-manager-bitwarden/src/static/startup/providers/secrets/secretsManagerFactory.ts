@@ -9,8 +9,10 @@ import {
 } from "@bitwarden/sdk-napi";
 import { EnumSecretsNameKey } from "./secretsNameKey.enum";
 
+export const secretsManagerFactoryProviderName = "BITWARDEN_SECRETS_MANAGER";
+
 export const secretsManagerFactory = {
-  provide: "BITWARDEN_SECRETS_MANAGER",
+  provide: secretsManagerFactoryProviderName,
   useFactory: async (configService: ConfigService) => {
     const logger = new Logger();
     const settings: ClientSettings = {
