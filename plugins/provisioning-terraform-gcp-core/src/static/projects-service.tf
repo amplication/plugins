@@ -20,7 +20,7 @@ module "service_project_teams" {
     "storage.googleapis.com",
     "servicenetworking.googleapis.com",
     "artifactregistry.googleapis.com",
-    "sql.googleapis.com",
+    "sqladmin.googleapis.com",
     "compute.googleapis.com",
     "run.googleapis.com",
     "container.googleapis.com"
