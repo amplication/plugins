@@ -1,20 +1,22 @@
-import {
-  EventNames,
-  type AmplicationPlugin,
-  type CreateServerPackageJsonParams,
-  type DsgContext,
-  type Events,
-  CreateServerDotEnvParams,
+import type {
+  AmplicationPlugin,
   CreateServerParams,
+  DsgContext,
+  Events,
   ModuleMap,
+  CreateServerPackageJsonParams,
+  CreateServerDotEnvParams,
   CreateServerSecretsManagerParams,
 } from "@amplication/code-gen-types";
-import { dependencies, envVariables } from "./constants";
+import { EventNames } from "@amplication/code-gen-types";
 import { resolve } from "path";
-import { getPluginSettings } from "./utils";
-import { secretNamesParser } from "./utils/secret_name_parser";
+import { dependencies, envVariables } from "./constants";
+import { getPluginSettings, secretNamesParser } from "./utils";
 
-class AwsSecretsManagerPlugin implements AmplicationPlugin {
+class BitWardenSecretsManagerPlugin implements AmplicationPlugin {
+  /**
+   * This is mandatory function that returns an object with the event name. Each event can have before or/and after
+   */
   register(): Events {
     return {
       [EventNames.CreateServerPackageJson]: {
@@ -24,41 +26,49 @@ class AwsSecretsManagerPlugin implements AmplicationPlugin {
         before: this.beforeCreateServerDotEnv,
       },
       [EventNames.CreateServer]: {
-        after: this.beforeCreateServer,
+        after: this.AfterCreateServer,
       },
       [EventNames.CreateServerSecretsManager]: {
         before: this.beforeCreateServerSecretsManager,
       },
     };
   }
-
+  // You can combine many events in one plugin in order to change the related files.
   beforeCreatePackageJson(
     _: DsgContext,
     eventParams: CreateServerPackageJsonParams,
   ): CreateServerPackageJsonParams {
     eventParams.updateProperties.push(dependencies);
-
     return eventParams;
   }
 
   beforeCreateServerDotEnv(
-    _: DsgContext,
+    context: DsgContext,
     eventParams: CreateServerDotEnvParams,
   ): CreateServerDotEnvParams {
-    eventParams.envVariables = [...eventParams.envVariables, ...envVariables];
-
+    const { BITWARDEN_ACCESS_TOKEN, BITWARDEN_ORGANISATION_ID } =
+      getPluginSettings(context.pluginInstallations);
+    eventParams.envVariables = [
+      ...eventParams.envVariables,
+      ...[
+        { BITWARDEN_ACCESS_TOKEN: BITWARDEN_ACCESS_TOKEN },
+        { BITWARDEN_ORGANISATION_ID: BITWARDEN_ORGANISATION_ID },
+      ],
+      ...envVariables,
+    ];
     return eventParams;
   }
 
-  async beforeCreateServer(
+  async AfterCreateServer(
     context: DsgContext,
     _: CreateServerParams,
     modules: ModuleMap,
   ): Promise<ModuleMap> {
-    const { fetchMode } = getPluginSettings(context.pluginInstallations);
+    const { fetchMode, secretNames } = getPluginSettings(
+      context.pluginInstallations,
+    );
     const staticPath = resolve(__dirname, "static", fetchMode.toLowerCase());
 
-    // Import static files
     const staticFiles = await context.utils.importStaticModules(
       staticPath,
       context.serverDirectories.srcDirectory,
@@ -68,7 +78,6 @@ class AwsSecretsManagerPlugin implements AmplicationPlugin {
 
     return modules;
   }
-
   async beforeCreateServerSecretsManager(
     context: DsgContext,
     eventParams: CreateServerSecretsManagerParams,
@@ -76,9 +85,8 @@ class AwsSecretsManagerPlugin implements AmplicationPlugin {
     const { secretNames } = getPluginSettings(context.pluginInstallations);
 
     eventParams.secretsNameKey.push(...secretNamesParser(secretNames));
-
     return eventParams;
   }
 }
 
-export default AwsSecretsManagerPlugin;
+export default BitWardenSecretsManagerPlugin;
