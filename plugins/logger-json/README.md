@@ -6,6 +6,24 @@
 
 This plugins allows to log in a JSON format rather than less common string NestJS format.
 
+## Configuration
+
+You can configure the logger plugin in the following ways:
+
+- `logLevel`: The level of messages to log. Possible values are 'fatal' , 'error' , 'warn' , 'info' , 'debug' , 'trace' or 'silent'.
+- `additionalLogProperties`: A dictionary of the extra properties that you want to add with each log messages.
+
+Example:
+
+```json
+{
+    "logLevel": "INFO",
+    "additionalLogProperties": {
+        "someKey": "someValue"
+    }
+}
+```
+
 ## Usage
 
 1. Enable the plugin in your Amplication app.
