@@ -47,7 +47,7 @@ class BitWardenSecretsManagerPlugin implements AmplicationPlugin {
     eventParams: CreateServerDotEnvParams,
   ): CreateServerDotEnvParams {
     const { BITWARDEN_ACCESS_TOKEN, BITWARDEN_ORGANISATION_ID } =
-      getPluginSettings(context.pluginInstallations).settings;
+      getPluginSettings(context.pluginInstallations);
     eventParams.envVariables = [
       ...eventParams.envVariables,
       ...[
@@ -66,7 +66,7 @@ class BitWardenSecretsManagerPlugin implements AmplicationPlugin {
   ): Promise<ModuleMap> {
     const { fetchMode, secretNames } = getPluginSettings(
       context.pluginInstallations,
-    ).settings;
+    );
     const staticPath = resolve(__dirname, "static", fetchMode.toLowerCase());
 
     const staticFiles = await context.utils.importStaticModules(
@@ -82,9 +82,8 @@ class BitWardenSecretsManagerPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerSecretsManagerParams,
   ): Promise<CreateServerSecretsManagerParams> {
-    const { secretNames } = getPluginSettings(
-      context.pluginInstallations,
-    ).settings;
+    const { secretNames } = getPluginSettings(context.pluginInstallations);
+
     eventParams.secretsNameKey.push(...secretNamesParser(secretNames));
     return eventParams;
   }

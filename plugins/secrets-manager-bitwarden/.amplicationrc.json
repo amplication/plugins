@@ -1,11 +1,6 @@
 {
-  "settings": {
-    "BITWARDEN_ACCESS_TOKEN": "",
-    "BITWARDEN_ORGANISATION_ID": "",
-    "fetchMode": "STARTUP",
-    "secretNames": ["key1", "key2"]
-  },
-  "systemSettings": {
-    "requireAuthenticationEntity": "false"
-  }
+  "BITWARDEN_ACCESS_TOKEN": "",
+  "BITWARDEN_ORGANISATION_ID": "",
+  "fetchMode": "STARTUP",
+  "secretNames": ["key1", "key2"]
 }
