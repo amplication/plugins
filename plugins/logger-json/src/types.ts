@@ -1,8 +1,8 @@
 export type AdditionalProperties = {
-    [key: string]: any
-}
+  [key: string]: any;
+};
 
 export interface Settings {
-    logLevel: string,
-    additionalLogProperties: AdditionalProperties
+  logLevel: string;
+  additionalLogProperties: AdditionalProperties;
 }
