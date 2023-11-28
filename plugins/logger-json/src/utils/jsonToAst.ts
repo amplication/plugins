@@ -1,4 +1,4 @@
-import { AdditionalProperties } from "src/types";
+import { AdditionalProperties } from "../types";
 import { ASTNode, builders as b, namedTypes as n } from "ast-types";
 
 export const propertiesToAST = (items: AdditionalProperties): ASTNode => {
