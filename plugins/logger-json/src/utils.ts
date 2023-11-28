@@ -13,7 +13,7 @@ export const getPluginSettings = (
   const userSettings = plugin?.settings ?? {};
 
   const settings: Settings = {
-    ...defaultSettings,
+    ...defaultSettings.settings,
     ...userSettings,
   };
 
