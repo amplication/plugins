@@ -18,6 +18,8 @@ jobs:
           trigger: "/publish"
           prefix_only: "true"
           reaction: "rocket"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
   get-refs:
     name: Resolve PR refs
