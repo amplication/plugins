@@ -1,0 +1,7 @@
+{
+  "targets": {
+    "install": {},
+    "lint": {},
+    "npm:publish": {}
+  }
+}
