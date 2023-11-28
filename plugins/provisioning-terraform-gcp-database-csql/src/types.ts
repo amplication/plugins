@@ -5,6 +5,7 @@ export enum DatabaseTypes {
 export interface Settings {
   global: {
     name: string;
+    team: string;
     project_identifier: string;
     region: string;
     zone_suffix: string;

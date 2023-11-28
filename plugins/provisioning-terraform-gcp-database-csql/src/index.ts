@@ -8,7 +8,7 @@ import type {
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
 import { resolve } from "path";
-import { kebabCase, snakeCase } from "lodash";
+import { kebabCase } from "lodash";
 import { getTerraformDirectory, getPluginSettings } from "./utils";
 import {
   moduleNameKey,
@@ -24,6 +24,7 @@ import {
   availabilityTypeKey,
   deletionProtectionKey,
   versionKey,
+  teamKey,
 } from "./constants";
 
 class TerraformAwsDatabaseCloudSql implements AmplicationPlugin {
@@ -71,8 +72,9 @@ class TerraformAwsDatabaseCloudSql implements AmplicationPlugin {
 
     const staticPath = resolve(
       __dirname,
-      "./static" + settings.configuration.type
+      "./static/" + settings.configuration.type
     );
+
     const staticFiles = await context.utils.importStaticModules(
       staticPath,
       terraformDirectory
@@ -84,8 +86,8 @@ class TerraformAwsDatabaseCloudSql implements AmplicationPlugin {
 
     staticFiles.replaceModulesCode((_path, code) =>
       code
-        .replaceAll(moduleNameKey, "csql_" + snakeCase(name))
         .replaceAll(nameKey, kebabCase(name))
+        .replaceAll(teamKey, settings.global.team)
         .replaceAll(projectIdentifierKey, settings.global.project_identifier)
         .replaceAll(regionKey, settings.global.region)
         .replaceAll(zoneSuffixKey, settings.global.zone_suffix)
@@ -97,6 +99,10 @@ class TerraformAwsDatabaseCloudSql implements AmplicationPlugin {
         .replaceAll(availabilityTypeKey, settings.global.availability_type)
         .replaceAll(deletionProtectionKey, settings.global.deletion_protection)
         .replaceAll(versionKey, settings.global.version)
+    );
+
+    context.logger.warn(
+      JSON.stringify("static:" + staticPath + ", output: " + terraformDirectory)
     );
 
     context.logger.info(`Generated Terraform GCP Database Cloud SQL...`);

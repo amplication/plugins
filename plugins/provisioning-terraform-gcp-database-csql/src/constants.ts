@@ -1,6 +1,7 @@
 export const moduleNameKey = "${{ MODULE_NAME }}";
 export const nameKey = "${{ NAME }}";
 export const regionKey = "${{ REGION }}";
+export const teamKey = "${{ TEAM }}";
 export const projectIdentifierKey = "${{ PROJECT_IDENTIFIER }}";
 export const zoneSuffixKey = "${{ ZONE_SUFFIX }}";
 export const tierKey = "${{ TIER }}";

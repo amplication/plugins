@@ -2,8 +2,9 @@
   "settings": {
     "global": {
       "name": "",
+      "team": "development",
       "region": "europe-west1",
-      "zone": "a",
+      "zone_suffix": "a",
       "availability_type": "ZONAL",
       "tier": "db-custom-2-3840",
       "disk_size": "10",
