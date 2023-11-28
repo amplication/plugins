@@ -82,7 +82,7 @@ jobs:
               repo: context.repo.repo,
               pull_number: context.issue.number
             });
-            return pr.data.head.sha | cut -c1-7;
+            return pr.data.head.sha.substring(0, 7);
 
   publish:
     name: Publish beta version
