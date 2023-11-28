@@ -36,6 +36,7 @@ jobs:
         id: head
         uses: actions/github-script@v5
         with:
+          result-encoding: string
           script: |
             const pr = await github.rest.pulls.get({
               owner: context.repo.owner,
@@ -48,6 +49,7 @@ jobs:
         id: base
         uses: actions/github-script@v5
         with:
+          result-encoding: string
           script: |
             const pr = await github.rest.pulls.get({
               owner: context.repo.owner,
@@ -76,6 +78,7 @@ jobs:
         id: last-commit
         uses: actions/github-script@v5
         with:
+          result-encoding: string
           script: |
             const pr = await github.rest.pulls.get({
               owner: context.repo.owner,
