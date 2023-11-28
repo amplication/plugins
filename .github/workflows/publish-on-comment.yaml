@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.issue.pull_request }}
     outputs:
-      last-commit-short-sha: ${{ steps.last_commit.outputs.sha }}
+      last-commit-short-sha: ${{ steps.last-commit.outputs.result  }}
     steps:
       - name: Get last commit SHA of the PR
         id: last-commit
