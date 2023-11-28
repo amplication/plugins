@@ -98,14 +98,35 @@ jobs:
           fi
 
   publish:
-    name: Publish
+    name: Publish latest version
+    runs-on: ubuntu-latest
     needs: nx
     if: ${{ github.event_name == 'push' && needs.nx.outputs.affected-plugins != '[]' && needs.nx.outputs.affected-plugins != '' }}
-    uses: ./.github/workflows/publish.template.yaml
     strategy:
       matrix:
         affected-plugin: ${{ fromJson(needs.nx.outputs.affected-plugins) }}
-    with:
-      affected-plugin: ${{ matrix.affected-plugin }}
-    secrets:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies and build 🔧
+        run: npm ci && npm run build
+        working-directory: plugins/${{ matrix.affected-plugin }}
+
+      - name: Publish version dry-run
+        run: npm publish --access public --dry-run
+        working-directory: plugins/${{ matrix.affected-plugin }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish package on NPM [latest] 📦
+        run: npm publish --access public
+        working-directory: plugins/${{ matrix.affected-plugin }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

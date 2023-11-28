@@ -1,0 +1,139 @@
+name: publish-on-comment
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  check-comment:
+    name: Check comment for /publish
+    runs-on: ubuntu-latest
+    if: ${{ github.event.issue.pull_request }}
+    outputs:
+      trigger-comment: ${{ steps.check.outputs.triggered }}
+    steps:
+      - uses: khan/pull-request-comment-trigger@v1.1.0
+        id: check
+        with:
+          trigger: "/publish"
+          prefix_only: "true"
+          reaction: "rocket"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+  get-refs:
+    name: Resolve PR refs
+    runs-on: ubuntu-latest
+    if: ${{ github.event.issue.pull_request }}
+    outputs:
+      head: ${{ steps.head.outputs.result }}
+      base: ${{ steps.base.outputs.result }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get head
+        id: head
+        uses: actions/github-script@v5
+        with:
+          result-encoding: string
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            return pr.data.head.ref;
+
+      - name: Get base
+        id: base
+        uses: actions/github-script@v5
+        with:
+          result-encoding: string
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            return pr.data.base.ref;
+
+  get-affected-plugins:
+    name: Get affected plugins
+    needs: [check-comment, get-refs]
+    if: ${{ needs.check-comment.outputs.trigger-comment == 'true' }}
+    uses: ./.github/workflows/nx.template.yaml
+    with:
+      nx-head: ${{ needs.get-refs.outputs.head }}
+      nx-base: ${{ needs.get-refs.outputs.base }}
+
+  get-last-commit:
+    name: Get last commit short SHA of the PR
+    runs-on: ubuntu-latest
+    if: ${{ github.event.issue.pull_request }}
+    outputs:
+      last-commit-short-sha: ${{ steps.last-commit.outputs.result  }}
+    steps:
+      - name: Get last commit SHA of the PR
+        id: last-commit
+        uses: actions/github-script@v5
+        with:
+          result-encoding: string
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            return pr.data.head.sha.substring(0, 7);
+
+  publish:
+    name: Publish beta version
+    runs-on: ubuntu-latest
+    needs: [get-affected-plugins, get-last-commit]
+    if: ${{ needs.get-affected-plugins.outputs.affected-plugins != '[]' && needs.get-affected-plugins.outputs.affected-plugins != '' }}
+    strategy:
+      matrix:
+        affected-plugin: ${{ fromJson(needs.get-affected-plugins.outputs.affected-plugins) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies and build 🔧
+        run: npm ci && npm run build
+        working-directory: plugins/${{ matrix.affected-plugin }}
+
+      - name: Publish version dry-run
+        run: npm publish --access public --tag beta --dry-run
+        working-directory: plugins/${{ matrix.affected-plugin }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish package on NPM [beta] 📦
+        run: |
+          VERSION=$(cat package.json | jq -r '.version')
+          npm version $VERSION-beta.pr-${{ github.event.issue.number }}.${{ needs.get-last-commit.outputs.last-commit-short-sha }}
+          npm publish --access public --tag beta
+        working-directory: plugins/${{ matrix.affected-plugin }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  create-comment:
+    name: Create comment
+    runs-on: ubuntu-latest
+    needs: [get-affected-plugins, publish]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            Published beta version for ${{ needs.get-affected-plugins.outputs.affected-plugins }}

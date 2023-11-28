@@ -1,0 +1,58 @@
+{
+  "name": "@amplication/plugin-secrets-manager-bitwarden",
+  "version": "1.0.0",
+  "description": "Amplication plugin to manage secrets using Bitwarden-secret-manager",
+  "main": "dist/index.js",
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "dev": "webpack --watch",
+    "build": "webpack",
+    "prebuild": "rimraf dist"
+  },
+  "author": "ChenemiKen <chenemiken15@gmail.com>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@amplication/code-gen-types": "^2.0.19",
+    "@amplication/code-gen-utils": "^0.0.7",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@babel/parser": "^7.23.0",
+    "@babel/types": "^7.23.0",
+    "@types/jest": "^29.5.6",
+    "@types/lodash": "^4.14.200",
+    "@typescript-eslint/eslint-plugin": "^6.9.0",
+    "@typescript-eslint/parser": "^6.9.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "eslint": "^8.52.0",
+    "jest-mock-extended": "^3.0.5",
+    "prettier": "^3.0.3",
+    "rimraf": "^5.0.5",
+    "ts-jest": "^29.1.1",
+    "ts-loader": "^9.5.0",
+    "typescript": "^5.2.2",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src/tests",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "testEnvironment": "node"
+  },
+  "keywords": [
+    "amplication",
+    "bitwarden",
+    "secret-manager"
+  ]
+}
