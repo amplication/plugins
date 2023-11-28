@@ -9,10 +9,10 @@ import {
     ModuleMap,
     CreateServerSecretsManagerParams,
 } from "@amplication/code-gen-types";
-import { dependencies, envVariables } from "./constants";
+import { dependencies } from "./constants";
 import { resolve } from "path";
 import { getPluginSettings } from "./utils";
-import { secretNamesParser } from "./utils/secret_name_parser";
+import { secretNamesParser } from "./utils/secret-name-parser";
 
 class GoogleSecretsManager implements AmplicationPlugin {
     register(): Events {
@@ -42,10 +42,15 @@ class GoogleSecretsManager implements AmplicationPlugin {
     }
 
     beforeCreateServerDotEnv(
-        _: DsgContext,
+        context: DsgContext,
         eventParams: CreateServerDotEnvParams,
     ): CreateServerDotEnvParams {
-        eventParams.envVariables = [...eventParams.envVariables, ...envVariables];
+        const { gcpResourceId } = getPluginSettings(context.pluginInstallations)
+
+        eventParams.envVariables = [
+            ...eventParams.envVariables,
+            ...[{ GCP_RESOURCE_ID: gcpResourceId }]
+        ];
 
         return eventParams;
     }

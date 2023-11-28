@@ -1,5 +1,6 @@
 export interface Settings {
     fetchMode: string;
+    gcpResourceId: string;
     secretNames: string[];
 }
 

@@ -1,5 +1,6 @@
 {
   "settings": {
+    "gcpResourceId": "12345678910",
     "fetchMode": "STARTUP",
     "secretNames": [
       "SecretA:1",

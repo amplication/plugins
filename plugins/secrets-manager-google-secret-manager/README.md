@@ -10,10 +10,10 @@ This purpose of this plugin is to easily and securely use secrets from Google Se
 
 ## Configuration
 
-The plugins are fetched by two methods:
+The secrets are fetched by two methods:
 
-- `STARTUP` - In this method, the plugins are fetched during the startup time (Initially loaded).
-- `ON_DEMAND` - In this method, the plugins are fetched during the runtime (Loaded when the secrets are needed).
+- `STARTUP` - In this method, the secrets are fetched during the startup time (Initially loaded).
+- `ON_DEMAND` - In this method, the secrets are fetched during the runtime (Loaded when the secrets are needed).
 
 You need to define also a property named `secretNames` that will contain a list of the secrets that the service needs to interact with (see below for the formatting of the secret name).
 
@@ -31,7 +31,7 @@ Example:
 
 ## Secret name format
 
-- `<secret_name>:<secret_version>` where `<secret_name>` is the name of the secet that you want to load and the `<secret_version>` is the version of the secret to load.
+- `<secret_name>:<secret_version>` where `<secret_name>` is the name of the secrets that you want to load and the `<secret_version>` is the version of the secret to load.
 
 ## Usage
 
