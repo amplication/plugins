@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-provisioning-terraform-aws-repository-ecr",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Adds a container registry setup based on terraform for Amazon Web Services to the generated service.",
   "main": "dist/index.js",
   "nx": {},
