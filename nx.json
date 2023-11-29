@@ -4,7 +4,7 @@
     "defaultBase": "master"
   },
   "targetDefaults": {
-    "install": {
+    "install:clean": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npm ci",
@@ -13,7 +13,7 @@
     },
     "build": {
       "cache": true,
-      "dependsOn": ["install", "^build", "format:write"],
+      "dependsOn": ["install:clean", "^build", "format:write"],
       "inputs": ["production", "^production"]
     },
     "lint": {
