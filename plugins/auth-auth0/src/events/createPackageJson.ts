@@ -11,7 +11,7 @@ import {
 export const beforeCreatePackageJson = (event: "server" | "client") => {
   return async (
     context: DsgContext,
-    eventParams: CreateAdminUIPackageJsonParams | CreateServerPackageJsonParams,
+    eventParams: CreateAdminUIPackageJsonParams | CreateServerPackageJsonParams
   ): Promise<
     CreateAdminUIPackageJsonParams | CreateServerPackageJsonParams
   > => {

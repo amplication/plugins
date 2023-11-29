@@ -15,7 +15,7 @@ module "${{ RDS_MODULE_NAME }}" {
 
   db_name  = "${{ DATABASE_NAME }}"
   username = "${{ DATABASE_USERNAME }}"
-  password = random_password.password.result
+  password = random_password.database_password.result
   port     = ${{ DATABASE_PORT }}
 
   manage_master_user_password = false
@@ -28,17 +28,17 @@ module "${{ RDS_MODULE_NAME }}" {
   backup_retention_period = ${{ BACKUP_RETENTION_PERIOD }}
 }
 
-resource "random_password" "password" {
-  length           = 20
-  special          = false
+resource "random_password" "database_password" {
+  length  = 20
+  special = false
 }
 
 module "${{ SG_MODULE_NAME }}" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "5.0.0"
 
-  name        = "${{ SECURITY_GROUP_IDENTIFIER }}"
-  vpc_id      = module.vpc.vpc_id
+  name   = "${{ SECURITY_GROUP_IDENTIFIER }}"
+  vpc_id = module.vpc.vpc_id
 
   ingress_with_cidr_blocks = [
     {
@@ -48,6 +48,12 @@ module "${{ SG_MODULE_NAME }}" {
       cidr_blocks = module.vpc.vpc_cidr_block
     },
   ]
+}
+
+output "db_password" {
+  description = "The password for the master user of the database"
+  value       = random_password.database_password.result
+  sensitive   = true
 }
 
 output "db_instance_address" {

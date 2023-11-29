@@ -16,7 +16,7 @@ locals {
   name        = "${{ NAME }}"
   region      = "${{ REGION_IDENTIFIER }}"
   environment = "${{ ENVIRONMENT }}"
-  
-  vpc_cidr_block  = "${{ CIDR_BLOCK }}"
-  vpc_azs         = slice(data.aws_availability_zones.available.names, 0, 3)
+
+  vpc_cidr_block = "${{ CIDR_BLOCK }}"
+  vpc_azs        = slice(data.aws_availability_zones.available.names, 0, 3)
 }

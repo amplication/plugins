@@ -109,47 +109,7 @@ export class InvalidDataTypeError extends Error {
     super(
       `Invalid fields data types: ${fields
         .map((field) => `${field.name} data type should be ${field.dataType}`)
-        .join(", ")}`,
+        .join(", ")}`
     );
   }
-}
-
-export function createUserEntityIfNotExist(
-  authEntity?: Entity,
-  entities?: Entity[],
-): void {
-  if (!authEntity) {
-    entities?.push(DEFAULT_USER_ENTITY);
-  } else {
-    const missingAuthFields =
-      authEntity.fields && getMissingAuthFields(authEntity.fields);
-
-    missingAuthFields &&
-      entities
-        ?.find((x) => x.name === authEntity.name)
-        ?.fields.push(...missingAuthFields);
-  }
-}
-
-export function getMissingAuthFields(fields: EntityField[]): EntityField[] {
-  const fieldsByName = Object.fromEntries(
-    fields.map((field) => [field.name, field]),
-  );
-  const missingAuthFields: EntityField[] = [];
-  const invalidDataTypeAuthFields: EntityField[] = [];
-  for (const field of USER_AUTH_FIELDS) {
-    if (field.name in fieldsByName) {
-      if (fieldsByName[field.name].dataType !== field.dataType) {
-        invalidDataTypeAuthFields.push(field);
-      }
-    } else {
-      missingAuthFields.push(field);
-    }
-  }
-
-  if (invalidDataTypeAuthFields.length) {
-    throw new InvalidDataTypeError(invalidDataTypeAuthFields);
-  }
-
-  return missingAuthFields;
 }

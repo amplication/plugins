@@ -1,7 +1,8 @@
 {
   "name": "@amplication/plugin-broker-nats",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "main": "dist/index.js",
+  "nx": {},
   "scripts": {
     "prepublishOnly": "npm run build",
     "dev": "webpack --watch",

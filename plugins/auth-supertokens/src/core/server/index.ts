@@ -1,0 +1,12 @@
+export { alterGraphqlSettingsInAppModule } from "./alterGraphqlSettings";
+export { addRemoveAuthFiles } from "./addRemoveAuthFiles";
+export { createSupertokensService } from "./createSupertokensService";
+export { removeRemoveDefaultCorsSettingInMain } from "./removeRemoveDefaultCorsSettingInMain";
+export { addAuthModuleInAuthDir } from "./addAuthModuleInAuthDir";
+export { injectAuthService } from "./injectAuthService";
+export { createAuthService } from "./createAuthService";
+export { verifyAuthCorePluginIsInstalled } from "./verifyAuthCorePluginIsInstalled";
+export { addAppCorsSettings } from "./addAppCorsSettings";
+export { addAuthFilter } from "./addAuthFilter";
+export { addGenSupertokensOptionsImport } from "./addGenSupertokensOptionsImport";
+export { verifySupertokensIdFieldExists } from "./verifySupertokensIdFieldExists";

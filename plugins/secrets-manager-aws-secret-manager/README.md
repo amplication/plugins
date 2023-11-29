@@ -15,16 +15,17 @@ The plugins are fetched by two methods:
 - `STARTUP` - In this method, the plugins are fetched during the startup time (Initially loaded).
 - `ON_DEMAND` - In this method, the plugins are fetched during the runtime (Loaded when the secrets are needed).
 
-If you are choosing the `STARTUP` method, you need to define another property named `secretNames` that will contain a list of the secrets that needs to be loaded during startup time (see below for the formatting of the secret name).
+You need to define also a property named `secretNames` that will contain a list of the secrets that the service needs to interact with (see below for the formatting of the secret name).
 
 Example:
 
 ```json
 "fetchMode": "STARTUP",
 "secretNames": [
-    "/secretA",
-    "/path/path2/secretB",
-    "/path/path2/path3/secretC"
+    "/path/common",
+    "/path/path1:SecretA",
+    "/path/path2:SecretB",
+    "/path/path2/path3:SecretC"
 ]
 
 ```

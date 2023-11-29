@@ -1,0 +1,132 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  push:
+    branches:
+      - master
+
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NX_BRANCH: ${{ github.head_ref }}
+  BASE: ${{ github.base_ref || github.event.repository.default_branch}}
+
+jobs:
+  ci:
+    name: Continuous Integration
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Nx set sha
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: ${{ env.BASE }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: "package.json"
+          cache: "npm"
+          cache-dependency-path: "package-lock.json"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npx nx affected --target=lint --parallel
+        continue-on-error: true # we will open a PR for fixing lint errors
+
+      - name: Build
+        run: npx nx affected --target=build --parallel
+
+      - name: Test
+        run: npx nx affected --target=test --parallel
+        continue-on-error: true # we will open a PR for fixing test errors
+
+  nx:
+    name: Nx
+    needs: ci
+    uses: ./.github/workflows/nx.template.yaml
+    with:
+      nx-head: ${{ github.head_ref && format('refs/pull/{0}/merge', github.event.number) || github.ref_name  }}
+      nx-base: ${{ github.base_ref || inputs.nx-base || github.event.repository.default_branch }}
+
+  plugin-version-validator:
+    runs-on: ubuntu-latest
+    name: Plugin Version Validator
+    needs: nx
+    if: ${{ github.event_name == 'pull_request' && needs.nx.outputs.affected-plugins != '[]' && needs.nx.outputs.affected-plugins != '' }}
+    strategy:
+      matrix:
+        affected-plugin: ${{ fromJson(needs.nx.outputs.affected-plugins) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get plugin version from PR
+        id: get-plugin-version
+        run: |
+          PLUGIN_PATH="plugins/${{ matrix.affected-plugin }}/package.json"
+          echo "version=$(cat $PLUGIN_PATH | jq -r '.version')" >> $GITHUB_OUTPUT
+
+      - name: Checkout target branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+
+      - name: Get current latest plugin version from the base branch
+        id: get-current-latest-version
+        run: |
+          PLUGIN_PATH="plugins/${{ matrix.affected-plugin }}/package.json" 
+          echo "version=$(cat $PLUGIN_PATH | jq -r '.version')" >> $GITHUB_OUTPUT
+
+      - name: Check if versions are equal
+        id: check-version
+        run: |
+          if [ "${{ steps.get-plugin-version.outputs.version }}" == "${{ steps.get-current-latest-version.outputs.version }}" ]; then
+            echo "❌ Versions are equal. Please bump the version in ${{ matrix.affected-plugin }} 😵"
+            exit 1
+          else
+            echo "✅ Versions are not equal. All good"
+            exit 0
+          fi
+
+  publish:
+    name: Publish latest version
+    runs-on: ubuntu-latest
+    needs: nx
+    if: ${{ github.event_name == 'push' && needs.nx.outputs.affected-plugins != '[]' && needs.nx.outputs.affected-plugins != '' }}
+    strategy:
+      matrix:
+        affected-plugin: ${{ fromJson(needs.nx.outputs.affected-plugins) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies and build 🔧
+        run: npm ci && npm run build
+        working-directory: plugins/${{ matrix.affected-plugin }}
+
+      - name: Publish version dry-run
+        run: npm publish --access public --dry-run
+        working-directory: plugins/${{ matrix.affected-plugin }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish package on NPM [latest] 📦
+        run: npm publish --access public
+        working-directory: plugins/${{ matrix.affected-plugin }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

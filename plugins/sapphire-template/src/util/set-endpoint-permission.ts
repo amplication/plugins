@@ -1,6 +1,10 @@
 import assert from "assert";
 import { builders, namedTypes } from "ast-types";
-import { Entity, EnumEntityAction, EnumEntityPermissionType } from "@amplication/code-gen-types";
+import {
+  Entity,
+  EnumEntityAction,
+  EnumEntityPermissionType,
+} from "@amplication/code-gen-types";
 import { getClassMethodById, removeDecoratorByName } from "./ast";
 import { createPublicDecorator } from "./create-public-decorator";
 import { removeIdentifierFromUseInterceptorDecorator } from "./nestjs-code-generation";

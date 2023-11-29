@@ -7,12 +7,14 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
       services: {
         server: {
           environment: {
-            DB_URL: "`sqlserver://db:1433;database=${DB_NAME};user=${DB_USER};password=${DB_PASSWORD};TrustServerCertificate=true`",
+            DB_URL:
+              "`sqlserver://db:1433;database=${DB_NAME};user=${DB_USER};password=${DB_PASSWORD};TrustServerCertificate=true`",
           },
         },
         migrate: {
           environment: {
-            DB_URL: "`sqlserver://db:1433;database=${DB_NAME};user=${DB_USER};password=${DB_PASSWORD};TrustServerCertificate=true`",
+            DB_URL:
+              "`sqlserver://db:1433;database=${DB_NAME};user=${DB_USER};password=${DB_PASSWORD};TrustServerCertificate=true`",
           },
         },
         db: {
@@ -37,7 +39,7 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
               "SELECT 1",
               "-b",
               "-o",
-              "/dev/null",              
+              "/dev/null",
             ],
             timeout: "5s",
             interval: "10s",
@@ -47,7 +49,7 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
         },
       },
       volumes: {
-        mssql: null,  //mssql: "/var/opt/mssql",
+        mssql: null, //mssql: "/var/opt/mssql",
       },
     },
   ];
@@ -78,7 +80,7 @@ export const updateDockerComposeDevProperties: CreateServerDockerComposeParams["
               "SELECT 1",
               "-b",
               "-o",
-              "/dev/null",              
+              "/dev/null",
             ],
             timeout: "5s",
             interval: "10s",

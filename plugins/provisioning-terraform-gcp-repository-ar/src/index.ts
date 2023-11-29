@@ -10,12 +10,7 @@ import { EventNames } from "@amplication/code-gen-types";
 import { resolve } from "path";
 import { kebabCase, snakeCase } from "lodash";
 import { getTerraformDirectory, getPluginSettings } from "./utils";
-import {
-  moduleNameKey,
-  nameKey,
-  regionKey,
-  projectIdentifierKey,
-} from "./constants";
+import { moduleNameKey, nameKey, regionKey } from "./constants";
 
 class TerraformGcpRepositoryArPlugin implements AmplicationPlugin {
   register(): Events {
@@ -55,7 +50,7 @@ class TerraformGcpRepositoryArPlugin implements AmplicationPlugin {
     // fetch the plugin specific settings and merge them with the defaults
     const settings = getPluginSettings(context.pluginInstallations);
 
-    const templateFileName: string = "ecr-template.tf";
+    const templateFileName: string = "ar-template.tf";
     const fileNamePrefix: string = "ar-";
     const fileNameSuffix: string = ".tf";
     const name: string = settings.repository_name
@@ -77,7 +72,6 @@ class TerraformGcpRepositoryArPlugin implements AmplicationPlugin {
         .replaceAll(moduleNameKey, "ar_" + snakeCase(name))
         .replaceAll(nameKey, kebabCase(name))
         .replaceAll(regionKey, settings.region)
-        .replaceAll(projectIdentifierKey, settings.project_id)
     );
 
     context.logger.info(

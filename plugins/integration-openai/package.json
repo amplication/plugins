@@ -1,8 +1,9 @@
 {
   "name": "@amplication/plugin-integrate-openai",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Add a module and a service to use OpenAI API to Amplication generated code",
   "main": "dist/index.js",
+  "nx": {},
   "scripts": {
     "dev": "webpack --watch",
     "build": "webpack",
