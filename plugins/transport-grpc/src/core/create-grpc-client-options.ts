@@ -47,7 +47,7 @@ export async function createGrpcClientOptionsFile(
   const templateMapping = {
     PACKAGES_ARRAY: packagesArray,
     PROTO_PATH_ARRAY: protoPathArray,
-    PORT_PATH: builders.stringLiteral("localhost:9090")
+    PORT_PATH: builders.stringLiteral("localhost:9090"),
   };
 
   const filePath = `${serverDirectories.srcDirectory}/${fileName}`;

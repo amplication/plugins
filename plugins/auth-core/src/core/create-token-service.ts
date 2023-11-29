@@ -6,7 +6,7 @@ import { join } from "path";
 import { templatesPath } from "../constants";
 
 export async function createTokenService(
-  dsgContext: DsgContext,
+  dsgContext: DsgContext
 ): Promise<Module> {
   const { serverDirectories, resourceInfo } = dsgContext;
   const authProvider: EnumAuthProviderType =
@@ -17,7 +17,7 @@ export async function createTokenService(
 
   const templatePath = join(
     templatesPath,
-    `create-token/${name.toLowerCase()}/${name.toLowerCase()}Token.service.template.ts`,
+    `create-token/${name.toLowerCase()}/${name.toLowerCase()}Token.service.template.ts`
   );
 
   const file = await readFile(templatePath);

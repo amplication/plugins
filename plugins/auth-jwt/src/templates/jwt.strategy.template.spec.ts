@@ -6,7 +6,7 @@ import { TEST_USER } from "../constants";
 declare class ENTITY_SERVICE {}
 describe("Testing the jwtStrategyBase.validate()", () => {
   const userService = mock<ENTITY_SERVICE>();
-  const jwtStrategy = new JwtStrategyBase(userService, "Secrete");
+  const jwtStrategy = new JwtStrategyBase("Secrete", userService);
   beforeEach(() => {
     userService.findOne.mockClear();
   });

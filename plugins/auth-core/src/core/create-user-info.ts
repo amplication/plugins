@@ -22,7 +22,7 @@ export async function createUserInfo(dsgContext: DsgContext): Promise<Module> {
   const { serverDirectories, resourceInfo, entities } = dsgContext;
 
   const authEntity = entities?.find(
-    (x) => x.name === resourceInfo?.settings.authEntityName,
+    (x) => x.name === resourceInfo?.settings.authEntityName
   );
   if (!authEntity) {
     dsgContext.logger.error(AUTH_ENTITY_LOG_ERROR);
@@ -38,14 +38,14 @@ export async function createUserInfo(dsgContext: DsgContext): Promise<Module> {
   const entityNameModuleId = builders.identifier(name);
   const entityNamImport = importNames(
     [entityNameModuleId],
-    `../${name.toLowerCase()}/base/${name}`,
+    `../${name.toLowerCase()}/base/${name}`
   );
 
   addImports(
     template,
     [entityNamImport].filter(
-      (x) => x, //remove nulls and undefined
-    ) as namedTypes.ImportDeclaration[],
+      (x) => x //remove nulls and undefined
+    ) as namedTypes.ImportDeclaration[]
   );
 
   const filePath = `${authDir}/${name}Info.ts`;
@@ -57,7 +57,7 @@ export async function createUserInfo(dsgContext: DsgContext): Promise<Module> {
 
 function prepareTemplateMapping(
   idType: types.Id["idType"],
-  authEntity: Entity,
+  authEntity: Entity
 ) {
   return {
     USER_ID_TYPE_ANNOTATION: idTypeTSOptions[idType],

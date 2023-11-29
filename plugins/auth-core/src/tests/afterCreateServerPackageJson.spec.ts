@@ -97,10 +97,10 @@ describe("Testing afterCreateServerPackageJson hook", () => {
     const updatedModules = await plugin.afterCreateServerPackageJson(
       context,
       params,
-      modules,
+      modules
     );
     const grantsModule = prettyCode(
-      updatedModules.get("src/grants.json")?.code,
+      updatedModules.get("src/grants.json")?.code
     );
     const expectedGrantsModule = prettyCode(correctGrantsOutput);
     expect(grantsModule).toStrictEqual(expectedGrantsModule);

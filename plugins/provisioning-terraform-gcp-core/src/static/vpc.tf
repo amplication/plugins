@@ -13,19 +13,19 @@ module "network" {
     {
       subnet_name           = "subnet-${each.key}-1"
       subnet_ip             = cidrsubnet(each.value.cidr, 8, 0)
-      subnet_region         = "europe-west1"
+      subnet_region         = "${var.region_prefix}1"
       subnet_private_access = true
     },
     {
       subnet_name           = "subnet-${each.key}-2"
-      subnet_ip             = cidrsubnet(each.value.cidr, 8, 4)
-      subnet_region         = "europe-west2"
+      subnet_ip             = cidrsubnet(each.value.cidr, 8, 1)
+      subnet_region         = "${var.region_prefix}2"
       subnet_private_access = true
     },
     {
       subnet_name           = "subnet-${each.key}-3"
-      subnet_ip             = cidrsubnet(each.value.cidr, 8, 8)
-      subnet_region         = "europe-west3"
+      subnet_ip             = cidrsubnet(each.value.cidr, 8, 2)
+      subnet_region         = "${var.region_prefix}3"
       subnet_private_access = true
     },
   ]
