@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Adds terraform code for a Cloud SQL database to the generated service.",
   "main": "dist/index.js",
+  "nx": {},
   "scripts": {
     "prepublishOnly": "npm run build",
     "dev": "webpack --watch",
