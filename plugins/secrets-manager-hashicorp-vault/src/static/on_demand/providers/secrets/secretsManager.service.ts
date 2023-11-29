@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { SecretsManagerServiceBase } from "./base/secretsManager.service.base";
-import Vault from "node-vault"
+import Vault from "node-vault";
 import { EnumSecretsNameKey } from "./secretsNameKey.enum";
 
 @Injectable()
@@ -11,7 +11,7 @@ export class SecretsManagerService extends SecretsManagerServiceBase {
   constructor(
     @Inject("SECRETS_CLIENT")
     protected readonly client: Vault.client,
-    protected readonly configService: ConfigService
+    protected readonly configService: ConfigService,
   ) {
     super(configService);
   }
@@ -20,7 +20,7 @@ export class SecretsManagerService extends SecretsManagerServiceBase {
     const [secret_id, secret_name] = key.split(":");
 
     try {
-      return (await this.client.read(secret_id)).data.data[secret_name]
+      return (await this.client.read(secret_id)).data.data[secret_name];
     } catch (err: unknown) {
       if (err instanceof Error) {
         this.logger.error(
@@ -30,6 +30,6 @@ export class SecretsManagerService extends SecretsManagerServiceBase {
       }
     }
 
-    return null
+    return null;
   }
 }

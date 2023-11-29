@@ -8,12 +8,12 @@ export class SecretsManagerService extends SecretsManagerServiceBase {
   constructor(
     @Inject("SECRETS")
     protected readonly secrets: Partial<Record<EnumSecretsNameKey, unknown>>,
-    protected readonly configService: ConfigService
+    protected readonly configService: ConfigService,
   ) {
     super(configService);
   }
 
   async getSecret<T>(key: EnumSecretsNameKey): Promise<T | null> {
-    return this.secrets[key] as any
+    return this.secrets[key] as any;
   }
 }

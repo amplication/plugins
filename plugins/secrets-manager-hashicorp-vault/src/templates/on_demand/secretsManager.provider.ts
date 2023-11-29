@@ -1,5 +1,5 @@
 import { ConfigService } from "@nestjs/config";
-import Vault from "node-vault"
+import Vault from "node-vault";
 
 export const SecretsManagerProvider = {
   provide: "SECRETS_CLIENT",
@@ -7,10 +7,10 @@ export const SecretsManagerProvider = {
     const vault = Vault({
       apiVersion: configService.get("VAULT_API_VER"),
       endpoint: configService.get("VAULT_ENDPOINT"),
-    })
-    VAULT_AUTH
+    });
+    VAULT_AUTH;
 
-    return vault
+    return vault;
   },
   inject: [ConfigService],
 };

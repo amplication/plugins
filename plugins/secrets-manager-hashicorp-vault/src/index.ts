@@ -11,7 +11,16 @@ import {
   CreateServerDockerComposeParams,
   CreateServerDockerComposeDBParams,
 } from "@amplication/code-gen-types";
-import { authModeAppRole, authModeToken, configs, dependencies, envVariablesAppRole, envVariablesAuthToken, updateDockerComposeDevProperties, updateDockerComposeProperties } from "./constants";
+import {
+  authModeAppRole,
+  authModeToken,
+  configs,
+  dependencies,
+  envVariablesAppRole,
+  envVariablesAuthToken,
+  updateDockerComposeDevProperties,
+  updateDockerComposeProperties,
+} from "./constants";
 import { join, resolve } from "path";
 import { getPluginSettings } from "./utils";
 import { secretNamesParser } from "./utils/secret_name_parser";
@@ -34,17 +43,17 @@ class HashiCorpVaultPlugin implements AmplicationPlugin {
         before: this.beforeCreateServerSecretsManager,
       },
       [EventNames.CreateServerDockerCompose]: {
-        before: this.beforeCreateServerDockerCompose
+        before: this.beforeCreateServerDockerCompose,
       },
       [EventNames.CreateServerDockerComposeDev]: {
-        before: this.beforeCreateServerDockerComposeDev
-      }
+        before: this.beforeCreateServerDockerComposeDev,
+      },
     };
   }
 
   beforeCreatePackageJson(
     _: DsgContext,
-    eventParams: CreateServerPackageJsonParams
+    eventParams: CreateServerPackageJsonParams,
   ): CreateServerPackageJsonParams {
     eventParams.updateProperties.push(dependencies);
 
@@ -53,14 +62,20 @@ class HashiCorpVaultPlugin implements AmplicationPlugin {
 
   beforeCreateServerDotEnv(
     context: DsgContext,
-    eventParams: CreateServerDotEnvParams
+    eventParams: CreateServerDotEnvParams,
   ): CreateServerDotEnvParams {
-    const { authMode } = getPluginSettings(context.pluginInstallations)
+    const { authMode } = getPluginSettings(context.pluginInstallations);
 
-    if(authMode == "APPROLE") {
-      eventParams.envVariables = [...eventParams.envVariables, ...envVariablesAppRole];
+    if (authMode == "APPROLE") {
+      eventParams.envVariables = [
+        ...eventParams.envVariables,
+        ...envVariablesAppRole,
+      ];
     } else {
-      eventParams.envVariables = [...eventParams.envVariables, ...envVariablesAuthToken];
+      eventParams.envVariables = [
+        ...eventParams.envVariables,
+        ...envVariablesAuthToken,
+      ];
     }
 
     return eventParams;
@@ -69,28 +84,42 @@ class HashiCorpVaultPlugin implements AmplicationPlugin {
   async beforeCreateServer(
     context: DsgContext,
     _: CreateServerParams,
-    modules: ModuleMap
+    modules: ModuleMap,
   ): Promise<ModuleMap> {
-    const { fetchMode, authMode } = getPluginSettings(context.pluginInstallations);
+    const { fetchMode, authMode } = getPluginSettings(
+      context.pluginInstallations,
+    );
     const staticPath = resolve(__dirname, "static", fetchMode.toLowerCase());
 
     // Gen code for the provider based on the auth type selected
-    const template = await readFile(resolve(__dirname, "templates", fetchMode.toLowerCase(), "secretsManager.provider.ts"))
+    const template = await readFile(
+      resolve(
+        __dirname,
+        "templates",
+        fetchMode.toLowerCase(),
+        "secretsManager.provider.ts",
+      ),
+    );
 
     interpolate(template, {
       //@ts-ignore
-      VAULT_AUTH: authMode == "APPROLE" ? authModeAppRole : authModeToken
-    })
+      VAULT_AUTH: authMode == "APPROLE" ? authModeAppRole : authModeToken,
+    });
 
     await modules.set({
       code: print(template).code,
-      path: join(context.serverDirectories.srcDirectory, "providers", "secrets", "secretsManager.provider.ts")
-    })
+      path: join(
+        context.serverDirectories.srcDirectory,
+        "providers",
+        "secrets",
+        "secretsManager.provider.ts",
+      ),
+    });
 
     // Import static files
     const staticFiles = await context.utils.importStaticModules(
       staticPath,
-      context.serverDirectories.srcDirectory
+      context.serverDirectories.srcDirectory,
     );
 
     await modules.merge(staticFiles);
@@ -98,17 +127,17 @@ class HashiCorpVaultPlugin implements AmplicationPlugin {
     // Copy the config files
     const configFiles = await context.utils.importStaticModules(
       configs,
-      context.serverDirectories.baseDirectory
-    )
+      context.serverDirectories.baseDirectory,
+    );
 
-    await modules.merge(configFiles)
+    await modules.merge(configFiles);
 
     return modules;
   }
 
   beforeCreateServerDockerCompose(
     _: DsgContext,
-    eventParams: CreateServerDockerComposeParams
+    eventParams: CreateServerDockerComposeParams,
   ) {
     eventParams.updateProperties.push(...updateDockerComposeProperties);
     return eventParams;
@@ -116,7 +145,7 @@ class HashiCorpVaultPlugin implements AmplicationPlugin {
 
   beforeCreateServerDockerComposeDev(
     context: DsgContext,
-    eventParams: CreateServerDockerComposeDBParams
+    eventParams: CreateServerDockerComposeDBParams,
   ) {
     eventParams.updateProperties.push(...updateDockerComposeDevProperties);
     return eventParams;
@@ -124,7 +153,7 @@ class HashiCorpVaultPlugin implements AmplicationPlugin {
 
   async beforeCreateServerSecretsManager(
     context: DsgContext,
-    eventParams: CreateServerSecretsManagerParams
+    eventParams: CreateServerSecretsManagerParams,
   ): Promise<CreateServerSecretsManagerParams> {
     const { secretNames } = getPluginSettings(context.pluginInstallations);
 
