@@ -1,4 +1,4 @@
-module "csql_${{ MODULE_NAME }}" {
+module "${{ MODULE_NAME }}" {
   source  = "googlecloudplatform/sql-db/google//modules/postgresql"
   version = "17.1.0"
 
@@ -31,24 +31,24 @@ module "csql_${{ MODULE_NAME }}" {
 }
 
 output "name" {
-  value = module.postgresql.instance_name
+  value = module.${{ MODULE_NAME }}.instance_name
 }
 
 output "user_name" {
-  value = module.postgresql.user_name
+  value = module.${{ MODULE_NAME }}.user_name
 }
 
 output "generated_user_password" {
   sensitive = true
-  value     = module.postgresql.generated_user_password
+  value     = module.${{ MODULE_NAME }}.generated_user_password
 }
 
 output "replicas" {
   sensitive = true
-  value     = module.postgresql.replicas
+  value     = module.${{ MODULE_NAME }}.replicas
 }
 
 output "instances" {
   sensitive = true
-  value     = module.postgresql.instances
+  value     = module.${{ MODULE_NAME }}.instances
 }

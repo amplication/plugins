@@ -86,7 +86,7 @@ class TerraformAwsDatabaseCloudSql implements AmplicationPlugin {
     staticFiles.replaceModulesCode((_path, code) =>
       code
         .replaceAll(nameKey, kebabCase(name))
-        .replaceAll(moduleNameKey, snakeCase(name))
+        .replaceAll(moduleNameKey, "csql_" + snakeCase(name))
         .replaceAll(environmentKey, settings.global.environment)
         .replaceAll(teamKey, settings.global.team)
         .replaceAll(regionKey, settings.global.region)

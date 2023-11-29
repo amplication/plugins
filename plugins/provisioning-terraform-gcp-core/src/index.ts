@@ -33,7 +33,7 @@ class TerraformGcpCorePlugin implements AmplicationPlugin {
   async afterCreateServer(
     context: DsgContext,
     eventParams: CreateServerParams,
-    modules: ModuleMap
+    modules: ModuleMap,
   ): Promise<ModuleMap> {
     context.logger.info("Generating Terraform Google Cloud Platform Core ...");
 
@@ -85,11 +85,11 @@ class TerraformGcpCorePlugin implements AmplicationPlugin {
       environmentsConfiguration = JSON.stringify(
         settings.environments,
         null,
-        "\t"
+        "\t",
       );
     } else {
       context.logger.warn(
-        "TerraformGcpCorePlugin: no environments were passed..."
+        "TerraformGcpCorePlugin: no environments were passed...",
       );
       environmentsConfiguration = "{}";
     }
@@ -98,7 +98,7 @@ class TerraformGcpCorePlugin implements AmplicationPlugin {
     const staticPath = resolve(__dirname, "./static");
     const staticFiles = await context.utils.importStaticModules(
       staticPath,
-      terraformDirectoryPath
+      terraformDirectoryPath,
     );
 
     staticFiles.replaceModulesCode((_path, code) =>
@@ -109,7 +109,7 @@ class TerraformGcpCorePlugin implements AmplicationPlugin {
         .replaceAll(globalDomainKey, settings.global.domain)
         .replaceAll(globalRegionPrefixKey, settings.global.region_prefix)
         .replaceAll(environmentsKey, environmentsConfiguration)
-        .replaceAll(backendKey, backendConfiguration)
+        .replaceAll(backendKey, backendConfiguration),
     );
 
     context.logger.info("Generated Terraform Google Cloud Platform Core ...");
