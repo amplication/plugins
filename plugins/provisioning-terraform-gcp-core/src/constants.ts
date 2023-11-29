@@ -7,4 +7,4 @@ export const globalRegionPrefixKey = "${{ GLOBAL_REGION_PREFIX }}";
 
 export const environmentsKey = "${{ ENVIRONMENTS }}";
 
-export const backendKey = "${{ BACKEND}}";
+export const backendKey = "${{ BACKEND }}";
