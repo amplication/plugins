@@ -10,12 +10,7 @@ import { EventNames } from "@amplication/code-gen-types";
 import { resolve } from "path";
 import { kebabCase, snakeCase } from "lodash";
 import { getTerraformDirectory, getPluginSettings } from "./utils";
-import {
-  moduleNameKey,
-  nameKey,
-  regionKey,
-  projectIdentifierKey,
-} from "./constants";
+import { moduleNameKey, nameKey, regionKey } from "./constants";
 
 class TerraformGcpRepositoryArPlugin implements AmplicationPlugin {
   register(): Events {
@@ -77,7 +72,6 @@ class TerraformGcpRepositoryArPlugin implements AmplicationPlugin {
         .replaceAll(moduleNameKey, "ar_" + snakeCase(name))
         .replaceAll(nameKey, kebabCase(name))
         .replaceAll(regionKey, settings.region)
-        .replaceAll(projectIdentifierKey, settings.project_id)
     );
 
     context.logger.info(

@@ -10,13 +10,9 @@ Adds a container registry setup based on terraform for Google Cloud Platform to 
 
 ## Configuration
 
-If a configuration is required, add it here.
-
 `repository_name` will determine the name of the container image repository, if unset it will default to the name of the generated service.
 
 `region` determines where the container image repository will be hosted.
-
-`project_id` determines in which project to place the container image repository.
 
 ## Usage
 

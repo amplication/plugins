@@ -1,8 +1,7 @@
 {
     "settings": {
         "repository_name": "",
-        "region": "europe-west1",
-        "project_id": "project-01234"
+        "region": "europe-west1"
     },
     "systemSettings": {
         "requireAuthenticationEntity": "false"
