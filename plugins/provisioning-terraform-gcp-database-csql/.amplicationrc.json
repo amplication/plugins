@@ -2,8 +2,9 @@
   "settings": {
     "global": {
       "name": "",
+      "environment": "sandbox",
       "team": "development",
-      "region": "europe-west1",
+      "region": "europe-west2",
       "zone_suffix": "a",
       "availability_type": "ZONAL",
       "tier": "db-custom-2-3840",

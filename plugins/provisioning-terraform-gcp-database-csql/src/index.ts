@@ -1,6 +1,5 @@
 import type {
   AmplicationPlugin,
-  CreateAdminUIParams,
   CreateServerParams,
   DsgContext,
   Events,
@@ -8,13 +7,13 @@ import type {
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
 import { resolve } from "path";
-import { kebabCase } from "lodash";
+import { kebabCase, snakeCase } from "lodash";
 import { getTerraformDirectory, getPluginSettings } from "./utils";
 import {
-  moduleNameKey,
+  environmentKey,
   nameKey,
   regionKey,
-  projectIdentifierKey,
+  moduleNameKey,
   zoneSuffixKey,
   tierKey,
   databaseCharsetKey,
@@ -87,8 +86,9 @@ class TerraformAwsDatabaseCloudSql implements AmplicationPlugin {
     staticFiles.replaceModulesCode((_path, code) =>
       code
         .replaceAll(nameKey, kebabCase(name))
+        .replaceAll(moduleNameKey, snakeCase(name))
+        .replaceAll(environmentKey, settings.global.environment)
         .replaceAll(teamKey, settings.global.team)
-        .replaceAll(projectIdentifierKey, settings.global.project_identifier)
         .replaceAll(regionKey, settings.global.region)
         .replaceAll(zoneSuffixKey, settings.global.zone_suffix)
         .replaceAll(tierKey, settings.global.tier)
@@ -99,10 +99,6 @@ class TerraformAwsDatabaseCloudSql implements AmplicationPlugin {
         .replaceAll(availabilityTypeKey, settings.global.availability_type)
         .replaceAll(deletionProtectionKey, settings.global.deletion_protection)
         .replaceAll(versionKey, settings.global.version)
-    );
-
-    context.logger.warn(
-      JSON.stringify("static:" + staticPath + ", output: " + terraformDirectory)
     );
 
     context.logger.info(`Generated Terraform GCP Database Cloud SQL...`);
