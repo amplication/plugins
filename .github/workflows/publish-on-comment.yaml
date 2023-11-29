@@ -90,7 +90,7 @@ jobs:
   publish:
     name: Publish beta version
     runs-on: ubuntu-latest
-    needs: [get-affected-plugins, get-last-commit]
+    needs: [get-affected-plugins, get-last-commit, get-refs]
     if: ${{ needs.get-affected-plugins.outputs.affected-plugins != '[]' && needs.get-affected-plugins.outputs.affected-plugins != '' }}
     strategy:
       matrix:
@@ -99,7 +99,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: ${{ needs.get-last-commit.outputs.last-commit-short-sha }}
+          ref: ${{ needs.get-refs.outputs.head }}
 
       - name: Setup Node
         uses: actions/setup-node@v3
