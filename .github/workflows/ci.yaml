@@ -63,6 +63,7 @@ jobs:
     needs: nx
     if: ${{ github.event_name == 'pull_request' && needs.nx.outputs.affected-plugins != '[]' && needs.nx.outputs.affected-plugins != '' }}
     strategy:
+      fail-fast: false
       matrix:
         affected-plugin: ${{ fromJson(needs.nx.outputs.affected-plugins) }}
     steps:
