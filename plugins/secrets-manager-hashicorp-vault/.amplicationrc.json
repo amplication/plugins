@@ -1,14 +1,9 @@
 {
-  "settings": {
-    "authMode": "TOKEN",
-    "fetchMode": "STARTUP",
-    "secretNames": [
-      "/secret/path/to:SecretA",
-      "/secret/path/to:SecretB",
-      "/secret/path/to/secrets/common"
-    ]
-  },
-  "systemSettings": {
-    "requireAuthenticationEntity": "false"
-  }
+  "authMode": "TOKEN",
+  "fetchMode": "STARTUP",
+  "secretNames": [
+    "/secret/path/to:SecretA",
+    "/secret/path/to:SecretB",
+    "/secret/path/to/secrets/common"
+  ]
 }
