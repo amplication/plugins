@@ -22,13 +22,13 @@ export const dependencies = {
 };
 
 export const authModeToken = `
-vault.token = configService.get("VAULT_TOKEN");
+vault.token = configService.getOrThrow("VAULT_TOKEN");
 `;
 
 export const authModeAppRole = `
 const result = await vault.approleLogin({
-  role_id: configService.get("ROLE_ID"),
-  secret_id: configService.get("SECRET_ID")
+  role_id: configService.getOrThrow("ROLE_ID"),
+  secret_id: configService.getOrThrow("SECRET_ID")
 })
 
 vault.token = result.auth.client_token ?? "";
