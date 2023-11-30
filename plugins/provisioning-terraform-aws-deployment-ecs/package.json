@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-provisioning-terraform-aws-deployment-ecs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Description of your plugin",
   "main": "dist/index.js",
   "nx": {},
