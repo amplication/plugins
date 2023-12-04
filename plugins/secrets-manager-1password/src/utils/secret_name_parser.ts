@@ -14,7 +14,7 @@ export function secretNameParser(secretPath: string): Record<string, string> {
 export function secretNamesParser(
   secretNames: string[],
 ): Record<string, string> {
-  var secretsParsed = {};
+  let secretsParsed = {};
 
   secretNames.forEach((secretName) => {
     secretsParsed = { ...secretsParsed, ...secretNameParser(secretName) };
