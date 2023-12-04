@@ -6,8 +6,7 @@ Amplication plugin that allows easy management of secrets by using 1Password.
 
 ## Purpose
 
-This purpose of this plugin is to easily and securely use secrets by using 1Password. Documentation for [1Passwordk-sdk](https://developer.1password.com/docs/connect/
-)
+This purpose of this plugin is to easily and securely use secrets by using 1Password. Documentation for [1Passwordk-sdk](https://developer.1password.com/docs/connect/)
 
 ## Configuration
 
@@ -41,11 +40,11 @@ The secret name must be formatted in the following way:
 To use this plugin:
 
 1. Get 1Passwork-Connect token by following:
-    * Sign in to your account on 1Password.com.
-    * Select Developer Tools from the sidebar.
-    * Under Infrastructure Secrets Management, select Other.
-    * Select "Create a Connect server".
-    * Follow the onscreen instructions to create a `1password-credentials.json` file and `Connect token`.
+   - Sign in to your account on 1Password.com.
+   - Select Developer Tools from the sidebar.
+   - Under Infrastructure Secrets Management, select Other.
+   - Select "Create a Connect server".
+   - Follow the onscreen instructions to create a `1password-credentials.json` file and `Connect token`.
 2. Update the `connect token` and `serverURL` in `.amplicationrc.json`
 
 This plugin will override your default implementation for `SecretsManagerService` to use the secrets from AWS Secrets Manager
@@ -59,4 +58,3 @@ Running `npm run build` will bundle your plugin with Webpack for production.
 ### `dev`
 
 Running `npm run dev` will watch your plugin's source code and automatically bundle it with every change.
-

@@ -1,16 +1,12 @@
 {
-    "settings": {
-        "awsRegion": "us-east-1",
-        "fetchMode": "STARTUP",
-        "secretNames": [
-            "SecretA",
-            "SecretB",
-            "SecretC"
-        ],
-        "serverURL": "http://localhost:8080",
-        "OnePasswordToken": "my-token"
-    },
-    "systemSettings": {
-        "requireAuthenticationEntity": "false"
-    }
+  "settings": {
+    "awsRegion": "us-east-1",
+    "fetchMode": "STARTUP",
+    "secretNames": ["SecretA", "SecretB", "SecretC"],
+    "serverURL": "http://localhost:8080",
+    "OnePasswordToken": "my-token"
+  },
+  "systemSettings": {
+    "requireAuthenticationEntity": "false"
+  }
 }
