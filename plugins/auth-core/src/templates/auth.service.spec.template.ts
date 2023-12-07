@@ -32,7 +32,7 @@ const USER: any = {
 const SIGN_TOKEN = "SIGN_TOKEN";
 
 const authEntityService = {
-  findOne(args: { where: { username: string } }): any | null {
+  FIND_ONE_FUNCTION(args: { where: { username: string } }): any | null {
     if (args.where.username === VALID_CREDENTIALS.username) {
       return USER;
     }
@@ -86,8 +86,8 @@ describe("AuthService", () => {
       await expect(
         service.validateUser(
           VALID_CREDENTIALS.username,
-          VALID_CREDENTIALS.password
-        )
+          VALID_CREDENTIALS.password,
+        ),
       ).resolves.toEqual({
         username: USER.username,
         roles: USER.roles,
@@ -99,8 +99,8 @@ describe("AuthService", () => {
       await expect(
         service.validateUser(
           INVALID_CREDENTIALS.username,
-          INVALID_CREDENTIALS.password
-        )
+          INVALID_CREDENTIALS.password,
+        ),
       ).resolves.toBe(null);
     });
   });
