@@ -1,7 +1,7 @@
 {
-  "name": "plugin-name",
-  "version": "0.0.1",
-  "description": "Description of your plugin",
+  "name": "@amplication/plugin-secrets-manager-1password",
+  "version": "1.0.0",
+  "description": "Amplication plugin for 1Password",
   "main": "dist/index.js",
   "nx": {},
   "scripts": {
@@ -9,10 +9,9 @@
     "dev": "webpack --watch",
     "build": "webpack",
     "prebuild": "rimraf dist",
-    "test": "jest",
     "format:write": "prettier --write \"**/*.{js,ts}\""
   },
-  "author": "Amplication Contributor",
+  "author": "Divjot <150240732+happyPointr@users.noreply.github.com>",
   "license": "Apache-2.0",
   "dependencies": {
     "@amplication/code-gen-types": "^2.0.20",
