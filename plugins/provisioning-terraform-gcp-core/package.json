@@ -1,7 +1,7 @@
 {
   "name": "@amplication/plugin-provisioning-terraform-gcp-core",
   "version": "0.0.1",
-  "description": "Description of your plugin",
+  "description": "Adds a core networking setup of terraform for Google Cloud to the generated service.",
   "main": "dist/index.js",
   "nx": {},
   "scripts": {
@@ -12,7 +12,7 @@
     "test": "jest",
     "format:write": "prettier --write \"**/*.{js,ts}\""
   },
-  "author": "Amplication Contributor",
+  "author": "Levi van Noort <levi@amplication.com>",
   "license": "Apache-2.0",
   "dependencies": {
     "@amplication/code-gen-types": "^2.0.19",
