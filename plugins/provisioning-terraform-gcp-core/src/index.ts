@@ -70,6 +70,7 @@ class TerraformGcpCorePlugin implements AmplicationPlugin {
       path = "${settings.backend?.local?.path}"
     }
   }`;
+        break;
       case BackendTypes.Gcs:
         backendConfiguration = `terraform {
     backend "${BackendTypes.Gcs}" {
@@ -77,6 +78,7 @@ class TerraformGcpCorePlugin implements AmplicationPlugin {
       prefix = "${settings.backend?.gcs?.prefix}"
     }
   }`;
+        break;
     }
 
     let environmentsConfiguration: string;
