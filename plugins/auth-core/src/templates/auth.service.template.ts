@@ -19,7 +19,7 @@ export class AuthService {
     username: string,
     password: string
   ): Promise<ENTITY_NAME_INFO | null> {
-    const user = await this.ENTITY_SERVICE.findOne({
+    const user = await this.ENTITY_SERVICE.FIND_ONE_FUNCTION({
       where: { username },
     });
     if (user && (await this.passwordService.compare(password, user.password))) {
