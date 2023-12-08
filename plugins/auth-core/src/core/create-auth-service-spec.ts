@@ -13,18 +13,19 @@ import {
   removeTSClassDeclares,
 } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
+import { camelCase } from "lodash";
 
 const authServiceSpecPath = join(
   templatesPath,
-  "auth.service.spec.template.ts"
+  "auth.service.spec.template.ts",
 );
 
 export async function createAuthServiceSpec(
-  dsgContext: DsgContext
+  dsgContext: DsgContext,
 ): Promise<Module> {
   const { entities, resourceInfo, serverDirectories } = dsgContext;
   const authEntity = entities?.find(
-    (x) => x.name === resourceInfo?.settings.authEntityName
+    (x) => x.name === resourceInfo?.settings.authEntityName,
   );
   if (!authEntity) {
     dsgContext.logger.error(AUTH_ENTITY_LOG_ERROR);
@@ -40,18 +41,19 @@ export async function createAuthServiceSpec(
 
   const entityServiceImport = importNames(
     [authServiceNameId],
-    `../${entityNameToLower}/${entityNameToLower}.service`
+    `../${entityNameToLower}/${entityNameToLower}.service`,
   );
 
   addImports(
     template,
     [entityServiceImport].filter(
-      (x) => x //remove nulls and undefined
-    ) as namedTypes.ImportDeclaration[]
+      (x) => x, //remove nulls and undefined
+    ) as namedTypes.ImportDeclaration[],
   );
 
   const templateMapping = {
     ENTITY_SERVICE: builders.identifier(entityServiceName),
+    FIND_ONE_FUNCTION: builders.identifier(`${camelCase(authEntity?.name)}`),
   };
 
   interpolate(template, templateMapping);

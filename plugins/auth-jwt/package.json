@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-auth-jwt",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "description": "set jwt as provider for Amplication build",
   "main": "dist/index.js",
   "nx": {},
