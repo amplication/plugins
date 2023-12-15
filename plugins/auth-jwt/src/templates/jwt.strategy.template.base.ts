@@ -20,7 +20,7 @@ export class JwtStrategyBase
 
   async validate(payload: ENTITY_NAME_INFO): Promise<ENTITY_NAME_INFO> {
     const { username } = payload;
-    const user = await this.ENTITY_SERVICE.findOne({
+    const user = await this.ENTITY_SERVICE.FIND_ONE_FUNCTION({
       where: { username },
     });
     if (!user) {
