@@ -19,7 +19,15 @@ import {
 import { readFile, print } from "@amplication/code-gen-utils";
 import { kebabCase } from "lodash";
 import { join, resolve } from "path";
-import { staticDirectory, templatesPath } from "./constants";
+import {
+  DOCKER_SERVICE_KAFKA_NAME,
+  DOCKER_SERVICE_KAFKA_PORT,
+  DOCKER_SERVICE_ZOOKEEPER_NAME,
+  DOCKER_SERVICE_ZOOKEEPER_PORT,
+  staticDirectory,
+  templatesPath,
+  updateDockerComposeDevProperties,
+} from "./constants";
 import { builders, namedTypes } from "ast-types";
 import {
   addImports,
@@ -50,7 +58,7 @@ class KafkaPlugin implements AmplicationPlugin {
         before: this.beforeCreateServerPackageJson,
       },
       CreateServerDockerComposeDev: {
-        before: this.beforeCreateDockerComposeFile,
+        before: this.beforeCreateDockerComposeDevFile,
       },
       CreateMessageBroker: {
         before: this.beforeCreateBroker,
@@ -227,52 +235,37 @@ class KafkaPlugin implements AmplicationPlugin {
     dsgContext: DsgContext,
     eventParams: CreateServerDockerComposeDevParams,
   ): CreateServerDockerComposeDevParams {
-    const KAFKA_NAME = "kafka";
-    const ZOOKEEPER_NAME = "zookeeper";
-    const ZOOKEEPER_PORT = "2181";
-    const KAFKA_PORT = "9092";
-    const KAFKA_UI = "kafka-ui";
-
-    const newParams = {
+    const updateDockerComposeProperties = {
       services: {
-        [ZOOKEEPER_NAME]: {
-          image: "confluentinc/cp-zookeeper:5.2.4",
+        server: {
           environment: {
-            ZOOKEEPER_CLIENT_PORT: 2181,
-            ZOOKEEPER_TICK_TIME: 2000,
-          },
-          ports: [`${ZOOKEEPER_PORT}:${ZOOKEEPER_PORT}`],
-        },
-        [KAFKA_NAME]: {
-          image: "confluentinc/cp-kafka:7.3.1",
-          depends_on: [ZOOKEEPER_NAME],
-          ports: ["9092:9092", "9997:9997"],
-          environment: {
-            KAFKA_BROKER_ID: 1,
-            KAFKA_ZOOKEEPER_CONNECT: `${ZOOKEEPER_NAME}:${ZOOKEEPER_PORT}`,
-            KAFKA_ADVERTISED_LISTENERS: `PLAINTEXT://${KAFKA_NAME}:29092,PLAINTEXT_HOST://localhost:${KAFKA_PORT}`,
-            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: `PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT`,
-            KAFKA_INTER_BROKER_LISTENER_NAME: `PLAINTEXT`,
-            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1,
-            KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1,
-            KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1,
-          },
-        },
-        [KAFKA_UI]: {
-          container_name: KAFKA_UI,
-          image: "provectuslabs/kafka-ui:latest",
-          ports: ["8080:8080"],
-          depends_on: [ZOOKEEPER_NAME, KAFKA_NAME],
-          environment: {
-            KAFKA_CLUSTERS_0_NAME: "local",
-            KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:29092",
-            KAFKA_CLUSTERS_0_ZOOKEEPER: "zookeeper:2181",
-            KAFKA_CLUSTERS_0_JMXPORT: 9997,
+            KAFKA_BROKERS: `${DOCKER_SERVICE_KAFKA_NAME}:${DOCKER_SERVICE_KAFKA_PORT}`,
+            KAFKA_ENABLE_SSL: "${KAFKA_ENABLE_SSL}",
+            KAFKA_CLIENT_ID: "${KAFKA_CLIENT_ID}",
+            KAFKA_GROUP_ID: "${KAFKA_GROUP_ID}",
           },
         },
       },
     };
-    eventParams.updateProperties.push(newParams);
+    eventParams.updateProperties.push(updateDockerComposeProperties);
+    eventParams.updateProperties.push(updateDockerComposeDevProperties);
+    eventParams.updateProperties.push({
+      services: {
+        [DOCKER_SERVICE_KAFKA_NAME]: {
+          environment: {
+            KAFKA_ADVERTISED_LISTENERS: `PLAINTEXT://${DOCKER_SERVICE_KAFKA_NAME}:29092,PLAINTEXT_HOST://${DOCKER_SERVICE_KAFKA_NAME}:${DOCKER_SERVICE_KAFKA_PORT}`,
+          },
+        },
+      },
+    });
+    return eventParams;
+  }
+
+  beforeCreateDockerComposeDevFile(
+    dsgContext: DsgContext,
+    eventParams: CreateServerDockerComposeDevParams,
+  ): CreateServerDockerComposeDevParams {
+    eventParams.updateProperties.push(updateDockerComposeDevProperties);
     return eventParams;
   }
 
