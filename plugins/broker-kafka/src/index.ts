@@ -22,8 +22,6 @@ import { join, resolve } from "path";
 import {
   DOCKER_SERVICE_KAFKA_NAME,
   DOCKER_SERVICE_KAFKA_PORT,
-  DOCKER_SERVICE_ZOOKEEPER_NAME,
-  DOCKER_SERVICE_ZOOKEEPER_PORT,
   staticDirectory,
   templatesPath,
   updateDockerComposeDevProperties,
