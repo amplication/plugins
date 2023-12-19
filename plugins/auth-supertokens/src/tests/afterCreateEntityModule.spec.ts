@@ -63,7 +63,7 @@ describe("Testing afterCreateEntityModule hook", () => {
       params,
       moduleMap,
     );
-    let expectedCode = prettyCode(authModuleRaw);
+    const expectedCode = prettyCode(authModuleRaw);
     const code = prettyCode(modules.get("/auth/auth.module.ts").code);
     expect(code).toStrictEqual(expectedCode);
   });

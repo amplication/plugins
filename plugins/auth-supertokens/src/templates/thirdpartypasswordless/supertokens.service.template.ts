@@ -47,7 +47,7 @@ export class SupertokensService {
                   return resp;
                 },
                 thirdPartySignInUp: async function (input) {
-                  let resp =
+                  const resp =
                     await originalImplementation.thirdPartySignInUp(input);
 
                   if (
