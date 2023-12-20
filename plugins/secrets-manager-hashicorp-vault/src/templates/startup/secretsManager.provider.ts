@@ -14,7 +14,7 @@ export const SecretsManagerProvider = {
     });
     VAULT_AUTH;
 
-    var secrets: Partial<Record<EnumSecretsNameKey, unknown>> = {};
+    let secrets: Partial<Record<EnumSecretsNameKey, unknown>> = {};
 
     for (const path of Object.values(EnumSecretsNameKey)) {
       const [secret_path, secret_name] = path.split(":");

@@ -102,7 +102,7 @@ class HashiCorpVaultPlugin implements AmplicationPlugin {
     );
 
     interpolate(template, {
-      //@ts-ignore
+      //@ts-expect-error VAULT_AUTH will be replaced by the interpolation
       VAULT_AUTH: authMode == "APPROLE" ? authModeAppRole : authModeToken,
     });
 
