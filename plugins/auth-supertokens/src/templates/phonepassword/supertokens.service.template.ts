@@ -51,11 +51,11 @@ export class SupertokensService {
                 sendEmail: async function (input) {
                   if (input.type === "PASSWORD_RESET") {
                     // TODO: Send SMS to user.email (it's a phone number)
-                    console.log("The user's phone number:", input.user.email);
-                    console.log(
-                      "The password reset link:",
-                      input.passwordResetLink,
-                    );
+                    // console.log("The user's phone number:", input.user.email);
+                    // console.log(
+                    //   "The password reset link:",
+                    //   input.passwordResetLink,
+                    // );
                   } else {
                     return originalImplementation.sendEmail(input);
                   }
