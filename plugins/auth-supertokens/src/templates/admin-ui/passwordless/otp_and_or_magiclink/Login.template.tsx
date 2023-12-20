@@ -94,7 +94,9 @@ const CreateOTPForm = ({ notify, moveToNextStep }: any) => {
       if (parsedPhoneNumber && parsedPhoneNumber.isValid()) {
         input = { phoneNumber: parsedPhoneNumber };
       }
-    } catch (e) {}
+    } catch (e) {
+      // do nothing
+    }
     if (input.email) {
       const resp = await Passwordless.doesEmailExist({ email: input.email });
       if (resp.status !== "OK" || !resp.doesExist) {
