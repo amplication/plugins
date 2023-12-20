@@ -81,7 +81,7 @@ class TerraformAwsCorePlugin implements AmplicationPlugin {
       path = "${settings.backend?.local?.path}"
     }
   }`;
-
+        break;
       case BackendTypes.S3:
         backendConfiguration = `terraform {
     backend "s3" {
@@ -90,6 +90,7 @@ class TerraformAwsCorePlugin implements AmplicationPlugin {
       region = "${settings.backend?.s3?.region}"
     }
   }`;
+        break;
     }
 
     // set the path to the static files and fetch them for manipulation
