@@ -4,15 +4,5 @@
   ],
   "ignorePatterns": [
     "!**/*"
-  ],
-  "overrides": [
-    {
-      "files": [
-        "*.ts"
-      ],
-      "rules": {
-        "no-case-declarations": "warn"
-      }
-    }
   ]
 }
