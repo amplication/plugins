@@ -24,7 +24,7 @@ export const getPluginSettings = (
 };
 
 export function secretNamesParser(secretNames: string[]): SecretsNameKey[] {
-  var secretsParsed: SecretsNameKey[] = [];
+  const secretsParsed: SecretsNameKey[] = [];
 
   secretNames.forEach((secretName) => {
     secretsParsed.push({
