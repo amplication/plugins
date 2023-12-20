@@ -190,7 +190,7 @@ export function interpolate(
      */
     visitTemplateLiteral(path) {
       const canTransformToStringLiteral = path.node.expressions.every(
-        (expression: any) =>
+        (expression) =>
           namedTypes.Identifier.check(expression) &&
           expression.name in mapping &&
           namedTypes.StringLiteral.check(mapping[expression.name]),
