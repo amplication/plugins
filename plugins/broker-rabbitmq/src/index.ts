@@ -32,6 +32,7 @@ import {
 } from "./util/ast";
 import { pascalCase } from "pascal-case";
 import { getPluginSettings } from "./utils";
+import { TSTypeKind } from "ast-types/gen/kinds";
 
 class RabbitMQPlugin implements AmplicationPlugin {
   static moduleFile: Module | undefined;
@@ -236,7 +237,7 @@ class RabbitMQPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateMessageBrokerServiceParams,
   ): Promise<ModuleMap> {
-    const { serverDirectories, utils } = context;
+    const { serverDirectories } = context;
     const { messageBrokerDirectory } = serverDirectories;
 
     const serviceFilePath = resolve(
@@ -383,7 +384,7 @@ class RabbitMQPlugin implements AmplicationPlugin {
 
         const decorators: namedTypes.Decorator[] = [payloadDecorator];
 
-        //@ts-ignore
+        //@ts-expect-error Identifier has Decorator type
         messageId.decorators = decorators;
 
         const currentClassMethod = builders.classMethod.from({
@@ -486,7 +487,7 @@ const allMessageBrokerTopicsTypeDeclaration = (topicEnumNames: string[]) => {
   const enumTypes: namedTypes.TSTypeReference[] = topicEnumNames.map(
     (enumName) => builders.tsTypeReference(builders.identifier(enumName)),
   );
-  const declaration = (rightSide: any) => {
+  const declaration = (rightSide: TSTypeKind) => {
     return builders.exportDeclaration(
       false,
       builders.tsTypeAliasDeclaration(
