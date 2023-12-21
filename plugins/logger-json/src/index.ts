@@ -8,6 +8,7 @@ import {
   ModuleMap,
   CreateServerPackageJsonParams,
   CreateServerAppModuleParams,
+  CreateServerDockerComposeParams,
 } from "@amplication/code-gen-types";
 import {
   appendImports,
@@ -28,6 +29,9 @@ class LoggerJSONPlugin implements AmplicationPlugin {
     return {
       [EventNames.CreateServerDotEnv]: {
         before: this.beforeCreateServerDotEnv,
+      },
+      [EventNames.CreateServerDockerCompose]: {
+        before: this.beforeCreateServerDockerCompose,
       },
       [EventNames.CreateServer]: {
         after: this.afterCreateServer,
@@ -56,6 +60,23 @@ class LoggerJSONPlugin implements AmplicationPlugin {
       ...[{ LOG_LEVEL }, { SERVICE_NAME }],
     ];
 
+    return eventParams;
+  }
+
+  beforeCreateServerDockerCompose(
+    context: DsgContext,
+    eventParams: CreateServerDockerComposeParams,
+  ) {
+    eventParams.updateProperties.push({
+      services: {
+        server: {
+          environment: {
+            LOG_LEVEL: "${LOG_LEVEL}",
+            SERVICE_NAME: "${SERVICE_NAME}",
+          },
+        },
+      },
+    });
     return eventParams;
   }
 

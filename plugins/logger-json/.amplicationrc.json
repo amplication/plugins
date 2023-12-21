@@ -1,11 +1,7 @@
 {
   "settings": {
-    "logLevel": "INFO",
-    "additionalLogProperties": {
-      "isAwesome": true,
-      "canUpscale": 1,
-      "someKey": "someValue"
-    }
+    "logLevel": "info",
+    "additionalLogProperties": {}
   },
   "systemSettings": {
     "requireAuthenticationEntity": "false"
