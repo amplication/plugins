@@ -124,7 +124,7 @@ const getSelectedThirdPartyProviders = (settings: Settings) => {
     "twitter",
   ];
   return Object.keys(settings.recipe).filter((key) =>
-    allProviders.includes(key as any)
+    allProviders.includes(key as keyof ThirdPartyProvider)
   ) as (keyof ThirdPartyProvider)[];
 };
 
@@ -154,7 +154,7 @@ const addThirdPartyLoginButtonImports = (
       selectedProviders.map((name) =>
         builders.importSpecifier(
           builders.identifier(
-            providerToButtonName[name as keyof ThirdPartyProvider]!
+            providerToButtonName[name as keyof ThirdPartyProvider]
           )
         )
       ),

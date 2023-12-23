@@ -21,7 +21,7 @@ export const removeNonSupertokensAuthProviderImportsFromAppModule = (
 
 const removeAuthProviderImports = (code: string): string => {
   const lines = code.split("\n");
-  let newLines = [];
+  const newLines = [];
   for (const line of lines) {
     if (line.includes("ra-auth-http") || line.includes("ra-auth-jwt")) {
       continue;

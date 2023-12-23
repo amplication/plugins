@@ -6,7 +6,7 @@ import {
 } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
 import { parse } from "@amplication/code-gen-utils";
-import { NamedClassDeclaration } from "@amplication/code-gen-types";
+import { NamedClassDeclaration, EntityEnumDTOs, EntityDTOs } from "@amplication/code-gen-types";
 import { prettyCode } from "../../utils";
 import SupertokensAuthPlugin from "../../index";
 import { name } from "../../../package.json";
@@ -51,14 +51,13 @@ describe("Testing afterCreateDTOs for emailpassword recipe hook", () => {
       dtos: {
         // Ignoring the rest of the fields because only the createInput and
         // updateInput and entity are required for the tests
-        //@ts-ignore
         TheEntity: {
           createInput: parse(createInputRaw).program
             .body[0] as NamedClassDeclaration,
           updateInput: parse(updateInputRaw).program
             .body[0] as NamedClassDeclaration,
           entity: parse(entityCode).program.body[0] as NamedClassDeclaration,
-        },
+        } as EntityDTOs & EntityEnumDTOs,
       },
     };
   });
