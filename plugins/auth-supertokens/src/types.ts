@@ -11,8 +11,6 @@ export interface Settings {
   recipe:
     | {
         name: "emailpassword";
-        //emailFieldName: string;
-        //passwordFieldName: string;
       }
     | {
         name: "passwordless";
