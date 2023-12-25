@@ -5,7 +5,6 @@ import { PassportModule } from "@nestjs/passport";
 import { JWT_EXPIRATION, JWT_SECRET_KEY } from "../constants";
 import { SecretsManagerModule } from "../providers/secrets/secretsManager.module";
 import { SecretsManagerService } from "../providers/secrets/secretsManager.service";
-// @ts-ignore
 // eslint-disable-next-line
 import { AuthController } from "./auth.controller";
 import { AuthResolver } from "./auth.resolver";
@@ -14,7 +13,7 @@ import { BasicStrategy } from "./basic/basic.strategy";
 import { PasswordService } from "./password.service";
 import { TokenService } from "./token.service";
 
-declare class ENTITY_MODULE {}
+declare class ENTITY_MODULE { }
 
 @Module({
   imports: [
@@ -53,4 +52,4 @@ declare class ENTITY_MODULE {}
   controllers: [AuthController],
   exports: [AuthService, PasswordService],
 })
-export class AuthModule {}
+export class AuthModule { }

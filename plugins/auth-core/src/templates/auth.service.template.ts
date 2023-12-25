@@ -1,19 +1,18 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-// @ts-ignore
 // eslint-disable-next-line
 import { Credentials } from "./Credentials";
 import { PasswordService } from "./password.service";
 import { TokenService } from "./token.service";
 
-declare class ENTITY_NAME_INFO {}
-declare class ENTITY_SERVICE {}
+declare class ENTITY_NAME_INFO { }
+declare class ENTITY_SERVICE { }
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly passwordService: PasswordService,
     private readonly tokenService: TokenService
-  ) {}
+  ) { }
 
   async validateUser(
     username: string,

@@ -217,10 +217,10 @@ class AuthCorePlugin implements AmplicationPlugin {
     const grants =
       context.entities && context.roles
         ? createGrantsModule(
-            context.serverDirectories.srcDirectory,
-            context.entities,
-            context.roles
-          )
+          context.serverDirectories.srcDirectory,
+          context.entities,
+          context.roles
+        )
         : null;
 
     if (grants) {
@@ -507,13 +507,13 @@ class AuthCorePlugin implements AmplicationPlugin {
       builders.stringLiteral("../../auth/defaultAuth.guard")
     );
 
-    const ignoreComment = builders.commentLine("// @ts-ignore", false);
+    // const ignoreComment = builders.commentLine("// @ts-ignore", false);
 
-    if (!defaultAuthGuardImport.comments) {
-      defaultAuthGuardImport.comments = [];
-    }
+    // if (!defaultAuthGuardImport.comments) {
+    //   defaultAuthGuardImport.comments = [];
+    // }
 
-    defaultAuthGuardImport.comments.push(ignoreComment);
+    // defaultAuthGuardImport.comments.push(ignoreComment);
 
     addImports(
       eventParams.template,
@@ -849,7 +849,7 @@ class AuthCorePlugin implements AmplicationPlugin {
               builders.objectProperty(
                 builders.identifier("resource"),
                 eventParams.templateMapping[
-                  "ENTITY_NAME"
+                "ENTITY_NAME"
                 ] as namedTypes.StringLiteral
               ),
               builders.objectProperty(

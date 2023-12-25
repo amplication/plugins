@@ -1,15 +1,13 @@
 import { Test, TestingModule } from "@nestjs/testing";
-// @ts-ignore
 // eslint-disable-next-line
 import { AuthService } from "./auth.service";
 import { Credentials } from "./Credentials";
 import { PasswordService } from "./password.service";
-// @ts-ignore
 // eslint-disable-next-line
 import { TokenService } from "./token.service";
 import { VALID_ID } from "../tests/auth/constants";
 
-declare class ENTITY_SERVICE {}
+declare class ENTITY_SERVICE { }
 
 const VALID_CREDENTIALS: Credentials = {
   username: "Valid User",
