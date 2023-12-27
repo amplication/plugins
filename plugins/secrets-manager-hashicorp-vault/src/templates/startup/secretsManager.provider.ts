@@ -30,7 +30,7 @@ export const SecretsManagerProvider = {
         if (err instanceof Error) {
           logger.error(
             `Error while loading secret named "${secret_name}" from path "${secret_path}" - ${err.message}`,
-            "SecretsManager",
+            "SecretsManager"
           );
         }
       }

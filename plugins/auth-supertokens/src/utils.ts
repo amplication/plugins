@@ -13,10 +13,10 @@ import * as K from "ast-types/gen/kinds";
 import { NodePath } from "ast-types/lib/node-path";
 
 export const getPluginSettings = (
-  pluginInstallations: PluginInstallation[],
+  pluginInstallations: PluginInstallation[]
 ): Settings => {
   const plugin = pluginInstallations.find(
-    (plugin) => plugin.npm === PackageName,
+    (plugin) => plugin.npm === PackageName
   );
 
   const userSettings = plugin?.settings ?? {};
@@ -31,7 +31,7 @@ export const getPluginSettings = (
 
 export function getFunctionDeclarationById(
   node: ASTNode,
-  id: namedTypes.Identifier,
+  id: namedTypes.Identifier
 ): namedTypes.FunctionDeclaration {
   let functionDeclaration: namedTypes.FunctionDeclaration | null = null;
   recast.visit(node, {
@@ -46,7 +46,7 @@ export function getFunctionDeclarationById(
 
   if (!functionDeclaration) {
     throw new Error(
-      `Could not find function declaration with the identifier ${id.name} in provided AST node`,
+      `Could not find function declaration with the identifier ${id.name} in provided AST node`
     );
   }
 
@@ -58,7 +58,7 @@ export const prettyCode = (code: string): string => {
 };
 
 export const settingToEnvVar = (
-  settingKey: keyof Settings,
+  settingKey: keyof Settings
 ): string | undefined => {
   const prefix = "SUPERTOKENS";
   const mapping: { [key in keyof Settings]?: string } = {
@@ -89,7 +89,7 @@ export const settingsToVarDict = (settings: Settings): VariableDictionary => {
 };
 
 export const varDictToReactEnvVars = (
-  varDict: VariableDictionary,
+  varDict: VariableDictionary
 ): VariableDictionary => {
   return varDict.map((val) => {
     const envName = Object.keys(val)[0];
@@ -104,7 +104,7 @@ export const varDictToReactEnvVars = (
  */
 export function interpolate(
   ast: ASTNode,
-  mapping: { [key: string]: ASTNode | undefined },
+  mapping: { [key: string]: ASTNode | undefined }
 ): void {
   return recast.visit(ast, {
     visitIdentifier(path) {
@@ -156,7 +156,7 @@ export function interpolate(
         (expression) =>
           namedTypes.Identifier.check(expression) &&
           expression.name in mapping &&
-          namedTypes.StringLiteral.check(mapping[expression.name]),
+          namedTypes.StringLiteral.check(mapping[expression.name])
       );
       if (canTransformToStringLiteral) {
         path.node.expressions = path.node.expressions.map((expression) => {
@@ -180,7 +180,7 @@ export function interpolate(
 
 export function evaluateJSX(
   path: NodePath,
-  mapping: { [key: string]: ASTNode | undefined },
+  mapping: { [key: string]: ASTNode | undefined }
 ): void {
   const childrenPath = path.get("children");
   childrenPath.each(
@@ -192,7 +192,7 @@ export function evaluateJSX(
         | K.JSXElementKind
         | K.JSXFragmentKind
         | K.LiteralKind
-      >,
+      >
     ) => {
       const { node } = childPath;
       if (
@@ -209,12 +209,12 @@ export function evaluateJSX(
           childPath.replace(...mapped.children);
         }
       }
-    },
+    }
   );
 }
 
 export function transformTemplateLiteralToStringLiteral(
-  templateLiteral: namedTypes.TemplateLiteral,
+  templateLiteral: namedTypes.TemplateLiteral
 ): namedTypes.StringLiteral {
   const value = templateLiteral.quasis
     .map((quasie, i) => {

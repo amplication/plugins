@@ -21,7 +21,7 @@ describe("Testing afterCreateMessageBrokerService hook", () => {
   it("should correctly add the code for generating message broker module", async () => {
     const modules = await plugin.afterCreateMessageBrokerService(
       context,
-      params,
+      params
     );
     const serviceModule = modules.get("/redis.producer.service.ts");
     const serviceCode = utils.print(utils.parse(serviceModule.code)).code;
@@ -29,14 +29,14 @@ describe("Testing afterCreateMessageBrokerService hook", () => {
     const controllerModule = modules.get("/redis.controller.ts");
     const controllerCode = utils.print(utils.parse(controllerModule.code)).code;
     const expectedControllerCode = utils.print(
-      utils.parse(expectedController),
+      utils.parse(expectedController)
     ).code;
     const constsModule = modules.get("/constants.ts");
     const constsCode = utils.print(utils.parse(constsModule.code)).code;
     const expectedConstsCode = utils.print(utils.parse(expectedConsts)).code;
     const redisMessageModule = modules.get("/redisMessage.ts");
     const redisMessageCode = utils.print(
-      utils.parse(redisMessageModule.code),
+      utils.parse(redisMessageModule.code)
     ).code;
     expect(serviceCode).toStrictEqual(expectedServiceCode);
     expect(controllerCode).toStrictEqual(expectedControllerCode);

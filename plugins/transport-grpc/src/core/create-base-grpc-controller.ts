@@ -15,12 +15,12 @@ import { templatesPath } from "../constants";
 
 const controllerBaseGrpcPath = join(
   templatesPath,
-  "controller.grpc.base.template.ts",
+  "controller.grpc.base.template.ts"
 );
 
 export async function createGrpcControllerBase(
   context: DsgContext,
-  eventParams: CreateEntityGrpcControllerBaseParams,
+  eventParams: CreateEntityGrpcControllerBaseParams
 ): Promise<void> {
   try {
     const { controllerBaseId, templateMapping, entity } = eventParams;
@@ -30,16 +30,16 @@ export async function createGrpcControllerBase(
 
     const classDeclaration = getClassDeclarationById(
       controllerBaseGrpcTemplate,
-      controllerBaseId,
+      controllerBaseId
     );
 
     controllerMethodsIdsActionPairs(templateMapping, entity).forEach(
       ({ methodId, entity, methodName }) => {
         const classMethod = getClassMethodByIdName(classDeclaration, methodId);
         classMethod?.decorators?.push(
-          buildGrpcMethodDecorator(entity.name, methodName),
+          buildGrpcMethodDecorator(entity.name, methodName)
         );
-      },
+      }
     );
     eventParams.template = controllerBaseGrpcTemplate;
   } catch (error) {
@@ -48,12 +48,12 @@ export async function createGrpcControllerBase(
 }
 export function buildGrpcMethodDecorator(
   entityName: string,
-  methodName: string,
+  methodName: string
 ): namedTypes.Decorator {
   return builders.decorator(
     builders.callExpression(builders.identifier("GrpcMethod"), [
       builders.stringLiteral(`${entityName}Service`),
       builders.stringLiteral(methodName),
-    ]),
+    ])
   );
 }

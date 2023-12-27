@@ -25,7 +25,7 @@ describe("Testing beforeCreateServerDockerCompose hook", () => {
   it("should correctly modify the updateProperties", () => {
     const { updateProperties } = plugin.beforeCreateServerDockerComposeDev(
       context,
-      params,
+      params
     );
     expect(updateProperties).toStrictEqual([
       {

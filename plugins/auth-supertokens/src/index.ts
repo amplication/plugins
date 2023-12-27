@@ -129,7 +129,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
 
   async beforeCreateSeed(
     context: DsgContext,
-    eventParams: CreateSeedParams,
+    eventParams: CreateSeedParams
   ): Promise<CreateSeedParams> {
     const path = resolve(constants.templatesPath, "seed.template.ts");
     eventParams.template = await readFile(path);
@@ -139,7 +139,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       (prop) =>
         prop.type === "ObjectProperty" &&
         prop.key.type === "Identifier" &&
-        prop.key.name === "password",
+        prop.key.name === "password"
     );
     if (passwordProp) {
       const prop = passwordProp as namedTypes.ObjectProperty;
@@ -151,14 +151,14 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
 
   async beforeCreateAdminAppModule(
     context: DsgContext,
-    eventParams: CreateAdminAppModuleParams,
+    eventParams: CreateAdminAppModuleParams
   ): Promise<CreateAdminAppModuleParams> {
     const settings = utils.getPluginSettings(context.pluginInstallations);
     const newTemplatePath = join(
       constants.templatesPath,
       "admin-ui",
       settings.recipe.name,
-      "App.template.tsx",
+      "App.template.tsx"
     );
     const newTemplate = await readFile(newTemplatePath);
     context.logger.info("Replacing the admin UI app template");
@@ -175,14 +175,14 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
   async afterCreateAdminAppModule(
     context: DsgContext,
     eventParams: CreateAdminAppModuleParams,
-    modules: ModuleMap,
+    modules: ModuleMap
   ): Promise<ModuleMap> {
     const { srcDirectory } = context.clientDirectories;
 
     removeNonSupertokensAuthProviderImportsFromAppModule(
       srcDirectory,
       modules,
-      context.logger,
+      context.logger
     );
 
     return modules;
@@ -191,7 +191,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
   async afterCreateAdminUI(
     context: DsgContext,
     eventParams: CreateAdminUIParams,
-    modules: ModuleMap,
+    modules: ModuleMap
   ): Promise<ModuleMap> {
     const { srcDirectory } = context.clientDirectories;
     const settings = utils.getPluginSettings(context.pluginInstallations);
@@ -200,7 +200,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       srcDirectory,
       modules,
       settings.recipe.name,
-      context.logger,
+      context.logger
     );
     await replaceLoginPage(srcDirectory, modules, settings, context.logger);
     await replaceTypesModule(srcDirectory, modules, settings, context.logger);
@@ -209,12 +209,12 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       srcDirectory,
       modules,
       settings,
-      context.logger,
+      context.logger
     );
     removeNonSupertokensAuthProviderModules(
       srcDirectory,
       modules,
-      context.logger,
+      context.logger
     );
     if (
       (settings.recipe.name === "passwordless" ||
@@ -226,7 +226,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
         srcDirectory,
         modules,
         settings.recipe.name,
-        context.logger,
+        context.logger
       );
     }
     if (
@@ -238,7 +238,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
         srcDirectory,
         modules,
         settings.recipe.name,
-        context.logger,
+        context.logger
       );
     }
 
@@ -247,7 +247,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
 
   beforeCreateAdminDotEnv(
     context: DsgContext,
-    eventParams: CreateAdminDotEnvParams,
+    eventParams: CreateAdminDotEnvParams
   ): CreateAdminDotEnvParams {
     const { getPluginSettings, settingsToVarDict, varDictToReactEnvVars } =
       utils;
@@ -263,7 +263,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       return neededVars.includes(varName);
     });
     context.logger.info(
-      "Adding react environment variables in admin UI .env file",
+      "Adding react environment variables in admin UI .env file"
     );
     eventParams.envVariables.push(...varDictToReactEnvVars(varsForAdminUi));
 
@@ -272,13 +272,13 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
 
   beforeCreateAdminUIPackageJson(
     context: DsgContext,
-    eventParams: CreateAdminUIPackageJsonParams,
+    eventParams: CreateAdminUIPackageJsonParams
   ): CreateAdminUIPackageJsonParams {
     const settings = utils.getPluginSettings(context.pluginInstallations);
     const deps = constants.adminUIDependencies(settings.recipe.name);
 
     context.logger.info(
-      "Adding dependencies to the admin UI's package.json file",
+      "Adding dependencies to the admin UI's package.json file"
     );
     eventParams.updateProperties.forEach((updateProperty) => {
       merge(updateProperty, deps);
@@ -289,7 +289,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
 
   beforeCreateEntityResolver(
     context: DsgContext,
-    eventParams: CreateEntityResolverParams,
+    eventParams: CreateEntityResolverParams
   ): CreateEntityResolverParams {
     const authEntityName = context.resourceInfo?.settings.authEntityName;
     if (camelCase(authEntityName ?? "") === eventParams.entityName) {
@@ -301,7 +301,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
 
   beforeCreateEntityResolverBase(
     context: DsgContext,
-    eventParams: CreateEntityResolverBaseParams,
+    eventParams: CreateEntityResolverBaseParams
   ): CreateEntityResolverBaseParams {
     const authEntityName = context.resourceInfo?.settings.authEntityName;
     if (camelCase(authEntityName ?? "") === eventParams.entityName) {
@@ -313,7 +313,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
 
   beforeCreateEntityController(
     context: DsgContext,
-    eventParams: CreateEntityControllerParams,
+    eventParams: CreateEntityControllerParams
   ): CreateEntityControllerParams {
     const authEntityName = context.resourceInfo?.settings.authEntityName;
     if (camelCase(authEntityName ?? "") === eventParams.entityName) {
@@ -325,7 +325,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
 
   beforeCreateEntityControllerBase(
     context: DsgContext,
-    eventParams: CreateEntityControllerBaseParams,
+    eventParams: CreateEntityControllerBaseParams
   ): CreateEntityControllerBaseParams {
     const authEntityName = context.resourceInfo?.settings.authEntityName;
     if (!authEntityName) {
@@ -342,7 +342,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
   async afterCreateDTOs(
     context: DsgContext,
     eventParams: CreateDTOsParams,
-    modules: ModuleMap,
+    modules: ModuleMap
   ): Promise<ModuleMap> {
     const { authDirectory, srcDirectory } = context.serverDirectories;
     const authEntityName = context.resourceInfo?.settings.authEntityName;
@@ -359,14 +359,14 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       modules,
       eventParams.dtos[authEntityName].createInput,
       settings.supertokensIdFieldName,
-      context.logger,
+      context.logger
     );
     await createAuthService(
       modules,
       srcDirectory,
       authDirectory,
       authEntityName,
-      context.logger,
+      context.logger
     );
 
     return modules;
@@ -375,7 +375,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
   async afterCreateEntityModule(
     context: DsgContext,
     eventParams: CreateEntityModuleParams,
-    modules: ModuleMap,
+    modules: ModuleMap
   ): Promise<ModuleMap> {
     const { srcDirectory, authDirectory } = context.serverDirectories;
     const authEntityName = context.resourceInfo?.settings.authEntityName;
@@ -390,7 +390,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
         modules,
         srcDirectory,
         authDirectory,
-        context.logger,
+        context.logger
       );
       checks.addedAuthModuleInAuthDir = true;
     }
@@ -400,18 +400,18 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
 
   beforeCreateServer(
     context: DsgContext,
-    eventParams: CreateServerParams,
+    eventParams: CreateServerParams
   ): CreateServerParams {
     const authEntityName = context.resourceInfo?.settings.authEntityName;
     const settings = utils.getPluginSettings(context.pluginInstallations);
     verifyAuthCorePluginIsInstalled(
       context.pluginInstallations,
-      context.logger,
+      context.logger
     );
     verifySupertokensIdFieldExists(
       context.entities ?? [],
       authEntityName ?? "",
-      settings.supertokensIdFieldName,
+      settings.supertokensIdFieldName
     );
 
     return eventParams;
@@ -420,7 +420,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
   async afterCreateServer(
     context: DsgContext,
     eventParams: CreateServerParams,
-    modules: ModuleMap,
+    modules: ModuleMap
   ): Promise<ModuleMap> {
     const { srcDirectory } = context.serverDirectories;
     // Because the default cors setting doesn't work with the supertokens
@@ -442,7 +442,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       }
       if (!checks.alteredAuthEntityResolverBase) {
         throw new Error(
-          "Failed to replace the auth entity resolver base template",
+          "Failed to replace the auth entity resolver base template"
         );
       }
     }
@@ -452,7 +452,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
 
   beforeCreateServerDotEnv(
     context: DsgContext,
-    eventParams: CreateServerDotEnvParams,
+    eventParams: CreateServerDotEnvParams
   ): CreateServerDotEnvParams {
     const settings = utils.getPluginSettings(context.pluginInstallations);
     context.logger.info("Adding environment variables");
@@ -463,12 +463,12 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
 
   beforeCreateServerAppModule(
     context: DsgContext,
-    eventParams: CreateServerAppModuleParams,
+    eventParams: CreateServerAppModuleParams
   ): CreateServerAppModuleParams {
     const { template } = eventParams;
 
     context.logger.info(
-      "Adding the generateSupertokensOptions import to the app module",
+      "Adding the generateSupertokensOptions import to the app module"
     );
     addGenSupertokensOptionsImport(template);
 
@@ -478,7 +478,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
   async afterCreateServerAppModule(
     context: DsgContext,
     eventParams: CreateServerAppModuleParams,
-    modules: ModuleMap,
+    modules: ModuleMap
   ): Promise<ModuleMap> {
     const { srcDirectory } = context.serverDirectories;
     const appModulePath = `${srcDirectory}/app.module.ts`;
@@ -507,16 +507,16 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
 
   beforeCreateConnectMicroservices(
     context: DsgContext,
-    eventParams: CreateConnectMicroservicesParams,
+    eventParams: CreateConnectMicroservicesParams
   ): CreateConnectMicroservicesParams {
     const { template } = eventParams;
 
     const connectFunc = utils.getFunctionDeclarationById(
       template,
-      builders.identifier("connectMicroservices"),
+      builders.identifier("connectMicroservices")
     );
     context.logger.info(
-      "Adding the cors and auth filter settings in the connectMicroservices function",
+      "Adding the cors and auth filter settings in the connectMicroservices function"
     );
     addAppCorsSettings(template, connectFunc);
     addAuthFilter(template, connectFunc);
@@ -526,12 +526,12 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
 
   beforeCreateServerPackageJson(
     context: DsgContext,
-    eventParams: CreateServerPackageJsonParams,
+    eventParams: CreateServerPackageJsonParams
   ): CreateServerPackageJsonParams {
     const supertokensDeps = constants.dependencies;
 
     context.logger.info(
-      "Adding dependencies to the server's package.json file",
+      "Adding dependencies to the server's package.json file"
     );
     eventParams.updateProperties.forEach((updateProperty) => {
       merge(updateProperty, supertokensDeps);
@@ -543,7 +543,7 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
   async afterCreateServerAuth(
     context: DsgContext,
     eventParams: CreateServerAuthParams,
-    modules: ModuleMap,
+    modules: ModuleMap
   ): Promise<ModuleMap> {
     const newModules = await addRemoveAuthFiles(context, modules);
     return newModules;

@@ -14,10 +14,10 @@ export * from "@amplication/code-gen-utils";
 export { prettyPrint } from "recast";
 
 export const getPluginSettings = (
-  pluginInstallations: PluginInstallation[],
+  pluginInstallations: PluginInstallation[]
 ): Settings => {
   const plugin = pluginInstallations.find(
-    (plugin) => plugin.npm === PackageName,
+    (plugin) => plugin.npm === PackageName
   );
 
   const userSettings = plugin?.settings ?? {};
@@ -70,7 +70,7 @@ export const removeSemicolon = (stmt: string) => {
   }
   if (stmt[stmt.length - 1] !== ";") {
     throw new Error(
-      "This statement doesn't end in a semicolon. No semicolon to remove",
+      "This statement doesn't end in a semicolon. No semicolon to remove"
     );
   }
   return stmt.slice(0, -1);
@@ -88,7 +88,7 @@ export const prettyCode = (code: string): string => {
  */
 export function getClassDeclarationById(
   node: ASTNode,
-  id: namedTypes.Identifier,
+  id: namedTypes.Identifier
 ): namedTypes.ClassDeclaration {
   let classDeclaration: namedTypes.ClassDeclaration | null = null;
   recast.visit(node, {
@@ -103,7 +103,7 @@ export function getClassDeclarationById(
 
   if (!classDeclaration) {
     throw new Error(
-      `Could not find class declaration with the identifier ${id.name} in provided AST node`,
+      `Could not find class declaration with the identifier ${id.name} in provided AST node`
     );
   }
 
@@ -112,7 +112,7 @@ export function getClassDeclarationById(
 
 export function getFunctionDeclarationById(
   node: ASTNode,
-  id: namedTypes.Identifier,
+  id: namedTypes.Identifier
 ): namedTypes.FunctionDeclaration {
   let functionDeclaration: namedTypes.FunctionDeclaration | null = null;
   recast.visit(node, {
@@ -127,7 +127,7 @@ export function getFunctionDeclarationById(
 
   if (!functionDeclaration) {
     throw new Error(
-      `Could not find function declaration with the identifier ${id.name} in provided AST node`,
+      `Could not find function declaration with the identifier ${id.name} in provided AST node`
     );
   }
 
@@ -141,7 +141,7 @@ export function getFunctionDeclarationById(
  */
 export function interpolate(
   ast: ASTNode,
-  mapping: { [key: string]: ASTNode | undefined },
+  mapping: { [key: string]: ASTNode | undefined }
 ): void {
   return recast.visit(ast, {
     visitIdentifier(path) {
@@ -193,7 +193,7 @@ export function interpolate(
         (expression) =>
           namedTypes.Identifier.check(expression) &&
           expression.name in mapping &&
-          namedTypes.StringLiteral.check(mapping[expression.name]),
+          namedTypes.StringLiteral.check(mapping[expression.name])
       );
       if (canTransformToStringLiteral) {
         path.node.expressions = path.node.expressions.map((expression) => {
@@ -202,8 +202,8 @@ export function interpolate(
         });
         path.replace(
           transformTemplateLiteralToStringLiteral(
-            path.node as namedTypes.TemplateLiteral,
-          ),
+            path.node as namedTypes.TemplateLiteral
+          )
         );
       }
       this.traverse(path);
@@ -220,7 +220,7 @@ export function interpolate(
 }
 
 export function transformTemplateLiteralToStringLiteral(
-  templateLiteral: namedTypes.TemplateLiteral,
+  templateLiteral: namedTypes.TemplateLiteral
 ): namedTypes.StringLiteral {
   const value = templateLiteral.quasis
     .map((quasie, i) => {
@@ -238,7 +238,7 @@ export function transformTemplateLiteralToStringLiteral(
 
 export function evaluateJSX(
   path: NodePath,
-  mapping: { [key: string]: ASTNode | undefined },
+  mapping: { [key: string]: ASTNode | undefined }
 ): void {
   const childrenPath = path.get("children");
   childrenPath.each(
@@ -250,7 +250,7 @@ export function evaluateJSX(
         | K.JSXElementKind
         | K.JSXFragmentKind
         | K.LiteralKind
-      >,
+      >
     ) => {
       const { node } = childPath;
       if (
@@ -267,6 +267,6 @@ export function evaluateJSX(
           childPath.replace(...mapped.children);
         }
       }
-    },
+    }
   );
 }

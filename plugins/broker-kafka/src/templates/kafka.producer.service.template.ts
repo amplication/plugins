@@ -9,7 +9,7 @@ export class KafkaProducerService {
 
   async emitMessage(
     topic: BROKER_TOPICS,
-    message: KafkaMessage,
+    message: KafkaMessage
   ): Promise<void> {
     return await new Promise((resolve, reject) => {
       this.kafkaClient.emit(topic, message).subscribe({

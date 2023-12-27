@@ -21,27 +21,27 @@ describe("Testing afterCreateMessageBrokerClientOptionsFactory", () => {
   it("should correctly add the code for generating rabbitmq Client Options", async () => {
     const modules = await plugin.afterCreateMessageBrokerClientOptionsFactory(
       context,
-      params,
+      params
     );
 
     const rabbitMqClientOptionsModule = modules.get(
-      path.join("/", "generateRabbitMQClientOptions.ts"),
+      path.join("/", "generateRabbitMQClientOptions.ts")
     );
     const rabbitMqClientOptionsCode = utils.print(
-      utils.parse(rabbitMqClientOptionsModule.code),
+      utils.parse(rabbitMqClientOptionsModule.code)
     ).code;
     const expectedRabbitMqClientOptionsCode = utils.print(
-      utils.parse(expectedRabbitMqClientOptions),
+      utils.parse(expectedRabbitMqClientOptions)
     ).code;
 
     const testModule = modules.get(
-      path.join("/", "generateRabbitMQClientOptions.spec.ts"),
+      path.join("/", "generateRabbitMQClientOptions.spec.ts")
     );
     const testCode = utils.print(utils.parse(testModule.code)).code;
     const expectedTestCode = utils.print(utils.parse(expectedTest)).code;
 
     expect(rabbitMqClientOptionsCode).toStrictEqual(
-      expectedRabbitMqClientOptionsCode,
+      expectedRabbitMqClientOptionsCode
     );
     expect(testCode).toStrictEqual(expectedTestCode);
   });
@@ -116,7 +116,7 @@ const fakeContext = () => {
       warn: async (
         message: string,
         params?: Record<string, unknown>,
-        userFriendlyMessage?: string,
+        userFriendlyMessage?: string
       ) => {
         console.log("Warning!", userFriendlyMessage);
       },

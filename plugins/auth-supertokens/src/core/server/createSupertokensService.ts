@@ -161,7 +161,9 @@ const getDefaultCreateValues = (
           defaultValues.push(
             builders.objectProperty(
               builders.identifier(propName),
-              getDefaultValueForType(propType as namedTypes.TSTypeAnnotation["typeAnnotation"])
+              getDefaultValueForType(
+                propType as namedTypes.TSTypeAnnotation["typeAnnotation"]
+              )
             )
           );
         }
@@ -199,7 +201,10 @@ const getDefaultValueForType = (
         case "StringLiteral":
           return builders.stringLiteral(propType.literal.value);
         case "TemplateLiteral":
-          return builders.templateLiteral(propType.literal.quasis, propType.literal.expressions);
+          return builders.templateLiteral(
+            propType.literal.quasis,
+            propType.literal.expressions
+          );
         case "UnaryExpression":
           return builders.unaryExpression(
             propType.literal.operator,

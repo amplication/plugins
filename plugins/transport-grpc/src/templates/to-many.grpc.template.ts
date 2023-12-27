@@ -18,7 +18,7 @@ declare class RELATED_ENTITY_FIND_MANY_ARGS {}
 declare interface SERVICE {
   FIND_PROPERTY(
     parentId: string,
-    args: RELATED_ENTITY_WHERE_INPUT,
+    args: RELATED_ENTITY_WHERE_INPUT
   ): Promise<RELATED_ENTITY[]>;
 
   update(args: {
@@ -49,7 +49,7 @@ export class Mixin {
   @ApiNestedQuery(RELATED_ENTITY_FIND_MANY_ARGS)
   async FIND_MANY(
     @common.Req() request: Request,
-    @common.Param() params: WHERE_UNIQUE_INPUT,
+    @common.Param() params: WHERE_UNIQUE_INPUT
   ): Promise<RELATED_ENTITY[]> {
     const query = plainToClass(RELATED_ENTITY_FIND_MANY_ARGS, request.query);
     const results = await this.service.FIND_PROPERTY(params.id, {
@@ -58,7 +58,7 @@ export class Mixin {
     });
     if (results === null) {
       throw new errors.NotFoundException(
-        `No resource was found for ${JSON.stringify(params)}`,
+        `No resource was found for ${JSON.stringify(params)}`
       );
     }
     return results;
@@ -67,7 +67,7 @@ export class Mixin {
   @common.Post(CREATE_PATH)
   async CONNECT(
     @common.Param() params: WHERE_UNIQUE_INPUT,
-    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[],
+    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[]
   ): Promise<void> {
     const data = {
       PROPERTY: {
@@ -84,7 +84,7 @@ export class Mixin {
   @common.Patch(UPDATE_PATH)
   async UPDATE(
     @common.Param() params: WHERE_UNIQUE_INPUT,
-    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[],
+    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[]
   ): Promise<void> {
     const data = {
       PROPERTY: {
@@ -101,7 +101,7 @@ export class Mixin {
   @common.Delete(DELETE_PATH)
   async DISCONNECT(
     @common.Param() params: WHERE_UNIQUE_INPUT,
-    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[],
+    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[]
   ): Promise<void> {
     const data = {
       PROPERTY: {

@@ -38,7 +38,7 @@ class TerraformAwsDatabaseRdsPlugin implements AmplicationPlugin {
   async afterCreateServer(
     context: DsgContext,
     eventParams: CreateServerParams,
-    modules: ModuleMap,
+    modules: ModuleMap
   ): Promise<ModuleMap> {
     context.logger.info(`Generating Terraform AWS Database RDS...`);
 
@@ -47,7 +47,7 @@ class TerraformAwsDatabaseRdsPlugin implements AmplicationPlugin {
     const serviceName = kebabCase(context.resourceInfo?.name);
     if (!serviceName) {
       throw new Error(
-        "TerraformAwsRepositoryEcrPlugin: Service name is undefined",
+        "TerraformAwsRepositoryEcrPlugin: Service name is undefined"
       );
     }
 
@@ -57,7 +57,7 @@ class TerraformAwsDatabaseRdsPlugin implements AmplicationPlugin {
     // an error if the aforementioned plugin wasnt installed.
     const terraformDirectory = getTerraformDirectory(
       context.pluginInstallations,
-      context.serverDirectories.baseDirectory,
+      context.serverDirectories.baseDirectory
     );
 
     // import the settings, which are merged default settings & user inputs
@@ -91,20 +91,20 @@ class TerraformAwsDatabaseRdsPlugin implements AmplicationPlugin {
         : hyphenName;
     } else {
       throw new Error(
-        "TerraformAwsDatabaseRdsPlugin: is dependent on 'Terraform - AWS Core' plugin",
+        "TerraformAwsDatabaseRdsPlugin: is dependent on 'Terraform - AWS Core' plugin"
       );
     }
 
     const staticFiles = await context.utils.importStaticModules(
       staticPath,
-      terraformDirectory,
+      terraformDirectory
     );
 
     staticFiles.replaceModulesPath((path) =>
       path.replace(
         templateFileName,
-        fileNamePrefix + hyphenName + fileNameSuffix,
-      ),
+        fileNamePrefix + hyphenName + fileNameSuffix
+      )
     );
 
     if (isPostgresSettings(settings)) {
@@ -115,33 +115,33 @@ class TerraformAwsDatabaseRdsPlugin implements AmplicationPlugin {
           .replaceAll(pgDatabaseIdentifierKey, databaseIdentifier)
           .replaceAll(
             pgAllocatedStorageKey,
-            String(settings.postgres.storage.allocated),
+            String(settings.postgres.storage.allocated)
           )
           .replaceAll(
             pgMaximumStorageKey,
-            String(settings.postgres.storage.maximum),
+            String(settings.postgres.storage.maximum)
           )
           .replaceAll(pgDatabaseNameKey, camelCase(databaseName))
           .replaceAll(pgDatabaseUsernameKey, settings.postgres.username)
           .replaceAll(pgDatabasePortKey, String(settings.postgres.port))
           .replaceAll(
             pgDatabaseInstanceClassKey,
-            settings.postgres.instance_class,
+            settings.postgres.instance_class
           )
           .replaceAll(
             pgMaintenanceWindowKey,
-            settings.postgres.maintenance.window,
+            settings.postgres.maintenance.window
           )
           .replaceAll(pgBackupWindowKey, settings.postgres.backup.window)
           .replaceAll(
             pgBackupRetentionPeriodKey,
-            String(settings.postgres.backup.retention_period),
+            String(settings.postgres.backup.retention_period)
           )
-          .replaceAll(pgSgIdentifierKey, "rds-" + securityGroupName),
+          .replaceAll(pgSgIdentifierKey, "rds-" + securityGroupName)
       );
     } else {
       throw new Error(
-        "TerraformAwsDatabaseRdsPlugin: is dependent on 'Terraform - AWS Core' plugin",
+        "TerraformAwsDatabaseRdsPlugin: is dependent on 'Terraform - AWS Core' plugin"
       );
     }
 

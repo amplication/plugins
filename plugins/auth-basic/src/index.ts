@@ -39,7 +39,7 @@ const PASSWORD_SERVICE_ID = builders.identifier("PasswordService");
 const PASSWORD_SERVICE_MEMBER_ID = builders.identifier("passwordService");
 const HASH_MEMBER_EXPRESSION = memberExpression`this.${PASSWORD_SERVICE_MEMBER_ID}.hash`;
 const TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID = builders.identifier(
-  "transformStringFieldUpdateInput",
+  "transformStringFieldUpdateInput"
 );
 
 class BasicAuthPlugin implements AmplicationPlugin {
@@ -66,7 +66,7 @@ class BasicAuthPlugin implements AmplicationPlugin {
 
   beforeCreateServer(context: DsgContext, eventParams: CreateServerParams) {
     const authEntity = context.entities?.find(
-      (x) => x.name === context.resourceInfo?.settings.authEntityName,
+      (x) => x.name === context.resourceInfo?.settings.authEntityName
     );
     if (!authEntity) {
       throw new Error(`Authentication entity does not exist`);
@@ -79,11 +79,11 @@ class BasicAuthPlugin implements AmplicationPlugin {
 
     requiredFields.forEach((requiredField) => {
       const field = authEntity.fields.find(
-        (field) => field.name === requiredField,
+        (field) => field.name === requiredField
       );
       if (!field) {
         throw new Error(
-          `Authentication entity must have a field named ${requiredField}`,
+          `Authentication entity must have a field named ${requiredField}`
         );
       }
     });
@@ -93,7 +93,7 @@ class BasicAuthPlugin implements AmplicationPlugin {
 
   beforeCreateAdminModules(
     context: DsgContext,
-    eventParams: CreateAdminUIParams,
+    eventParams: CreateAdminUIParams
   ) {
     if (context.resourceInfo) {
       context.resourceInfo.settings.authProvider = EnumAuthProviderType.Http;
@@ -104,7 +104,7 @@ class BasicAuthPlugin implements AmplicationPlugin {
 
   beforeCreateAuthModules(
     context: DsgContext,
-    eventParams: CreateServerAuthParams,
+    eventParams: CreateServerAuthParams
   ) {
     context.utils.skipDefaultBehavior = true;
     return eventParams;
@@ -113,12 +113,12 @@ class BasicAuthPlugin implements AmplicationPlugin {
   async afterCreateAuthModules(
     context: DsgContext,
     eventParams: CreateServerAuthParams,
-    modules: ModuleMap,
+    modules: ModuleMap
   ): Promise<ModuleMap> {
     const staticPath = resolve(__dirname, "./static");
     const staticsFiles = await context.utils.importStaticModules(
       staticPath,
-      context.serverDirectories.srcDirectory,
+      context.serverDirectories.srcDirectory
     );
 
     // 1. create basic strategy base file.
@@ -135,13 +135,13 @@ class BasicAuthPlugin implements AmplicationPlugin {
 
   beforeCreateEntityService(
     context: DsgContext,
-    eventParams: CreateEntityServiceParams,
+    eventParams: CreateEntityServiceParams
   ) {
     const { template, serviceId, entityName, templateMapping } = eventParams;
     const modulePath = `${context.serverDirectories.srcDirectory}/${entityName}/${entityName}.service.ts`;
     const passwordFields = BasicAuthPlugin.getPasswordFields(
       context,
-      eventParams.entityName,
+      eventParams.entityName
     );
     if (!passwordFields?.length) return eventParams;
 
@@ -155,7 +155,7 @@ class BasicAuthPlugin implements AmplicationPlugin {
         classDeclaration,
         PASSWORD_SERVICE_MEMBER_ID.name,
         PASSWORD_SERVICE_ID,
-        "protected",
+        "protected"
       );
 
       addIdentifierToConstructorSuperCall(template, PASSWORD_SERVICE_MEMBER_ID);
@@ -175,8 +175,8 @@ class BasicAuthPlugin implements AmplicationPlugin {
           [PASSWORD_SERVICE_ID],
           relativeImportPath(
             modulePath,
-            `${context.serverDirectories.srcDirectory}/auth/password.service.ts`,
-          ),
+            `${context.serverDirectories.srcDirectory}/auth/password.service.ts`
+          )
         ),
       ]);
     }
@@ -185,7 +185,7 @@ class BasicAuthPlugin implements AmplicationPlugin {
 
   beforeCreateEntityServiceBase(
     context: DsgContext,
-    eventParams: CreateEntityServiceBaseParams,
+    eventParams: CreateEntityServiceBaseParams
   ) {
     const { template, serviceBaseId, entityName, entity, templateMapping } =
       eventParams;
@@ -200,9 +200,9 @@ class BasicAuthPlugin implements AmplicationPlugin {
           const fieldId = builders.identifier(field.name);
           return builders.objectProperty(
             fieldId,
-            awaitExpression`await ${HASH_MEMBER_EXPRESSION}(${ARGS_ID}.${DATA_ID}.${fieldId})`,
+            awaitExpression`await ${HASH_MEMBER_EXPRESSION}(${ARGS_ID}.${DATA_ID}.${fieldId})`
           );
-        }),
+        })
       );
 
     templateMapping["UPDATE_ARGS_MAPPING"] =
@@ -215,9 +215,9 @@ class BasicAuthPlugin implements AmplicationPlugin {
             logicalExpression`${valueMemberExpression} && await ${TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID}(
               ${ARGS_ID}.${DATA_ID}.${fieldId},
               (password) => ${HASH_MEMBER_EXPRESSION}(password)
-            )`,
+            )`
           );
-        }),
+        })
       );
 
     interpolate(template, eventParams.templateMapping);
@@ -229,7 +229,7 @@ class BasicAuthPlugin implements AmplicationPlugin {
       classDeclaration,
       PASSWORD_SERVICE_MEMBER_ID.name,
       PASSWORD_SERVICE_ID,
-      "protected",
+      "protected"
     );
 
     for (const member of classDeclaration.body.body) {
@@ -248,8 +248,8 @@ class BasicAuthPlugin implements AmplicationPlugin {
         [PASSWORD_SERVICE_ID],
         relativeImportPath(
           moduleBasePath,
-          `${context.serverDirectories.srcDirectory}/auth/password.service.ts`,
-        ),
+          `${context.serverDirectories.srcDirectory}/auth/password.service.ts`
+        )
       ),
     ]);
 
@@ -258,8 +258,8 @@ class BasicAuthPlugin implements AmplicationPlugin {
         [TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID],
         relativeImportPath(
           moduleBasePath,
-          `${serverDirectories.srcDirectory}/prisma.util.ts`,
-        ),
+          `${serverDirectories.srcDirectory}/prisma.util.ts`
+        )
       ),
     ]);
 
@@ -268,18 +268,18 @@ class BasicAuthPlugin implements AmplicationPlugin {
 
   private static getPasswordFields(
     context: DsgContext,
-    entityName: string,
+    entityName: string
   ): EntityField[] | undefined {
     const entity = context.entities?.find(
       (entity) =>
-        entity.name.toLocaleLowerCase() === entityName.toLocaleLowerCase(),
+        entity.name.toLocaleLowerCase() === entityName.toLocaleLowerCase()
     );
 
     return entity?.fields.filter(isPasswordField);
   }
 
   private static createMutationDataMapping(
-    mappings: namedTypes.ObjectProperty[],
+    mappings: namedTypes.ObjectProperty[]
   ): namedTypes.Identifier | namedTypes.ObjectExpression {
     if (!mappings.length) {
       return ARGS_ID;
@@ -291,7 +291,7 @@ class BasicAuthPlugin implements AmplicationPlugin {
         builders.objectExpression([
           builders.spreadProperty(memberExpression`${ARGS_ID}.${DATA_ID}`),
           ...mappings,
-        ]),
+        ])
       ),
     ]);
   }

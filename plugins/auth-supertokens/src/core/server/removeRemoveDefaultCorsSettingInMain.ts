@@ -6,7 +6,7 @@ import { visit } from "recast";
 export const removeRemoveDefaultCorsSettingInMain = (
   srcDir: string,
   modules: ModuleMap,
-  logger: BuildLogger,
+  logger: BuildLogger
 ) => {
   logger.info("Removing the default cors setting in main.ts");
   const mainModule = modules.get(join(srcDir, "main.ts"));
@@ -63,7 +63,7 @@ export const removeRemoveDefaultCorsSettingInMain = (
 
   if (!foundCorsProp) {
     throw new Error(
-      `Failed to find the NestFactory app instantiation in the ${srcDir}/main.ts main function`,
+      `Failed to find the NestFactory app instantiation in the ${srcDir}/main.ts main function`
     );
   }
   modules.replace(mainModule, {

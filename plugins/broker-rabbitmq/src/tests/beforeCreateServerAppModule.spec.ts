@@ -54,7 +54,7 @@ describe("Testing beforeCreateServerAppModule hook", () => {
   it("should add the rabbit module to modules list", () => {
     const { templateMapping } = plugin.beforeCreateServerAppModule(
       context,
-      params,
+      params
     );
     const expectedModules = "[RabbitMQModule]";
     const modulesCode = utils.prettyPrint(templateMapping.MODULES).code;

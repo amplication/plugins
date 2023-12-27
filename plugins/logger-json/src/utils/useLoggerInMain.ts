@@ -7,7 +7,7 @@ import { importNames } from "./ast";
 export const useLoggerInMain = (
   srcDir: string,
   modules: ModuleMap,
-  logger: BuildLogger,
+  logger: BuildLogger
 ) => {
   logger.info("Adding custom logger module in main.ts");
 
@@ -57,7 +57,7 @@ export const useLoggerInMain = (
 
       // Add the bufferLogs configuration to NestJS app instance
       args[1].properties.push(
-        b.objectProperty(b.identifier("bufferLogs"), b.literal(true)),
+        b.objectProperty(b.identifier("bufferLogs"), b.literal(true))
       );
 
       appendImports(mainCode, [
@@ -71,10 +71,10 @@ export const useLoggerInMain = (
           [
             b.callExpression(
               b.memberExpression(b.identifier("app"), b.identifier("get")),
-              [b.identifier("Logger")],
+              [b.identifier("Logger")]
             ),
-          ],
-        ),
+          ]
+        )
       );
 
       path.insertAfter(useLoggerStatement);

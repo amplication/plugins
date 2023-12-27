@@ -25,7 +25,7 @@ describe("Testing afterCreateMessageBrokerClientOptionsFactory hook", () => {
   it("should correctly add the code for generating message broker client options", async () => {
     const modules = await plugin.afterCreateMessageBrokerClientOptionsFactory(
       context,
-      params,
+      params
     );
     const path = "/generateRedisClientOptions.ts";
     const code = utils.print(utils.parse(modules.get(path).code)).code;

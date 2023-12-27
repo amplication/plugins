@@ -17,28 +17,28 @@ import { print } from "@amplication/code-gen-utils";
 
 const basicStrategyBasePath = join(
   templatesPath,
-  "basic.strategy.base.template.ts",
+  "basic.strategy.base.template.ts"
 );
 
 export async function createBasicStrategyBase(
-  dsgContext: DsgContext,
+  dsgContext: DsgContext
 ): Promise<Module> {
   return await mapBasicStrategyTemplate(
     dsgContext,
     basicStrategyBasePath,
-    "basic.strategy.base.ts",
+    "basic.strategy.base.ts"
   );
 }
 
 async function mapBasicStrategyTemplate(
   context: DsgContext,
   templatePath: string,
-  fileName: string,
+  fileName: string
 ): Promise<Module> {
   try {
     const { entities, resourceInfo, serverDirectories } = context;
     const authEntity = entities?.find(
-      (x) => x.name === resourceInfo?.settings.authEntityName,
+      (x) => x.name === resourceInfo?.settings.authEntityName
     );
     if (!authEntity) {
       context.logger.error(AUTH_ENTITY_LOG_ERROR);
@@ -51,14 +51,14 @@ async function mapBasicStrategyTemplate(
 
     const entityNameImport = importNames(
       [authEntityNameId],
-      `../../${entityInfoName}`,
+      `../../${entityInfoName}`
     );
 
     addImports(
       template,
       [entityNameImport].filter(
-        (x) => x, //remove nulls and undefined
-      ) as namedTypes.ImportDeclaration[],
+        (x) => x //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[]
     );
 
     const templateMapping = {

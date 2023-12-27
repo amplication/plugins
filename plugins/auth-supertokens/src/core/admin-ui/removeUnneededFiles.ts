@@ -4,7 +4,7 @@ import { join } from "lodash";
 export const removeUnneededAdminUIFiles = (
   srcDirectory: string,
   modules: ModuleMap,
-  logger: BuildLogger,
+  logger: BuildLogger
 ) => {
   logger.info("Removing unneeded files from the admin UI");
   const unneededFilenames = [
@@ -14,6 +14,6 @@ export const removeUnneededAdminUIFiles = (
     join("auth-provider", "ra-auth-jwt.ts"),
   ];
   modules.removeMany(
-    unneededFilenames.map((filename) => `${srcDirectory}/${filename}`),
+    unneededFilenames.map((filename) => `${srcDirectory}/${filename}`)
   );
 };

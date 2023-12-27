@@ -20,27 +20,27 @@ import { camelCase } from "lodash";
 
 const jwtStrategyBasePath = join(
   templatesPath,
-  "jwt.strategy.template.base.ts",
+  "jwt.strategy.template.base.ts"
 );
 
 export async function createJwtStrategyBase(
-  dsgContext: DsgContext,
+  dsgContext: DsgContext
 ): Promise<Module> {
   return await mapJwtStrategyTemplate(
     dsgContext,
     jwtStrategyBasePath,
-    "jwt.strategy.base.ts",
+    "jwt.strategy.base.ts"
   );
 }
 
 async function mapJwtStrategyTemplate(
   context: DsgContext,
   templatePath: string,
-  fileName: string,
+  fileName: string
 ): Promise<Module> {
   const { entities, resourceInfo, serverDirectories } = context;
   const authEntity = entities?.find(
-    (x) => x.name === resourceInfo?.settings.authEntityName,
+    (x) => x.name === resourceInfo?.settings.authEntityName
   );
   if (!authEntity) {
     context.logger.error(AUTH_ENTITY_LOG_ERROR);
@@ -57,27 +57,27 @@ async function mapJwtStrategyTemplate(
 
     const entityNameImport = importNames(
       [authEntityNameId],
-      `../../${entityInfoName}`,
+      `../../${entityInfoName}`
     );
 
     const entityNameToLower = authEntity?.name.toLowerCase();
 
     const entityServiceImport = importNames(
       [authServiceNameId],
-      `../../../${entityNameToLower}/${entityNameToLower}.service`,
+      `../../../${entityNameToLower}/${entityNameToLower}.service`
     );
 
     addImports(
       template,
       [entityNameImport, entityServiceImport].filter(
-        (x) => x, //remove nulls and undefined
-      ) as namedTypes.ImportDeclaration[],
+        (x) => x //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[]
     );
 
     const templateMapping = {
       ENTITY_NAME_INFO: builders.identifier(`${authEntity.name}Info`),
       ENTITY_SERVICE: builders.identifier(`${entityNameToLower}Service`),
-      FIND_ONE_FUNCTION: builders.identifier(`${camelCase(authEntity?.name) }`)
+      FIND_ONE_FUNCTION: builders.identifier(`${camelCase(authEntity?.name)}`),
     };
 
     const filePath = `${serverDirectories.authDirectory}/jwt/base/${fileName}`;
@@ -86,18 +86,18 @@ async function mapJwtStrategyTemplate(
 
     const classDeclaration = getClassDeclarationById(
       template,
-      builders.identifier("JwtStrategyBase"),
+      builders.identifier("JwtStrategyBase")
     );
 
     const entityServiceIdentifier = builders.identifier(
-      `${entityNameToLower}Service`,
+      `${entityNameToLower}Service`
     );
 
     addInjectableDependency(
       classDeclaration,
       entityServiceIdentifier.name,
       builders.identifier(`${authEntity?.name}Service`),
-      "protected",
+      "protected"
     );
 
     removeTSClassDeclares(template);

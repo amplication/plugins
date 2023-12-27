@@ -15,7 +15,7 @@ export const addAuthModuleInAuthDir = async (
   modules: ModuleMap,
   srcDirectory: string,
   authDirectory: string,
-  logger: BuildLogger,
+  logger: BuildLogger
 ) => {
   logger.info("Creating a new server auth module");
   const templatePath = join(templatesPath, "auth.module.template.ts");
@@ -28,7 +28,7 @@ export const addAuthModuleInAuthDir = async (
   appendImports(template, [
     builders.importDeclaration(
       [builders.importSpecifier(moduleId)],
-      getModulePath(params, srcDirectory, authDirectory),
+      getModulePath(params, srcDirectory, authDirectory)
     ),
   ]);
   interpolate(template, templateMapping);
@@ -40,7 +40,7 @@ export const addAuthModuleInAuthDir = async (
 };
 
 const getModuleId = (
-  params: CreateEntityModuleParams,
+  params: CreateEntityModuleParams
 ): namedTypes.Identifier => {
   if (!params.templateMapping.MODULE) {
     throw new Error("Failed to find the module ID of the auth entity");
@@ -51,15 +51,15 @@ const getModuleId = (
 const getModulePath = (
   params: CreateEntityModuleParams,
   srcDirectory: string,
-  authDirectory: string,
+  authDirectory: string
 ): namedTypes.StringLiteral => {
   const modulePath = `${srcDirectory}/${camelCase(
-    params.entityName,
+    params.entityName
   )}/${camelCase(params.entityName)}.module`;
   const path = relative(authDirectory, modulePath);
   if (!path) {
     throw new Error(
-      "The source directory is not a parent of the auth directory",
+      "The source directory is not a parent of the auth directory"
     );
   }
   return builders.stringLiteral(path);

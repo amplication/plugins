@@ -20,41 +20,41 @@ describe("Testing afterCreateMessageBrokerService", () => {
   it("should correctly add the code for generating rabbitmq producer service", async () => {
     const modules = await plugin.afterCreateMessageBrokerService(
       context,
-      params,
+      params
     );
 
     const rabbitMqProducerService = modules.get(
-      "/rabbitmq.producer.service.ts",
+      "/rabbitmq.producer.service.ts"
     );
     const rabbitMqProducerServiceCode = utils.print(
-      utils.parse(rabbitMqProducerService.code),
+      utils.parse(rabbitMqProducerService.code)
     ).code;
     const expectedProducerServiceCode = utils.print(
-      utils.parse(expectedProducerService),
+      utils.parse(expectedProducerService)
     ).code;
 
     const rabbitMQMessage = modules.get("/RabbitMQMessage.ts");
     const rabbitMQMessageCode = utils.print(
-      utils.parse(rabbitMQMessage.code),
+      utils.parse(rabbitMQMessage.code)
     ).code;
     const expectedRabbitMQMessageCode = utils.print(
-      utils.parse(expectedRabbitMQMessage),
+      utils.parse(expectedRabbitMQMessage)
     ).code;
 
     const rabbitMQMessageHeaders = modules.get("/RabbitMQMessageHeaders.ts");
     const rabbitMQMessageHeadersCode = utils.print(
-      utils.parse(rabbitMQMessageHeaders.code),
+      utils.parse(rabbitMQMessageHeaders.code)
     ).code;
     const expectedRabbitMQMessageHeadersCode = utils.print(
-      utils.parse(expectedRabbitMQMessageHeaders),
+      utils.parse(expectedRabbitMQMessageHeaders)
     ).code;
 
     expect(rabbitMqProducerServiceCode).toStrictEqual(
-      expectedProducerServiceCode,
+      expectedProducerServiceCode
     );
     expect(rabbitMQMessageCode).toStrictEqual(expectedRabbitMQMessageCode);
     expect(rabbitMQMessageHeadersCode).toStrictEqual(
-      expectedRabbitMQMessageHeadersCode,
+      expectedRabbitMQMessageHeadersCode
     );
   });
 });
@@ -108,7 +108,7 @@ const fakeContext = () => {
       warn: async (
         message: string,
         params?: Record<string, unknown>,
-        userFriendlyMessage?: string,
+        userFriendlyMessage?: string
       ) => {
         console.log("Warning!", userFriendlyMessage);
       },

@@ -21,11 +21,11 @@ type AuthGuardMetaData = {
 
 export async function createDefaultGuard(
   authProvider: EnumAuthProviderType,
-  authPath: string,
+  authPath: string
 ): Promise<Module> {
   const defaultAuthGuardPath = join(
     templatesPath,
-    "default-auth-guard.template.ts",
+    "default-auth-guard.template.ts"
   );
 
   const modulePath = `${authPath}/defaultAuth.guard.ts`;
@@ -38,7 +38,7 @@ export async function createDefaultGuard(
   });
   const baseGuardImport = importNames(
     [baseGuardIdentifier],
-    relativeImportPath(modulePath, path),
+    relativeImportPath(modulePath, path)
   );
   addImports(templateGuardFile, [baseGuardImport]);
   removeTSClassDeclares(templateGuardFile);
@@ -46,7 +46,7 @@ export async function createDefaultGuard(
 }
 function getMetaDataForAuthGuard(
   setAuthGuard: EnumAuthProviderType,
-  authPath: string,
+  authPath: string
 ): AuthGuardMetaData {
   const data: AuthGuardMetaData = { fileName: "", path: "", className: "" };
   switch (setAuthGuard) {
@@ -62,7 +62,7 @@ function getMetaDataForAuthGuard(
       break;
     default:
       throw new Error(
-        `Not found any meta data for auth guard - ${setAuthGuard}`,
+        `Not found any meta data for auth guard - ${setAuthGuard}`
       );
   }
   return data;

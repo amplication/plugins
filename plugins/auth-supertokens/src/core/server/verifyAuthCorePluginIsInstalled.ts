@@ -2,7 +2,7 @@ import { BuildLogger, PluginInstallation } from "@amplication/code-gen-types";
 
 export const verifyAuthCorePluginIsInstalled = (
   pluginInstallations: PluginInstallation[],
-  logger: BuildLogger,
+  logger: BuildLogger
 ) => {
   logger.info("Verifying that the auth core plugin is installed");
   for (const plugin of pluginInstallations) {
@@ -11,6 +11,6 @@ export const verifyAuthCorePluginIsInstalled = (
     }
   }
   throw new Error(
-    "The auth-core plugin must be installed for the auth-supertokens plugin to function",
+    "The auth-core plugin must be installed for the auth-supertokens plugin to function"
   );
 };

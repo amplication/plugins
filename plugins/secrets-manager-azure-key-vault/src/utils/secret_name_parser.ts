@@ -1,7 +1,7 @@
 import { SecretsNameKey } from "@amplication/code-gen-types";
 
 export function secretNameParser(secretPath: string): Record<string, string> {
-  const secretName = secretPath.split(":")[0]
+  const secretName = secretPath.split(":")[0];
 
   return {
     [secretName]: secretPath,

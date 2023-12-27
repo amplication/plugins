@@ -8,7 +8,7 @@ import { getPluginSettings } from "@utils/getPluginSettings";
 
 export const beforeCreateAdminDotEnv = async (
   context: DsgContext,
-  eventParams: CreateAdminDotEnvParams,
+  eventParams: CreateAdminDotEnvParams
 ): Promise<CreateAdminDotEnvParams> => {
   const settings = getPluginSettings(context.pluginInstallations);
 
@@ -20,7 +20,7 @@ export const beforeCreateAdminDotEnv = async (
       context.logger.error(
         "Management API Access Token is required if you want to use the Management API.",
         {},
-        "Kindly add the Management API Access Token in the plugin settings' managementParams field.",
+        "Kindly add the Management API Access Token in the plugin settings' managementParams field."
       );
       throw new Error("Auth0 environment creation failed.");
     }
@@ -29,7 +29,7 @@ export const beforeCreateAdminDotEnv = async (
       context.logger.error(
         "Management API Identifier is required if you want to use the Management API.",
         {},
-        "Kindly add the Management API Identifier in the plugin settings' managementParams field.",
+        "Kindly add the Management API Identifier in the plugin settings' managementParams field."
       );
       throw new Error("Auth0 environment creation failed.");
     }
@@ -45,7 +45,7 @@ export const beforeCreateAdminDotEnv = async (
     context.logger.error(
       "Domain, Client ID and Audience are required.",
       {},
-      "Kindly add the Domain, Client ID and Audience in the plugin settings or use the Management API by providing the Management API Access Token and Identifier in the plugin settings' managementParams field, and make useManagementApi true.",
+      "Kindly add the Domain, Client ID and Audience in the plugin settings or use the Management API by providing the Management API Access Token and Identifier in the plugin settings' managementParams field, and make useManagementApi true."
     );
     throw new Error("Auth0 environment creation failed.");
   }
@@ -61,7 +61,7 @@ export const beforeCreateAdminDotEnv = async (
   };
 
   eventParams.envVariables = eventParams.envVariables.concat(
-    convertToVarDict(envVariables),
+    convertToVarDict(envVariables)
   );
 
   return eventParams;

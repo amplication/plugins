@@ -18,27 +18,27 @@ import { camelCase } from "lodash";
 
 const jwtStrategySpecPath = join(
   templatesPath,
-  "jwt.strategy.template.spec.ts",
+  "jwt.strategy.template.spec.ts"
 );
 
 export async function createJwtStrategySpec(
-  dsgContext: DsgContext,
+  dsgContext: DsgContext
 ): Promise<Module> {
   return await mapJwtStrategySpecTemplate(
     dsgContext,
     jwtStrategySpecPath,
-    "jwt.strategy.spec.ts",
+    "jwt.strategy.spec.ts"
   );
 }
 
 async function mapJwtStrategySpecTemplate(
   context: DsgContext,
   templatePath: string,
-  fileName: string,
+  fileName: string
 ): Promise<Module> {
   const { entities, resourceInfo, serverDirectories } = context;
   const authEntity = entities?.find(
-    (x) => x.name === resourceInfo?.settings.authEntityName,
+    (x) => x.name === resourceInfo?.settings.authEntityName
   );
   if (!authEntity) {
     context.logger.error(AUTH_ENTITY_LOG_ERROR);
@@ -54,19 +54,19 @@ async function mapJwtStrategySpecTemplate(
 
     const entityServiceImport = importNames(
       [authServiceNameId],
-      `../../../${entityNameToLower}/${entityNameToLower}.service`,
+      `../../../${entityNameToLower}/${entityNameToLower}.service`
     );
 
     addImports(
       template,
       [entityServiceImport].filter(
-        (x) => x, //remove nulls and undefined
-      ) as namedTypes.ImportDeclaration[],
+        (x) => x //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[]
     );
 
     const templateMapping = {
       ENTITY_SERVICE: builders.identifier(`${entityServiceName}`),
-      FIND_ONE_FUNCTION: builders.identifier(`${camelCase(authEntity?.name) }`)
+      FIND_ONE_FUNCTION: builders.identifier(`${camelCase(authEntity?.name)}`),
     };
 
     const filePath = `${serverDirectories.srcDirectory}/tests/auth/jwt/${fileName}`;

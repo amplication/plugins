@@ -28,11 +28,11 @@ const useCasesByAction = [
 ];
 const useCaseTemplatePath = join(
   resolve(__dirname, "./templates"),
-  "useCase.template.ts",
+  "useCase.template.ts"
 );
 const useCaseIndexTemplatePath = join(
   resolve(__dirname, "./templates"),
-  "index.template.ts",
+  "index.template.ts"
 );
 
 export const createUseCasesCrud = async (entityName: string) => {
@@ -44,13 +44,13 @@ export const createUseCasesCrud = async (entityName: string) => {
     const useCaseModuleTemp = await createUsCaseModule(
       useCasesByAction[i] as UseCasesCrud,
       template,
-      entityName,
+      entityName
     );
 
     useCaseModuleTemp && useCasesModules.push(useCaseModuleTemp.module);
     const exportUseCaseName = builders.exportAllDeclaration(
       builders.stringLiteral(useCaseModuleTemp.fileName),
-      null,
+      null
     );
 
     indexTemplate.program.body.unshift(exportUseCaseName);
@@ -67,17 +67,17 @@ export const createUseCasesCrud = async (entityName: string) => {
 const createUsCaseModule = async (
   useCase: UseCasesCrud,
   template: namedTypes.File,
-  entityName: string,
+  entityName: string
 ): Promise<ModuleUseCase> => {
   const entityCapitalFirst = capitalizeFirstLetter(entityName);
   const useCaseClass = `${useCase}${entityCapitalFirst}UseCase`;
   const templateMapping = {
     USE_CASE: builders.identifier(useCaseClass),
     USE_CASE_ARGS: builders.identifier(
-      setUseCaseArgsName(entityCapitalFirst, useCase),
+      setUseCaseArgsName(entityCapitalFirst, useCase)
     ),
     ENTITY_DTO: builders.identifier(
-      useCase === "FindMany" ? `${entityCapitalFirst}[]` : entityCapitalFirst,
+      useCase === "FindMany" ? `${entityCapitalFirst}[]` : entityCapitalFirst
     ),
   };
 
@@ -116,31 +116,31 @@ const setUseCaseArgsName = (entityName: string, useCase: UseCasesCrud) => {
 const createClassImport = (
   template: namedTypes.File,
   entityName: string,
-  useCase: UseCasesCrud,
+  useCase: UseCasesCrud
 ) => {
   const dtoName = `${entityName}${useCase}`;
 
   const crudDtoImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(entityName))],
-    builders.stringLiteral(`../model/dtos/${entityName}`),
+    builders.stringLiteral(`../model/dtos/${entityName}`)
   );
 
   const dtoImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(entityName))],
-    builders.stringLiteral(`../model/dtos/${entityName}`),
+    builders.stringLiteral(`../model/dtos/${entityName}`)
   );
 
   const repositoryImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(`I${entityName}Repository`))],
     builders.stringLiteral(
-      `../model/interfaces/repositories/${entityName.toLowerCase()}-repository.interface`,
-    ),
+      `../model/interfaces/repositories/${entityName.toLowerCase()}-repository.interface`
+    )
   );
 
   const dtoArgsName = setUseCaseArgsName(entityName, useCase); // `${entityName}${useCase}Args`;
   const useCaseArgsImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(dtoArgsName))],
-    builders.stringLiteral(`../model/dtos/${dtoArgsName}`),
+    builders.stringLiteral(`../model/dtos/${dtoArgsName}`)
   );
 
   addImports(template, [dtoImport, repositoryImport, useCaseArgsImport]);
@@ -148,14 +148,14 @@ const createClassImport = (
 
 const createdConstructorStatements = (
   classDeclaration: namedTypes.ClassDeclaration,
-  entityName: string,
+  entityName: string
 ) => {
   const repositoryIdentifier = builders.identifier(`I${entityName}Repository`);
   addInjectableDependency(
     classDeclaration,
     `${entityName.toLowerCase()}Repository`,
     repositoryIdentifier,
-    "private",
+    "private"
   );
 };
 
@@ -176,15 +176,15 @@ const createClassMethod = (entityName: string, useCase: UseCasesCrud) => {
             builders.memberExpression(
               builders.memberExpression(
                 builders.thisExpression(),
-                builders.identifier(`${entityName.toLowerCase()}Repository`),
+                builders.identifier(`${entityName.toLowerCase()}Repository`)
               ),
               builders.identifier(
-                `${useCase.charAt(0).toLowerCase()}${useCase.slice(1)}`,
-              ),
+                `${useCase.charAt(0).toLowerCase()}${useCase.slice(1)}`
+              )
             ),
-            [builders.identifier("args")],
-          ),
-        ),
+            [builders.identifier("args")]
+          )
+        )
       ),
     ]),
     async: true,
@@ -194,8 +194,8 @@ const createClassMethod = (entityName: string, useCase: UseCasesCrud) => {
         name: "args",
         typeAnnotation: builders.tsTypeAnnotation(
           builders.tsTypeReference(
-            builders.identifier(setUseCaseArgsName(entityName, useCase)),
-          ),
+            builders.identifier(setUseCaseArgsName(entityName, useCase))
+          )
         ),
       }),
     ],
@@ -204,8 +204,8 @@ const createClassMethod = (entityName: string, useCase: UseCasesCrud) => {
         builders.identifier("Promise"),
         builders.tsTypeParameterInstantiation([
           builders.tsTypeReference(builders.identifier(getReturnType(useCase))),
-        ]),
-      ),
+        ])
+      )
     ),
   });
 };

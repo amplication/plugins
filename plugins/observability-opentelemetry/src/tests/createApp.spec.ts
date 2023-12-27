@@ -38,7 +38,7 @@ describe("Testing createApp hook", () => {
   it("should add the opentelemetry module to the modules list", () => {
     const { templateMapping } = beforeCreateServerAppModule(
       context,
-      eventParams,
+      eventParams
     );
 
     const moduleCode = recast.prettyPrint(templateMapping["MODULES"]).code;
@@ -52,7 +52,7 @@ describe("Testing createApp hook", () => {
 
     const { templateMapping } = beforeCreateServerAppModule(
       context,
-      eventParams,
+      eventParams
     );
 
     const moduleCode = recast.prettyPrint(templateMapping["MODULES"]).code;

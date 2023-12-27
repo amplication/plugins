@@ -18,23 +18,23 @@ import { print } from "@amplication/code-gen-utils";
 const authModulePath = join(templatesPath, "auth.module.template.ts");
 
 export async function createAuthModule(
-  dsgContext: DsgContext,
+  dsgContext: DsgContext
 ): Promise<Module> {
   return await mapAuthModuleTemplate(
     dsgContext,
     authModulePath,
-    "auth.module.ts",
+    "auth.module.ts"
   );
 }
 
 async function mapAuthModuleTemplate(
   context: DsgContext,
   templatePath: string,
-  fileName: string,
+  fileName: string
 ): Promise<Module> {
   const { entities, resourceInfo, serverDirectories } = context;
   const authEntity = entities?.find(
-    (x) => x.name === resourceInfo?.settings.authEntityName,
+    (x) => x.name === resourceInfo?.settings.authEntityName
   );
   if (!authEntity) {
     context.logger.error(AUTH_ENTITY_LOG_ERROR);
@@ -50,14 +50,14 @@ async function mapAuthModuleTemplate(
 
     const authModuleImport = importNames(
       [authModuleNameId],
-      `../${entityNameToLower}/${entityNameToLower}.module`,
+      `../${entityNameToLower}/${entityNameToLower}.module`
     );
 
     addImports(
       template,
       [authModuleImport].filter(
-        (x) => x, //remove nulls and undefined
-      ) as namedTypes.ImportDeclaration[],
+        (x) => x //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[]
     );
 
     const templateMapping = {

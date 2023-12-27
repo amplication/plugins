@@ -36,7 +36,7 @@ class HelmChartPlugin implements AmplicationPlugin {
   async afterCreateServerDotEnv(
     context: DsgContext,
     eventParams: CreateServerDotEnvParams,
-    modules: ModuleMap,
+    modules: ModuleMap
   ): Promise<ModuleMap> {
     context.logger.info(`Generating Helm Chart...`);
 
@@ -89,17 +89,17 @@ class HelmChartPlugin implements AmplicationPlugin {
       helmDirectoryPath = join(
         rootDirectoryPath,
         settings.directory_name,
-        serviceName,
+        serviceName
       );
     } else if (settings.root_level === false) {
       helmDirectoryPath = join(
         context.serverDirectories.baseDirectory,
         settings.directory_name,
-        serviceName,
+        serviceName
       );
     } else {
       throw new Error(
-        "HelmChartPlugin: Specify true or false for the root_level setting",
+        "HelmChartPlugin: Specify true or false for the root_level setting"
       );
     }
 
@@ -108,7 +108,7 @@ class HelmChartPlugin implements AmplicationPlugin {
     const chartTemplatePath = resolve(__dirname, chartTemplateDirectory);
     const chartTemplateFiles = await context.utils.importStaticModules(
       chartTemplatePath,
-      helmDirectoryPath,
+      helmDirectoryPath
     );
 
     // render the helm chart from the static files in combination with the values provided through

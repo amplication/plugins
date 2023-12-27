@@ -60,7 +60,7 @@ describe("Testing afterCreateDTOs hook", () => {
           updateInput: parse(updateInputRawBefore).program
             .body[0] as NamedClassDeclaration,
           entity: parse(entityCode).program.body[0] as NamedClassDeclaration,
-        } as EntityEnumDTOs & EntityDTOs
+        } as EntityEnumDTOs & EntityDTOs,
       },
     };
   });
@@ -68,7 +68,7 @@ describe("Testing afterCreateDTOs hook", () => {
     const moduleMap = await plugin.afterCreateDTOs(
       context,
       params,
-      new ModuleMap(context.logger),
+      new ModuleMap(context.logger)
     );
     const expectedAuthServiceCode = prettyCode(authService);
     const code = prettyCode(moduleMap.get("/auth/auth.service.ts").code);

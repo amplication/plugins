@@ -8,10 +8,10 @@ export const addAuthCallbackModule = async (
   srcDirectory: string,
   modules: ModuleMap,
   recipeName: Settings["recipe"]["name"],
-  logger: BuildLogger,
+  logger: BuildLogger
 ) => {
   logger.info(
-    "Adding the auth callback module in the admin UI for third party logins",
+    "Adding the auth callback module in the admin UI for third party logins"
   );
   const filename = "AuthCallback.tsx";
   if (
