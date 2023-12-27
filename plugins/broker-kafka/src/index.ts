@@ -334,7 +334,7 @@ class KafkaPlugin implements AmplicationPlugin {
           ),
         });
 
-        //@ts-expect-error - decorators is not defined in Identifier
+        //@ts-expect-error - decorators is defined in the type
         kafkaValue.decorators = [payloadDecorator];
 
         const kafkaContextDecorator = builders.decorator(
@@ -346,7 +346,8 @@ class KafkaPlugin implements AmplicationPlugin {
             builders.tsTypeReference(builders.identifier("KafkaContext"))
           ),
         });
-        //@ts-expect-error - decorators is not defined in Identifier
+
+        //@ts-expect-error - decorators is defined in the type
         kafkaContext.decorators = [kafkaContextDecorator];
 
         const currentClassMethod = builders.classMethod.from({
