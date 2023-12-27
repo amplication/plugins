@@ -39,6 +39,7 @@
     "yaml": "^2.2.1"
   },
   "jest": {
+    "passWithNoTests": true,
     "moduleFileExtensions": [
       "js",
       "json",
