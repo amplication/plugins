@@ -17,10 +17,12 @@ Example:
 
 ```json
 {
-    "logLevel": "INFO",
-    "additionalLogProperties": {
-        "someKey": "someValue"
-    }
+  "logLevel": "info",
+  "additionalLogProperties": {
+    "someKey": "someValue",
+    "project": "A",
+    "team": "di"
+  }
 }
 ```
 

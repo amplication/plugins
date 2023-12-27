@@ -2,6 +2,8 @@ import {
   BuildLogger,
   CreateDTOsParams,
   DsgContext,
+  EntityDTOs,
+  EntityEnumDTOs,
   ModuleMap,
 } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
@@ -52,14 +54,13 @@ describe("Testing afterCreateDTOs for passwordless recipe", () => {
       dtos: {
         // Ignoring the rest of the fields because only the createInput and
         // updateInput and entity are required for the tests
-        //@ts-ignore
         TheEntity: {
           createInput: parse(createInputRaw).program
             .body[0] as NamedClassDeclaration,
           updateInput: parse(updateInputRaw).program
             .body[0] as NamedClassDeclaration,
           entity: parse(entityCode).program.body[0] as NamedClassDeclaration,
-        },
+        } as EntityEnumDTOs & EntityDTOs,
       },
     };
   });

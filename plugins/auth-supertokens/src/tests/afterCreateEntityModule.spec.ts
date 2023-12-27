@@ -76,7 +76,6 @@ import {
   Module,
   NestModule
 } from "@nestjs/common";
-import { PasswordService } from "./password.service";
 import { STAuthMiddleware } from "./supertokens/auth.middleware";
 import { AuthService } from "./auth.service";
 import { TheEntityModule } from "../theEntity/theEntity.module";

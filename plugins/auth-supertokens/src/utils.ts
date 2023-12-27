@@ -11,7 +11,6 @@ import { settings as defaultSettings } from "../.amplicationrc.json";
 import { builders } from "ast-types";
 import * as K from "ast-types/gen/kinds";
 import { NodePath } from "ast-types/lib/node-path";
-import { groupBy, mapValues, uniqBy } from "lodash";
 
 export const getPluginSettings = (
   pluginInstallations: PluginInstallation[],
@@ -81,7 +80,7 @@ export const settingsToVarDict = (settings: Settings): VariableDictionary => {
       const envVar = settingToEnvVar(settingKey as keyof Settings);
       if (envVar) {
         return {
-          [envVar]: settings[settingKey as keyof Settings]!.toString(),
+          [envVar]: settings[settingKey as keyof Settings].toString(),
         };
       }
       return {};
@@ -110,7 +109,7 @@ export function interpolate(
   return recast.visit(ast, {
     visitIdentifier(path) {
       const { name } = path.node;
-      if (mapping.hasOwnProperty(name)) {
+      if (Object.prototype.hasOwnProperty.call(mapping, name)) {
         const replacement = mapping[name];
         path.replace(replacement);
       }

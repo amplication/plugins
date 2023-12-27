@@ -28,7 +28,7 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
     context.pluginInstallations[0].settings = {};
     const { envVariables } = plugin.beforeCreateServerDotEnv(context, params);
     const expectedEnvVars: VariableDictionary = utils.settingsToVarDict(
-      defaultSettings as any,
+      defaultSettings as Settings
     );
     expectedEnvVars.sort(envVarSortCmpFunc);
     envVariables.sort(envVarSortCmpFunc);

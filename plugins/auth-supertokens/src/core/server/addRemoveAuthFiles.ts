@@ -1,5 +1,4 @@
 import {
-  BuildLogger,
   DsgContext,
   ModuleMap,
 } from "@amplication/code-gen-types";

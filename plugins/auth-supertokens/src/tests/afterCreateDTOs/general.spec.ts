@@ -2,6 +2,8 @@ import {
   BuildLogger,
   CreateDTOsParams,
   DsgContext,
+  EntityDTOs,
+  EntityEnumDTOs,
   ModuleMap,
 } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
@@ -9,7 +11,6 @@ import { parse } from "@amplication/code-gen-utils";
 import { NamedClassDeclaration } from "@amplication/code-gen-types";
 import { prettyCode } from "../../utils";
 import SupertokensAuthPlugin from "../../index";
-import { print } from "@amplication/code-gen-utils";
 import { name } from "../../../package.json";
 
 describe("Testing afterCreateDTOs hook", () => {
@@ -53,14 +54,13 @@ describe("Testing afterCreateDTOs hook", () => {
       dtos: {
         // Ignoring the rest of the fields because only the createInput and
         // updateInput and entity are required for the tests
-        //@ts-ignore
         TheEntity: {
           createInput: parse(createInputRawBefore).program
             .body[0] as NamedClassDeclaration,
           updateInput: parse(updateInputRawBefore).program
             .body[0] as NamedClassDeclaration,
           entity: parse(entityCode).program.body[0] as NamedClassDeclaration,
-        },
+        } as EntityEnumDTOs & EntityDTOs
       },
     };
   });
