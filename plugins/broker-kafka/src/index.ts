@@ -168,7 +168,7 @@ class KafkaPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateMessageBrokerServiceParams
   ): Promise<ModuleMap> {
-    const { serverDirectories, utils } = context;
+    const { serverDirectories, logger, otherResources } = context;
     const { messageBrokerDirectory } = serverDirectories;
 
     const servicePath = join(
@@ -182,7 +182,10 @@ class KafkaPlugin implements AmplicationPlugin {
       )?.resourceInfo?.name ?? null;
 
     if (!messageBrokerName) {
-      throw new Error("Message broker name not found");
+      logger.warn(
+        "Message broker name not found. Did you forget to add a message broker resource?",
+      );
+      messageBrokerName = "kafka";
     }
 
     const templatePath = join(
@@ -215,7 +218,7 @@ class KafkaPlugin implements AmplicationPlugin {
       `KafkaMessageHeaders.ts`
     );
 
-    const modules = new ModuleMap(context.logger);
+    const modules = new ModuleMap(logger);
     await modules.set({ code: print(template).code, path: servicePath });
     await modules.set({
       code: print(kafkaMessageFile).code,
