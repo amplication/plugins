@@ -38,18 +38,6 @@ export class JwtStrategyBase extends PassportStrategy(Strategy) {
       },
     });
 
-    if (!ENTITY) {
-      throw new UnauthorizedException();
-    }
-
-    if (
-      !Array.isArray(ENTITY.roles) ||
-      typeof ENTITY.roles !== "object" ||
-      ENTITY.roles === null
-    ) {
-      throw new Error("ENTITY roles is not a valid value");
-    }
-
     return ENTITY ? { ...ENTITY, roles: ENTITY?.roles as string[] } : null;
   }
 }

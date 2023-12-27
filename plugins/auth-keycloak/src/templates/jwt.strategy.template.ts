@@ -27,6 +27,14 @@ export class JwtStrategy extends JwtStrategyBase implements IAuthStrategy {
 
     // If the entity is valid, return it
     if (VALIDATED_ENTITY) {
+      if (
+        !Array.isArray(VALIDATED_ENTITY.roles) ||
+        typeof VALIDATED_ENTITY.roles !== "object" ||
+        VALIDATED_ENTITY.roles === null
+      ) {
+        throw new Error("ENTITY roles is not a valid value");
+      }
+
       return VALIDATED_ENTITY;
     }
 
