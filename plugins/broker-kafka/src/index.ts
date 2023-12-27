@@ -305,8 +305,9 @@ class KafkaPlugin implements AmplicationPlugin {
 
     interpolate(template, templateMapping);
     const classDeclaration = getClassDeclarationById(template, controllerId);
+    const { serviceTopics, serverDirectories } = context;
 
-    context.serviceTopics?.map((serviceTopic) => {
+    serviceTopics?.map((serviceTopic) => {
       serviceTopic.patterns.forEach((topic) => {
         if (!topic.topicName) {
           throw new Error(`Topic name not found for topic id ${topic.topicId}`);
@@ -379,7 +380,7 @@ class KafkaPlugin implements AmplicationPlugin {
       });
     });
     const filePath = join(
-      context.serverDirectories.srcDirectory,
+      serverDirectories.srcDirectory,
       "kafka",
       "kafka.controller.ts"
     );
