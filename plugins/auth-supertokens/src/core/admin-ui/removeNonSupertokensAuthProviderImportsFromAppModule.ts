@@ -3,10 +3,10 @@ import { BuildLogger, ModuleMap } from "@amplication/code-gen-types";
 export const removeNonSupertokensAuthProviderImportsFromAppModule = (
   srcDirectory: string,
   modules: ModuleMap,
-  logger: BuildLogger,
+  logger: BuildLogger
 ) => {
   logger.info(
-    "Removing non-SuperTokens auth provider imports from the admin UI app module",
+    "Removing non-SuperTokens auth provider imports from the admin UI app module"
   );
   const appModule = modules.get(`${srcDirectory}/App.tsx`);
   if (!appModule) {

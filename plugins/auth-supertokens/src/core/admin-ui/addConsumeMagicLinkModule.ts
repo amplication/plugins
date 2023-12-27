@@ -8,10 +8,10 @@ export const addConsumeMagicLinkModule = async (
   srcDirectory: string,
   modules: ModuleMap,
   recipeName: Settings["recipe"]["name"],
-  logger: BuildLogger,
+  logger: BuildLogger
 ) => {
   logger.info(
-    "Adding the consume magic link module in the admin UI for passwordless logins",
+    "Adding the consume magic link module in the admin UI for passwordless logins"
   );
   const filename = "ConsumeSuperTokensMagicLink.tsx";
   if (
@@ -19,7 +19,7 @@ export const addConsumeMagicLinkModule = async (
     recipeName !== "thirdpartypasswordless"
   ) {
     throw new Error(
-      "Unexpected recipe for generation of consume magic link module",
+      "Unexpected recipe for generation of consume magic link module"
     );
   }
   const path = resolve(
@@ -27,7 +27,7 @@ export const addConsumeMagicLinkModule = async (
     "admin-ui",
     recipeName,
     "magiclink",
-    filename,
+    filename
   );
   modules.set({
     path: `${srcDirectory}/${filename}`,

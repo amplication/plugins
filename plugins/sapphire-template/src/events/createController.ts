@@ -11,12 +11,12 @@ import { addImports } from "../util/ast";
 
 const controllerTemplatePath = join(
   resolve(__dirname, "./templates"),
-  "controller.template.ts",
+  "controller.template.ts"
 );
 
 export const beforeCreateEntityController = async (
   context: DsgContext,
-  eventParams: CreateEntityControllerParams,
+  eventParams: CreateEntityControllerParams
 ) => {
   const template = await readFile(controllerTemplatePath);
   return { ...eventParams, template };
@@ -24,7 +24,7 @@ export const beforeCreateEntityController = async (
 
 const updateControllerImports = (
   template: namedTypes.File,
-  entityName: string,
+  entityName: string
 ) => {
   const entityNameToUpper =
     entityName.charAt(0).toUpperCase() + entityName.slice(1);
@@ -46,22 +46,22 @@ const updateControllerImports = (
   const serviceImport = builders.importDeclaration(
     [
       builders.importSpecifier(
-        builders.identifier(`${entityNameToUpper}Service`),
+        builders.identifier(`${entityNameToUpper}Service`)
       ),
     ],
     builders.stringLiteral(
-      `../app/${lowerCaseEntity}/services/${lowerCaseEntity}.service`,
-    ),
+      `../app/${lowerCaseEntity}/services/${lowerCaseEntity}.service`
+    )
   );
   const createDtoImport = builders.importDeclaration(
     [
       builders.importSpecifier(
-        builders.identifier(`${entityNameToUpper}CreateInput`),
+        builders.identifier(`${entityNameToUpper}CreateInput`)
       ),
     ],
     builders.stringLiteral(
-      `../app/${lowerCaseEntity}/model/dtos/${entityNameToUpper}CreateInput`,
-    ),
+      `../app/${lowerCaseEntity}/model/dtos/${entityNameToUpper}CreateInput`
+    )
   );
   // const whereDtoImport = builders.importDeclaration(
   //   [builders.importSpecifier(builders.identifier(`${entityName}WhereInput`))],
@@ -72,38 +72,38 @@ const updateControllerImports = (
   const whereUniqueDtoImport = builders.importDeclaration(
     [
       builders.importSpecifier(
-        builders.identifier(`${entityNameToUpper}WhereUniqueInput`),
+        builders.identifier(`${entityNameToUpper}WhereUniqueInput`)
       ),
     ],
     builders.stringLiteral(
-      `../app/${lowerCaseEntity}/model/dtos/${entityNameToUpper}WhereUniqueInput`,
-    ),
+      `../app/${lowerCaseEntity}/model/dtos/${entityNameToUpper}WhereUniqueInput`
+    )
   );
   const findManyArgsDtoImport = builders.importDeclaration(
     [
       builders.importSpecifier(
-        builders.identifier(`${entityNameToUpper}FindManyArgs`),
+        builders.identifier(`${entityNameToUpper}FindManyArgs`)
       ),
     ],
     builders.stringLiteral(
-      `../app/${lowerCaseEntity}/model/dtos/${entityName}FindManyArgs`,
-    ),
+      `../app/${lowerCaseEntity}/model/dtos/${entityName}FindManyArgs`
+    )
   );
   const updateInputDtoImport = builders.importDeclaration(
     [
       builders.importSpecifier(
-        builders.identifier(`${entityNameToUpper}UpdateInput`),
+        builders.identifier(`${entityNameToUpper}UpdateInput`)
       ),
     ],
     builders.stringLiteral(
-      `../app/${lowerCaseEntity}/model/dtos/${entityNameToUpper}UpdateInput`,
-    ),
+      `../app/${lowerCaseEntity}/model/dtos/${entityNameToUpper}UpdateInput`
+    )
   );
   const entityDtoImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(entityNameToUpper))],
     builders.stringLiteral(
-      `../app/${lowerCaseEntity}/model/dtos/${entityNameToUpper}`,
-    ),
+      `../app/${lowerCaseEntity}/model/dtos/${entityNameToUpper}`
+    )
   );
 
   addImports(template, [
@@ -119,7 +119,7 @@ const updateControllerImports = (
 export const afterCreateEntityController = (
   context: DsgContext,
   eventParams: CreateEntityControllerParams,
-  modules: Module[],
+  modules: Module[]
 ) => {
   try {
     const file = parse(modules[0].code);

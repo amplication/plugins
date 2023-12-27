@@ -7,7 +7,7 @@ import { dockerComposeDevValues, dockerComposeValues } from "@/constants";
 
 export const beforeCreateServerDockerCompose = (
   context: DsgContext,
-  eventParams: CreateServerDockerComposeParams,
+  eventParams: CreateServerDockerComposeParams
 ): CreateServerDockerComposeParams => {
   eventParams.updateProperties.push(...dockerComposeValues);
 
@@ -16,7 +16,7 @@ export const beforeCreateServerDockerCompose = (
 
 export const beforeCreateServerDockerComposeDev = (
   context: DsgContext,
-  eventParams: CreateServerDockerComposeDBParams,
+  eventParams: CreateServerDockerComposeDBParams
 ): CreateServerDockerComposeDBParams => {
   eventParams.updateProperties.push(...dockerComposeDevValues);
 

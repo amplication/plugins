@@ -53,7 +53,7 @@ class HashiCorpVaultPlugin implements AmplicationPlugin {
 
   beforeCreatePackageJson(
     _: DsgContext,
-    eventParams: CreateServerPackageJsonParams,
+    eventParams: CreateServerPackageJsonParams
   ): CreateServerPackageJsonParams {
     eventParams.updateProperties.push(dependencies);
 
@@ -62,7 +62,7 @@ class HashiCorpVaultPlugin implements AmplicationPlugin {
 
   beforeCreateServerDotEnv(
     context: DsgContext,
-    eventParams: CreateServerDotEnvParams,
+    eventParams: CreateServerDotEnvParams
   ): CreateServerDotEnvParams {
     const { authMode } = getPluginSettings(context.pluginInstallations);
 
@@ -84,10 +84,10 @@ class HashiCorpVaultPlugin implements AmplicationPlugin {
   async beforeCreateServer(
     context: DsgContext,
     _: CreateServerParams,
-    modules: ModuleMap,
+    modules: ModuleMap
   ): Promise<ModuleMap> {
     const { fetchMode, authMode } = getPluginSettings(
-      context.pluginInstallations,
+      context.pluginInstallations
     );
     const staticPath = resolve(__dirname, "static", fetchMode.toLowerCase());
 
@@ -97,8 +97,8 @@ class HashiCorpVaultPlugin implements AmplicationPlugin {
         __dirname,
         "templates",
         fetchMode.toLowerCase(),
-        "secretsManager.provider.ts",
-      ),
+        "secretsManager.provider.ts"
+      )
     );
 
     interpolate(template, {
@@ -112,14 +112,14 @@ class HashiCorpVaultPlugin implements AmplicationPlugin {
         context.serverDirectories.srcDirectory,
         "providers",
         "secrets",
-        "secretsManager.provider.ts",
+        "secretsManager.provider.ts"
       ),
     });
 
     // Import static files
     const staticFiles = await context.utils.importStaticModules(
       staticPath,
-      context.serverDirectories.srcDirectory,
+      context.serverDirectories.srcDirectory
     );
 
     await modules.merge(staticFiles);
@@ -127,7 +127,7 @@ class HashiCorpVaultPlugin implements AmplicationPlugin {
     // Copy the config files
     const configFiles = await context.utils.importStaticModules(
       configs,
-      context.serverDirectories.baseDirectory,
+      context.serverDirectories.baseDirectory
     );
 
     await modules.merge(configFiles);
@@ -137,7 +137,7 @@ class HashiCorpVaultPlugin implements AmplicationPlugin {
 
   beforeCreateServerDockerCompose(
     _: DsgContext,
-    eventParams: CreateServerDockerComposeParams,
+    eventParams: CreateServerDockerComposeParams
   ) {
     eventParams.updateProperties.push(...updateDockerComposeProperties);
     return eventParams;
@@ -145,7 +145,7 @@ class HashiCorpVaultPlugin implements AmplicationPlugin {
 
   beforeCreateServerDockerComposeDev(
     context: DsgContext,
-    eventParams: CreateServerDockerComposeDBParams,
+    eventParams: CreateServerDockerComposeDBParams
   ) {
     eventParams.updateProperties.push(...updateDockerComposeDevProperties);
     return eventParams;
@@ -153,7 +153,7 @@ class HashiCorpVaultPlugin implements AmplicationPlugin {
 
   async beforeCreateServerSecretsManager(
     context: DsgContext,
-    eventParams: CreateServerSecretsManagerParams,
+    eventParams: CreateServerSecretsManagerParams
   ): Promise<CreateServerSecretsManagerParams> {
     const { secretNames } = getPluginSettings(context.pluginInstallations);
 

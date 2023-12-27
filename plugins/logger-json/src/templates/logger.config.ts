@@ -11,7 +11,7 @@ export const LoggerConfiguration = (configService: ConfigService): Params => {
 
   if (!allowedLevels.includes(logLevel)) {
     throw new Error(
-      `${logLevel} is not a valid log level. Check your LOG_LEVEL env variable.`,
+      `${logLevel} is not a valid log level. Check your LOG_LEVEL env variable.`
     );
   }
 

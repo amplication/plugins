@@ -6,12 +6,12 @@ import { capitalizeFirstLetter } from "../util/utils";
 
 const repositoryTemplatePath = join(
   resolve(__dirname, "./templates"),
-  "repository.template.ts",
+  "repository.template.ts"
 );
 
 const repositoryInterfaceTemplatePath = join(
   resolve(__dirname, "./templates"),
-  "repository.interface.template.ts",
+  "repository.interface.template.ts"
 );
 
 export const createRepositoryModule = async (entityName: string) => {
@@ -20,16 +20,16 @@ export const createRepositoryModule = async (entityName: string) => {
   const templateMapping = {
     ENTITY_REPOSITORY: builders.identifier(`${entityCapitalFirst}Repository`),
     ENTITY_REPOSITORY_INTERFACE: builders.identifier(
-      `I${entityCapitalFirst}Repository`,
+      `I${entityCapitalFirst}Repository`
     ),
     ENTITY: builders.identifier(entityCapitalFirst),
     ENTITY_PRISMA: builders.identifier(entityName),
     COUNT_ARGS: builders.identifier(`Prisma.${entityCapitalFirst}CountArgs`),
     FIND_MANY_ARGS: builders.identifier(
-      `Prisma.${entityCapitalFirst}FindManyArgs`,
+      `Prisma.${entityCapitalFirst}FindManyArgs`
     ),
     FIND_ONE_ARGS: builders.identifier(
-      `Prisma.${entityCapitalFirst}FindUniqueArgs`,
+      `Prisma.${entityCapitalFirst}FindUniqueArgs`
     ),
     CREATE_ARGS: builders.identifier(`Prisma.${entityCapitalFirst}CreateArgs`),
     UPDATE_ARGS: builders.identifier(`Prisma.${entityCapitalFirst}UpdateArgs`),
@@ -39,8 +39,9 @@ export const createRepositoryModule = async (entityName: string) => {
   interpolate(repositoryTemplate, templateMapping);
   createClassImport(repositoryTemplate, entityCapitalFirst);
 
-  const repositoryInterfaceModule =
-    await createRepositoryInterfaceModule(entityName);
+  const repositoryInterfaceModule = await createRepositoryInterfaceModule(
+    entityName
+  );
 
   return [
     {
@@ -55,8 +56,8 @@ const createClassImport = (template: namedTypes.File, entityName: string) => {
   const repositoryInterfaceImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(`I${entityName}Repository`))],
     builders.stringLiteral(
-      `../model/interfaces/repositories/${entityName}-repository.interface`,
-    ),
+      `../model/interfaces/repositories/${entityName}-repository.interface`
+    )
   );
 
   const entityNameToUpper =
@@ -64,7 +65,7 @@ const createClassImport = (template: namedTypes.File, entityName: string) => {
 
   const entityImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(entityNameToUpper))],
-    builders.stringLiteral(`../model/dtos/${entityName}`),
+    builders.stringLiteral(`../model/dtos/${entityName}`)
   );
 
   addImports(template, [repositoryInterfaceImport, entityImport]);
@@ -73,19 +74,19 @@ const createClassImport = (template: namedTypes.File, entityName: string) => {
 const createRepositoryInterfaceModule = async (entityName: string) => {
   const entityCapitalFirst = capitalizeFirstLetter(entityName);
   const repositoryInterfaceTemplate = await readFile(
-    repositoryInterfaceTemplatePath,
+    repositoryInterfaceTemplatePath
   );
   const templateMapping = {
     ENTITY_REPOSITORY_INTERFACE: builders.identifier(
-      `I${entityCapitalFirst}Repository`,
+      `I${entityCapitalFirst}Repository`
     ),
     ENTITY: builders.identifier(entityCapitalFirst),
     COUNT_ARGS: builders.identifier(`Prisma.${entityCapitalFirst}CountArgs`),
     FIND_MANY_ARGS: builders.identifier(
-      `Prisma.${entityCapitalFirst}FindManyArgs`,
+      `Prisma.${entityCapitalFirst}FindManyArgs`
     ),
     FIND_ONE_ARGS: builders.identifier(
-      `Prisma.${entityCapitalFirst}FindUniqueArgs`,
+      `Prisma.${entityCapitalFirst}FindUniqueArgs`
     ),
     CREATE_ARGS: builders.identifier(`Prisma.${entityCapitalFirst}CreateArgs`),
     UPDATE_ARGS: builders.identifier(`Prisma.${entityCapitalFirst}UpdateArgs`),
@@ -103,11 +104,11 @@ const createRepositoryInterfaceModule = async (entityName: string) => {
 
 const createInterfaceImport = (
   template: namedTypes.File,
-  entityName: string,
+  entityName: string
 ) => {
   const entityImport = builders.importDeclaration(
     [builders.importSpecifier(builders.identifier(entityName))],
-    builders.stringLiteral(`../../dtos/${entityName}`),
+    builders.stringLiteral(`../../dtos/${entityName}`)
   );
 
   addImports(template, [entityImport]);

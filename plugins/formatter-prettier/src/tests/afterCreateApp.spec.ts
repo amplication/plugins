@@ -38,7 +38,7 @@ describe("Testing afterCreateApp hook", () => {
                 path: module.replace(directory, basePath ? basePath + "/" : ""),
                 code: await fs.promises.readFile(module, "utf-8"),
               };
-            }),
+            })
           );
 
           const moduleMap: ModuleMap = new ModuleMap(logger);
@@ -58,7 +58,7 @@ describe("Testing afterCreateApp hook", () => {
     const StaticModules = await plugin.afterCreateApp("client")(
       context,
       {},
-      modules,
+      modules
     );
     // snapshot the module map
     expect(StaticModules.modules()).toMatchSnapshot();
@@ -80,7 +80,7 @@ describe("Testing afterCreateApp hook", () => {
     const StaticModules = await plugin.afterCreateApp("client")(
       context,
       {},
-      modules,
+      modules
     );
     // snapshot the module map
     expect(StaticModules.modules()).toMatchSnapshot();

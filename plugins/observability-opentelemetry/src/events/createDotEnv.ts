@@ -6,7 +6,7 @@ import { getPluginSettings, convertToVarDict } from "@utils/index";
 
 export const beforeCreateServerDotEnv = (
   context: DsgContext,
-  eventParams: CreateServerDotEnvParams,
+  eventParams: CreateServerDotEnvParams
 ): CreateServerDotEnvParams => {
   const {
     JAEGER_AGENT_PORT,
@@ -28,7 +28,7 @@ export const beforeCreateServerDotEnv = (
   };
 
   eventParams.envVariables = eventParams.envVariables.concat(
-    convertToVarDict(envVariables),
+    convertToVarDict(envVariables)
   );
 
   return eventParams;

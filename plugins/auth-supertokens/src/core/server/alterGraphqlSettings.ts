@@ -12,10 +12,10 @@ import { visit } from "recast";
 export const alterGraphqlSettingsInAppModule = (
   modules: ModuleMap,
   appModule: Module,
-  logger: BuildLogger,
+  logger: BuildLogger
 ) => {
   logger.info(
-    "Adding cors settings and disabling the playground in the server's graphql settings",
+    "Adding cors settings and disabling the playground in the server's graphql settings"
   );
   // Removing duplicate auth module imports here because
   // the parse(appModule.code) keeps failing due to duplicate
@@ -73,7 +73,7 @@ export const alterGraphqlSettingsInAppModule = (
                 prop.type === "ObjectProperty" &&
                 prop.key.type === "Identifier" &&
                 prop.key.name === "playground"
-              ),
+              )
           );
           settingsChanged = true;
           obj.properties.push(playgroundDisabledProp(), corsSettingProp());
@@ -91,21 +91,21 @@ export const alterGraphqlSettingsInAppModule = (
 const playgroundDisabledProp = (): namedTypes.ObjectProperty => {
   return builders.objectProperty(
     builders.identifier("playground"),
-    builders.booleanLiteral(false),
+    builders.booleanLiteral(false)
   );
 };
 
 const corsSettingProp = (): namedTypes.ObjectProperty => {
   return builders.objectProperty(
     builders.identifier("cors"),
-    builders.objectExpression([corsOriginProp(), corsCredentialsProp()]),
+    builders.objectExpression([corsOriginProp(), corsCredentialsProp()])
   );
 };
 
 const corsCredentialsProp = (): namedTypes.ObjectProperty => {
   return builders.objectProperty(
     builders.identifier("credentials"),
-    builders.booleanLiteral(true),
+    builders.booleanLiteral(true)
   );
 };
 
@@ -115,17 +115,17 @@ const corsOriginProp = (): namedTypes.ObjectProperty => {
     builders.memberExpression(
       builders.memberExpression(
         genSupertokensOptionsCall(),
-        builders.identifier("appInfo"),
+        builders.identifier("appInfo")
       ),
-      builders.identifier("websiteDomain"),
-    ),
+      builders.identifier("websiteDomain")
+    )
   );
 };
 
 const genSupertokensOptionsCall = (): namedTypes.CallExpression => {
   return builders.callExpression(
     builders.identifier("generateSupertokensOptions"),
-    [builders.identifier("configService")],
+    [builders.identifier("configService")]
   );
 };
 

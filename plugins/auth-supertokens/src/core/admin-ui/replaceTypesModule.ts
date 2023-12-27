@@ -8,7 +8,7 @@ export const replaceTypesModule = async (
   srcDirectory: string,
   modules: ModuleMap,
   settings: Settings,
-  logger: BuildLogger,
+  logger: BuildLogger
 ) => {
   logger.info("Replacing the types module in the admin UI");
   const newTypesCode = await getTypesCode(settings);
@@ -30,7 +30,7 @@ const getTypesCode = async (settings: Settings) => {
     staticsPath,
     "admin-ui",
     settings.recipe.name,
-    "types.ts",
+    "types.ts"
   );
   return print(await readFile(path)).code;
 };
@@ -53,7 +53,7 @@ const getPasswordlessTypesCode = async (settings: Settings) => {
     "admin-ui",
     name,
     flowTypeToSubDir[flowType],
-    "types.ts",
+    "types.ts"
   );
   return print(await readFile(path)).code;
 };

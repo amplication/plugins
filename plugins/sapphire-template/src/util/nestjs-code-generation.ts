@@ -17,7 +17,7 @@ export function addInjectableDependency(
   classDeclaration: namedTypes.ClassDeclaration,
   name: string,
   typeId: namedTypes.Identifier,
-  accessibility: "public" | "private" | "protected",
+  accessibility: "public" | "private" | "protected"
 ): void {
   const constructor = findConstructor(classDeclaration);
 
@@ -32,10 +32,10 @@ export function addInjectableDependency(
       parameter: builders.identifier.from({
         name: name,
         typeAnnotation: builders.tsTypeAnnotation(
-          builders.tsTypeReference(typeId),
+          builders.tsTypeReference(typeId)
         ),
       }),
-    }),
+    })
   );
 }
 
@@ -48,7 +48,7 @@ export function addInjectableDependency(
  */
 export function removeIdentifierFromModuleDecorator(
   file: ASTNode,
-  identifier: namedTypes.Identifier,
+  identifier: namedTypes.Identifier
 ): void {
   const moduleDecorator = findFirstDecoratorByName(file, MODULE_DECORATOR_NAME);
 
@@ -73,7 +73,7 @@ export function removeIdentifierFromModuleDecorator(
 
 export function removeIdentifierFromUseInterceptorDecorator(
   node: ASTNode,
-  identifier: string,
+  identifier: string
 ): namedTypes.Decorator | boolean {
   const decoratorName = USE_INTERCEPTORS_DECORATOR_NAME;
   let decorator: namedTypes.ClassDeclaration | null = null;
@@ -85,7 +85,7 @@ export function removeIdentifierFromUseInterceptorDecorator(
         const parentArgs: namedTypes.Identifier[] =
           callee.parentPath.node.arguments;
         const argToDeleteIndex = parentArgs.findIndex(
-          (arg) => arg.name === identifier,
+          (arg) => arg.name === identifier
         );
         parentArgs.splice(argToDeleteIndex, 1);
         if (!parentArgs.length) {

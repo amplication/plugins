@@ -22,7 +22,7 @@ describe("Testing beforeCreateBroker", () => {
   it("should correctly change the messageBrokerDirectory", async () => {
     plugin.beforeCreateBroker(context, params);
     expect(context.serverDirectories.messageBrokerDirectory).toStrictEqual(
-      expectedMessageBrokerDirectory,
+      expectedMessageBrokerDirectory
     );
   });
 });
@@ -33,7 +33,7 @@ const fakeContext = () => {
       warn: async (
         message: string,
         params?: Record<string, unknown>,
-        userFriendlyMessage?: string,
+        userFriendlyMessage?: string
       ) => {
         console.log("Warning!", userFriendlyMessage);
       },

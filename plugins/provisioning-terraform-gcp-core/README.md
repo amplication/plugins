@@ -39,7 +39,7 @@ Adds a core networking setup of terraform for Google Cloud to the generated serv
 }
 ```
 
-`backend` the backend part of the configuraiton allows for specify whether to use a `local` backend or a `gcs` backend, the latter is advised. 
+`backend` the backend part of the configuraiton allows for specify whether to use a `local` backend or a `gcs` backend, the latter is advised.
 
 ## Usage
 

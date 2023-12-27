@@ -6,7 +6,11 @@ import {
 } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
 import { parse } from "@amplication/code-gen-utils";
-import { NamedClassDeclaration, EntityEnumDTOs, EntityDTOs } from "@amplication/code-gen-types";
+import {
+  NamedClassDeclaration,
+  EntityEnumDTOs,
+  EntityDTOs,
+} from "@amplication/code-gen-types";
 import { prettyCode } from "../../utils";
 import SupertokensAuthPlugin from "../../index";
 import { name } from "../../../package.json";
@@ -65,11 +69,11 @@ describe("Testing afterCreateDTOs for emailpassword recipe hook", () => {
     const moduleMap = await plugin.afterCreateDTOs(
       context,
       params,
-      new ModuleMap(context.logger),
+      new ModuleMap(context.logger)
     );
     const expectedSupertokensCode = prettyCode(supertokensService);
     const code = prettyCode(
-      moduleMap.get("/auth/supertokens/supertokens.service.ts").code,
+      moduleMap.get("/auth/supertokens/supertokens.service.ts").code
     );
     expect(code).toStrictEqual(expectedSupertokensCode);
   });

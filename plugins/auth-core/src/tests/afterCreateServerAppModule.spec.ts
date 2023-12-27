@@ -29,7 +29,7 @@ describe("Testing afterCreateServerAppModule hook", () => {
     const newModules = await plugin.afterCreateAppModule(
       context,
       params,
-      modules,
+      modules
     );
     const [appModule] = newModules.modules();
     const code = prettyCode(appModule.code);

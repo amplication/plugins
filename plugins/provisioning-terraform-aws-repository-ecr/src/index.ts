@@ -29,7 +29,7 @@ class TerraformAwsRepositoryEcrPlugin implements AmplicationPlugin {
   async afterCreateServer(
     context: DsgContext,
     eventParams: CreateServerParams,
-    modules: ModuleMap,
+    modules: ModuleMap
   ): Promise<ModuleMap> {
     context.logger.info(`Generating Terraform AWS Repository ECR...`);
 
@@ -38,7 +38,7 @@ class TerraformAwsRepositoryEcrPlugin implements AmplicationPlugin {
     const serviceName = kebabCase(context.resourceInfo?.name);
     if (!serviceName) {
       throw new Error(
-        "TerraformAwsRepositoryEcrPlugin: Service name is undefined",
+        "TerraformAwsRepositoryEcrPlugin: Service name is undefined"
       );
     }
 
@@ -48,7 +48,7 @@ class TerraformAwsRepositoryEcrPlugin implements AmplicationPlugin {
     // an error if the aforementioned plugin wasnt installed.
     const terraformDirectory = getTerraformDirectory(
       context.pluginInstallations,
-      context.serverDirectories.baseDirectory,
+      context.serverDirectories.baseDirectory
     );
 
     // fetch the plugin specific settings and merge them with the defaults
@@ -59,7 +59,7 @@ class TerraformAwsRepositoryEcrPlugin implements AmplicationPlugin {
       settings.repository_type != RepositoryType.Public
     ) {
       throw new Error(
-        "TerraformAwsRepositoryEcrPlugin: The setting repository_type should either be 'private' or 'public'",
+        "TerraformAwsRepositoryEcrPlugin: The setting repository_type should either be 'private' or 'public'"
       );
     }
 
@@ -73,11 +73,11 @@ class TerraformAwsRepositoryEcrPlugin implements AmplicationPlugin {
     const staticPath = resolve(__dirname, "./static/");
     const staticFiles = await context.utils.importStaticModules(
       staticPath,
-      terraformDirectory,
+      terraformDirectory
     );
 
     staticFiles.replaceModulesPath((path) =>
-      path.replace(templateFileName, fileNamePrefix + name + fileNameSuffix),
+      path.replace(templateFileName, fileNamePrefix + name + fileNameSuffix)
     );
 
     staticFiles.replaceModulesCode((_path, code) =>
@@ -87,8 +87,8 @@ class TerraformAwsRepositoryEcrPlugin implements AmplicationPlugin {
         .replaceAll(typeKey, settings.repository_type)
         .replaceAll(
           configurationForceDeleteKey,
-          String(settings.configuration.force_delete),
-        ),
+          String(settings.configuration.force_delete)
+        )
     );
 
     context.logger.info(`Generated Terraform AWS Repository ECR...`);

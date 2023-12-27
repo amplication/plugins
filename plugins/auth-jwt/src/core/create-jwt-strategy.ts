@@ -20,23 +20,23 @@ import { print } from "@amplication/code-gen-utils";
 const jwtStrategyPath = join(templatesPath, "jwt.strategy.template.ts");
 
 export async function createJwtStrategy(
-  dsgContext: DsgContext,
+  dsgContext: DsgContext
 ): Promise<Module> {
   return await mapJwtStrategyTemplate(
     dsgContext,
     jwtStrategyPath,
-    "jwt.strategy.ts",
+    "jwt.strategy.ts"
   );
 }
 
 async function mapJwtStrategyTemplate(
   context: DsgContext,
   templatePath: string,
-  fileName: string,
+  fileName: string
 ): Promise<Module> {
   const { entities, resourceInfo, serverDirectories } = context;
   const authEntity = entities?.find(
-    (x) => x.name === resourceInfo?.settings.authEntityName,
+    (x) => x.name === resourceInfo?.settings.authEntityName
   );
   if (!authEntity) {
     context.logger.error(AUTH_ENTITY_LOG_ERROR);
@@ -53,14 +53,14 @@ async function mapJwtStrategyTemplate(
 
     const entityServiceImport = importNames(
       [authServiceNameId],
-      `../../${entityNameToLower}/${entityNameToLower}.service`,
+      `../../${entityNameToLower}/${entityNameToLower}.service`
     );
 
     addImports(
       template,
       [entityServiceImport].filter(
-        (x) => x, //remove nulls and undefined
-      ) as namedTypes.ImportDeclaration[],
+        (x) => x //remove nulls and undefined
+      ) as namedTypes.ImportDeclaration[]
     );
 
     const templateMapping = {
@@ -73,18 +73,18 @@ async function mapJwtStrategyTemplate(
 
     const classDeclaration = getClassDeclarationById(
       template,
-      builders.identifier("JwtStrategy"),
+      builders.identifier("JwtStrategy")
     );
 
     const entityServiceIdentifier = builders.identifier(
-      `${entityNameToLower}Service`,
+      `${entityNameToLower}Service`
     );
 
     addInjectableDependency(
       classDeclaration,
       entityServiceIdentifier.name,
       builders.identifier(`${authEntity?.name}Service`),
-      "protected",
+      "protected"
     );
 
     removeTSClassDeclares(template);

@@ -26,15 +26,15 @@ describe("Testing afterCreateServerAuth", () => {
     const modules = await plugin.afterCreateServerAuth(
       context,
       params,
-      moduleMap,
+      moduleMap
     );
 
     const controllerModule = modules.get(
-      path.join("/", "rabbitmq", "rabbitmq.controller.ts"),
+      path.join("/", "rabbitmq", "rabbitmq.controller.ts")
     );
     const controllerCode = utils.print(utils.parse(controllerModule.code)).code;
     const expectedControllerCode = utils.print(
-      utils.parse(expectedController),
+      utils.parse(expectedController)
     ).code;
     expect(controllerCode).toStrictEqual(expectedControllerCode);
   });
@@ -66,7 +66,7 @@ const fakeContext = () => {
       warn: async (
         message: string,
         params?: Record<string, unknown>,
-        userFriendlyMessage?: string,
+        userFriendlyMessage?: string
       ) => {
         console.log("Warning!", userFriendlyMessage);
       },

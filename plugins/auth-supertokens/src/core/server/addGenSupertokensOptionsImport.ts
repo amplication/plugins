@@ -9,9 +9,9 @@ const genSupertokensOptionsImport = (): namedTypes.ImportDeclaration => {
   return builders.importDeclaration(
     [
       builders.importSpecifier(
-        builders.identifier("generateSupertokensOptions"),
+        builders.identifier("generateSupertokensOptions")
       ),
     ],
-    builders.stringLiteral("./auth/supertokens/generateSupertokensOptions"),
+    builders.stringLiteral("./auth/supertokens/generateSupertokensOptions")
   );
 };

@@ -39,7 +39,7 @@ export enum EnumMessageType {
 
 export const controllerMethodsIdsActionPairs = (
   templateMapping: { [key: string]: namedTypes.Identifier },
-  entity: Entity,
+  entity: Entity
 ): MethodsIdsActionEntityTriplet[] => [
   {
     methodId: templateMapping[
@@ -112,7 +112,7 @@ export const methodMessages = (entityName: string): methodMessage[] => [
 ];
 
 export const manyRelationMethodMessages = (
-  entityName: string,
+  entityName: string
 ): methodMessage[] => [
   {
     name: pascalCase(entityName),
@@ -131,7 +131,7 @@ export const manyRelationMethodMessages = (
 export const controllerToManyMethodsIdsActionPairs = (
   relatedEntity: Entity,
   fieldName: string,
-  entityName?: string,
+  entityName?: string
 ): MethodsIdsActionEntity[] => [
   {
     methodName: `findMany${pascalCase(fieldName)}`,
@@ -157,7 +157,7 @@ export const controllerToManyMethodsIdsActionPairs = (
 
 export const controllerToManyIdsActionPairs = (
   toManyMapping: { [key: string]: namedTypes.Identifier },
-  fieldName: string,
+  fieldName: string
 ): ControllersIdsActionEntity[] => [
   {
     methodId: toManyMapping["FIND_MANY"],

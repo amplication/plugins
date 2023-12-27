@@ -20,7 +20,7 @@ export const replaceLoginPage = async (
   srcDirectory: string,
   modules: ModuleMap,
   settings: Settings,
-  logger: BuildLogger,
+  logger: BuildLogger
 ) => {
   logger.info("Replacing the login page in the admin UI");
   const newLoginCode = await getLoginCode(settings);
@@ -46,7 +46,7 @@ const getLoginCode = async (settings: Settings) => {
     staticsPath,
     "admin-ui",
     settings.recipe.name,
-    "Login.tsx",
+    "Login.tsx"
   );
   return print(await readFile(path)).code;
 };
@@ -76,12 +76,12 @@ const getPasswordlessLoginCode = async (settings: Settings) => {
     "admin-ui",
     name,
     flowTypeToSubDir[flowType],
-    "Login.template.tsx",
+    "Login.template.tsx"
   );
   const template = await readFile(templatePath);
   interpolate(template, {
     CONTACT_METHOD_FIELD_LABEL: builders.stringLiteral(
-      contactMethodToFieldLabel[contactMethod],
+      contactMethodToFieldLabel[contactMethod]
     ),
   });
   return print(template).code;
@@ -100,7 +100,7 @@ const getThirdPartyLoginCode = async (settings: Settings) => {
     templatesPath,
     "admin-ui",
     settings.recipe.name,
-    "Login.tsx",
+    "Login.tsx"
   );
   const loginPage = await readFile(loginPath);
   addThirdPartyLoginButtonImports(loginPage, selectedProviders);
@@ -130,16 +130,16 @@ const getSelectedThirdPartyProviders = (settings: Settings) => {
 
 const addThirdPartyLoginButtonExpressions = (
   loginPage: namedTypes.File,
-  selectedProviders: (keyof ThirdPartyProvider)[],
+  selectedProviders: (keyof ThirdPartyProvider)[]
 ) => {
   const btnExpressions = selectedProviders.map(
-    (providerName) => providerToButtonExpression[providerName],
+    (providerName) => providerToButtonExpression[providerName]
   );
   const templateMapping = {
     SIGN_IN_BUTTONS: builders.jsxFragment(
       builders.jsxOpeningFragment(),
       builders.jsxClosingFragment(),
-      btnExpressions,
+      btnExpressions
     ),
   };
   interpolate(loginPage, templateMapping);
@@ -147,7 +147,7 @@ const addThirdPartyLoginButtonExpressions = (
 
 const addThirdPartyLoginButtonImports = (
   loginPage: namedTypes.File,
-  selectedProviders: (keyof ThirdPartyProvider)[],
+  selectedProviders: (keyof ThirdPartyProvider)[]
 ) => {
   appendImports(loginPage, [
     builders.importDeclaration(
@@ -158,7 +158,7 @@ const addThirdPartyLoginButtonImports = (
           )
         )
       ),
-      builders.stringLiteral("react-social-login-buttons"),
+      builders.stringLiteral("react-social-login-buttons")
     ),
   ]);
 };
@@ -185,6 +185,6 @@ const providerToButtonExpression: {
   github: jsxElement('<GithubLoginButton onClick={signInClicked("github")} />'),
   apple: jsxElement('<AppleLoginButton onClick={signInClicked("apple")} />'),
   twitter: jsxElement(
-    '<TwitterLoginButton onClick={signInClicked("twitter")} />',
+    '<TwitterLoginButton onClick={signInClicked("twitter")} />'
   ),
 };

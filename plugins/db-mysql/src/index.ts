@@ -42,13 +42,13 @@ class MySQLPlugin implements AmplicationPlugin {
   beforeCreateServer(context: DsgContext, eventParams: CreateServerParams) {
     const generateErrorMessage = (
       entityName: string,
-      fieldName: string,
+      fieldName: string
     ) => `MultiSelectOptionSet (list of primitives type) on entity: ${entityName}, field: ${fieldName}, is not supported by MySQL prisma provider. 
     You can select another data type or change your DB to PostgreSQL`;
 
     context.entities?.forEach(({ name: entityName, fields }) => {
       const field = fields.find(
-        ({ dataType }) => dataType === EnumDataType.MultiSelectOptionSet,
+        ({ dataType }) => dataType === EnumDataType.MultiSelectOptionSet
       );
       if (field) {
         context.logger.error(generateErrorMessage(entityName, field.name));
@@ -61,10 +61,10 @@ class MySQLPlugin implements AmplicationPlugin {
 
   beforeCreateServerDotEnv(
     context: DsgContext,
-    eventParams: CreateServerDotEnvParams,
+    eventParams: CreateServerDotEnvParams
   ) {
     const { port, password, user, host, dbName } = getPluginSettings(
-      context.pluginInstallations,
+      context.pluginInstallations
     );
 
     eventParams.envVariables = [
@@ -85,7 +85,7 @@ class MySQLPlugin implements AmplicationPlugin {
 
   beforeCreateServerDockerCompose(
     context: DsgContext,
-    eventParams: CreateServerDockerComposeParams,
+    eventParams: CreateServerDockerComposeParams
   ) {
     eventParams.updateProperties.push(...updateDockerComposeProperties);
     return eventParams;
@@ -93,7 +93,7 @@ class MySQLPlugin implements AmplicationPlugin {
 
   beforeCreateServerDockerComposeDev(
     context: DsgContext,
-    eventParams: CreateServerDockerComposeDBParams,
+    eventParams: CreateServerDockerComposeDBParams
   ) {
     eventParams.updateProperties.push(...updateDockerComposeDevProperties);
     return eventParams;
@@ -101,7 +101,7 @@ class MySQLPlugin implements AmplicationPlugin {
 
   beforeCreatePrismaSchema(
     context: DsgContext,
-    eventParams: CreatePrismaSchemaParams,
+    eventParams: CreatePrismaSchemaParams
   ) {
     const { entities } = eventParams;
     entities.forEach((entity) => {
@@ -109,7 +109,7 @@ class MySQLPlugin implements AmplicationPlugin {
         if (field.customAttributes) {
           field.customAttributes = field.customAttributes.replace(
             /@([\w]+)\./g,
-            `@${dataSource.name}.`,
+            `@${dataSource.name}.`
           );
         }
       });

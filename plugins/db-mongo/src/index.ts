@@ -66,8 +66,8 @@ class MongoPlugin implements AmplicationPlugin {
       entity.fields.find(
         (field) =>
           field.dataType === EnumDataType.Id &&
-          (field?.properties as types.Id).idType === "AUTO_INCREMENT",
-      ),
+          (field?.properties as types.Id).idType === "AUTO_INCREMENT"
+      )
     );
 
     if (
@@ -83,7 +83,7 @@ class MongoPlugin implements AmplicationPlugin {
 
   beforeCreateServerPackageJson(
     context: DsgContext,
-    eventParams: CreateServerPackageJsonParams,
+    eventParams: CreateServerPackageJsonParams
   ) {
     const myValues = {
       scripts: {
@@ -100,10 +100,10 @@ class MongoPlugin implements AmplicationPlugin {
 
   beforeCreateServerDotEnv(
     context: DsgContext,
-    eventParams: CreateServerDotEnvParams,
+    eventParams: CreateServerDotEnvParams
   ) {
     const { port, password, user, host, dbName } = getPluginSettings(
-      context.pluginInstallations,
+      context.pluginInstallations
     );
 
     eventParams.envVariables = [
@@ -124,7 +124,7 @@ class MongoPlugin implements AmplicationPlugin {
 
   beforeCreateServerDockerCompose(
     context: DsgContext,
-    eventParams: CreateServerDockerComposeParams,
+    eventParams: CreateServerDockerComposeParams
   ) {
     eventParams.updateProperties.push(...updateDockerComposeProperties);
     return eventParams;
@@ -132,7 +132,7 @@ class MongoPlugin implements AmplicationPlugin {
 
   beforeCreateServerDockerComposeDev(
     context: DsgContext,
-    eventParams: CreateServerDockerComposeDBParams,
+    eventParams: CreateServerDockerComposeDBParams
   ) {
     eventParams.updateProperties.push(...updateDockerComposeDevProperties);
     return eventParams;
@@ -141,20 +141,20 @@ class MongoPlugin implements AmplicationPlugin {
   async afterCreateServerStaticFiles(
     context: DsgContext,
     eventParams: LoadStaticFilesParams,
-    modules: ModuleMap,
+    modules: ModuleMap
   ): Promise<ModuleMap> {
     const staticPathToHealthBaseService = resolve(__dirname, "./static/health");
     const staticsHealthBaseService = await context.utils.importStaticModules(
       staticPathToHealthBaseService,
-      `${context.serverDirectories.srcDirectory}/health/base`,
+      `${context.serverDirectories.srcDirectory}/health/base`
     );
     const staticPathToHealthServiceTest = resolve(
       __dirname,
-      "./static/tests/health",
+      "./static/tests/health"
     );
     const staticsHealthServiceTest = await context.utils.importStaticModules(
       staticPathToHealthServiceTest,
-      `${context.serverDirectories.srcDirectory}/tests/health`,
+      `${context.serverDirectories.srcDirectory}/tests/health`
     );
 
     await modules.mergeMany([
@@ -167,7 +167,7 @@ class MongoPlugin implements AmplicationPlugin {
 
   beforeCreatePrismaSchema(
     context: DsgContext,
-    eventParams: CreatePrismaSchemaParams,
+    eventParams: CreatePrismaSchemaParams
   ) {
     const originalHandler =
       eventParams.createFieldsHandlers[EnumDataType.Lookup];
@@ -175,7 +175,7 @@ class MongoPlugin implements AmplicationPlugin {
     eventParams.createFieldsHandlers[EnumDataType.Lookup] = (
       field: EntityField,
       entity: Entity,
-      fieldNamesCount?: Record<string, number>,
+      fieldNamesCount?: Record<string, number>
     ): CreateSchemaFieldResult => {
       const { properties, name } = field;
       const {
@@ -191,7 +191,7 @@ class MongoPlugin implements AmplicationPlugin {
           entityField.dataType === EnumDataType.Lookup &&
           entityField.permanentId === field.properties?.relatedFieldId &&
           allowMultipleSelection &&
-          entityField.properties?.allowMultipleSelection,
+          entityField.properties?.allowMultipleSelection
       );
 
       const isSelfRelation = relatedEntity.name === entity.name;
@@ -201,7 +201,7 @@ class MongoPlugin implements AmplicationPlugin {
           (entityField) =>
             entityField.id !== field.id &&
             entityField.dataType === EnumDataType.Lookup &&
-            entityField.properties.relatedEntity.name === relatedEntity.name,
+            entityField.properties.relatedEntity.name === relatedEntity.name
         );
 
         const relationName = !hasAnotherRelation
@@ -212,9 +212,7 @@ class MongoPlugin implements AmplicationPlugin {
               relatedEntity,
               relatedField,
               fieldNamesCount ? fieldNamesCount[field.name] === 1 : false,
-              fieldNamesCount
-                ? fieldNamesCount[relatedField.name] === 1
-                : false,
+              fieldNamesCount ? fieldNamesCount[relatedField.name] === 1 : false
             );
 
         if (
@@ -229,7 +227,7 @@ class MongoPlugin implements AmplicationPlugin {
               relatedEntity.name,
               !isOneToOneWithoutForeignKey,
               allowMultipleSelection || false,
-              relationName,
+              relationName
             ),
           ];
         }
@@ -257,7 +255,7 @@ class MongoPlugin implements AmplicationPlugin {
             [scalarRelationFieldName],
             ["id"],
             onDelete,
-            onUpdate,
+            onUpdate
           ),
           // Prisma Scalar Relation Field
           PrismaSchemaDSL.createScalarField(
@@ -274,7 +272,7 @@ class MongoPlugin implements AmplicationPlugin {
             false,
             undefined,
             undefined,
-            true,
+            true
           ),
         ];
       }
@@ -287,7 +285,7 @@ class MongoPlugin implements AmplicationPlugin {
         if (field.customAttributes) {
           field.customAttributes = field.customAttributes.replace(
             /@([\w]+)\./g,
-            `@${dataSource.name}.`,
+            `@${dataSource.name}.`
           );
         }
       });
@@ -305,7 +303,7 @@ class MongoPlugin implements AmplicationPlugin {
     relatedEntity: Entity,
     relatedField: EntityField,
     fieldHasUniqueName: boolean,
-    relatedFieldHasUniqueName: boolean,
+    relatedFieldHasUniqueName: boolean
   ): string {
     const relatedEntityNames = [
       relatedEntity.name,
@@ -313,10 +311,10 @@ class MongoPlugin implements AmplicationPlugin {
     ];
     const entityNames = [entity.name, pascalCase(entity.pluralName)];
     const matchingRelatedEntityName = relatedEntityNames.find(
-      (name) => field.name === camelCase(name),
+      (name) => field.name === camelCase(name)
     );
     const matchingEntityName = entityNames.find(
-      (name) => relatedField.name === camelCase(name),
+      (name) => relatedField.name === camelCase(name)
     );
     if (matchingRelatedEntityName && matchingEntityName) {
       const names = [matchingRelatedEntityName, matchingEntityName];
@@ -338,7 +336,7 @@ class MongoPlugin implements AmplicationPlugin {
     }
     const entityAndField = [entity.name, field.name].join(" ");
     const relatedEntityAndField = [relatedEntity.name, relatedField.name].join(
-      " ",
+      " "
     );
     const parts = [entityAndField, relatedEntityAndField];
     // Sort parts for deterministic results regardless of entity and related order

@@ -19,7 +19,7 @@ export class JwtStrategyBase extends PassportStrategy(Strategy) {
         rateLimit: true,
         jwksRequestsPerMinute: 5,
         jwksUri: `${configService.get(
-          "AUTH0_ISSUER_URL",
+          "AUTH0_ISSUER_URL"
         )}.well-known/jwks.json`,
       }),
     });

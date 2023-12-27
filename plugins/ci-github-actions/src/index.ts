@@ -31,7 +31,7 @@ class GithubActionsPlugin implements AmplicationPlugin {
   async afterCreateServer(
     context: DsgContext,
     eventParams: CreateServerParams,
-    modules: ModuleMap,
+    modules: ModuleMap
   ): Promise<ModuleMap> {
     context.logger.info(`Generating GitHub Actions workflow...`);
 
@@ -77,7 +77,7 @@ class GithubActionsPlugin implements AmplicationPlugin {
       staticPath = resolve(__dirname, githubStaticFiles);
       staticFiles = await context.utils.importStaticModules(
         staticPath,
-        outputDirectory,
+        outputDirectory
       );
 
       // set the registry to the github packages registry url and
@@ -109,8 +109,8 @@ class GithubActionsPlugin implements AmplicationPlugin {
       staticFiles.replaceModulesPath((path) =>
         path.replace(
           templateFileName,
-          workflowFileNamePrefix + serviceName + workflowFileNameSuffix,
-        ),
+          workflowFileNamePrefix + serviceName + workflowFileNameSuffix
+        )
       );
       staticFiles.replaceModulesCode((_path, code) =>
         code
@@ -120,8 +120,8 @@ class GithubActionsPlugin implements AmplicationPlugin {
           .replaceAll(authenticationPasswordKey, authenticationPassword)
           .replaceAll(
             serviceWorkingDirectoryKey,
-            context.serverDirectories.baseDirectory,
-          ),
+            context.serverDirectories.baseDirectory
+          )
       );
     } else {
       const defaultStaticFiles = "./static/default/";
@@ -129,21 +129,21 @@ class GithubActionsPlugin implements AmplicationPlugin {
       staticPath = resolve(__dirname, defaultStaticFiles);
       staticFiles = await context.utils.importStaticModules(
         staticPath,
-        outputDirectory,
+        outputDirectory
       );
       staticFiles.replaceModulesPath((path) =>
         path.replace(
           templateFileName,
-          workflowFileNamePrefix + serviceName + workflowFileNameSuffix,
-        ),
+          workflowFileNamePrefix + serviceName + workflowFileNameSuffix
+        )
       );
       staticFiles.replaceModulesCode((_path, code) =>
         code
           .replaceAll(serviceNameKey, serviceName)
           .replaceAll(
             serviceWorkingDirectoryKey,
-            context.serverDirectories.baseDirectory,
-          ),
+            context.serverDirectories.baseDirectory
+          )
       );
     }
     context.logger.info(succesfullPluginCodeGeneration);

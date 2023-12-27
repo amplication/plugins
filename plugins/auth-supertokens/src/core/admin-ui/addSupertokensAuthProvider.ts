@@ -8,13 +8,14 @@ export const addSupertokensAuthProvider = async (
   srcDirectory: string,
   modules: ModuleMap,
   settings: Settings,
-  logger: BuildLogger,
+  logger: BuildLogger
 ) => {
   logger.info(
-    "Adding the SuperTokens auth provider for react-admin authentication in the admin UI",
+    "Adding the SuperTokens auth provider for react-admin authentication in the admin UI"
   );
-  const supertokensAuthProviderCode =
-    await getSupertokensAuthProviderCode(settings);
+  const supertokensAuthProviderCode = await getSupertokensAuthProviderCode(
+    settings
+  );
   modules.set({
     path: join(srcDirectory, "auth-provider", "ra-auth-supertokens.ts"),
     code: supertokensAuthProviderCode,
@@ -32,7 +33,7 @@ const getSupertokensAuthProviderCode = async (settings: Settings) => {
     staticsPath,
     "admin-ui",
     settings.recipe.name,
-    "ra-auth-supertokens.ts",
+    "ra-auth-supertokens.ts"
   );
   return print(await readFile(path)).code;
 };
@@ -55,7 +56,7 @@ const getPasswordlessAuthProviderCode = async (settings: Settings) => {
     "admin-ui",
     name,
     flowTypeToSubDir[flowType],
-    "ra-auth-supertokens.ts",
+    "ra-auth-supertokens.ts"
   );
   return print(await readFile(path)).code;
 };
