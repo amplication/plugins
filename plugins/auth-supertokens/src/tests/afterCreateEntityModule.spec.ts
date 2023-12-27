@@ -63,7 +63,7 @@ describe("Testing afterCreateEntityModule hook", () => {
       params,
       moduleMap
     );
-    let expectedCode = prettyCode(authModuleRaw);
+    const expectedCode = prettyCode(authModuleRaw);
     const code = prettyCode(modules.get("/auth/auth.module.ts").code);
     expect(code).toStrictEqual(expectedCode);
   });
@@ -76,7 +76,6 @@ import {
   Module,
   NestModule
 } from "@nestjs/common";
-import { PasswordService } from "./password.service";
 import { STAuthMiddleware } from "./supertokens/auth.middleware";
 import { AuthService } from "./auth.service";
 import { TheEntityModule } from "../theEntity/theEntity.module";
