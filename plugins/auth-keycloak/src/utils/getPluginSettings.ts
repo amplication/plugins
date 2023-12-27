@@ -1,5 +1,5 @@
 import { name as PackageName } from "../../package.json";
-import defaultSettings from "../../amplicationrc.json";
+import defaultSettings from "../../.amplicationrc.json";
 import { PluginInstallation } from "@amplication/code-gen-types";
 import { Settings } from "../types";
 

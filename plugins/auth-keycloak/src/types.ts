@@ -1,26 +1,19 @@
 export interface Settings {
-  domain?: string;
-  clientID?: string;
-  audience?: string;
-  issuerURL?: string;
+  port: number;
+  realmName?: string;
+  realmID: string;
+  clientName?: string;
+  clientDescription?: string;
+  clientID: string;
+  adminUsername?: string;
+  adminPassword?: string;
   recipe: IRecipe;
-  useManagementApi: boolean;
-  managementParams?: IManagementApiParams;
   defaultUser?: Record<string, unknown>;
 }
 
-export interface IManagementApiParams {
-  accessToken: string;
-  identifier: string;
-  actionName?: string;
-  clientName?: string;
-  apiName?: string;
-  audience?: string;
-}
-
 export interface IRecipe {
-  type: "password" | "passwordless";
-  method?: "email" | "sms" | "magic-link";
   emailFieldName: string;
+  verifyEmail: boolean;
+  registrationAllowed: boolean;
   payloadFieldMapping: Record<string, string>;
 }

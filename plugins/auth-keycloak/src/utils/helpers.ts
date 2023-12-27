@@ -1,6 +1,7 @@
 import { Entity, EntityField, EnumDataType } from "@amplication/code-gen-types";
-import { EmailError } from "../constants";
+import { EmailError, placeholders } from "../constants";
 import { IRecipe } from "../types";
+import { Settings } from "../types";
 
 export function pascalCase(str: string): string {
   return str
@@ -78,3 +79,22 @@ export const getSearchableAuthField = (
 
   return authEmailField;
 };
+
+export const getRealmConfig = ( settings: Settings ): Record<string, unknown> => {
+  const defaults = {
+    realmID: "amplication-sample-realm",
+    realmName: "Amplication Sample Realm",
+    clientID: "amplication-server",
+    clientName: "Amplication Server",
+    clientDescription: "Sample client for Amplication Server",
+  }
+
+  const mapping = Object.entries(placeholders).reduce(
+    (acc, [key, value]) => ({
+      ...acc,
+      [value]: settings[key as keyof Settings]?.toString() || defaults[key as keyof typeof defaults],
+    }),
+    {}
+  );
+  return mapping;
+}
