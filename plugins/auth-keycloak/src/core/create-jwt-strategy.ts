@@ -176,7 +176,9 @@ const mapJwtStrategyTemplate = async (
           searchableAuthField,
         ),
       ),
-      CREATE_FUNCTION: builders.identifier(`create${pascalCase(authEntity?.name)}`),
+      CREATE_FUNCTION: builders.identifier(
+        `create${pascalCase(authEntity?.name)}`,
+      ),
     };
 
     const filePath = `${serverDirectories.authDirectory}/jwt/${fileName}`;
