@@ -66,7 +66,7 @@ async function mapJwtStrategySpecTemplate(
 
     const templateMapping = {
       ENTITY_SERVICE: builders.identifier(`${entityServiceName}`),
-      FIND_ONE_FUNCTION: builders.identifier(`${camelCase(authEntity?.name) }`)
+      FIND_ONE_FUNCTION: builders.identifier(`${camelCase(authEntity?.name)}`),
     };
 
     const filePath = `${serverDirectories.srcDirectory}/tests/auth/jwt/${fileName}`;

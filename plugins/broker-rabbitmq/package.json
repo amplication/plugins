@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-broker-rabbitmq",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Use a RabbitMQ message broker to communicate between services generated with Amplication",
   "main": "dist/index.js",
   "nx": {},
@@ -9,8 +9,7 @@
     "dev": "webpack --watch",
     "build": "webpack",
     "prebuild": "rimraf dist",
-    "test": "jest",
-    "format:write": "prettier --write \"**/*.{js,ts}\""
+    "test": "jest"
   },
   "keywords": [],
   "author": "Meyazhagan",
@@ -40,6 +39,7 @@
     "webpack-cli": "^5.1.4"
   },
   "jest": {
+    "passWithNoTests": true,
     "moduleFileExtensions": [
       "js",
       "json",

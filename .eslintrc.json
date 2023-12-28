@@ -24,7 +24,11 @@
     {
       "files": ["*.ts", "*.tsx"],
       "extends": ["plugin:@nx/typescript"],
-      "rules": {}
+      "rules": {
+        "no-prototype-builtins": "warn",
+        "@typescript-eslint/no-unused-vars": "warn",
+        "no-case-declarations": "warn"
+      }
     },
     {
       "files": ["*.js", "*.jsx"],
@@ -36,7 +40,20 @@
       "env": {
         "jest": true
       },
-      "rules": {}
+      "rules": {
+        "@typescript-eslint/ban-ts-comment": "warn",
+        "@typescript-eslint/no-unused-vars": "warn",
+        "@typescript-eslint/no-explicit-any": "warn"
+      }
+    },
+    {
+      "files": ["*.spec.template.ts", "*.spec.template.tsx"],
+      "env": {
+        "jest": true
+      },
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "warn"
+      }
     }
   ]
 }

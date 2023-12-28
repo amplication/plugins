@@ -327,7 +327,6 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateEntityControllerBaseParams
   ): CreateEntityControllerBaseParams {
-    const settings = utils.getPluginSettings(context.pluginInstallations);
     const authEntityName = context.resourceInfo?.settings.authEntityName;
     if (!authEntityName) {
       context.logger.error("Failed to find the auth entity");

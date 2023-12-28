@@ -4,7 +4,7 @@ import { ConfigService } from "@nestjs/config";
 declare class PACKAGES_ARRAY {}
 declare class PROTO_PATH_ARRAY {}
 
-let configService: ConfigService = new ConfigService();
+const configService: ConfigService = new ConfigService();
 
 export const grpcClientOptions: ClientOptions = {
   transport: Transport.GRPC,

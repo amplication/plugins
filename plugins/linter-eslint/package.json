@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-linter-eslint",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "This plugin is created to add eslint functionality to the amplication app",
   "main": "dist/index.js",
   "scripts": {
@@ -8,9 +8,6 @@
     "dev": "webpack --watch",
     "build": "webpack",
     "prebuild": "rimraf dist",
-    "format:write": "prettier --write \"**/*.{js,ts}\"",
-    "lint:fix": "eslint './src/**/*.{ts, tsx}' --fix --c .eslintrc",
-    "lint": "eslint './src/**/*.{ts, tsx}' --c .eslintrc",
     "test": "jest"
   },
   "author": "Ashish Padhy",
@@ -37,6 +34,7 @@
     "webpack-node-externals": "^3.0.0"
   },
   "jest": {
+    "passWithNoTests": true,
     "moduleFileExtensions": [
       "js",
       "json",

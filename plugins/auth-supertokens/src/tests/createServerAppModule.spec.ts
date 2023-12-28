@@ -65,7 +65,7 @@ describe("Testing beforeCreateServerAppModule hook", () => {
       params,
       moduleMap
     );
-    let expectedCode = prettyCode(afterGraphqlSetting);
+    const expectedCode = prettyCode(afterGraphqlSetting);
     expect(modules.get("/app.module.ts").code).toBe(expectedCode);
   });
 });

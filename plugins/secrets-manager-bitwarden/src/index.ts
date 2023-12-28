@@ -36,7 +36,7 @@ class BitWardenSecretsManagerPlugin implements AmplicationPlugin {
   // You can combine many events in one plugin in order to change the related files.
   beforeCreatePackageJson(
     _: DsgContext,
-    eventParams: CreateServerPackageJsonParams,
+    eventParams: CreateServerPackageJsonParams
   ): CreateServerPackageJsonParams {
     eventParams.updateProperties.push(dependencies);
     return eventParams;
@@ -44,7 +44,7 @@ class BitWardenSecretsManagerPlugin implements AmplicationPlugin {
 
   beforeCreateServerDotEnv(
     context: DsgContext,
-    eventParams: CreateServerDotEnvParams,
+    eventParams: CreateServerDotEnvParams
   ): CreateServerDotEnvParams {
     const { BITWARDEN_ACCESS_TOKEN, BITWARDEN_ORGANISATION_ID } =
       getPluginSettings(context.pluginInstallations);
@@ -62,16 +62,16 @@ class BitWardenSecretsManagerPlugin implements AmplicationPlugin {
   async AfterCreateServer(
     context: DsgContext,
     _: CreateServerParams,
-    modules: ModuleMap,
+    modules: ModuleMap
   ): Promise<ModuleMap> {
     const { fetchMode, secretNames } = getPluginSettings(
-      context.pluginInstallations,
+      context.pluginInstallations
     );
     const staticPath = resolve(__dirname, "static", fetchMode.toLowerCase());
 
     const staticFiles = await context.utils.importStaticModules(
       staticPath,
-      context.serverDirectories.srcDirectory,
+      context.serverDirectories.srcDirectory
     );
 
     await modules.merge(staticFiles);
@@ -80,7 +80,7 @@ class BitWardenSecretsManagerPlugin implements AmplicationPlugin {
   }
   async beforeCreateServerSecretsManager(
     context: DsgContext,
-    eventParams: CreateServerSecretsManagerParams,
+    eventParams: CreateServerSecretsManagerParams
   ): Promise<CreateServerSecretsManagerParams> {
     const { secretNames } = getPluginSettings(context.pluginInstallations);
 

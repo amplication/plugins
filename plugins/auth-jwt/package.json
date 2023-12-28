@@ -1,14 +1,13 @@
 {
   "name": "@amplication/plugin-auth-jwt",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "description": "set jwt as provider for Amplication build",
   "main": "dist/index.js",
   "nx": {},
   "scripts": {
     "dev": "webpack --watch",
     "build": "webpack",
-    "prebuild": "rimraf dist",
-    "format:write": "prettier --write \"**/*.{js,ts}\""
+    "prebuild": "rimraf dist"
   },
   "author": "barshimi",
   "license": "ISC",

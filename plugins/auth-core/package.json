@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-auth-core",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "set auth for Amplication build",
   "main": "dist/index.js",
   "nx": {},
@@ -8,8 +8,7 @@
     "dev": "webpack --watch",
     "build": "webpack",
     "prebuild": "rimraf dist",
-    "test": "jest",
-    "format:write": "prettier --write \"**/*.{js,ts}\""
+    "test": "jest"
   },
   "author": "Mor Hagbi",
   "license": "Apache-2.0",
@@ -42,6 +41,7 @@
     "webpack-cli": "^5.1.4"
   },
   "jest": {
+    "passWithNoTests": true,
     "moduleFileExtensions": [
       "js",
       "json",

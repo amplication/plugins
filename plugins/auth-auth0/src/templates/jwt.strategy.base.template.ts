@@ -4,7 +4,6 @@ import { passportJwtSecret } from "jwks-rsa";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { Auth0User } from "./User";
 
-declare class ENTITY_SERVICE {}
 declare class ENTITY_NAME_INFO {}
 
 export class JwtStrategyBase extends PassportStrategy(Strategy) {

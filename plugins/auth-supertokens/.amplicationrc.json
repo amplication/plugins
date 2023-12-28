@@ -10,9 +10,7 @@
     "apiKey": "",
     "supertokensIdFieldName": "supertokensId",
     "recipe": {
-      "name": "emailpassword",
-      "emailFieldName": "email",
-      "passwordFieldName": "password"
+      "name": "emailpassword"
     }
   }
 }

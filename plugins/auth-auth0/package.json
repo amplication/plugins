@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-auth-auth0",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Auth0 plugin for Amplication",
   "main": "dist/index.js",
   "scripts": {
@@ -8,9 +8,6 @@
     "dev": "webpack --watch",
     "build": "webpack",
     "prebuild": "rimraf dist",
-    "format:write": "prettier --write \"**/*.{js,ts}\"",
-    "lint:fix": "eslint './src/**/*.{ts, tsx}' --fix --c .eslintrc",
-    "lint": "eslint './src/**/*.{ts, tsx}' --c .eslintrc",
     "test": "jest"
   },
   "author": "Ashish Padhy <100484401+Shurtu-gal@users.noreply.github.com>",

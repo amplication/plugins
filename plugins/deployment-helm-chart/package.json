@@ -1,13 +1,12 @@
 {
   "name": "@amplication/plugin-deployment-helm-chart",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Add helm chart for deployment of the service",
   "main": "dist/index.js",
   "nx": {},
   "scripts": {
     "dev": "webpack --watch",
-    "build": "webpack",
-    "format:write": "prettier --write \"**/*.{js,ts}\""
+    "build": "webpack"
   },
   "author": "Levi van Noort <levi@amplication.com>",
   "contributors": [

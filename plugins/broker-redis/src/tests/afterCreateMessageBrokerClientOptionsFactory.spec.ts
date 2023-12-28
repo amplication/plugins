@@ -25,7 +25,7 @@ describe("Testing afterCreateMessageBrokerClientOptionsFactory hook", () => {
   it("should correctly add the code for generating message broker client options", async () => {
     const modules = await plugin.afterCreateMessageBrokerClientOptionsFactory(
       context,
-      params
+      params,
     );
     const path = "/generateRedisClientOptions.ts";
     const code = utils.print(utils.parse(modules.get(path).code)).code;
@@ -73,15 +73,20 @@ export const generateRedisClientOptions = (
     );
   }
 
-  return {
+  const redisOptions: RedisOptions = {
     transport: Transport.REDIS,
     options: {
       host: redisHost,
       port: redisPort,
       retryAttempts: redisRetryAttempts,
       retryDelay: redisRetryDelay,
-      tls: redisEnableTLS,
     },
   };
+
+  if (redisEnableTLS && redisOptions.options) {
+    redisOptions.options.tls = {};
+  }
+
+  return redisOptions;
 };
 `;

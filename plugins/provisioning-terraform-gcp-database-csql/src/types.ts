@@ -21,8 +21,8 @@ export interface Settings {
   };
   configuration: {
     type: DatabaseTypes;
-    postgres?: {}; //TODO: settings that are specific to postgres
-    mysql?: {}; //TODO: settings that are specific to postgres
-    mssql?: {}; //TODO: settings that are specific to postgres
+    postgres?: object; //TODO: settings that are specific to postgres
+    mysql?: object; //TODO: settings that are specific to postgres
+    mssql?: object; //TODO: settings that are specific to postgres
   };
 }

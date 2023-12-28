@@ -63,16 +63,16 @@ class GithubActionsPlugin implements AmplicationPlugin {
     let staticPath;
     let staticFiles;
 
-    const templateFileName: string = "workflow.yaml";
-    const workflowFileNamePrefix: string = "ci-";
-    const workflowFileNameSuffix: string = ".yaml";
-    const outputDirectory: string = "./.github/workflows/";
+    const templateFileName = "workflow.yaml";
+    const workflowFileNamePrefix = "ci-";
+    const workflowFileNameSuffix = ".yaml";
+    const outputDirectory = "./.github/workflows/";
 
-    const succesfullPluginCodeGeneration: string =
+    const succesfullPluginCodeGeneration =
       "Generated GitHub Actions workflow...";
 
     if (settings.registry == RegistryProviders.GitHub) {
-      const githubStaticFiles: string = "./static/github/";
+      const githubStaticFiles = "./static/github/";
 
       staticPath = resolve(__dirname, githubStaticFiles);
       staticFiles = await context.utils.importStaticModules(
@@ -124,7 +124,7 @@ class GithubActionsPlugin implements AmplicationPlugin {
           )
       );
     } else {
-      const defaultStaticFiles: string = "./static/default/";
+      const defaultStaticFiles = "./static/default/";
 
       staticPath = resolve(__dirname, defaultStaticFiles);
       staticFiles = await context.utils.importStaticModules(

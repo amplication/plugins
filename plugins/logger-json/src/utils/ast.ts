@@ -3,7 +3,7 @@ import * as recast from "recast";
 
 export function interpolate(
   ast: ASTNode,
-  mapping: { [key: string]: ASTNode | undefined },
+  mapping: { [key: string]: ASTNode | undefined }
 ): void {
   return recast.visit(ast, {
     visitIdentifier(path) {
@@ -55,7 +55,7 @@ export function interpolate(
         (expression) =>
           namedTypes.Identifier.check(expression) &&
           expression.name in mapping &&
-          namedTypes.StringLiteral.check(mapping[expression.name]),
+          namedTypes.StringLiteral.check(mapping[expression.name])
       );
       if (canTransformToStringLiteral) {
         path.node.expressions = path.node.expressions.map((expression) => {
@@ -71,7 +71,7 @@ export function interpolate(
 }
 
 export function transformTemplateLiteralToStringLiteral(
-  templateLiteral: namedTypes.TemplateLiteral,
+  templateLiteral: namedTypes.TemplateLiteral
 ): namedTypes.StringLiteral {
   const value = templateLiteral.quasis
     .map((quasie, i) => {
@@ -89,10 +89,10 @@ export function transformTemplateLiteralToStringLiteral(
 
 export function importNames(
   names: namedTypes.Identifier[],
-  source: string,
+  source: string
 ): namedTypes.ImportDeclaration {
   return builders.importDeclaration(
     names.map((name) => builders.importSpecifier(name)),
-    builders.stringLiteral(source),
+    builders.stringLiteral(source)
   );
 }

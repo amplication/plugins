@@ -154,7 +154,7 @@ export class SupertokensService {
                 return {
                   ...originalImplementation,
                   signInUp: async function (input) {
-                      let resp = await originalImplementation.signInUp(input);
+                      const resp = await originalImplementation.signInUp(input);
 
                       if (
                         resp.status === "OK" &&
