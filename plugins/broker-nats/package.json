@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-broker-nats",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "main": "dist/index.js",
   "nx": {},
   "scripts": {
@@ -8,8 +8,7 @@
     "dev": "webpack --watch",
     "build": "webpack",
     "prebuild": "rimraf dist",
-    "test": "jest",
-    "format:write": "prettier --write \"**/*.{js,ts}\""
+    "test": "jest"
   },
   "author": "tupe12334",
   "license": "Apache-2.0",
@@ -37,6 +36,7 @@
     "webpack-cli": "^5.1.4"
   },
   "jest": {
+    "passWithNoTests": true,
     "moduleFileExtensions": [
       "js",
       "json",

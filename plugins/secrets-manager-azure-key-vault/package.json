@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-secrets-manager-azure-key-vault",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Amplication plugin for Azure Key Vault",
   "main": "dist/index.js",
   "scripts": {
@@ -36,6 +36,7 @@
     "webpack-cli": "^5.1.4"
   },
   "jest": {
+    "passWithNoTests": true,
     "moduleFileExtensions": [
       "js",
       "json",

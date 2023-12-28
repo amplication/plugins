@@ -77,7 +77,7 @@ async function mapJwtStrategyTemplate(
     const templateMapping = {
       ENTITY_NAME_INFO: builders.identifier(`${authEntity.name}Info`),
       ENTITY_SERVICE: builders.identifier(`${entityNameToLower}Service`),
-      FIND_ONE_FUNCTION: builders.identifier(`${camelCase(authEntity?.name) }`)
+      FIND_ONE_FUNCTION: builders.identifier(`${camelCase(authEntity?.name)}`),
     };
 
     const filePath = `${serverDirectories.authDirectory}/jwt/base/${fileName}`;

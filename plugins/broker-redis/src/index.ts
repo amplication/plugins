@@ -24,6 +24,7 @@ import { readFile, print } from "@amplication/code-gen-utils";
 import { pascalCase } from "pascal-case";
 import * as utils from "./utils";
 import * as constants from "./constants";
+import { TSTypeKind } from "ast-types/gen/kinds";
 
 class RedisBrokerPlugin implements AmplicationPlugin {
   register(): Events {
@@ -378,7 +379,7 @@ const redisMessageId = (): namedTypes.Identifier => {
       builders.tsTypeReference(builders.identifier("RedisMessage"))
     ),
   });
-  //@ts-ignore
+  //@ts-expect-error decorators is defined on Identifier
   id.decorators = [
     builders.decorator(
       builders.callExpression(builders.identifier("Payload"), [])
@@ -399,7 +400,7 @@ const allMessageBrokerTopicsTypeDeclaration = (topicEnumNames: string[]) => {
   const enumTypes: namedTypes.TSTypeReference[] = topicEnumNames.map(
     (enumName) => builders.tsTypeReference(builders.identifier(enumName))
   );
-  const declaration = (rightSide: any) => {
+  const declaration = (rightSide: TSTypeKind) => {
     return builders.exportDeclaration(
       false,
       builders.tsTypeAliasDeclaration(

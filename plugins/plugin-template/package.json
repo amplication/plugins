@@ -9,8 +9,7 @@
     "dev": "webpack --watch",
     "build": "webpack",
     "prebuild": "rimraf dist",
-    "test": "jest",
-    "format:write": "prettier --write \"**/*.{js,ts}\""
+    "test": "jest"
   },
   "author": "Amplication Contributor",
   "license": "Apache-2.0",
@@ -38,6 +37,7 @@
     "webpack-cli": "^5.1.4"
   },
   "jest": {
+    "passWithNoTests": true,
     "moduleFileExtensions": [
       "js",
       "json",

@@ -21,11 +21,11 @@ export async function createGrpcClientOptionsFile(
   const template = await readFile(grpcClientOptionsPath);
   const { serverDirectories, entities } = context;
 
-  let packages: namedTypes.ArrayExpression = {
+  const packages: namedTypes.ArrayExpression = {
     elements: [],
     type: "ArrayExpression",
   };
-  let protoPaths: namedTypes.ArrayExpression = {
+  const protoPaths: namedTypes.ArrayExpression = {
     elements: [],
     type: "ArrayExpression",
   };

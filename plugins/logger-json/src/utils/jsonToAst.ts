@@ -5,7 +5,7 @@ export const propertiesToAST = (items: AdditionalProperties): ASTNode => {
   return b.variableDeclaration("const", [
     b.variableDeclarator(
       b.identifier("ADDITIONAL_LOG_PROPERTIES"),
-      b.objectExpression(jsonToAST(items)),
+      b.objectExpression(jsonToAST(items))
     ),
   ]);
 };

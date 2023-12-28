@@ -60,7 +60,7 @@ describe("Testing afterCreateDTOs hook", () => {
           updateInput: parse(updateInputRawBefore).program
             .body[0] as NamedClassDeclaration,
           entity: parse(entityCode).program.body[0] as NamedClassDeclaration,
-        } as EntityEnumDTOs & EntityDTOs
+        } as EntityEnumDTOs & EntityDTOs,
       },
     };
   });

@@ -1,11 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
-// @ts-ignore
-// eslint-disable-next-line
 import { AuthService } from "./auth.service";
 import { Credentials } from "./Credentials";
 import { PasswordService } from "./password.service";
-// @ts-ignore
-// eslint-disable-next-line
 import { TokenService } from "./token.service";
 import { VALID_ID } from "../tests/auth/constants";
 
@@ -86,8 +82,8 @@ describe("AuthService", () => {
       await expect(
         service.validateUser(
           VALID_CREDENTIALS.username,
-          VALID_CREDENTIALS.password,
-        ),
+          VALID_CREDENTIALS.password
+        )
       ).resolves.toEqual({
         username: USER.username,
         roles: USER.roles,
@@ -99,8 +95,8 @@ describe("AuthService", () => {
       await expect(
         service.validateUser(
           INVALID_CREDENTIALS.username,
-          INVALID_CREDENTIALS.password,
-        ),
+          INVALID_CREDENTIALS.password
+        )
       ).resolves.toBe(null);
     });
   });

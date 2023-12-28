@@ -22,7 +22,7 @@ export const enum EnumTemplateType {
 }
 
 export const controllerMethodsIdsActionPairs = (
-  templateMapping: { [key: string]: any },
+  templateMapping: { [key: string]: namedTypes.Identifier },
   entity: Entity
 ): MethodsIdsActionEntityTriplet[] => [
   {
@@ -79,7 +79,7 @@ export const controllerMethodsIdsActionPairs = (
 ];
 
 export const controllerToManyMethodsIdsActionPairs = (
-  toManyMapping: { [key: string]: any },
+  toManyMapping: { [key: string]: namedTypes.Identifier },
   entity: Entity,
   relatedEntity: Entity
 ): MethodsIdsActionEntityTriplet[] => [
@@ -118,7 +118,7 @@ export const controllerToManyMethodsIdsActionPairs = (
 ];
 
 export const resolverMethodsIdsActionPairs = (
-  templateMapping: { [key: string]: any },
+  templateMapping: { [key: string]: namedTypes.Identifier },
   entity: Entity
 ): MethodsIdsActionEntityTriplet[] => [
   {

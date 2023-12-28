@@ -38,7 +38,7 @@ export enum EnumMessageType {
 }
 
 export const controllerMethodsIdsActionPairs = (
-  templateMapping: { [key: string]: any },
+  templateMapping: { [key: string]: namedTypes.Identifier },
   entity: Entity
 ): MethodsIdsActionEntityTriplet[] => [
   {
@@ -156,7 +156,7 @@ export const controllerToManyMethodsIdsActionPairs = (
 ];
 
 export const controllerToManyIdsActionPairs = (
-  toManyMapping: { [key: string]: any },
+  toManyMapping: { [key: string]: namedTypes.Identifier },
   fieldName: string
 ): ControllersIdsActionEntity[] => [
   {

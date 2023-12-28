@@ -6,7 +6,11 @@ import {
 } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
 import { parse } from "@amplication/code-gen-utils";
-import { NamedClassDeclaration, EntityEnumDTOs, EntityDTOs } from "@amplication/code-gen-types";
+import {
+  NamedClassDeclaration,
+  EntityEnumDTOs,
+  EntityDTOs,
+} from "@amplication/code-gen-types";
 import { prettyCode } from "../../utils";
 import SupertokensAuthPlugin from "../../index";
 import { name } from "../../../package.json";
@@ -240,7 +244,7 @@ export class SupertokensService {
               return {
                 ...originalImplementation,
                 signUp: async function(input) {
-                  let resp = await originalImplementation.signUp(input);
+                  const resp = await originalImplementation.signUp(input);
                   if(
                       resp.status === "OK" &&
                       resp.user.loginMethods.length === 1 &&

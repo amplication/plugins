@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-formatter-prettier",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "The plugin that integrates Prettier to the app",
   "main": "dist/index.js",
   "nx": {},
@@ -8,8 +8,7 @@
     "dev": "webpack --watch",
     "build": "webpack",
     "test": "jest",
-    "prebuild": "rimraf dist",
-    "format:write": "prettier --write \"**/*.{js,ts}\""
+    "prebuild": "rimraf dist"
   },
   "author": "Eugene Tseitlin",
   "license": "Apache-2.0",
@@ -37,6 +36,7 @@
     "webpack-cli": "^4.10.0"
   },
   "jest": {
+    "passWithNoTests": true,
     "moduleFileExtensions": [
       "js",
       "json",
