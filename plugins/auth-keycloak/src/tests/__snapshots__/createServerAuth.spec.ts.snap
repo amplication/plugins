@@ -160,7 +160,7 @@ export class AuthResolver {
   @Query(() => UserInfo)
   @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
   async userInfo(
-    @UserData() entityInfo: UserInfo
+    @UserData() entityInfo: UserInfo,
   ): Promise<UserInfo> {
     return entityInfo;
   }
@@ -225,7 +225,7 @@ export interface KeycloakPayload {
   realm_access: {
     roles: string[];
   };
-};
+}
 ",
     "path": "src/auth/jwt/base/types.ts",
   },
