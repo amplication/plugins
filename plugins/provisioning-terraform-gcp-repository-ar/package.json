@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-provisioning-terraform-gcp-repository-ar",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Adds a container registry setup based on terraform for Google Cloud Platform to the generated service.",
   "main": "dist/index.js",
   "nx": {},
