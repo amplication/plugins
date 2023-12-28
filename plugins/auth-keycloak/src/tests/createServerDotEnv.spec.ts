@@ -27,8 +27,8 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
 
     const expectedEnvVariables = [
       { KEYCLOAK_URL: "http://localhost:8080" },
-      { KEYCLOAK_REALM: "KEYCLOAK_REALM_ID" },
-      { KEYCLOAK_CLIENT_ID: "KEYCLOAK_CLIENT_ID" },
+      { KEYCLOAK_REALM: "amplication-sample-realm" },
+      { KEYCLOAK_CLIENT_ID: "amplication-server" },
       { KEYCLOAK_ADMIN_USERNAME: "admin" },
       { KEYCLOAK_ADMIN_PASSWORD: "password" },
       { KEYCLOAK_PORT: "8080" },

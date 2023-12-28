@@ -15,5 +15,5 @@ export interface IRecipe {
   emailFieldName?: string;
   verifyEmail: boolean;
   registrationAllowed: boolean;
-  payloadFieldMapping: Record<string, string>;
+  payloadFieldMapping?: Record<string, string>;
 }

@@ -27,8 +27,8 @@ describe("Testing beforeCreateAdminDotEnv hook", () => {
 
     const expectedEnvVariables = [
       { REACT_APP_KEYCLOAK_URL: "http://localhost:8080" },
-      { REACT_APP_KEYCLOAK_REALM: "KEYCLOAK_REALM_ID" },
-      { REACT_APP_KEYCLOAK_CLIENT_ID: "KEYCLOAK_CLIENT_ID" },
+      { REACT_APP_KEYCLOAK_REALM: "amplication-sample-realm" },
+      { REACT_APP_KEYCLOAK_CLIENT_ID: "amplication-server" },
     ];
 
     expect(eventParams.envVariables).toEqual(expectedEnvVariables);

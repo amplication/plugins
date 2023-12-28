@@ -1,8 +1,8 @@
 {
   "settings": {
     "port": 8080,
-    "realmID": "KEYCLOAK_REALM_ID",
-    "clientID": "KEYCLOAK_CLIENT_ID",
+    "realmID": "amplication-sample-realm",
+    "clientID": "amplication-server",
     "recipe": {
       "verifyEmail": false,
       "registrationAllowed": true

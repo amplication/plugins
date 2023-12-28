@@ -23,7 +23,7 @@ export const getSearchableAuthField = (
 ): EntityField => {
   const { emailFieldName, payloadFieldMapping } = recipe;
   const payloadEmailField = Object.keys(payloadFieldMapping || {}).find(
-    (key) => payloadFieldMapping[key] === "email",
+    (key) => payloadFieldMapping?.[key] === "email",
   );
   const fallbackEmailField = entity?.fields?.find(
     (field) => field.dataType === EnumDataType.Email,

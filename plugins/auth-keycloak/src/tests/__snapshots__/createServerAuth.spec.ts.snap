@@ -253,7 +253,7 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
   },
   {
     "code": "{
-  "realm": "KEYCLOAK_REALM_ID",
+  "realm": "amplication-sample-realm",
   "displayName": "Amplication Sample Realm",
   "displayNameHtml": "Amplication Sample Realm",
   "notBefore": 0,
@@ -273,7 +273,7 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
   ],
   "clients": [
     {
-      "clientId": "KEYCLOAK_CLIENT_ID",
+      "clientId": "amplication-server",
       "name": "Amplication Server",
       "description": "Sample client for Amplication Server",
       "rootUrl": "http://localhost:3001/",
