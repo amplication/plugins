@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-linter-eslint",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "This plugin is created to add eslint functionality to the amplication app",
   "main": "dist/index.js",
   "scripts": {
