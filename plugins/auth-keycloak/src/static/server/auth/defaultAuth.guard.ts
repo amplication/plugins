@@ -11,11 +11,11 @@ export class DefaultAuthGuard extends JwtAuthGuard {
   }
 
   canActivate(
-    context: ExecutionContext,
+    context: ExecutionContext
   ): boolean | Promise<boolean> | Observable<any> {
     const isPublic = this.reflector.get<boolean>(
       IS_PUBLIC_KEY,
-      context.getHandler(),
+      context.getHandler()
     );
 
     if (isPublic) {
