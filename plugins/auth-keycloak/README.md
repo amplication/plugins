@@ -57,8 +57,8 @@ To use the plugin, the following values are required to be provided in the plugi
 
   - `payLoadMapping`: The mapping of the fields to use for payload. This has to be given in the format of `key: value` where the key is the name of the field in the auth entity and the value is the name of the field in the payload. Currently supported fields from payload are `email`, `email_verified`, `name`, `preferred_username`, `given_name`, `family_name`, `iss`, `sub`, `azp`, `scope`, `realm_access`. ( Optional )
 
-> [!TIP]
-> It is recommended not to use `iss`, `sub`, `azp`, `scope`, `realm_access` to prevent vulnerabilities. However, if you want to use them for some business logic, you are free to do so.
+    > [!TIP]
+    > It is recommended not to use `iss`, `sub`, `azp`, `scope`, `realm_access` to prevent vulnerabilities. However, if you want to use them for some business logic, you are free to do so.
 
 - `defaultUser`: The default user to be created in the database. This has to be given in the format of `key: value` where the key is the name of the field in the auth entity and the value is the value of the field to be set for the default user. If a field is not provided, it will be set to default value according to the type of the field. For more information, see [Default Values](src/utils/createAuthProperties.ts#L53-L142)
 
@@ -128,7 +128,7 @@ Running `npm run format:write` will format your plugin's code with Prettier.
 
 ## Usage
 
-The plugin works by adding new users to the database when they are authenticated by Keycloak. The plugin also adds the required environment variables in the `.env` file. OIn addition to this it adds the following files in the app:
+The plugin works by adding new users to the database when they are authenticated by Keycloak. The plugin also adds the required environment variables in the `.env` file. In addition to this it adds the following files in the app:
 
 ### Server
 
