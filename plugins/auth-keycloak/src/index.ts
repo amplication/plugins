@@ -1,6 +1,18 @@
 import type { AmplicationPlugin, Events } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
-import { afterCreateAdminApp, afterCreateAuthModules, beforeCreateAdminAppModule, beforeCreateAdminDotEnv, beforeCreateAuthModules, beforeCreatePackageJson, beforeCreateSeed, beforeCreateServer, beforeCreateServerDockerCompose, beforeCreateServerDockerComposeDev, beforeCreateServerDotEnv } from "./events";
+import {
+  afterCreateAdminApp,
+  afterCreateAuthModules,
+  beforeCreateAdminAppModule,
+  beforeCreateAdminDotEnv,
+  beforeCreateAuthModules,
+  beforeCreatePackageJson,
+  beforeCreateSeed,
+  beforeCreateServer,
+  beforeCreateServerDockerCompose,
+  beforeCreateServerDockerComposeDev,
+  beforeCreateServerDotEnv,
+} from "./events";
 
 class KeycloakPlugin implements AmplicationPlugin {
   register(): Events {

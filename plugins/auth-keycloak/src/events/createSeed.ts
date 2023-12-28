@@ -14,7 +14,7 @@ const seedTemplatePath = join(templatesPath, "seed.template.ts");
 
 export const beforeCreateSeed = async (
   context: DsgContext,
-  eventParams: CreateSeedParams
+  eventParams: CreateSeedParams,
 ): Promise<CreateSeedParams> => {
   const { entities, resourceInfo, logger } = context;
 
@@ -22,7 +22,7 @@ export const beforeCreateSeed = async (
 
   const { defaultUser } = getPluginSettings(context.pluginInstallations);
   const authEntity = entities?.find(
-    (x) => x.name === resourceInfo?.settings.authEntityName
+    (x) => x.name === resourceInfo?.settings.authEntityName,
   );
 
   if (!authEntity) {
@@ -33,7 +33,7 @@ export const beforeCreateSeed = async (
   const template = await readFile(seedTemplatePath);
   const seedProperties = createAuthEntityObjectCustomProperties(
     authEntity,
-    defaultUser || {}
+    defaultUser || {},
   );
 
   const templateMapping = {

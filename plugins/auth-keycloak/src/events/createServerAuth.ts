@@ -14,7 +14,7 @@ import { getPluginSettings, getRealmConfig } from "../utils";
 
 export const beforeCreateAuthModules = (
   context: DsgContext,
-  eventParams: CreateServerAuthParams
+  eventParams: CreateServerAuthParams,
 ) => {
   context.utils.skipDefaultBehavior = true;
   return eventParams;
@@ -23,13 +23,13 @@ export const beforeCreateAuthModules = (
 export const afterCreateAuthModules = async (
   context: DsgContext,
   eventParams: CreateServerAuthParams,
-  modules: ModuleMap
+  modules: ModuleMap,
 ) => {
   const pluginSettings = getPluginSettings(context.pluginInstallations);
 
   const staticFiles = await context.utils.importStaticModules(
     serverStaticPath,
-    context.serverDirectories.srcDirectory
+    context.serverDirectories.srcDirectory,
   );
 
   const configMapping = getRealmConfig(pluginSettings);
@@ -38,19 +38,18 @@ export const afterCreateAuthModules = async (
   staticFiles.replaceModulesCode((path, code) => {
     return Object.entries(configMapping).reduce((acc, [key, value]) => {
       return acc.replaceAll(key, value as string);
-    }, code)
-  })
+    }, code);
+  });
 
   // 1. Create JWT strategy
-  const { module: jwtStrategy, searchableAuthField } = await createJwtStrategy(
-    context
-  );
+  const { module: jwtStrategy, searchableAuthField } =
+    await createJwtStrategy(context);
   modules.set(jwtStrategy);
 
   // 2. Create JWT strategy base
   const jwtStrategyBase = await createJwtStrategyBase(
     context,
-    searchableAuthField
+    searchableAuthField,
   );
   modules.set(jwtStrategyBase);
 
@@ -78,9 +77,9 @@ export const afterCreateAuthModules = async (
   ];
   modules.removeMany(
     filesToRemove.map(
-      (file) => `${context.serverDirectories.authDirectory}/${file}`
-    )
-  );  
+      (file) => `${context.serverDirectories.authDirectory}/${file}`,
+    ),
+  );
 
   return modules;
 };

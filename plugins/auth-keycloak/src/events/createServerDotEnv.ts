@@ -11,7 +11,8 @@ export const beforeCreateServerDotEnv = async (
 ): Promise<CreateServerDotEnvParams> => {
   const pluginSettings = getPluginSettings(context.pluginInstallations);
 
-  const { port, realmID, clientID, adminPassword, adminUsername } = pluginSettings;
+  const { port, realmID, clientID, adminPassword, adminUsername } =
+    pluginSettings;
 
   const envVariables = {
     // Keycloak
