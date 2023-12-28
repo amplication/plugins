@@ -183,7 +183,7 @@ class KafkaPlugin implements AmplicationPlugin {
 
     if (!messageBrokerName) {
       logger.warn(
-        "Message broker name not found. Did you forget to add a message broker resource?",
+        "Message broker name not found. Did you forget to add a message broker resource?"
       );
       messageBrokerName = "kafka";
     }
