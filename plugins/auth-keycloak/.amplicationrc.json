@@ -1,5 +1,13 @@
 {
-  "settings": {},
+  "settings": {
+    "port": 8080,
+    "realmID": "KEYCLOAK_REALM_ID",
+    "clientID": "KEYCLOAK_CLIENT_ID",
+    "recipe": {
+      "verifyEmail": false,
+      "registrationAllowed": true
+    }
+  },
   "systemSettings": {
     "requireAuthenticationEntity": "true"
   }
