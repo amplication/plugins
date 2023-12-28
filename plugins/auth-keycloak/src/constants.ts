@@ -28,6 +28,7 @@ export const EmailError = (
   `The entity ${entityName} does not have a field named ${fieldName} specified in the ${propertyName} property or the field is not of type Email. Please add a field named ${fieldName} of type Email to the entity ${entityName} or change the ${propertyName} property in the recipe`;
 
 export const placeholders = {
+  port: "${{ KEYCLOAK_PORT }}",
   realmID: "${{ KEYCLOAK_REALM_ID }}",
   realmName: "${{ KEYCLOAK_REALM_NAME }}",
   clientID: "${{ KEYCLOAK_CLIENT_ID }}",

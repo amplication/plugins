@@ -23,7 +23,7 @@
       "name": "${{ KEYCLOAK_CLIENT_NAME }}",
       "description": "${{ KEYCLOAK_CLIENT_DESCRIPTION }}",
       "rootUrl": "http://localhost:3001/",
-      "adminUrl": "http://localhost:8080",
+      "adminUrl": "http://localhost:${{ KEYCLOAK_PORT }}",
       "baseUrl": "http://localhost:3001/",
       "surrogateAuthRequired": false,
       "enabled": true,
