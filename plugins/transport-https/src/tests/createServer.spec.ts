@@ -66,7 +66,7 @@ describe("Testing createServer hook", () => {
   });
 
   it("should use plugin settings if defined", async () => {
-    context.pluginInstallations[0].settings = {
+    const pluginSettings = {
       appMode: "https",
       httpsPort: 8443,
       httpsCertName: "custom-server.crt",
@@ -76,10 +76,17 @@ describe("Testing createServer hook", () => {
       caCertName: "custom-ca.crt",
     };
 
+    context.pluginInstallations[0].settings = pluginSettings;
+
     await plugin.afterCreateServer(context, {}, modules);
 
     // create snapshot of the generated files
-
     expect(modules.modules()).toMatchSnapshot();
+
+    const replaceArray = ["httpsCertDir", "httpsCertName", "httpsKeyName", "caKeyName", "caCertName"];
+
+    replaceArray.forEach((value) => {
+      expect(modules.get("scripts/generate-ssl.sh").code).toContain(pluginSettings[value as keyof typeof pluginSettings]);
+    });
   });
 });
