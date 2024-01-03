@@ -45,5 +45,6 @@ openssl x509 -req -sha256 -days 1825 -in "$certificates_dir/server.csr" -CA "$ce
 rm "$certificates_dir/server.csr"
 
 # Remove the CA serial file
-ca_serial_file="${{ ca_cert_file%.* }}.srl"
-rm "$certificates_dir/
+# Get the CA serial file name from the CA certificate file name by replacing the extension with .srl
+ca_serial_file="${ca_cert_file%.*}.srl"
+rm "$certificates_dir/$ca_serial_file"
