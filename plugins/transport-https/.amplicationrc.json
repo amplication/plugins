@@ -1,5 +1,13 @@
 {
-  "settings": {},
+  "settings": {
+    "appMode": "both",
+    "httpsPort": "443",
+    "httpsCertDir": ".certs",
+    "httpsCertName": "server.crt",
+    "httpsKeyName": "server.key",
+    "caKeyName": "ca.key",
+    "caCertName": "ca.crt"
+  },
   "systemSettings": {
     "requireAuthenticationEntity": "false"
   }
