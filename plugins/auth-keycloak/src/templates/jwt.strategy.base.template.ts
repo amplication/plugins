@@ -3,7 +3,6 @@ import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { passportJwtSecret } from "jwks-rsa";
 import { ExtractJwt, Strategy } from "passport-jwt";
-// @ts-ignore
 import { KeycloakPayload } from "./types";
 
 declare class ENTITY_SERVICE {}

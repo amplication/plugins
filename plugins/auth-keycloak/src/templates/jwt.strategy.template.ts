@@ -1,10 +1,7 @@
 import { Injectable } from "@nestjs/common";
-// @ts-ignore
 import { JwtStrategyBase } from "./base/jwt.strategy.base";
 import { ConfigService } from "@nestjs/config";
-// @ts-ignore
 import { KeycloakPayload } from "./base/types";
-// @ts-ignore
 import { IAuthStrategy } from "../IAuthStrategy";
 
 declare class ENTITY_SERVICE {}
