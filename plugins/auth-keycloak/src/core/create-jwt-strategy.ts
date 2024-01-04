@@ -29,8 +29,9 @@ import {
 import { getPluginSettings } from "../utils/getPluginSettings";
 import { IRecipe } from "../types";
 import { createAuthEntityObjectCustomProperties } from "../utils/createAuthProperties";
-import { getSearchableAuthField, pascalCase } from "../utils/helpers";
+import { getSearchableAuthField } from "../utils/helpers";
 import { getDTONameToPath, getImportableDTOs } from "../utils/addDTOImports";
+import { toPascalCase } from "js-convert-case";
 
 const jwtStrategyPath = join(templatesPath, "jwt.strategy.template.ts");
 
@@ -177,7 +178,7 @@ const mapJwtStrategyTemplate = async (
         ),
       ),
       CREATE_FUNCTION: builders.identifier(
-        `create${pascalCase(authEntity?.name)}`,
+        `create${toPascalCase(authEntity?.name)}`,
       ),
     };
 

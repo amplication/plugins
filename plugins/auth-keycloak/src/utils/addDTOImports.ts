@@ -1,7 +1,7 @@
 import { namedTypes, builders } from "ast-types";
 import { relativeImportPath } from "./module";
 import { DTOs, DsgContext } from "@amplication/code-gen-types";
-import { camelCase } from "./helpers";
+import { toCamelCase } from "js-convert-case";
 
 export function getDTONameToPath(
   context: DsgContext,
@@ -11,7 +11,7 @@ export function getDTONameToPath(
     Object.entries(dtos).flatMap(([entityName, entityDTOs]) =>
       Object.values(entityDTOs).map((dto) => [
         dto.id.name,
-        createDTOModulePath(context, camelCase(entityName), dto.id.name),
+        createDTOModulePath(context, toCamelCase(entityName), dto.id.name),
       ]),
     ),
   );

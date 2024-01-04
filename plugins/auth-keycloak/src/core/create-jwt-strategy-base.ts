@@ -20,7 +20,7 @@ import {
   importNames,
   interpolate,
 } from "../utils/ast";
-import { camelCase } from "lodash";
+import { toCamelCase } from "js-convert-case";
 
 const jwtStrategyBasePath = join(
   templatesPath,
@@ -87,7 +87,7 @@ const mapJwtStrategyTemplate = async (
       ENTITY_SERVICE: entityServiceIdentifier,
       ENTITY: builders.identifier(entityNameToLower),
       SEARCHABLE_AUTH_FIELD: builders.identifier(searchableAuthField.name),
-      FIND_ONE_FUNCTION: builders.identifier(`${camelCase(authEntity?.name)}`),
+      FIND_ONE_FUNCTION: builders.identifier(`${toCamelCase(authEntity?.name)}`),
     };
 
     const filePath = `${serverDirectories.authDirectory}/jwt/base/${fileName}`;

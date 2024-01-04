@@ -17,6 +17,7 @@
   "dependencies": {
     "@amplication/code-gen-types": "^2.0.19",
     "@amplication/code-gen-utils": "^0.0.7",
+    "js-convert-case": "^4.2.0",
     "lodash": "^4.17.21",
     "normalize-path": "^3.0.0"
   },

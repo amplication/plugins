@@ -6,7 +6,8 @@ import {
 } from "@amplication/code-gen-types";
 import { builders, namedTypes } from "ast-types";
 import { memberExpression } from "./ast";
-import { createEnumName, pascalCase } from "./helpers";
+import { createEnumName } from "./helpers";
+import { toPascalCase } from "js-convert-case";
 
 const DEFAULT_ADDRESS = "(32.085300, 34.781769)";
 const DEFAULT_EMAIL = "example@example.com";
@@ -92,10 +93,10 @@ export function createDefaultValue(
       const { options } = field.properties as types.OptionSet;
       const [firstOption] = options;
       return defaultValue
-        ? memberExpression`${createEnumName(field, entity)}.${pascalCase(
+        ? memberExpression`${createEnumName(field, entity)}.${toPascalCase(
             defaultValue as string,
           )}`
-        : memberExpression`${createEnumName(field, entity)}.${pascalCase(
+        : memberExpression`${createEnumName(field, entity)}.${toPascalCase(
             firstOption.label,
           )}`;
     }
