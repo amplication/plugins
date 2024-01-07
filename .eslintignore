@@ -3,4 +3,5 @@ node_modules
 **/dist
 **/static
 **/ast.ts
+
 **/templates

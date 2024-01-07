@@ -1,0 +1,353 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Testing createServer hook should use default values if plugin settings are not defined 1`] = `
+[
+  {
+    "code": "#!/bin/bash
+
+# Generate a self-signed certificate for the server to be used in development over HTTPS for local testing.
+# !!! DO NOT USE THIS IN PRODUCTION !!!
+
+certificates_dir="./.certs"
+certificates_file="server.crt"
+key_file="server.key"
+ca_key_file="ca.key"
+ca_cert_file="ca.crt"
+
+# Create the certificates directory if it doesn't exist
+if [ ! -d "$certificates_dir" ]; then
+  mkdir "$certificates_dir"
+fi
+
+# Generate the CA key and certificate
+openssl genrsa -out "$certificates_dir/$ca_key_file" 2048
+openssl req -x509 -new -nodes -key "$certificates_dir/$ca_key_file" -sha256 -days 1825 -out "$certificates_dir/$ca_cert_file" <<END
+IN
+Odisha
+Rourkela
+Amplication
+Software
+localhost
+ca-ashish@amplication.com
+END
+
+# Generate the certificate and key files for localhost with the CA key and certificate
+openssl req -new -nodes -newkey rsa:2048 -keyout "$certificates_dir/$key_file" -out "$certificates_dir/server.csr" <<END
+IN
+Odisha
+Rourkela
+Amplication
+Software
+localhost
+ashishpadhy@amplication.com
+password
+Plugin
+END
+
+openssl x509 -req -sha256 -days 1825 -in "$certificates_dir/server.csr" -CA "$certificates_dir/$ca_cert_file" -CAkey "$certificates_dir/$ca_key_file" -CAcreateserial -out "$certificates_dir/$certificates_file"
+
+# Remove the certificate signing request
+rm "$certificates_dir/server.csr"
+
+# Remove the CA serial file
+# Get the CA serial file name from the CA certificate file name by replacing the extension with .srl
+ca_serial_file="\${ca_cert_file%.*}.srl"
+rm "$certificates_dir/$ca_serial_file"",
+    "path": "scripts/generate-ssl.sh",
+  },
+  {
+    "code": "import { Logger, ValidationPipe } from "@nestjs/common";
+import {
+  AbstractHttpAdapter,
+  HttpAdapterHost,
+  NestFactory,
+} from "@nestjs/core";
+import { OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
+import { HttpExceptionFilter } from "./filters/HttpExceptions.filter";
+import { AppModule } from "./app.module";
+import { connectMicroservices } from "./connectMicroservices";
+import {
+  swaggerPath,
+  swaggerDocumentOptions,
+  swaggerSetupOptions,
+} from "./swagger";
+import fs from "fs";
+import { HttpsOptions } from "@nestjs/common/interfaces/external/https-options.interface";
+import https from "https";
+import http from "http";
+import express from "express";
+import { ExpressAdapter } from "@nestjs/platform-express";
+
+const {
+  PORT = 3000,
+  HTTPS_PORT = 443,
+  APP_MODE,
+  SSL_CERT_PATH,
+  SSL_KEY_PATH,
+  SSL_CA_PATH,
+} = process.env;
+
+const httpsOptions: HttpsOptions = {
+  cert: SSL_CERT_PATH && fs.readFileSync(SSL_CERT_PATH),
+  key: SSL_KEY_PATH && fs.readFileSync(SSL_KEY_PATH),
+  ca: SSL_CA_PATH && fs.readFileSync(SSL_CA_PATH),
+};
+
+function getHttpsServer(
+  server: express.Express,
+  httpsOptions: HttpsOptions,
+  APP_MODE: string | undefined
+) {
+  switch (APP_MODE) {
+    case "http":
+      return { cors: true };
+    case "https":
+      return { httpsOptions, cors: true };
+    case "both":
+      return new ExpressAdapter(server);
+    default:
+      throw new Error(\`APP_MODE \${APP_MODE} is not supported\`);
+  }
+}
+
+async function main() {
+  const server = express();
+  const app = await NestFactory.create(
+    AppModule,
+    getHttpsServer(server, httpsOptions, APP_MODE) as AbstractHttpAdapter
+  );
+
+  app.setGlobalPrefix("api");
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      forbidUnknownValues: false,
+    })
+  );
+
+  //This fix is based on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt#use_within_json
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  BigInt.prototype.toJSON = function () {
+    return this.toString();
+  };
+
+  const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
+
+  /** check if there is Public decorator for each path (action) and its method (findMany / findOne) on each controller */
+  Object.values((document as OpenAPIObject).paths).forEach((path: any) => {
+    Object.values(path).forEach((method: any) => {
+      if (
+        Array.isArray(method.security) &&
+        method.security.includes("isPublic")
+      ) {
+        method.security = [];
+      }
+    });
+  });
+
+  await connectMicroservices(app);
+  await app.startAllMicroservices();
+
+  SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
+
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new HttpExceptionFilter(httpAdapter));
+
+  await app.init();
+
+  if (APP_MODE === "both") {
+    Logger.log(\`🚀 Running both http and https server\`, "NestApplication");
+    // create both http and https server
+    http.createServer(server).listen(PORT);
+    https.createServer(httpsOptions, server).listen(HTTPS_PORT);
+  } else {
+    Logger.log(\`🚀 Running \${APP_MODE || "http"} server\`, "NestApplication");
+    await app.listen(PORT);
+  }
+
+  return app;
+}
+
+module.exports = main();
+",
+    "path": "src/main.ts",
+  },
+]
+`;
+
+exports[`Testing createServer hook should use plugin settings if defined 1`] = `
+[
+  {
+    "code": "#!/bin/bash
+
+# Generate a self-signed certificate for the server to be used in development over HTTPS for local testing.
+# !!! DO NOT USE THIS IN PRODUCTION !!!
+
+certificates_dir="./custom-certs"
+certificates_file="custom-server.crt"
+key_file="custom-server.key"
+ca_key_file="custom-ca.key"
+ca_cert_file="custom-ca.crt"
+
+# Create the certificates directory if it doesn't exist
+if [ ! -d "$certificates_dir" ]; then
+  mkdir "$certificates_dir"
+fi
+
+# Generate the CA key and certificate
+openssl genrsa -out "$certificates_dir/$ca_key_file" 2048
+openssl req -x509 -new -nodes -key "$certificates_dir/$ca_key_file" -sha256 -days 1825 -out "$certificates_dir/$ca_cert_file" <<END
+IN
+Odisha
+Rourkela
+Amplication
+Software
+localhost
+ca-ashish@amplication.com
+END
+
+# Generate the certificate and key files for localhost with the CA key and certificate
+openssl req -new -nodes -newkey rsa:2048 -keyout "$certificates_dir/$key_file" -out "$certificates_dir/server.csr" <<END
+IN
+Odisha
+Rourkela
+Amplication
+Software
+localhost
+ashishpadhy@amplication.com
+password
+Plugin
+END
+
+openssl x509 -req -sha256 -days 1825 -in "$certificates_dir/server.csr" -CA "$certificates_dir/$ca_cert_file" -CAkey "$certificates_dir/$ca_key_file" -CAcreateserial -out "$certificates_dir/$certificates_file"
+
+# Remove the certificate signing request
+rm "$certificates_dir/server.csr"
+
+# Remove the CA serial file
+# Get the CA serial file name from the CA certificate file name by replacing the extension with .srl
+ca_serial_file="\${ca_cert_file%.*}.srl"
+rm "$certificates_dir/$ca_serial_file"",
+    "path": "scripts/generate-ssl.sh",
+  },
+  {
+    "code": "import { Logger, ValidationPipe } from "@nestjs/common";
+import {
+  AbstractHttpAdapter,
+  HttpAdapterHost,
+  NestFactory,
+} from "@nestjs/core";
+import { OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
+import { HttpExceptionFilter } from "./filters/HttpExceptions.filter";
+import { AppModule } from "./app.module";
+import { connectMicroservices } from "./connectMicroservices";
+import {
+  swaggerPath,
+  swaggerDocumentOptions,
+  swaggerSetupOptions,
+} from "./swagger";
+import fs from "fs";
+import { HttpsOptions } from "@nestjs/common/interfaces/external/https-options.interface";
+import https from "https";
+import http from "http";
+import express from "express";
+import { ExpressAdapter } from "@nestjs/platform-express";
+
+const {
+  PORT = 3000,
+  HTTPS_PORT = 443,
+  APP_MODE,
+  SSL_CERT_PATH,
+  SSL_KEY_PATH,
+  SSL_CA_PATH,
+} = process.env;
+
+const httpsOptions: HttpsOptions = {
+  cert: SSL_CERT_PATH && fs.readFileSync(SSL_CERT_PATH),
+  key: SSL_KEY_PATH && fs.readFileSync(SSL_KEY_PATH),
+  ca: SSL_CA_PATH && fs.readFileSync(SSL_CA_PATH),
+};
+
+function getHttpsServer(
+  server: express.Express,
+  httpsOptions: HttpsOptions,
+  APP_MODE: string | undefined
+) {
+  switch (APP_MODE) {
+    case "http":
+      return { cors: true };
+    case "https":
+      return { httpsOptions, cors: true };
+    case "both":
+      return new ExpressAdapter(server);
+    default:
+      throw new Error(\`APP_MODE \${APP_MODE} is not supported\`);
+  }
+}
+
+async function main() {
+  const server = express();
+  const app = await NestFactory.create(
+    AppModule,
+    getHttpsServer(server, httpsOptions, APP_MODE) as AbstractHttpAdapter
+  );
+
+  app.setGlobalPrefix("api");
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      forbidUnknownValues: false,
+    })
+  );
+
+  //This fix is based on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt#use_within_json
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  BigInt.prototype.toJSON = function () {
+    return this.toString();
+  };
+
+  const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
+
+  /** check if there is Public decorator for each path (action) and its method (findMany / findOne) on each controller */
+  Object.values((document as OpenAPIObject).paths).forEach((path: any) => {
+    Object.values(path).forEach((method: any) => {
+      if (
+        Array.isArray(method.security) &&
+        method.security.includes("isPublic")
+      ) {
+        method.security = [];
+      }
+    });
+  });
+
+  await connectMicroservices(app);
+  await app.startAllMicroservices();
+
+  SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
+
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new HttpExceptionFilter(httpAdapter));
+
+  await app.init();
+
+  if (APP_MODE === "both") {
+    Logger.log(\`🚀 Running both http and https server\`, "NestApplication");
+    // create both http and https server
+    http.createServer(server).listen(PORT);
+    https.createServer(httpsOptions, server).listen(HTTPS_PORT);
+  } else {
+    Logger.log(\`🚀 Running \${APP_MODE || "http"} server\`, "NestApplication");
+    await app.listen(PORT);
+  }
+
+  return app;
+}
+
+module.exports = main();
+",
+    "path": "src/main.ts",
+  },
+]
+`;
