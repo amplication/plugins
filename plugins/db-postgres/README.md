@@ -22,9 +22,21 @@ It updates the following parts:
 
 ## Configuration
 
-The plugin uses the parameters configured on the database tab on the service settings page
+To configure this plugin, first click on your service's Plugins tab. Navigate to your _Installed Plugins_ page in the filter panel on the left hand side. Find the `PostgreSQL DB` plugin and click on the **Settings** button.
 
-![image](https://user-images.githubusercontent.com/43705455/190962515-6ffc6751-71de-4acb-9a85-da9e7096f923.png)
+From there, you'll see your plugin's settings text area that will allow you to input JSON.
+
+```json
+{
+  "host": "localhost",
+  "port": 5432,
+  "user": "admin",
+  "dbName": "my-db",
+  "password": "admin"
+}
+```
+
+Replace the `host`, `port`, `user`, `dbName`, and `password` values with your specific database credentials. Click the _Save_ button and your credentials will be applied by the plugin.
 
 ## Usage
 
