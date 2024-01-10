@@ -1,3 +1,5 @@
 export interface Settings {
-  includeAdminUI: boolean
+  includeAdminUI: boolean,
+  customLocation: string | null,
+  generateBasedOnServiceName: boolean
 }

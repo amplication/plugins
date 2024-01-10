@@ -13,10 +13,11 @@ import genDevcontainerConfig from "./utils/genDevcontainerConfig"
 import genDevcontainerConfigWithAdminUI from "./utils/genDevcontainerConfigWithAdminUI"
 import patchNginx from "./utils/patchNginx"
 import { readFile } from "fs/promises";
-import { join } from "path"
+import path, { join } from "path"
 import fs from "fs"
 import { Context } from "vm";
 import Module from "module";
+import genPathBasedOnConfig from "./utils/genPathBasedOnConfig"
 import { Settings } from "./types";
 
 class GithubCodespacesPlugin implements AmplicationPlugin {
@@ -38,6 +39,7 @@ class GithubCodespacesPlugin implements AmplicationPlugin {
   ): Promise<ModuleMap> {
     const settings = getPluginSettings(context.pluginInstallations);
     const serviceName = context.resourceInfo?.name ?? "Amplication App"
+    const devContainerPath = genPathBasedOnConfig(settings, serviceName)
 
     // Get dev container config
     var containerConfig;
@@ -54,12 +56,12 @@ class GithubCodespacesPlugin implements AmplicationPlugin {
     // Merge code
     await modules.set({
       code: JSON.stringify(containerConfig),
-      path: join(".devcontainer", "devcontainer.json")
+      path: devContainerPath
     })
 
     await modules.set({
       code: envConfig,
-      path: join(".devcontainer", "init.sh")
+      path: join(path.dirname(devContainerPath), "init.sh")
     })
 
     return modules

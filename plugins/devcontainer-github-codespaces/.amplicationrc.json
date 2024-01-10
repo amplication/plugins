@@ -1,6 +1,8 @@
 {
   "settings": {
-    "includeAdminUI": true
+    "includeAdminUI": true,
+    "customLocation": null,
+    "generateBasedOnServiceName": true
   },
   "systemSettings": {
     "requireAuthenticationEntity": "false"
