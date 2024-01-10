@@ -16,7 +16,8 @@ This plugins allows you to customize the devcontainer config based:
 - customLocation (string | null): Allows generating config as a specific directory.
 - generateBasedOnServiceName (string): Generates the config based on the service name, i.e., at `<root>/.devcontainer/<service-name>/devcontainer.json`
 
->[
+>[!WARNING]
+>If `customLocation` is not null and the `generateBasedOnServiceName` is true, then the latter will be ignored and the config will be generated in the custom location provided
 
 ## Scripts
 
@@ -30,4 +31,4 @@ Running `npm run dev` will watch your plugin's source code and automatically bun
 
 ## Usage
 
-Explain the usage of this plugin and its effect on the final build.
+Includes the devcontainer config
