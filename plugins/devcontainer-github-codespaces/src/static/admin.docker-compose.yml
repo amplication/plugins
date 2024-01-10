@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  admin-ui:
+    container_name: admin-ui-container
+    image: admin-ui-image
+    build:
+      context: ../admin-ui
+    ports:
+      3001:80

@@ -1,0 +1,8 @@
+{
+  "settings": {
+    "includeAdminUI": true
+  },
+  "systemSettings": {
+    "requireAuthenticationEntity": "false"
+  }
+}
