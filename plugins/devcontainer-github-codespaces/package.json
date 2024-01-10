@@ -1,5 +1,5 @@
 {
-  "name": "@amplication/devcontainer-github-codespaces",
+  "name": "@amplication/plugin-devcontainer-github-codespaces",
   "version": "1.0.0",
   "description": "Quickly setup your GitHub codespaces configuration for your Amplication app",
   "main": "dist/index.js",
