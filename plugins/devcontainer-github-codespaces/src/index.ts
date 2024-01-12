@@ -3,7 +3,6 @@ import type {
   CreateAdminUIParams,
   CreateServerParams,
   DsgContext,
-  EventParams,
   Events,
   ModuleMap,
 } from "@amplication/code-gen-types";
@@ -12,13 +11,10 @@ import { getPluginSettings } from "./utils";
 import genDevcontainerConfig from "./utils/genDevcontainerConfig"
 import genDevcontainerConfigWithAdminUI from "./utils/genDevcontainerConfigWithAdminUI"
 import patchNginx from "./utils/patchNginx"
-import { readFile } from "fs/promises";
 import path, { join } from "path"
 import fs from "fs"
 import { Context } from "vm";
-import Module from "module";
 import genPathBasedOnConfig from "./utils/genPathBasedOnConfig"
-import { Settings } from "./types";
 
 class GithubCodespacesPlugin implements AmplicationPlugin {
   register(): Events {
@@ -42,7 +38,7 @@ class GithubCodespacesPlugin implements AmplicationPlugin {
     const devContainerPath = genPathBasedOnConfig(settings, serviceName)
 
     // Get dev container config
-    var containerConfig;
+    let containerConfig;
     if (!settings.includeAdminUI) {
       containerConfig = genDevcontainerConfig(serviceName, context.serverDirectories.baseDirectory)
     } else {
@@ -51,11 +47,10 @@ class GithubCodespacesPlugin implements AmplicationPlugin {
 
     const envConfig = fs.readFileSync(join(__dirname, "templates", "init.sh"), { encoding: "utf-8" })
       .replace("{SERVER_ROOT}", context.serverDirectories.baseDirectory)
-      .replace("{CLIENT_ROOT}", context.clientDirectories.baseDirectory)
 
     // Merge code
     await modules.set({
-      code: JSON.stringify(containerConfig),
+      code: JSON.stringify(containerConfig, null, 2),
       path: devContainerPath
     })
 
