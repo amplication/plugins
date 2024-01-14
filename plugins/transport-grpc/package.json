@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-transport-grpc",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "add gRPC endpoints to your generated services",
   "main": "dist/index.js",
   "nx": {},
@@ -12,7 +12,7 @@
   "author": "Mor Hagbi",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@amplication/code-gen-types": "^2.0.17",
+    "@amplication/code-gen-types": "^2.0.22",
     "@amplication/code-gen-utils": "^0.0.7",
     "@babel/parser": "^7.23.0",
     "@babel/types": "^7.23.0",
