@@ -5,8 +5,7 @@
 Quickly generates the configuration that you require to setup devcontainer for your Amplication App
 
 ## Purpose
-
-Generates the configuration that you require to setup devcontainer for your Amplication App
+This plugin serves the purpose of generating devcontainer based on your configuration for your Amplication app
 
 ## Configuration
 
@@ -31,4 +30,6 @@ Running `npm run dev` will watch your plugin's source code and automatically bun
 
 ## Usage
 
-Includes the devcontainer config
+1. Enable the plugin in the Amplication dashboard
+2. Configure the plugin according to your needs
+3. Commit changes and build!

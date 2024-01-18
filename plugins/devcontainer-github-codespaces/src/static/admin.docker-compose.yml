@@ -5,6 +5,6 @@ services:
     container_name: admin-ui-container
     image: admin-ui-image
     build:
-      context: ../admin-ui
+      context: .
     ports:
-      3001:80
+      - 3001:80
