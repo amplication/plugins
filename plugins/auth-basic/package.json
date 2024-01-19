@@ -1,14 +1,13 @@
 {
   "name": "@amplication/plugin-auth-basic",
-  "version": "1.4.5",
+  "version": "1.4.7",
   "description": "set basic auth for Amplication build",
   "main": "dist/index.js",
   "nx": {},
   "scripts": {
     "dev": "webpack --watch",
     "build": "webpack",
-    "prebuild": "rimraf dist",
-    "format:write": "prettier --write \"**/*.{js,ts}\""
+    "prebuild": "rimraf dist"
   },
   "author": "barshimi",
   "license": "ISC",

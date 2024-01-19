@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-provisioning-terraform-gcp-database-csql",
-  "version": "0.0.1",
+  "version": "0.0.6",
   "description": "Adds terraform code for a Cloud SQL database to the generated service.",
   "main": "dist/index.js",
   "nx": {},
@@ -38,6 +38,7 @@
     "webpack-cli": "^5.1.4"
   },
   "jest": {
+    "passWithNoTests": true,
     "moduleFileExtensions": [
       "js",
       "json",

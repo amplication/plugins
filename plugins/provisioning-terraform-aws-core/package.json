@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-provisioning-terraform-aws-core",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Adds terraform code for provisioning Amazon Web Services core network infrastructure",
   "main": "dist/index.js",
   "nx": {},
@@ -8,8 +8,7 @@
     "prepublishOnly": "npm run build",
     "dev": "webpack --watch",
     "build": "webpack",
-    "prebuild": "rimraf dist",
-    "format:write": "prettier --write \"**/*.{js,ts}\""
+    "prebuild": "rimraf dist"
   },
   "author": "Levi van Noort <levi@amplication.com>",
   "license": "Apache-2.0",
@@ -32,7 +31,6 @@
     "typescript": "^5.2.2",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4",
-    "webpack-node-externals": "^3.0.0",
     "@types/lodash": "^4.14.200"
   }
 }

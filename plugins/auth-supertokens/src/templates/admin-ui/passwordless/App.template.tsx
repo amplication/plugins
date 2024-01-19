@@ -1,19 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Admin, DataProvider, Resource } from "react-admin";
-//@ts-ignore
 import buildGraphQLProvider from "./data-provider/graphqlDataProvider";
-import createHistory from "history/createBrowserHistory";
 import { Route } from "react-router-dom";
-//@ts-ignore
 import { theme } from "./theme/theme";
-//@ts-ignore
 import Login from "./Login";
 import "./App.scss";
-//@ts-ignore
 import Dashboard from "./pages/Dashboard";
-//@ts-ignore
 import { supertokensAuthProvider } from "./auth-provider/ra-auth-supertokens";
-//@ts-ignore
 import SuperTokens from "supertokens-web-js";
 import { SuperTokensConfig } from "./config";
 import ConsumeSuperTokensMagicLink from "./ConsumeSuperTokensMagicLink";

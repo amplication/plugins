@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-provisioning-terraform-aws-database-rds",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Adds terraform code for provisioning Amazon Web Services Relational Database Service (RDS) as an addition to the 'core' terraform code base.",
   "main": "dist/index.js",
   "nx": {},
@@ -8,8 +8,7 @@
     "prepublishOnly": "npm run build",
     "dev": "webpack --watch",
     "build": "webpack",
-    "prebuild": "rimraf dist",
-    "format:write": "prettier --write \"**/*.{js,ts}\""
+    "prebuild": "rimraf dist"
   },
   "author": "Levi van Noort <levi@amplication.com>",
   "license": "Apache-2.0",

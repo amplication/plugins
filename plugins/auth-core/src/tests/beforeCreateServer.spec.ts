@@ -2,6 +2,7 @@ import { CreateServerParams, DsgContext } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
 import { name } from "../../package.json";
 import AuthCorePlugin from "../index";
+import exp from "constants";
 
 describe("Testing beforeCreateServer hook", () => {
   let plugin: AuthCorePlugin;
@@ -11,39 +12,26 @@ describe("Testing beforeCreateServer hook", () => {
     plugin = new AuthCorePlugin();
     params = mock<CreateServerParams>();
   });
-  it("should add the auth entity when none is present", () => {
+  it("should throw exception when no auth entity is present", () => {
     const context = mock<DsgContext>({
       pluginInstallations: [{ npm: name }],
       resourceInfo: { settings: {} },
       entities: [],
     });
 
-    plugin.beforeCreateServer(context, params);
-
-    expect(context.entities!.length).toStrictEqual(1);
-    const newEntity = context.entities![0];
-    expect(newEntity.name).toStrictEqual("User");
+    expect(() => plugin.beforeCreateServer(context, params)).toThrow(
+      "Authentication entity does not exist",
+    );
   });
-  it("should add necessary auth entity fields when their missing in the auth entity", () => {
+  it("should throw exception when auth entity fields are missing in the auth entity", () => {
     const context = mock<DsgContext>({
       pluginInstallations: [{ npm: name }],
       resourceInfo: { settings: { authEntityName: "User" } },
       entities: [{ name: "User", fields: [] }],
     });
 
-    plugin.beforeCreateServer(context, params);
-
-    expect(context.entities!.length).toStrictEqual(1);
-    const authEntity = context.entities![0];
-    expect(authEntity.fields.length).toStrictEqual(3);
-    for (const fieldname of ["username", "password", "roles"]) {
-      try {
-        expect(
-          authEntity.fields.find((field) => field.name === fieldname)
-        ).toBeTruthy();
-      } catch (err) {
-        throw new Error(`The plugin did not add the ${fieldname} field`);
-      }
-    }
+    expect(() => plugin.beforeCreateServer(context, params)).toThrow(
+      "Authentication entity does not have a field named roles",
+    );
   });
 });

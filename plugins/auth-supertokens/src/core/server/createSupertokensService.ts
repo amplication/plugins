@@ -161,7 +161,9 @@ const getDefaultCreateValues = (
           defaultValues.push(
             builders.objectProperty(
               builders.identifier(propName),
-              getDefaultValueForType(propType as any)
+              getDefaultValueForType(
+                propType as namedTypes.TSTypeAnnotation["typeAnnotation"]
+              )
             )
           );
         }
@@ -174,7 +176,7 @@ const getDefaultCreateValues = (
 
 const getDefaultValueForType = (
   propType: namedTypes.TSTypeAnnotation["typeAnnotation"]
-): any => {
+): namedTypes.ObjectProperty["value"] => {
   switch (propType.type) {
     case "TSArrayType":
       return builders.arrayExpression([]);
@@ -191,21 +193,23 @@ const getDefaultValueForType = (
     case "TSObjectKeyword":
       return builders.objectExpression([]);
     case "TSLiteralType":
-      const lit = propType.literal;
-      switch (lit.type) {
+      switch (propType.literal.type) {
         case "BooleanLiteral":
-          return builders.booleanLiteral(lit.value);
+          return builders.booleanLiteral(propType.literal.value);
         case "NumericLiteral":
-          return builders.numericLiteral(lit.value);
+          return builders.numericLiteral(propType.literal.value);
         case "StringLiteral":
-          return builders.stringLiteral(lit.value);
+          return builders.stringLiteral(propType.literal.value);
         case "TemplateLiteral":
-          return builders.templateLiteral(lit.quasis, lit.expressions);
+          return builders.templateLiteral(
+            propType.literal.quasis,
+            propType.literal.expressions
+          );
         case "UnaryExpression":
           return builders.unaryExpression(
-            lit.operator,
-            lit.argument,
-            lit.prefix
+            propType.literal.operator,
+            propType.literal.argument,
+            propType.literal.prefix
           );
         default:
           throw new Error(
@@ -213,13 +217,12 @@ const getDefaultValueForType = (
           );
       }
     case "TSTypeReference":
-      const name = propType.typeName;
-      if (name.type !== "Identifier") {
+      if (propType.typeName.type !== "Identifier") {
         throw new Error(
-          `Can't figure out default value for property with type ${propType.type}: ${name}`
+          `Can't figure out default value for property with type ${propType.type}: ${propType.typeName.type}`
         );
       }
-      switch (name.name) {
+      switch (propType.typeName.name) {
         case "Date":
           return builders.newExpression(builders.identifier("Date"), []);
         case "InputJsonValue":
@@ -232,7 +235,7 @@ const getDefaultValueForType = (
           return builders.arrayExpression([]);
         default:
           throw new Error(
-            `Can't figure out default value for property with type ${propType.type}: ${name.name}`
+            `Can't figure out default value for property with type ${propType.type}: ${propType.typeName.type}`
           );
       }
     case "TSUnionType":

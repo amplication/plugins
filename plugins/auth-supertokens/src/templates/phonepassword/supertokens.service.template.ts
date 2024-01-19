@@ -33,7 +33,7 @@ export class SupertokensService {
                   if (typeof value !== "string") {
                     return "Phone number is invalid";
                   }
-                  let parsedPhoneNumber = parsePhoneNumber(value);
+                  const parsedPhoneNumber = parsePhoneNumber(value);
                   if (
                     parsedPhoneNumber === undefined ||
                     !parsedPhoneNumber.isValid()
@@ -51,11 +51,11 @@ export class SupertokensService {
                 sendEmail: async function (input) {
                   if (input.type === "PASSWORD_RESET") {
                     // TODO: Send SMS to user.email (it's a phone number)
-                    console.log("The user's phone number:", input.user.email);
-                    console.log(
-                      "The password reset link:",
-                      input.passwordResetLink
-                    );
+                    // console.log("The user's phone number:", input.user.email);
+                    // console.log(
+                    //   "The password reset link:",
+                    //   input.passwordResetLink,
+                    // );
                   } else {
                     return originalImplementation.sendEmail(input);
                   }
@@ -70,7 +70,7 @@ export class SupertokensService {
               return {
                 ...originalImplementation,
                 signUp: async function (input) {
-                  let resp = await originalImplementation.signUp(input);
+                  const resp = await originalImplementation.signUp(input);
                   if (
                     resp.status === "OK" &&
                     (!input.userContext ||
@@ -111,7 +111,7 @@ export class SupertokensService {
                       "Failed to find a user with the corresponding supertokens ID"
                     );
                   }
-                  let userInfo = await supertokens.getUser(
+                  const userInfo = await supertokens.getUser(
                     input.userId,
                     input.userContext
                   );
@@ -151,14 +151,14 @@ export class SupertokensService {
                       "original implementation's createCodePOST is undefined"
                     );
                   }
-                  let session = await Session.getSession(
+                  const session = await Session.getSession(
                     input.options.req,
                     input.options.res,
                     {
                       overrideGlobalClaimValidators: () => [],
                     }
                   );
-                  let phoneNumber: string =
+                  const phoneNumber: string =
                     session.getAccessTokenPayload().phoneNumber;
                   if (
                     !("phoneNumber" in input) ||
@@ -174,7 +174,7 @@ export class SupertokensService {
                       "original implementation's consumeCodePOST is undefined"
                     );
                   }
-                  let session = await Session.getSession(
+                  const session = await Session.getSession(
                     input.options.req,
                     input.options.res,
                     {
@@ -182,7 +182,7 @@ export class SupertokensService {
                     }
                   );
                   input.userContext.session = session;
-                  let resp = await originalImplementation.consumeCodePOST(
+                  const resp = await originalImplementation.consumeCodePOST(
                     input
                   );
                   if (resp.status === "OK") {

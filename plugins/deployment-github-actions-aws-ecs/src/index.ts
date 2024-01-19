@@ -53,16 +53,16 @@ class GithubActionsAwsEcsPlugin implements AmplicationPlugin {
     }
 
     // template file names
-    const templateWorkflowFileName: string = "workflow.yaml";
-    const templateTaskDefinitionFileName: string = "task-definition.json";
+    const templateWorkflowFileName = "workflow.yaml";
+    const templateTaskDefinitionFileName = "task-definition.json";
 
     // output file name prefix & suffixes
-    const fileNamePrefix: string = "cd-";
-    const workflowFileNameSuffix: string = "-aws-ecs.yaml";
-    const taskDefinitionFileNameSuffix: string = "-aws-ecs.json";
+    const fileNamePrefix = "cd-";
+    const workflowFileNameSuffix = "-aws-ecs.yaml";
+    const taskDefinitionFileNameSuffix = "-aws-ecs.json";
 
     // ouput directory base & file specific suffix
-    const outputDirectoryBase: string = ".github/workflows";
+    const outputDirectoryBase = ".github/workflows";
     const outputSuffixWorkflow: string =
       "/" + fileNamePrefix + serviceName + workflowFileNameSuffix;
     const outputSuffixTaskDefinition: string =

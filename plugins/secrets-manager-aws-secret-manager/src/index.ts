@@ -34,7 +34,7 @@ class AwsSecretsManagerPlugin implements AmplicationPlugin {
 
   beforeCreatePackageJson(
     _: DsgContext,
-    eventParams: CreateServerPackageJsonParams,
+    eventParams: CreateServerPackageJsonParams
   ): CreateServerPackageJsonParams {
     eventParams.updateProperties.push(dependencies);
 
@@ -43,7 +43,7 @@ class AwsSecretsManagerPlugin implements AmplicationPlugin {
 
   beforeCreateServerDotEnv(
     _: DsgContext,
-    eventParams: CreateServerDotEnvParams,
+    eventParams: CreateServerDotEnvParams
   ): CreateServerDotEnvParams {
     eventParams.envVariables = [...eventParams.envVariables, ...envVariables];
 
@@ -53,7 +53,7 @@ class AwsSecretsManagerPlugin implements AmplicationPlugin {
   async beforeCreateServer(
     context: DsgContext,
     _: CreateServerParams,
-    modules: ModuleMap,
+    modules: ModuleMap
   ): Promise<ModuleMap> {
     const { fetchMode } = getPluginSettings(context.pluginInstallations);
     const staticPath = resolve(__dirname, "static", fetchMode.toLowerCase());
@@ -61,7 +61,7 @@ class AwsSecretsManagerPlugin implements AmplicationPlugin {
     // Import static files
     const staticFiles = await context.utils.importStaticModules(
       staticPath,
-      context.serverDirectories.srcDirectory,
+      context.serverDirectories.srcDirectory
     );
 
     await modules.merge(staticFiles);
@@ -71,7 +71,7 @@ class AwsSecretsManagerPlugin implements AmplicationPlugin {
 
   async beforeCreateServerSecretsManager(
     context: DsgContext,
-    eventParams: CreateServerSecretsManagerParams,
+    eventParams: CreateServerSecretsManagerParams
   ): Promise<CreateServerSecretsManagerParams> {
     const { secretNames } = getPluginSettings(context.pluginInstallations);
 

@@ -1,11 +1,11 @@
-import { Entity } from "@amplication/code-gen-types";
+import { Entity, entityActions } from "@amplication/code-gen-types";
 import { namedTypes, builders } from "ast-types";
 import { pascalCase } from "pascal-case";
 
 type MethodsIdsActionEntityTriplet = {
   methodId: namedTypes.Identifier;
   entity: Entity;
-  methodName: string;
+  methodName?: string;
   inputObjectName: string;
   outputObjectName: string;
 };
@@ -38,15 +38,16 @@ export enum EnumMessageType {
 }
 
 export const controllerMethodsIdsActionPairs = (
-  templateMapping: { [key: string]: any },
-  entity: Entity
+  templateMapping: { [key: string]: namedTypes.Identifier },
+  entity: Entity,
+  entityActions: entityActions,
 ): MethodsIdsActionEntityTriplet[] => [
   {
     methodId: templateMapping[
       "CREATE_ENTITY_FUNCTION"
     ] as namedTypes.Identifier,
     entity: entity,
-    methodName: "create",
+    methodName: entityActions.entityDefaultActions.Create?.name,
     inputObjectName: `${pascalCase(entity.name)}CreateInput`,
     outputObjectName: pascalCase(entity.name),
   },
@@ -55,7 +56,7 @@ export const controllerMethodsIdsActionPairs = (
       "FIND_MANY_ENTITY_FUNCTION"
     ] as namedTypes.Identifier,
     entity: entity,
-    methodName: "findMany",
+    methodName: entityActions.entityDefaultActions.Find?.name,
     inputObjectName: "findManyParams",
     outputObjectName: `stream ${pascalCase(entity.name)}`,
   },
@@ -64,7 +65,7 @@ export const controllerMethodsIdsActionPairs = (
       "FIND_ONE_ENTITY_FUNCTION"
     ] as namedTypes.Identifier,
     entity: entity,
-    methodName: "findOne",
+    methodName: entityActions.entityDefaultActions.Read?.name,
     inputObjectName: `${pascalCase(entity.name)}WhereUniqueInput`,
     outputObjectName: pascalCase(entity.name),
   },
@@ -73,7 +74,7 @@ export const controllerMethodsIdsActionPairs = (
       "UPDATE_ENTITY_FUNCTION"
     ] as namedTypes.Identifier,
     entity: entity,
-    methodName: "update",
+    methodName: entityActions.entityDefaultActions.Update?.name,
     inputObjectName: `${pascalCase(entity.name)}UpdateInput`,
     outputObjectName: pascalCase(entity.name),
   },
@@ -82,7 +83,7 @@ export const controllerMethodsIdsActionPairs = (
       "DELETE_ENTITY_FUNCTION"
     ] as namedTypes.Identifier,
     entity: entity,
-    methodName: "delete",
+    methodName: entityActions.entityDefaultActions.Delete?.name,
     inputObjectName: `${pascalCase(entity.name)}WhereUniqueInput`,
     outputObjectName: pascalCase(entity.name),
   },
@@ -112,7 +113,7 @@ export const methodMessages = (entityName: string): methodMessage[] => [
 ];
 
 export const manyRelationMethodMessages = (
-  entityName: string
+  entityName: string,
 ): methodMessage[] => [
   {
     name: pascalCase(entityName),
@@ -131,7 +132,7 @@ export const manyRelationMethodMessages = (
 export const controllerToManyMethodsIdsActionPairs = (
   relatedEntity: Entity,
   fieldName: string,
-  entityName?: string
+  entityName?: string,
 ): MethodsIdsActionEntity[] => [
   {
     methodName: `findMany${pascalCase(fieldName)}`,
@@ -156,8 +157,8 @@ export const controllerToManyMethodsIdsActionPairs = (
 ];
 
 export const controllerToManyIdsActionPairs = (
-  toManyMapping: { [key: string]: any },
-  fieldName: string
+  toManyMapping: { [key: string]: namedTypes.Identifier },
+  fieldName: string,
 ): ControllersIdsActionEntity[] => [
   {
     methodId: toManyMapping["FIND_MANY"],

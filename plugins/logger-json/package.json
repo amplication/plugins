@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-logger-json",
-  "version": "1.0.1",
+  "version": "1.0.5",
   "description": "Amplication plugin to display your logs in JSON",
   "main": "dist/index.js",
   "scripts": {
@@ -43,6 +43,7 @@
     "webpack-cli": "^5.1.4"
   },
   "jest": {
+    "passWithNoTests": true,
     "moduleFileExtensions": [
       "js",
       "json",

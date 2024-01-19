@@ -53,7 +53,7 @@ export async function createAuthConstants(
 }
 
 const idTypeTSOptions: {
-  [key in types.Id["idType"]]: any;
+  [key in types.Id["idType"]]: namedTypes.Expression;
 } = {
   AUTO_INCREMENT: builders.numericLiteral(1),
   AUTO_INCREMENT_BIG_INT: builders.numericLiteral(1),

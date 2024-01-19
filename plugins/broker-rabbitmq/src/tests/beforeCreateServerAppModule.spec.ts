@@ -56,7 +56,7 @@ describe("Testing beforeCreateServerAppModule hook", () => {
       context,
       params
     );
-    let expectedModules = "[RabbitMQModule]";
+    const expectedModules = "[RabbitMQModule]";
     const modulesCode = utils.prettyPrint(templateMapping.MODULES).code;
     expect(modulesCode).toBe(expectedModules);
   });

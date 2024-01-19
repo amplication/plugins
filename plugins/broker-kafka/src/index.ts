@@ -168,7 +168,7 @@ class KafkaPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateMessageBrokerServiceParams,
   ): Promise<ModuleMap> {
-    const { serverDirectories, utils } = context;
+    const { serverDirectories, logger, otherResources } = context;
     const { messageBrokerDirectory } = serverDirectories;
 
     const servicePath = join(
@@ -176,13 +176,16 @@ class KafkaPlugin implements AmplicationPlugin {
       `kafka.producer.service.ts`,
     );
 
-    const messageBrokerName =
-      context.otherResources?.find(
+    let messageBrokerName =
+      otherResources?.find(
         (resource) => resource.resourceType === EnumResourceType.MessageBroker,
       )?.resourceInfo?.name ?? null;
 
     if (!messageBrokerName) {
-      throw new Error("Message broker name not found");
+      logger.warn(
+        "Message broker name not found. Did you forget to add a message broker resource?",
+      );
+      messageBrokerName = "kafka";
     }
 
     const templatePath = join(
@@ -215,7 +218,7 @@ class KafkaPlugin implements AmplicationPlugin {
       `KafkaMessageHeaders.ts`,
     );
 
-    const modules = new ModuleMap(context.logger);
+    const modules = new ModuleMap(logger);
     await modules.set({ code: print(template).code, path: servicePath });
     await modules.set({
       code: print(kafkaMessageFile).code,
@@ -302,8 +305,9 @@ class KafkaPlugin implements AmplicationPlugin {
 
     interpolate(template, templateMapping);
     const classDeclaration = getClassDeclarationById(template, controllerId);
+    const { serviceTopics, serverDirectories } = context;
 
-    context.serviceTopics?.map((serviceTopic) => {
+    serviceTopics?.map((serviceTopic) => {
       serviceTopic.patterns.forEach((topic) => {
         if (!topic.topicName) {
           throw new Error(`Topic name not found for topic id ${topic.topicId}`);
@@ -330,7 +334,7 @@ class KafkaPlugin implements AmplicationPlugin {
           ),
         });
 
-        //@ts-ignore
+        //@ts-expect-error - decorators is defined in the type
         kafkaValue.decorators = [payloadDecorator];
 
         const kafkaContextDecorator = builders.decorator(
@@ -342,7 +346,8 @@ class KafkaPlugin implements AmplicationPlugin {
             builders.tsTypeReference(builders.identifier("KafkaContext")),
           ),
         });
-        //@ts-ignore
+
+        //@ts-expect-error - decorators is defined in the type
         kafkaContext.decorators = [kafkaContextDecorator];
 
         const currentClassMethod = builders.classMethod.from({
@@ -376,7 +381,7 @@ class KafkaPlugin implements AmplicationPlugin {
       });
     });
     const filePath = join(
-      context.serverDirectories.srcDirectory,
+      serverDirectories.srcDirectory,
       "kafka",
       "kafka.controller.ts",
     );

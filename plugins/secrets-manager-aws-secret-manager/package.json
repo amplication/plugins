@@ -1,14 +1,13 @@
 {
   "name": "@amplication/plugin-secrets-manager-aws-secret-manager",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "Amplication plugin for AWS Secrets Manager",
   "main": "dist/index.js",
   "scripts": {
     "prepublishOnly": "npm run build",
     "dev": "webpack --watch",
     "build": "webpack",
-    "prebuild": "rimraf dist",
-    "format:write": "prettier --write \"**/*.{js,ts}\""
+    "prebuild": "rimraf dist"
   },
   "author": "duwudle <duwudle@gmail.com>",
   "license": "Apache-2.0",
@@ -36,6 +35,7 @@
     "webpack-cli": "^5.1.4"
   },
   "jest": {
+    "passWithNoTests": true,
     "moduleFileExtensions": [
       "js",
       "json",

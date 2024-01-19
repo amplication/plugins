@@ -1,0 +1,14 @@
+{
+  "settings": {
+    "port": 8080,
+    "realmID": "amplication-sample-realm",
+    "clientID": "amplication-server",
+    "recipe": {
+      "verifyEmail": false,
+      "registrationAllowed": true
+    }
+  },
+  "systemSettings": {
+    "requireAuthenticationEntity": "true"
+  }
+}

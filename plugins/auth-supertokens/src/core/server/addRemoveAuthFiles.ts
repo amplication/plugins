@@ -1,8 +1,4 @@
-import {
-  BuildLogger,
-  DsgContext,
-  ModuleMap,
-} from "@amplication/code-gen-types";
+import { DsgContext, ModuleMap } from "@amplication/code-gen-types";
 import { resolve, join } from "path";
 import { readFile, print } from "@amplication/code-gen-utils";
 import * as constants from "../../constants";

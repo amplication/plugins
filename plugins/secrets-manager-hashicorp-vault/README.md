@@ -40,9 +40,9 @@ The plugin allows authentication by two methods:
 
   If you want to authenticate by using Root token, choose the `authMode` as `TOKEN`.
   To use this authentication mode, you need to set your root token inside of the `.env` file
-  
+
 - By using app role
-  
+
   If you want to use AppRole mode, choose the `authMode` as `APPROLE`.
   To use this authentication mode, you need to set your Role Id and the Secret Id inside of the `.env` file
 
