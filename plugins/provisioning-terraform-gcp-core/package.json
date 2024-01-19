@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-provisioning-terraform-gcp-core",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Adds a core networking setup of terraform for Google Cloud to the generated service.",
   "main": "dist/index.js",
   "nx": {},
