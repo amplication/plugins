@@ -20,6 +20,7 @@
       }
     },
     "backend": {
+      "type": "gcs",
       "gcs": {
         "bucket": "terraform-state",
         "prefix": "terraform/state"
