@@ -18,7 +18,7 @@ This plugin serves the purpose of generating devcontainer based on your configur
 2. To use the plugin
    - Head over to https://github.com/codespaces/new to create a new codespace
      
-     ![image](https://github.com/pyxelpioneer/plugins/assets/151645921/64242a31-6be0-4e98-99c7-11e32a2fff64)
+     ![Create new codespace](./assets/codespaces_before.png)
 
    - In repository, select the repository that you pushed your Amplication code to.
      In branch, select the branch that your pushed your Amplication code to.
@@ -26,7 +26,7 @@ This plugin serves the purpose of generating devcontainer based on your configur
      In region, select the region that is nearest to you.
      In machine type, select the specs for the codespace that you want to use
 
-     ![image](https://github.com/pyxelpioneer/plugins/assets/151645921/9e737587-6a21-4188-be5a-94a11914b01e)
+     ![Configure codespace](./assets/codespaces_after.png)
 
    - Lastly, click on the Create Codespace to create your codespace and start developing!
 
