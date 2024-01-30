@@ -115,8 +115,7 @@ export function createDefaultValue(
     }
     case EnumDataType.Id:
     case EnumDataType.CreatedAt:
-    case EnumDataType.UpdatedAt:
-    case EnumDataType.Password: {
+    case EnumDataType.UpdatedAt: {
       return null;
     }
     case EnumDataType.Username: {
@@ -135,6 +134,10 @@ export function createDefaultValue(
     }
     case EnumDataType.Lookup: {
       return null;
+    }
+    case EnumDataType.Password: {
+      // Throw error on presence of password field in auth entity
+      throw new Error("Password field is not supported with Keycloak plugin");
     }
     default: {
       throw new Error(`Unexpected data type: ${field.dataType}`);
