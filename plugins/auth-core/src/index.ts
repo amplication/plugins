@@ -507,14 +507,6 @@ class AuthCorePlugin implements AmplicationPlugin {
       builders.stringLiteral("../../auth/defaultAuth.guard")
     );
 
-    // const ignoreComment = builders.commentLine("// @ts-ignore", false);
-
-    // if (!defaultAuthGuardImport.comments) {
-    //   defaultAuthGuardImport.comments = [];
-    // }
-
-    // defaultAuthGuardImport.comments.push(ignoreComment);
-
     addImports(
       eventParams.template,
       [nestAccessControlImport, defaultAuthGuardImport].filter(
