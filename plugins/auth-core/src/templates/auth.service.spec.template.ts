@@ -1,9 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
-// eslint-disable-next-line
 import { AuthService } from "./auth.service";
 import { Credentials } from "./Credentials";
 import { PasswordService } from "./password.service";
-// eslint-disable-next-line
 import { TokenService } from "./token.service";
 import { VALID_ID } from "../tests/auth/constants";
 
