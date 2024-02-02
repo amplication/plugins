@@ -6,6 +6,9 @@ import type {
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
 import {
+  afterCreateMessageBrokerClientOptionsFactory,
+  afterCreateMessageBrokerNestJSModule,
+  afterCreateMessageBrokerService,
   beforeCreateAppModule,
   beforeCreateDockerComposeFile,
   beforeCreateServerDotEnv,
@@ -34,6 +37,16 @@ class MQTTBrokerPlugin implements AmplicationPlugin {
       [EventNames.CreateMessageBroker]: {
         before: this.beforeCreateBroker,
       },
+      [EventNames.CreateMessageBrokerNestJSModule]: {
+        after: afterCreateMessageBrokerNestJSModule,
+      },
+      [EventNames.CreateMessageBrokerService]: {
+        after: afterCreateMessageBrokerService,
+      },
+      [EventNames.CreateMessageBrokerClientOptionsFactory]: {
+        after: afterCreateMessageBrokerClientOptionsFactory,
+      },
+      [EventNames.CreateConnectMicroservices]: {},
     };
   }
 
