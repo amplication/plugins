@@ -1,11 +1,20 @@
-import { DsgContext, ModuleMap } from "@amplication/code-gen-types";
+import {
+  CreateConnectMicroservicesParams,
+  DsgContext,
+  ModuleMap,
+} from "@amplication/code-gen-types";
 import { join, resolve } from "path";
 import { staticsPath, templatesPath } from "../constants";
 import { print, readFile } from "@amplication/code-gen-utils";
 import { EnumResourceType } from "@amplication/code-gen-types/src/models";
 import { pascalCase } from "pascal-case";
-import { interpolate } from "../util/ast";
-import { builders } from "ast-types";
+import {
+  addImports,
+  getFunctionDeclarationById,
+  importNames,
+  interpolate,
+} from "../util/ast";
+import { builders, namedTypes } from "ast-types";
 
 export const afterCreateMessageBrokerClientOptionsFactory = async (
   context: DsgContext,
@@ -85,4 +94,55 @@ export const afterCreateMessageBrokerService = async (
   await modules.set({ code: print(typesFile).code, path: typesPath });
 
   return modules;
+};
+
+export const beforeCreateConnectMicroservices = (
+  context: DsgContext,
+  eventParams: CreateConnectMicroservicesParams,
+) => {
+  const { template } = eventParams;
+
+  const generateClientOptionsImport = importNames(
+    [builders.identifier("generateClientOptions")],
+    "./mqtt/generateClientOptions",
+  );
+
+  const MicroserviceOptionsImport = importNames(
+    [builders.identifier("MicroserviceOptions")],
+    "@nestjs/microservices",
+  );
+
+  addImports(template, [
+    generateClientOptionsImport,
+    MicroserviceOptionsImport,
+  ]);
+
+  const connectExpression = builders.callExpression(
+    builders.memberExpression(
+      builders.identifier("app"),
+      builders.identifier("connectMicroservice"),
+    ),
+    [
+      builders.callExpression(builders.identifier("generateClientOptions"), [
+        builders.identifier("configService"),
+      ]),
+    ],
+  );
+
+  const typeArguments = builders.tsTypeParameterInstantiation([
+    builders.tsTypeReference(builders.identifier("MicroserviceOptions")),
+  ]);
+
+  connectExpression.typeArguments =
+    typeArguments as unknown as namedTypes.TypeParameterInstantiation;
+  const expression = builders.expressionStatement(connectExpression);
+
+  const connectFunctionId = getFunctionDeclarationById(
+    template,
+    builders.identifier("connectMicroservices"),
+  );
+
+  connectFunctionId.body.body.push(expression);
+
+  return eventParams;
 };

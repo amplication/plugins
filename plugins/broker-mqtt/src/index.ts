@@ -10,6 +10,7 @@ import {
   afterCreateMessageBrokerNestJSModule,
   afterCreateMessageBrokerService,
   beforeCreateAppModule,
+  beforeCreateConnectMicroservices,
   beforeCreateDockerComposeFile,
   beforeCreateServerDotEnv,
   beforeCreateServerPackageJson,
@@ -46,7 +47,10 @@ class MQTTBrokerPlugin implements AmplicationPlugin {
       [EventNames.CreateMessageBrokerClientOptionsFactory]: {
         after: afterCreateMessageBrokerClientOptionsFactory,
       },
-      [EventNames.CreateConnectMicroservices]: {},
+      [EventNames.CreateConnectMicroservices]: {
+        before: beforeCreateConnectMicroservices,
+      },
+      [EventNames.CreateMessageBrokerTopicsEnum]: {},
     };
   }
 
