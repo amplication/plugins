@@ -1,18 +1,10 @@
-/**
- * @Amplication example types file.
- * Add here all your typescript types/enum/interfaces
- */
 export interface Settings {
-  [key: string]: unknown;
-}
-
-export type Example = "Example";
-
-export interface ExampleInterface {
-  [key: string]: unknown;
-}
-
-export enum ExampleEnum {
-  FOO = "foo",
-  BOO = "boo",
+  mqttPort: number;
+  mqttWsPort: number;
+  mqttWebUiPort: number;
+  mqttBrokerHost: string;
+  mqttClientId: string;
+  mqttPassword: string;
+  mqttUsername: string;
+  mqttBroker: "hivemq" | "hivemq-enterprise" | "mosquitto" | "emqx"; // @TODO: add more brokers
 }
