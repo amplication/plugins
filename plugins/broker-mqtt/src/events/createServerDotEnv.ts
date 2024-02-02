@@ -2,7 +2,7 @@ import {
   CreateServerDotEnvParams,
   DsgContext,
 } from "@amplication/code-gen-types";
-import { getPluginSettings } from "../utils";
+import { convertToVarDict, getPluginSettings } from "../utils";
 
 export const beforeCreateServerDotEnv = (
   context: DsgContext,
@@ -23,15 +23,17 @@ export const beforeCreateServerDotEnv = (
 
   const clientId = mqttClientId || `broker-mqtt-${resourceInfo?.id}`;
 
-  envVariables.push({
-    MQTT_BROKER_HOST: mqttBrokerHost || "localhost",
-    MQTT_WEB_UI_PORT: mqttWebUiPort?.toString() || "8080",
-    MQTT_PORT: mqttPort?.toString() || "1883",
-    MQTT_WS_PORT: mqttWsPort?.toString() || "8073",
-    MQTT_USERNAME: mqttUsername,
-    MQTT_PASSWORD: mqttPassword,
-    MQTT_CLIENT_ID: mqttClientId || clientId,
-  });
+  eventParams.envVariables = envVariables.concat(
+    convertToVarDict({
+      MQTT_BROKER_HOST: mqttBrokerHost || "localhost",
+      MQTT_WEB_UI_PORT: mqttWebUiPort?.toString() || "8080",
+      MQTT_PORT: mqttPort?.toString() || "1883",
+      MQTT_WS_PORT: mqttWsPort?.toString() || "8073",
+      MQTT_USERNAME: mqttUsername,
+      MQTT_PASSWORD: mqttPassword,
+      MQTT_CLIENT_ID: mqttClientId || clientId,
+    }),
+  );
 
   return eventParams;
 };
