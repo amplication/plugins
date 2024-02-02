@@ -1,5 +1,13 @@
 {
-  "settings": {},
+  "settings": {
+    "mqttPort": 1883,
+    "mqttWsPort": 8073,
+    "mqttWebUiPort": 8080,
+    "mqttBrokerHost": "localhost",
+    "mqttUsername": "admin",
+    "mqttPassword": "admin",
+    "mqttBroker": "emqx"
+  },
   "systemSettings": {
     "requireAuthenticationEntity": "false"
   }

@@ -1,60 +1,52 @@
 import type {
   AmplicationPlugin,
-  CreateAdminUIParams,
-  CreateServerParams,
+  CreateMessageBrokerParams,
   DsgContext,
   Events,
-  ModuleMap,
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
-import { resolve } from "path";
+import {
+  beforeCreateAppModule,
+  beforeCreateDockerComposeFile,
+  beforeCreateServerDotEnv,
+  beforeCreateServerPackageJson,
+} from "./events";
+import { join } from "path";
 
-class ExamplePlugin implements AmplicationPlugin {
-  /**
-   * This is mandatory function that returns an object with the event name. Each event can have before or/and after
-   */
+class MQTTBrokerPlugin implements AmplicationPlugin {
   register(): Events {
     return {
-      [EventNames.CreateServer]: {
-        before: this.beforeCreateServer,
-        after: this.afterCreateServer,
+      [EventNames.CreateServerDotEnv]: {
+        before: beforeCreateServerDotEnv,
       },
-      [EventNames.CreateAdminUI]: {
-        before: this.beforeCreateAdminUI,
+      [EventNames.CreateServerPackageJson]: {
+        before: beforeCreateServerPackageJson,
+      },
+      [EventNames.CreateServerDockerCompose]: {
+        before: beforeCreateDockerComposeFile("PROD"),
+      },
+      [EventNames.CreateServerDockerComposeDev]: {
+        before: beforeCreateDockerComposeFile("DEV"),
+      },
+      [EventNames.CreateServerAppModule]: {
+        before: beforeCreateAppModule,
+      },
+      [EventNames.CreateMessageBroker]: {
+        before: this.beforeCreateBroker,
       },
     };
   }
-  // You can combine many events in one plugin in order to change the related files.
 
-  beforeCreateServer(context: DsgContext, eventParams: CreateServerParams) {
-    // Here you can manipulate the context or save any context variable for your after function.
-    // You can also manipulate the eventParams so it will change the result of Amplication function.
-    // context.utils.skipDefaultBehavior = true; this will prevent the default behavior and skip our handler.
-
-    return eventParams; // eventParams must return from before function. It will be used for the builder function.
-  }
-
-  async afterCreateServer(
-    context: DsgContext,
-    eventParams: CreateServerParams,
-    modules: ModuleMap
-  ): Promise<ModuleMap> {
-    // Here you can get the context, eventParams and the modules that Amplication created.
-    // Then you can manipulate the modules, add new ones, or create your own.
-    const staticPath = resolve(__dirname, "./static");
-    const staticFiles = await context.utils.importStaticModules(
-      staticPath,
-      context.serverDirectories.srcDirectory
+  beforeCreateBroker(
+    dsgContext: DsgContext,
+    eventParams: CreateMessageBrokerParams,
+  ): CreateMessageBrokerParams {
+    dsgContext.serverDirectories.messageBrokerDirectory = join(
+      dsgContext.serverDirectories.srcDirectory,
+      "mqtt",
     );
-    await modules.merge(staticFiles);
-    return modules; // You must return the generated modules you want to generate at this part of the build.
-  }
-
-  beforeCreateAdminUI(context: DsgContext, eventParams: CreateAdminUIParams) {
-    // Same as beforeCreateExample but for a different event.
-
     return eventParams;
   }
 }
 
-export default ExamplePlugin;
+export default MQTTBrokerPlugin;
