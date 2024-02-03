@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-auth-auth0",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Auth0 plugin for Amplication",
   "main": "dist/index.js",
   "scripts": {
