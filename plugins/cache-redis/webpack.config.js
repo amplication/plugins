@@ -1,13 +1,13 @@
 const path = require("path");
 const webpack = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
-const nodeExternals = require("webpack-node-externals");
 
 /** @type {import("webpack").Configuration} */
 module.exports = {
   mode: "production",
   target: "node",
   entry: "./src/index.ts",
+  externals: ["@amplication/code-gen-utils", "@amplication/code-gen-types"],
   plugins: [
     new webpack.SourceMapDevToolPlugin({
       filename: "[name].js.map",
@@ -40,5 +40,4 @@ module.exports = {
     libraryTarget: "commonjs2",
     clean: true,
   },
-  externals: [nodeExternals()],
 };

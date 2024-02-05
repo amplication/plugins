@@ -1,0 +1,44 @@
+{
+  "name": "@amplication/plugin-auth-auth0",
+  "version": "1.0.5",
+  "description": "Auth0 plugin for Amplication",
+  "main": "dist/index.js",
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "dev": "webpack --watch",
+    "build": "webpack",
+    "prebuild": "rimraf dist",
+    "test": "jest"
+  },
+  "author": "Ashish Padhy <100484401+Shurtu-gal@users.noreply.github.com>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@amplication/code-gen-types": "^2.0.17",
+    "@amplication/code-gen-utils": "^0.0.7",
+    "auth0": "^4.1.0",
+    "lodash": "^4.17.21",
+    "normalize-path": "^3.0.0"
+  },
+  "devDependencies": {
+    "@babel/parser": "^7.23.0",
+    "@babel/types": "^7.23.0",
+    "@types/jest": "^29.5.3",
+    "@types/lodash": "^4.14.197",
+    "@types/normalize-path": "^3.0.1",
+    "@typescript-eslint/eslint-plugin": "^6.7.5",
+    "@typescript-eslint/parser": "^6.7.5",
+    "copy-webpack-plugin": "^11.0.0",
+    "eslint": "^8.51.0",
+    "jest-mock-extended": "^3.0.5",
+    "prettier": "^3.0.3",
+    "rimraf": "^5.0.5",
+    "ts-jest": "^29.1.1",
+    "ts-loader": "^9.5.0",
+    "ts-node": "^10.9.1",
+    "tsconfig-paths-webpack-plugin": "^4.1.0",
+    "typescript": "^5.2.2",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "webpack-node-externals": "^3.0.0"
+  }
+}

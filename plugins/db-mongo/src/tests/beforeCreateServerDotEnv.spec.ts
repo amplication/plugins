@@ -21,7 +21,8 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
     deepEqual(envVariables, [
       { DB_USER: "admin" },
       { DB_PASSWORD: "admin" },
-      { DB_PORT: 27017 },
+      { DB_PORT: (27017).toString() },
+      { DB_NAME: "my-db" },
       {
         DB_URL: "mongodb://admin:admin@localhost:27017/my-db?authSource=admin",
       },
@@ -38,7 +39,8 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
     deepEqual(envVariables, [
       { DB_USER: "admin" },
       { DB_PASSWORD: "admin" },
-      { DB_PORT: newPort },
+      { DB_PORT: newPort.toString() },
+      { DB_NAME: "my-db" },
       {
         DB_URL: `mongodb://admin:admin@localhost:${newPort}/my-db?authSource=admin`,
       },

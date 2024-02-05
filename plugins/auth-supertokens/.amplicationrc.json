@@ -1,0 +1,16 @@
+{
+  "settings": {
+    "apiDomain": "http://localhost:3000",
+    "appName": "Amplication App",
+    "websiteDomain": "http://localhost:3001",
+    "websiteBasePath": "/auth",
+    "apiBasePath": "/api/auth",
+    "connectionUri": "https://try.supertokens.com",
+    "apiGatewayPath": "",
+    "apiKey": "",
+    "supertokensIdFieldName": "supertokensId",
+    "recipe": {
+      "name": "emailpassword"
+    }
+  }
+}

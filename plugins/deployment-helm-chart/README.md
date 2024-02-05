@@ -12,7 +12,7 @@ Adds a helm chart for the generated service which can be used for deployment of 
 
 The `root_level` setting determines whether the directory for the helm charts is placed at the root of the repository or in the base directory of the service.
 
-The `directory_name` setting determines what the sub-directory for the de helm chart in the root level or service base directory is called.
+The `directory_name` setting determines what the sub-directory for the helm chart in the root level or service base directory is called.
 
 For both the `server` and the `admin_ui` additional configuration can be provided to further customize the helm charts to be able to deploy them quicker. As these are the options that are specific to each deployment other than additional Kubernetes objects.
 

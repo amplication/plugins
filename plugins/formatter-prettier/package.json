@@ -1,14 +1,14 @@
 {
   "name": "@amplication/plugin-formatter-prettier",
-  "version": "1.0.1",
+  "version": "1.0.5",
   "description": "The plugin that integrates Prettier to the app",
   "main": "dist/index.js",
+  "nx": {},
   "scripts": {
     "dev": "webpack --watch",
     "build": "webpack",
     "test": "jest",
-    "prebuild": "rimraf dist",
-    "format:write": "prettier --write \"**/*.{js,ts}\""
+    "prebuild": "rimraf dist"
   },
   "author": "Eugene Tseitlin",
   "license": "Apache-2.0",
@@ -19,7 +19,8 @@
     "copy-webpack-plugin": "^11.0.0",
     "fast-glob": "^3.2.12",
     "jest-mock-extended": "^2.0.7",
-    "@amplication/code-gen-types": "^2.0.8",
+    "@amplication/code-gen-types": "^2.0.17",
+    "@amplication/code-gen-utils": "^0.0.7",
     "@types/jest": "^29.5.3",
     "@types/lodash": "^4.14.182",
     "@types/normalize-path": "^3.0.0",
@@ -35,6 +36,7 @@
     "webpack-cli": "^4.10.0"
   },
   "jest": {
+    "passWithNoTests": true,
     "moduleFileExtensions": [
       "js",
       "json",

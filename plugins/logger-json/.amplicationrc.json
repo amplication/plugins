@@ -1,0 +1,9 @@
+{
+  "settings": {
+    "logLevel": "info",
+    "additionalLogProperties": {}
+  },
+  "systemSettings": {
+    "requireAuthenticationEntity": "false"
+  }
+}

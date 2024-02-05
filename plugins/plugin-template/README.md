@@ -1,6 +1,6 @@
 # @amplication/plugin-<name>
 
-[![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-auth-basic)](https://www.npmjs.com/package/@amplication/plugin-auth-basic)
+[![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-<name>)](https://www.npmjs.com/package/@amplication/plugin-<name>)
 
 A short description of the plugin and its actions.
 

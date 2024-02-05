@@ -6,15 +6,15 @@ import { TEST_USER } from "../constants";
 declare class ENTITY_SERVICE {}
 describe("Testing the jwtStrategyBase.validate()", () => {
   const userService = mock<ENTITY_SERVICE>();
-  const jwtStrategy = new JwtStrategyBase(userService, "Secrete");
+  const jwtStrategy = new JwtStrategyBase("Secrete", userService);
   beforeEach(() => {
-    userService.findOne.mockClear();
+    userService.FIND_ONE_FUNCTION.mockClear();
   });
   it("should throw UnauthorizedException where there is no user", async () => {
     //ARRANGE
-    userService.findOne
-      .calledWith({ where: { username: TEST_USER.username } })
-      .mockReturnValue(Promise.resolve(null));
+    userService.FIND_ONE_FUNCTION.calledWith({
+      where: { username: TEST_USER.username },
+    }).mockReturnValue(Promise.resolve(null));
     //ACT
     const result = jwtStrategy.validate({
       id: TEST_USER.id,

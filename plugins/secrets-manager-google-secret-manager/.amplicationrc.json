@@ -1,0 +1,10 @@
+{
+  "settings": {
+    "gcpResourceId": "12345678910",
+    "fetchMode": "STARTUP",
+    "secretNames": ["SecretA:1", "SecretB:2", "SecretC:3"]
+  },
+  "systemSettings": {
+    "requireAuthenticationEntity": "false"
+  }
+}

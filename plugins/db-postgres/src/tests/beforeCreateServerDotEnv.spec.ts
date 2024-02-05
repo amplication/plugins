@@ -22,7 +22,8 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
       { DB_URL: "postgres://admin:admin@localhost:5432/my-db" },
       { DB_USER: "admin" },
       { DB_PASSWORD: "admin" },
-      { DB_PORT: 5432 },
+      { DB_PORT: (5432).toString() },
+      { DB_NAME: "my-db" },
     ]);
   });
 
@@ -37,7 +38,8 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
       { DB_URL: `postgres://admin:admin@localhost:${newPort}/my-db` },
       { DB_USER: "admin" },
       { DB_PASSWORD: "admin" },
-      { DB_PORT: newPort },
+      { DB_PORT: newPort.toString() },
+      { DB_NAME: "my-db" },
     ]);
   });
 });

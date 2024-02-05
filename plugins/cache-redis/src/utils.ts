@@ -1,9 +1,12 @@
-import { PluginInstallation, VariableDictionary } from "@amplication/code-gen-types";
+import {
+  PluginInstallation,
+  VariableDictionary,
+} from "@amplication/code-gen-types";
 import { name as PackageName } from "../package.json";
 import { Settings } from "./types";
 import { settings as defaultSettings } from "../.amplicationrc.json";
 import { File } from "@babel/types";
-import { namedTypes, } from "ast-types";
+import { namedTypes } from "ast-types";
 import * as recast from "recast";
 import * as recastBabelParser from "recast/parsers/babel";
 import getBabelOptions, { Overrides } from "recast/parsers/_babel_options";
@@ -30,39 +33,42 @@ export const settingToEnvVar = (settingKey: keyof Settings): string => {
     host: "REDIS_HOST",
     port: "REDIS_PORT",
     ttl: "REDIS_TTL",
-    max: "REDIS_MAX_REQUESTS_CACHED",
     username: "REDIS_USERNAME",
-    password: "REDIS_PASSWORD"
-  }
-  return mapping[settingKey]
-}
+    password: "REDIS_PASSWORD",
+  };
+  return mapping[settingKey];
+};
 
 export const settingsToVarDict = (settings: Settings): VariableDictionary => {
-  return Object.keys(settings)
+  return (
+    Object.keys(settings)
       .map((settingKey) => ({
-          [settingToEnvVar(settingKey as keyof Settings)]:
-            settings[settingKey as keyof Settings]?.toString()
+        [settingToEnvVar(settingKey as keyof Settings)]:
+          settings[settingKey as keyof Settings]?.toString(),
       }))
       .filter((obj) => {
         const key = Object.keys(obj)[0];
-        return obj[key] !== undefined && obj[key] !== null
+        return obj[key] !== undefined && obj[key] !== null;
       })
       // Added this last map to get rid of typescript errors
       .map((obj) => {
-        const key = Object.keys(obj)[0]
-        return { [key]: obj[key]! }
+        const key = Object.keys(obj)[0];
+        return { [key]: obj[key]! };
       })
-}
+  );
+};
 
 export const removeSemicolon = (stmt: string) => {
-  if(stmt.length === 0) {
-    throw new Error("This isn't a statement")
+  if (stmt.length === 0) {
+    throw new Error("This isn't a statement");
   }
-  if(stmt[stmt.length - 1] !== ";") {
-    throw new Error("This statement doesn't end in a semicolon. No semicolon to remove")
+  if (stmt[stmt.length - 1] !== ";") {
+    throw new Error(
+      "This statement doesn't end in a semicolon. No semicolon to remove"
+    );
   }
-  return stmt.slice(0, -1)
-}
+  return stmt.slice(0, -1);
+};
 
 export function addImport(
   file: namedTypes.File,

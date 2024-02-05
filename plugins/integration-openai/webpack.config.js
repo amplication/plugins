@@ -19,7 +19,9 @@ module.exports = {
       patterns: [{ from: "src/static", to: "static" }],
     }),
     new CopyWebpackPlugin({
-      patterns: [{ from: "src/templates", to: "templates", noErrorOnMissing: true  }],
+      patterns: [
+        { from: "src/templates", to: "templates", noErrorOnMissing: true },
+      ],
     }),
   ],
   module: {

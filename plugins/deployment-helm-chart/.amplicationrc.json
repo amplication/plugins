@@ -1,23 +1,23 @@
-{ 
-    "settings":{ 
-    "root_level" : false,
-    "directory_name" : "helm",
-    "server" : {
-        "chart_version" : "0.0.1",
-        "application_version" : "0.0.1",
-        "repository" : "ghcr.io/NAMESPACE/IMAGE_NAME",
-        "tag" : "latest",
-        "host" : "server.example.com",
-        "port" : "3000"
+{
+  "settings": {
+    "root_level": false,
+    "directory_name": "helm",
+    "server": {
+      "chart_version": "0.0.1",
+      "application_version": "0.0.1",
+      "repository": "ghcr.io/NAMESPACE/IMAGE_NAME",
+      "tag": "latest",
+      "host": "server.example.com",
+      "port": "3000"
     },
-    "admin_ui" : {
-        "enabled" : false,
-        "chart_version" : "0.0.1",
-        "application_version" : "0.0.1",
-        "repository" : "ghcr.io/NAMESPACE/IMAGE_NAME",
-        "tag" : "latest",
-        "host" : "admin.example.com",
-        "port" : "8080"
+    "admin_ui": {
+      "enabled": false,
+      "chart_version": "0.0.1",
+      "application_version": "0.0.1",
+      "repository": "ghcr.io/NAMESPACE/IMAGE_NAME",
+      "tag": "latest",
+      "host": "admin.example.com",
+      "port": "8080"
     }
-}
+  }
 }

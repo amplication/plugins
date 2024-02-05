@@ -13,6 +13,7 @@ import {
   removeTSClassDeclares,
 } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
+import { camelCase } from "lodash";
 
 const authServiceSpecPath = join(
   templatesPath,
@@ -52,6 +53,7 @@ export async function createAuthServiceSpec(
 
   const templateMapping = {
     ENTITY_SERVICE: builders.identifier(entityServiceName),
+    FIND_ONE_FUNCTION: builders.identifier(`${camelCase(authEntity?.name)}`),
   };
 
   interpolate(template, templateMapping);

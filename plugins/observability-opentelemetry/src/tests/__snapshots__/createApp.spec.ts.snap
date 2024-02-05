@@ -12,7 +12,7 @@ exports[`Testing createApp hook should add the necessary imports 1`] = `
 
 import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-grpc";
-import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";"
+import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-node";"
 `;
 
 exports[`Testing createApp hook should add the opentelemetry module to the modules list 1`] = `

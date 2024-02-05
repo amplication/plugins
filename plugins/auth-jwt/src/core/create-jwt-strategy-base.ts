@@ -16,6 +16,7 @@ import {
 } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
 import { print } from "@amplication/code-gen-utils";
+import { camelCase } from "lodash";
 
 const jwtStrategyBasePath = join(
   templatesPath,
@@ -76,6 +77,7 @@ async function mapJwtStrategyTemplate(
     const templateMapping = {
       ENTITY_NAME_INFO: builders.identifier(`${authEntity.name}Info`),
       ENTITY_SERVICE: builders.identifier(`${entityNameToLower}Service`),
+      FIND_ONE_FUNCTION: builders.identifier(`${camelCase(authEntity?.name)}`),
     };
 
     const filePath = `${serverDirectories.authDirectory}/jwt/base/${fileName}`;

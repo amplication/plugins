@@ -33,7 +33,7 @@ class GithubActionsPlugin implements AmplicationPlugin {
     eventParams: CreateServerParams,
     modules: ModuleMap
   ): Promise<ModuleMap> {
-    context.logger.info(`Generating Github Actions workflow...`);
+    context.logger.info(`Generating GitHub Actions workflow...`);
 
     // determine the name of the service which will be used as the name for the workflow
     // workflow names must be lower case letters and numbers. words may be separated with dashes (-):
@@ -63,16 +63,16 @@ class GithubActionsPlugin implements AmplicationPlugin {
     let staticPath;
     let staticFiles;
 
-    const templateFileName: string = "workflow.yaml";
-    const workflowFileNamePrefix: string = "ci-";
-    const workflowFileNameSuffix: string = ".yaml";
-    const outputDirectory: string = "./.github/workflows/";
+    const templateFileName = "workflow.yaml";
+    const workflowFileNamePrefix = "ci-";
+    const workflowFileNameSuffix = ".yaml";
+    const outputDirectory = "./.github/workflows/";
 
-    const succesfullPluginCodeGeneration: string =
-      "Generated Github Actions workflow...";
+    const succesfullPluginCodeGeneration =
+      "Generated GitHub Actions workflow...";
 
     if (settings.registry == RegistryProviders.GitHub) {
-      const githubStaticFiles: string = "./static/github/";
+      const githubStaticFiles = "./static/github/";
 
       staticPath = resolve(__dirname, githubStaticFiles);
       staticFiles = await context.utils.importStaticModules(
@@ -112,7 +112,7 @@ class GithubActionsPlugin implements AmplicationPlugin {
           workflowFileNamePrefix + serviceName + workflowFileNameSuffix
         )
       );
-      staticFiles.replaceModulesCode((code) =>
+      staticFiles.replaceModulesCode((_path, code) =>
         code
           .replaceAll(serviceNameKey, serviceName)
           .replaceAll(imageKey, image)
@@ -124,7 +124,7 @@ class GithubActionsPlugin implements AmplicationPlugin {
           )
       );
     } else {
-      const defaultStaticFiles: string = "./static/default/";
+      const defaultStaticFiles = "./static/default/";
 
       staticPath = resolve(__dirname, defaultStaticFiles);
       staticFiles = await context.utils.importStaticModules(
@@ -137,7 +137,7 @@ class GithubActionsPlugin implements AmplicationPlugin {
           workflowFileNamePrefix + serviceName + workflowFileNameSuffix
         )
       );
-      staticFiles.replaceModulesCode((code) =>
+      staticFiles.replaceModulesCode((_path, code) =>
         code
           .replaceAll(serviceNameKey, serviceName)
           .replaceAll(

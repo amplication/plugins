@@ -3,7 +3,6 @@ import type {
   CreateServerDotEnvParams,
   DsgContext,
   Events,
-  Module,
   ModuleMap,
 } from "@amplication/code-gen-types";
 import {
@@ -61,11 +60,11 @@ class HelmChartPlugin implements AmplicationPlugin {
     }
 
     const configmapIndentation = "    ";
-    let configmap: string = "";
+    let configmap = "";
 
     variables.forEach((variable) => {
       const [name, value] = Object.entries(variable)[0];
-      configmap = `${configmap}\n${configmapIndentation}${name}: ${value}`;
+      configmap = `${configmap}\n${configmapIndentation}${name}: "${value}"`;
     });
 
     /**
@@ -83,8 +82,8 @@ class HelmChartPlugin implements AmplicationPlugin {
      *         from the static directory via the renderdOutput variable
      */
 
-    let helmDirectoryPath: string = "";
-    const rootDirectoryPath: string = "./";
+    let helmDirectoryPath = "";
+    const rootDirectoryPath = "./";
 
     if (settings.root_level === true) {
       helmDirectoryPath = join(
@@ -104,7 +103,7 @@ class HelmChartPlugin implements AmplicationPlugin {
       );
     }
 
-    const chartTemplateDirectory: string = "./static/chart";
+    const chartTemplateDirectory = "./static/chart";
 
     const chartTemplatePath = resolve(__dirname, chartTemplateDirectory);
     const chartTemplateFiles = await context.utils.importStaticModules(
@@ -114,7 +113,7 @@ class HelmChartPlugin implements AmplicationPlugin {
 
     // render the helm chart from the static files in combination with the values provided through
     // the settings
-    chartTemplateFiles.replaceModulesCode((code) => {
+    chartTemplateFiles.replaceModulesCode((_path, code) => {
       return code
         .replaceAll(serviceNameKey, serviceName)
         .replaceAll(chartVersionKey, settings.server.chart_version)
@@ -126,7 +125,7 @@ class HelmChartPlugin implements AmplicationPlugin {
         .replaceAll(configurationKey, configmap);
     });
 
-    await context.logger.info("Configuring Helm chart template...");
+    await context.logger.info("Configuring Helm Charts template...");
     await modules.merge(chartTemplateFiles);
     return modules;
   }

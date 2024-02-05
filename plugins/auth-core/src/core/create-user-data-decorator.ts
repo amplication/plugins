@@ -1,7 +1,7 @@
 import { Module, DsgContext } from "@amplication/code-gen-types";
 import { join } from "path";
 import { templatesPath } from "../constants";
-import { readFile } from "@amplication/code-gen-utils";
+import { print, readFile } from "@amplication/code-gen-utils";
 import {
   addImports,
   importNames,
@@ -9,7 +9,6 @@ import {
   removeTSClassDeclares,
 } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
-import { print } from "@amplication/code-gen-utils";
 
 const userDataDecoratorPath = join(
   templatesPath,

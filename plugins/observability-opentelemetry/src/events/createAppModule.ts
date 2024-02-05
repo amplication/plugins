@@ -68,7 +68,7 @@ const generateImports = (): namedTypes.ImportDeclaration[] => {
       [OTLP_TRACE_EXPORTER],
       "@opentelemetry/exporter-trace-otlp-grpc"
     ),
-    importNames([BATCH_SPAN_PROCESSOR], "@opentelemetry/sdk-trace-base"),
+    importNames([BATCH_SPAN_PROCESSOR], "@opentelemetry/sdk-trace-node"),
   ];
 };
 
@@ -82,7 +82,9 @@ export const beforeCreateServerAppModule = (
 
   templateMapping["MODULES"] = builders.arrayExpression([
     ...templateMapping["MODULES"].elements,
-    opentelemetryModule(serviceName || context.resourceInfo?.name || "sample-service"),
+    opentelemetryModule(
+      serviceName || context.resourceInfo?.name || "sample-service"
+    ),
   ]);
 
   addImports(template, generateImports());

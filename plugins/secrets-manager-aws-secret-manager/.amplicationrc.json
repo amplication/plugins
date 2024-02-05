@@ -1,0 +1,14 @@
+{
+  "settings": {
+    "awsRegion": "us-east-1",
+    "fetchMode": "STARTUP",
+    "secretNames": [
+      "/path/to:SecretA",
+      "/path/to:SecretB",
+      "/path/to/secrets/common"
+    ]
+  },
+  "systemSettings": {
+    "requireAuthenticationEntity": "false"
+  }
+}

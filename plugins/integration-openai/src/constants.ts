@@ -6,6 +6,6 @@ export const envVariables: VariableDictionary = [
 
 export const dependencies = {
   dependencies: {
-    openai: "^3.3.0",
+    openai: "^4.24.7",
   },
 };

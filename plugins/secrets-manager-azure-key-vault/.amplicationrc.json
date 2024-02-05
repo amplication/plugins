@@ -1,0 +1,9 @@
+{
+  "settings": {
+    "fetchMode": "STARTUP",
+    "secretNames": ["SecretA:Version1", "SecretB:Version1", "SecretC:Version2"]
+  },
+  "systemSettings": {
+    "requireAuthenticationEntity": "false"
+  }
+}

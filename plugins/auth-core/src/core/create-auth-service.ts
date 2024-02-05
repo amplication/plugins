@@ -16,6 +16,7 @@ import {
 import { builders, namedTypes } from "ast-types";
 import { print } from "@amplication/code-gen-utils";
 import { addInjectableDependency } from "../util/nestjs-code-generation";
+import { camelCase } from "lodash";
 
 const authServicePath = join(templatesPath, "auth.service.template.ts");
 
@@ -74,6 +75,7 @@ async function mapAuthServiceTemplate(
       ENTITY_NAME_INFO: builders.identifier(`${authEntity.name}Info`),
       ENTITY_SERVICE: builders.identifier(`${entityNameToLower}Service`),
       ENTITY_SERVICE_UPPER: builders.identifier(`${authEntity?.name}Service`),
+      FIND_ONE_FUNCTION: builders.identifier(`${camelCase(authEntity?.name)}`),
     };
 
     const filePath = `${serverDirectories.authDirectory}/${fileName}`;

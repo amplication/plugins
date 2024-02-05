@@ -1,5 +1,5 @@
 import { Module, DsgContext } from "@amplication/code-gen-types";
-import { readFile } from "@amplication/code-gen-utils";
+import { print, readFile } from "@amplication/code-gen-utils";
 import {
   addImports,
   importNames,
@@ -8,7 +8,6 @@ import {
   removeTSInterfaceDeclares,
 } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
-import { print } from "@amplication/code-gen-utils";
 import { AUTH_ENTITY_ERROR, AUTH_ENTITY_LOG_ERROR } from "../constants";
 
 export async function mapAuthTemplate(
