@@ -1,0 +1,223 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Testing the creation of message broker modules and files all modules and files should be created with custom values 1`] = `
+[
+  {
+    "code": "import { ClientProxy } from "@nestjs/microservices";
+import { MqttMessage } from "./types";
+import { Inject, OnModuleInit } from "@nestjs/common";
+import { CustomMqttTopics } from "./topics";
+
+export class MqttProducerService implements OnModuleInit {
+  constructor(
+    @Inject("MQTT_CLIENT") private readonly mqttClient: ClientProxy,
+  ) {}
+
+  async publish(topic: CustomMqttTopics, message: MqttMessage): Promise<void> {
+    return await new Promise((resolve, reject) => {
+      this.mqttClient.emit(topic, message).subscribe({
+        error(err) {
+          reject(err);
+        },
+        next() {
+          resolve();
+        },
+      });
+    });
+  }
+
+  async onModuleInit() {
+    await this.mqttClient.connect();
+  }
+}
+",
+    "path": "src/mqtt/mqtt.producer.service.ts",
+  },
+  {
+    "code": "export interface MqttMessage {
+  key: string | Record<string, unknown> | null;
+  value: string | Record<string, unknown> | null;
+  headers: MqttMessageHeaders;
+}
+
+export interface MqttMessageHeaders {
+  [key: string]: Buffer | string | number | boolean | null;
+}",
+    "path": "src/mqtt/types.ts",
+  },
+  {
+    "code": "import { ConfigService } from "@nestjs/config";
+import { Transport, MqttOptions } from "@nestjs/microservices";
+
+export const generateClientOptions = (
+  configService: ConfigService
+): MqttOptions => {
+  const mqttBrokerHost = configService.get<string>("MQTT_BROKER_HOST");
+  const mqttBrokerPort = configService.get<number>("MQTT_PORT");
+  const clientId = configService.get<string>("MQTT_CLIENT_ID");
+  const username = configService.get<string>("MQTT_USERNAME");
+  const password = configService.get<string>("MQTT_PASSWORD");
+  
+  if (!mqttBrokerHost || !mqttBrokerPort || !clientId || !username || !password) {
+    throw new Error(
+      "MQTT_BROKER_HOST, MQTT_PORT, MQTT_CLIENT_ID, MQTT_USERNAME, MQTT_PASSWORD must be defined"
+    );
+  }
+
+  return {
+    transport: Transport.MQTT,
+    options: {
+      host: mqttBrokerHost,
+      port: mqttBrokerPort,
+      clientId: clientId,
+      username,
+      password,
+      connectTimeout: 10000,
+    },
+  };
+}",
+    "path": "src/mqtt/generateClientOptions.ts",
+  },
+  {
+    "code": "import { Global, Module } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { ClientProxyFactory } from "@nestjs/microservices";
+import { generateClientOptions } from "./generateClientOptions";
+import { MqttProducerService } from "./mqtt.producer.service";
+import { MqttController } from "./mqtt.controller";
+
+@Global()
+@Module({
+  imports: [],
+  providers: [
+    {
+      provide: "MQTT_CLIENT",
+      useFactory: (configService: ConfigService) => {
+        return ClientProxyFactory.create(
+          generateClientOptions(configService),
+        );
+      },
+      inject: [ConfigService],
+    },
+    MqttProducerService
+  ],
+  controllers: [MqttController],
+  exports: [MqttProducerService],
+})
+
+export class MqttModule {}",
+    "path": "src/mqtt/mqtt.module.ts",
+  },
+]
+`;
+
+exports[`Testing the creation of message broker modules and files all modules and files should be created with default values 1`] = `
+[
+  {
+    "code": "import { ClientProxy } from "@nestjs/microservices";
+import { MqttMessage } from "./types";
+import { Inject, OnModuleInit } from "@nestjs/common";
+import { MqttTopics } from "./topics";
+
+export class MqttProducerService implements OnModuleInit {
+  constructor(
+    @Inject("MQTT_CLIENT") private readonly mqttClient: ClientProxy,
+  ) {}
+
+  async publish(topic: MqttTopics, message: MqttMessage): Promise<void> {
+    return await new Promise((resolve, reject) => {
+      this.mqttClient.emit(topic, message).subscribe({
+        error(err) {
+          reject(err);
+        },
+        next() {
+          resolve();
+        },
+      });
+    });
+  }
+
+  async onModuleInit() {
+    await this.mqttClient.connect();
+  }
+}
+",
+    "path": "src/mqtt/mqtt.producer.service.ts",
+  },
+  {
+    "code": "export interface MqttMessage {
+  key: string | Record<string, unknown> | null;
+  value: string | Record<string, unknown> | null;
+  headers: MqttMessageHeaders;
+}
+
+export interface MqttMessageHeaders {
+  [key: string]: Buffer | string | number | boolean | null;
+}",
+    "path": "src/mqtt/types.ts",
+  },
+  {
+    "code": "import { ConfigService } from "@nestjs/config";
+import { Transport, MqttOptions } from "@nestjs/microservices";
+
+export const generateClientOptions = (
+  configService: ConfigService
+): MqttOptions => {
+  const mqttBrokerHost = configService.get<string>("MQTT_BROKER_HOST");
+  const mqttBrokerPort = configService.get<number>("MQTT_PORT");
+  const clientId = configService.get<string>("MQTT_CLIENT_ID");
+  const username = configService.get<string>("MQTT_USERNAME");
+  const password = configService.get<string>("MQTT_PASSWORD");
+  
+  if (!mqttBrokerHost || !mqttBrokerPort || !clientId || !username || !password) {
+    throw new Error(
+      "MQTT_BROKER_HOST, MQTT_PORT, MQTT_CLIENT_ID, MQTT_USERNAME, MQTT_PASSWORD must be defined"
+    );
+  }
+
+  return {
+    transport: Transport.MQTT,
+    options: {
+      host: mqttBrokerHost,
+      port: mqttBrokerPort,
+      clientId: clientId,
+      username,
+      password,
+      connectTimeout: 10000,
+    },
+  };
+}",
+    "path": "src/mqtt/generateClientOptions.ts",
+  },
+  {
+    "code": "import { Global, Module } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { ClientProxyFactory } from "@nestjs/microservices";
+import { generateClientOptions } from "./generateClientOptions";
+import { MqttProducerService } from "./mqtt.producer.service";
+import { MqttController } from "./mqtt.controller";
+
+@Global()
+@Module({
+  imports: [],
+  providers: [
+    {
+      provide: "MQTT_CLIENT",
+      useFactory: (configService: ConfigService) => {
+        return ClientProxyFactory.create(
+          generateClientOptions(configService),
+        );
+      },
+      inject: [ConfigService],
+    },
+    MqttProducerService
+  ],
+  controllers: [MqttController],
+  exports: [MqttProducerService],
+})
+
+export class MqttModule {}",
+    "path": "src/mqtt/mqtt.module.ts",
+  },
+]
+`;
