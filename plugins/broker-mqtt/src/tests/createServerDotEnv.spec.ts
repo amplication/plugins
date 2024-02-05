@@ -22,8 +22,8 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
     });
   });
 
-  it("should use default values if plugin settings are not defined", async () => {
-    eventParams = await beforeCreateServerDotEnv(context, eventParams);
+  it("should use default values if plugin settings are not defined", () => {
+    eventParams = beforeCreateServerDotEnv(context, eventParams);
 
     const expectedEnvVariables = [
       { MQTT_BROKER_HOST: "localhost" },
@@ -38,7 +38,7 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
     expect(eventParams.envVariables).toEqual(expectedEnvVariables);
   });
 
-  it("should use plugin settings if defined", async () => {
+  it("should use plugin settings if defined", () => {
     context.pluginInstallations[0].settings = {
       mqttBrokerHost: "CUSTOM_MQTT_BROKER_HOST",
       mqttWebUiPort: 1234,
@@ -52,7 +52,7 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
       context.resourceInfo.id = "123";
     }
 
-    eventParams = await beforeCreateServerDotEnv(context, eventParams);
+    eventParams = beforeCreateServerDotEnv(context, eventParams);
 
     const expectedEnvVariables = [
       { MQTT_BROKER_HOST: "CUSTOM_MQTT_BROKER_HOST" },
