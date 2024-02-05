@@ -7,13 +7,12 @@ import type {
   ModuleMap,
 } from "@amplication/code-gen-types";
 import { EventNames } from "@amplication/code-gen-types";
-import { getPluginSettings } from "./utils";
+import { getPluginSettings, serviceNameFromContext } from "./utils";
 import genDevcontainerConfig from "./utils/genDevcontainerConfig"
 import genDevcontainerConfigWithAdminUI from "./utils/genDevcontainerConfigWithAdminUI"
 import patchNginx from "./utils/patchNginx"
 import path, { join } from "path"
 import fs from "fs"
-import { Context } from "vm";
 import genPathBasedOnConfig from "./utils/genPathBasedOnConfig"
 
 class GithubCodespacesPlugin implements AmplicationPlugin {
@@ -34,16 +33,11 @@ class GithubCodespacesPlugin implements AmplicationPlugin {
     modules: ModuleMap
   ): Promise<ModuleMap> {
     const settings = getPluginSettings(context.pluginInstallations);
-    const serviceName = context.resourceInfo?.name ?? "Amplication App"
+    const serviceName = serviceNameFromContext(context)
     const devContainerPath = genPathBasedOnConfig(settings, serviceName)
 
     // Get dev container config
-    let containerConfig;
-    if (!settings.includeAdminUI) {
-      containerConfig = genDevcontainerConfig(serviceName, context.serverDirectories.baseDirectory)
-    } else {
-      containerConfig = genDevcontainerConfigWithAdminUI(serviceName, context.serverDirectories.baseDirectory, context.clientDirectories.baseDirectory)
-    }
+    const containerConfig = genDevcontainerConfig(serviceName, context.serverDirectories.baseDirectory)
 
     const envConfig = fs.readFileSync(join(__dirname, "templates", "init.sh"), { encoding: "utf-8" })
       .replace("{SERVER_ROOT}", context.serverDirectories.baseDirectory)
@@ -63,16 +57,26 @@ class GithubCodespacesPlugin implements AmplicationPlugin {
   }
 
   async afterCreateAdminUI(
-    context: Context,
+    context: DsgContext,
     eventParams: CreateAdminUIParams,
     modules: ModuleMap
   ): Promise<ModuleMap> {
     const settings = getPluginSettings(context.pluginInstallations)
+    const serviceName = serviceNameFromContext(context)
+    const devContainerPath = genPathBasedOnConfig(settings, serviceName)
 
     if (!settings.includeAdminUI) return modules
+    
+    const containerConfig = genDevcontainerConfigWithAdminUI(serviceName, context.serverDirectories.baseDirectory, context.clientDirectories.baseDirectory)
 
     const nginxPath = join(context.clientDirectories.baseDirectory, "configuration", "nginx.conf")
     const dockerComposePath = join(context.clientDirectories.baseDirectory, "docker-compose.yml")
+
+    // Merge the new devcontainer config
+    await modules.set({
+      code: JSON.stringify(containerConfig, null, 2),
+      path: devContainerPath
+    })
 
     // Get nginx config and patch it to change the listen address
     const patchedNginx = patchNginx(modules.get(nginxPath).code)

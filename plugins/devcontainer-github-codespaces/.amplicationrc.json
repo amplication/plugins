@@ -1,6 +1,6 @@
 {
   "settings": {
-    "includeAdminUI": true,
+    "includeAdminUI": false,
     "customLocation": null,
     "generateBasedOnServiceName": true
   },

@@ -1,4 +1,4 @@
-import { PluginInstallation } from "@amplication/code-gen-types";
+import { DsgContext, PluginInstallation } from "@amplication/code-gen-types";
 import { name as PackageName } from "../package.json";
 import { Settings } from "./types";
 import defaultSettings from "../.amplicationrc.json";
@@ -19,3 +19,7 @@ export const getPluginSettings = (
 
   return settings;
 };
+
+export const serviceNameFromContext = (context: DsgContext): string => {
+  return context.resourceInfo?.name ?? "Amplication App"
+} 
