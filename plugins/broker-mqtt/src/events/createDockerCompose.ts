@@ -5,6 +5,7 @@ import {
 } from "@amplication/code-gen-types";
 import { getPluginSettings } from "../utils";
 import {
+  DOCKER_SERVICE_MQTT_NAME,
   emqxDockerCompose,
   hiveMqDockerCompose,
   hivemqCommunityDockerCompose,
@@ -41,7 +42,7 @@ export const beforeCreateDockerComposeFile = (type: "PROD" | "DEV") => {
         services: {
           migrate: {
             depends_on: {
-              "mqtt-broker": {
+              [DOCKER_SERVICE_MQTT_NAME]: {
                 condition: "service_healthy",
               },
             },
