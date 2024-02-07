@@ -15,6 +15,7 @@ import {
   interpolate,
 } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
+import { getPluginSettings } from "../utils";
 
 export const afterCreateMessageBrokerClientOptionsFactory = async (
   context: DsgContext,
@@ -33,8 +34,12 @@ export const afterCreateMessageBrokerClientOptionsFactory = async (
 export const afterCreateMessageBrokerNestJSModule = async (
   context: DsgContext,
 ): Promise<ModuleMap> => {
-  const filePath = resolve(staticsPath, "mqtt.module.ts");
-  const file = await readFile(filePath);
+  const { sparkplugConfig } = getPluginSettings(context.pluginInstallations);
+  const filePath = sparkplugConfig.enabled
+    ? "mqtt.module.sparkplug.ts"
+    : "mqtt.module.ts";
+
+  const file = await readFile(join(staticsPath, filePath));
   const generateFileName = "mqtt.module.ts";
 
   const moduleFile = {
@@ -47,6 +52,16 @@ export const afterCreateMessageBrokerNestJSModule = async (
 
   const modules = new ModuleMap(context.logger);
   await modules.set(moduleFile);
+
+  if (sparkplugConfig.enabled) {
+    const sparkPlugModules = await context.utils.importStaticModules(
+      join(staticsPath, "sparkplug"),
+      context.serverDirectories.messageBrokerDirectory,
+    );
+
+    await modules.merge(sparkPlugModules);
+  }
+
   return modules;
 };
 

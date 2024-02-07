@@ -18,6 +18,7 @@ export const beforeCreateServerDotEnv = (
     mqttBrokerHost,
     mqttWsPort,
     mqttWebUiPort,
+    sparkplugConfig,
   } = settings;
   const { envVariables } = eventParams;
 
@@ -34,6 +35,20 @@ export const beforeCreateServerDotEnv = (
       MQTT_CLIENT_ID: mqttClientId || clientId,
     }),
   );
+
+  if (sparkplugConfig.enabled) {
+    const { groupIdentifier, edgeNodeIdentifier, clientIdentifier } =
+      sparkplugConfig;
+    eventParams.envVariables = eventParams.envVariables.concat(
+      convertToVarDict({
+        MQTT_SPARKPLUG_GROUP_ID: groupIdentifier,
+        MQTT_SPARKPLUG_EDGE_NODE: edgeNodeIdentifier,
+        MQTT_SPARKPLUG_CLIENT_ID:
+          clientIdentifier ||
+          `amplication-sparkplug-client-${resourceInfo?.id}`,
+      }),
+    );
+  }
 
   return eventParams;
 };

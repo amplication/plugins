@@ -41,7 +41,7 @@ export const beforeCreateDockerComposeFile = (type: "PROD" | "DEV") => {
         services: {
           migrate: {
             depends_on: {
-              mqtt: {
+              "mqtt-broker": {
                 condition: "service_healthy",
               },
             },

@@ -7,4 +7,10 @@ export interface Settings {
   mqttPassword: string;
   mqttUsername: string;
   mqttBroker: "hivemq" | "hivemq-enterprise" | "mosquitto" | "emqx"; // @TODO: add more brokers
+  sparkplugConfig: {
+    groupIdentifier: string;
+    edgeNodeIdentifier: string;
+    clientIdentifier?: string;
+    enabled: boolean;
+  };
 }

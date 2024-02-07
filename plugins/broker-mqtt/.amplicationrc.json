@@ -6,7 +6,12 @@
     "mqttBrokerHost": "localhost",
     "mqttUsername": "admin",
     "mqttPassword": "admin",
-    "mqttBroker": "emqx"
+    "mqttBroker": "emqx",
+    "sparkplugConfig": {
+      "enabled": false,
+      "edgeNodeIdentifier": "amplication-sparkplug-edge",
+      "groupIdentifier": "amplication-sparkplug-group"
+    }
   },
   "systemSettings": {
     "requireAuthenticationEntity": "false"
