@@ -37,7 +37,7 @@ class GithubCodespacesPlugin implements AmplicationPlugin {
     const devContainerPath = genPathBasedOnConfig(settings, serviceName)
 
     // Get dev container config
-    const containerConfig = genDevcontainerConfig(serviceName, context.serverDirectories.baseDirectory)
+    const containerConfig = genDevcontainerConfig(serviceName, context.serverDirectories.baseDirectory, devContainerPath)
 
     const envConfig = fs.readFileSync(join(__dirname, "templates", "init.sh"), { encoding: "utf-8" })
       .replace("{SERVER_ROOT}", context.serverDirectories.baseDirectory)
@@ -66,8 +66,8 @@ class GithubCodespacesPlugin implements AmplicationPlugin {
     const devContainerPath = genPathBasedOnConfig(settings, serviceName)
 
     if (!settings.includeAdminUI) return modules
-    
-    const containerConfig = genDevcontainerConfigWithAdminUI(serviceName, context.serverDirectories.baseDirectory, context.clientDirectories.baseDirectory)
+
+    const containerConfig = genDevcontainerConfigWithAdminUI(serviceName, context.serverDirectories.baseDirectory, context.clientDirectories.baseDirectory, devContainerPath)
 
     const nginxPath = join(context.clientDirectories.baseDirectory, "configuration", "nginx.conf")
     const dockerComposePath = join(context.clientDirectories.baseDirectory, "docker-compose.yml")

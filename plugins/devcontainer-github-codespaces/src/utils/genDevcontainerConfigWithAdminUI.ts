@@ -1,7 +1,7 @@
 import genDevcontainerConfig from "./genDevcontainerConfig"
 
-export default function genDevcontainerConfigWithAdminUI(serviceName: string, serverRoot: string, clientRoot: string) {
-    const serverConfig = genDevcontainerConfig(serviceName, serverRoot)
+export default function genDevcontainerConfigWithAdminUI(serviceName: string, serverRoot: string, clientRoot: string, devcontainerPath: string) {
+    const serverConfig = genDevcontainerConfig(serviceName, serverRoot, devcontainerPath)
 
     return {
         ...serverConfig,
