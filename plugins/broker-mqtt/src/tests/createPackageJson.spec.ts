@@ -36,4 +36,31 @@ describe("Testing createPackageJson hook", () => {
     const returnedParams = beforeCreateServerPackageJson(context, eventParams);
     expect(returnedParams.updateProperties).toEqual(expectedDependencies);
   });
+
+  it("should add sparkplug-client to the dependencies", async () => {
+    context.pluginInstallations[0].settings = {
+      sparkplugConfig: {
+        groupIdentifier: "groupIdentifier",
+        edgeNodeIdentifier: "edgeNodeIdentifier",
+        enabled: true,
+      },
+    };
+
+    const expectedDependencies = [
+      {
+        dependencies: {
+          "@nestjs/microservices": "^10.3.1",
+          mqtt: "^5.3.5",
+        },
+      },
+      {
+        dependencies: {
+          "sparkplug-client": "^3.2.4",
+        },
+      },
+    ];
+
+    const returnedParams = beforeCreateServerPackageJson(context, eventParams);
+    expect(returnedParams.updateProperties).toEqual(expectedDependencies);
+  });
 });

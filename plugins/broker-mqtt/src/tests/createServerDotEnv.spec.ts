@@ -1,4 +1,5 @@
 import {
+  AppInfo,
   CreateServerDotEnvParams,
   DsgContext,
 } from "@amplication/code-gen-types";
@@ -62,6 +63,37 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
       { MQTT_USERNAME: "CUSTOM_MQTT_USERNAME" },
       { MQTT_PASSWORD: "CUSTOM_MQTT_PASSWORD" },
       { MQTT_CLIENT_ID: "broker-mqtt-123" },
+    ];
+
+    expect(eventParams.envVariables).toEqual(expectedEnvVariables);
+  });
+
+  it("should work with sparkplug", () => {
+    context.pluginInstallations[0].settings = {
+      sparkplugConfig: {
+        enabled: true,
+        groupIdentifier: "group",
+        edgeNodeIdentifier: "edge",
+      },
+    };
+
+    context.resourceInfo = mock<AppInfo>({
+      id: "123",
+    });
+
+    eventParams = beforeCreateServerDotEnv(context, eventParams);
+
+    const expectedEnvVariables = [
+      { MQTT_BROKER_HOST: "localhost" },
+      { MQTT_WEB_UI_PORT: "8080" },
+      { MQTT_PORT: "1883" },
+      { MQTT_WS_PORT: "8073" },
+      { MQTT_USERNAME: "admin" },
+      { MQTT_PASSWORD: "admin" },
+      { MQTT_CLIENT_ID: "broker-mqtt-123" },
+      { MQTT_SPARKPLUG_GROUP_ID: "group" },
+      { MQTT_SPARKPLUG_EDGE_NODE: "edge" },
+      { MQTT_SPARKPLUG_CLIENT_ID: "amplication-sparkplug-client-123" },
     ];
 
     expect(eventParams.envVariables).toEqual(expectedEnvVariables);

@@ -221,3 +221,167 @@ export class MqttModule {}",
   },
 ]
 `;
+
+exports[`Testing the creation of message broker modules and files all modules and files should be created with sparkplug enabled 1`] = `
+[
+  {
+    "code": "import { ClientProxy } from "@nestjs/microservices";
+import { MqttMessage } from "./types";
+import { Inject, OnModuleInit } from "@nestjs/common";
+import { MqttTopics } from "./topics";
+
+export class MqttProducerService implements OnModuleInit {
+  constructor(
+    @Inject("MQTT_CLIENT") private readonly mqttClient: ClientProxy,
+  ) {}
+
+  async publish(topic: MqttTopics, message: MqttMessage): Promise<void> {
+    return await new Promise((resolve, reject) => {
+      this.mqttClient.emit(topic, message).subscribe({
+        error(err) {
+          reject(err);
+        },
+        next() {
+          resolve();
+        },
+      });
+    });
+  }
+
+  async onModuleInit() {
+    await this.mqttClient.connect();
+  }
+}
+",
+    "path": "src/mqtt/mqtt.producer.service.ts",
+  },
+  {
+    "code": "export interface MqttMessage {
+  key: string | Record<string, unknown> | null;
+  value: string | Record<string, unknown> | null;
+  headers: MqttMessageHeaders;
+}
+
+export interface MqttMessageHeaders {
+  [key: string]: Buffer | string | number | boolean | null;
+}",
+    "path": "src/mqtt/types.ts",
+  },
+  {
+    "code": "import { ConfigService } from "@nestjs/config";
+import { Transport, MqttOptions } from "@nestjs/microservices";
+
+export const generateClientOptions = (
+  configService: ConfigService
+): MqttOptions => {
+  const mqttBrokerHost = configService.get<string>("MQTT_BROKER_HOST");
+  const mqttBrokerPort = configService.get<number>("MQTT_PORT");
+  const clientId = configService.get<string>("MQTT_CLIENT_ID");
+  const username = configService.get<string>("MQTT_USERNAME");
+  const password = configService.get<string>("MQTT_PASSWORD");
+  
+  if (!mqttBrokerHost || !mqttBrokerPort || !clientId || !username || !password) {
+    throw new Error(
+      "MQTT_BROKER_HOST, MQTT_PORT, MQTT_CLIENT_ID, MQTT_USERNAME, MQTT_PASSWORD must be defined"
+    );
+  }
+
+  return {
+    transport: Transport.MQTT,
+    options: {
+      host: mqttBrokerHost,
+      port: mqttBrokerPort,
+      clientId: clientId,
+      username,
+      password,
+      connectTimeout: 10000,
+    },
+  };
+}",
+    "path": "src/mqtt/generateClientOptions.ts",
+  },
+  {
+    "code": "import { Global, Module } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { ClientProxyFactory } from "@nestjs/microservices";
+import { generateClientOptions } from "./generateClientOptions";
+import { MqttProducerService } from "./mqtt.producer.service";
+import { MqttController } from "./mqtt.controller";
+import { SparkplugService } from './sparkplug.service';
+
+@Global()
+@Module({
+  imports: [],
+  providers: [
+    {
+      provide: "MQTT_CLIENT",
+      useFactory: (configService: ConfigService) => {
+        return ClientProxyFactory.create(
+          generateClientOptions(configService),
+        );
+      },
+      inject: [ConfigService],
+    },
+    MqttProducerService,
+    SparkplugService
+  ],
+  controllers: [MqttController],
+  exports: [MqttProducerService, SparkplugService],
+})
+
+export class MqttModule {}",
+    "path": "src/mqtt/mqtt.module.ts",
+  },
+  {
+    "code": "import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+var SparkPlug = require('sparkplug-client');
+
+@Injectable()
+export class SparkplugServiceBase {
+  public client: ReturnType<typeof SparkPlug.newClient>;
+  private readonly logger = new Logger(SparkplugServiceBase.name);
+
+  constructor(protected readonly configService: ConfigService) {
+    const serverUrl = \`mqtt://\${this.configService.get('MQTT_BROKER_HOST')}:\${this.configService.get('MQTT_PORT')}\`;
+
+    const config = {
+      clientId : this.configService.get('MQTT_SPARKPLUG_CLIENT_ID')!,
+      username : this.configService.get('MQTT_USERNAME')!,
+      password : this.configService.get('MQTT_PASSWORD')!,
+      groupId : this.configService.get('MQTT_SPARKPLUG_GROUP_ID')!,
+      edgeNode: this.configService.get('MQTT_SPARKPLUG_EDGE_NODE')!,
+      serverUrl,
+    };
+
+    this.client = SparkPlug.newClient(config);
+
+    this.client.on('connect', () => {
+      this.logger.log('Connected to MQTT broker');
+    });
+
+    this.client.on('error', (err: Error) => {
+      this.logger.error(\`Error: \${err}\`);
+    });
+  }
+}
+",
+    "path": "src/mqtt/base/sparkplug.service.base.ts",
+  },
+  {
+    "code": "import { Injectable } from '@nestjs/common';
+import sparkPlug from 'sparkplug-client';
+import { SparkplugServiceBase } from './base/sparkplug.service.base';
+import { ConfigService } from '@nestjs/config';
+
+@Injectable()
+export class SparkplugService extends SparkplugServiceBase {
+  constructor(protected readonly configService: ConfigService) {
+    super(configService);
+  }
+}
+",
+    "path": "src/mqtt/sparkplug.service.ts",
+  },
+]
+`;

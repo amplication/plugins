@@ -4,6 +4,8 @@ import {
   ModuleMap,
 } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
+import fg from "fast-glob";
+import fs from "fs";
 import {
   afterCreateMessageBrokerClientOptionsFactory,
   afterCreateMessageBrokerNestJSModule,
@@ -36,6 +38,33 @@ describe("Testing the creation of message broker modules and files", () => {
         warn: jest.fn(),
       },
       otherResources: [],
+      utils: {
+        importStaticModules: async (source, basePath) => {
+          const directory = `${source}/`;
+          const staticModules = await fg(`${directory}**/*`, {
+            absolute: false,
+            dot: true,
+            ignore: ["**.js", "**.js.map", "**.d.ts"],
+          });
+
+          const modules = await Promise.all(
+            staticModules.sort().map(async (module) => {
+              return {
+                path: module.replace(directory, basePath ? basePath + "/" : ""),
+                code: await fs.promises.readFile(module, "utf-8"),
+              };
+            }),
+          );
+
+          const moduleMap: ModuleMap = new ModuleMap(logger);
+
+          for await (const module of modules) {
+            await moduleMap.set(module);
+          }
+
+          return moduleMap;
+        },
+      },
     });
   });
 
@@ -88,6 +117,28 @@ describe("Testing the creation of message broker modules and files", () => {
         },
       },
     ];
+    plugin.beforeCreateBroker(context, modules);
+    const brokerModules = await afterCreateMessageBrokerService(context);
+    const generateClientOptionsModule =
+      await afterCreateMessageBrokerClientOptionsFactory(context);
+    const nestjsModule = await afterCreateMessageBrokerNestJSModule(context);
+
+    await modules.mergeMany([
+      brokerModules,
+      generateClientOptionsModule,
+      nestjsModule,
+    ]);
+
+    expect(modules.modules()).toMatchSnapshot();
+  });
+
+  it("all modules and files should be created with sparkplug enabled", async () => {
+    context.pluginInstallations[0].settings = {
+      sparkplugConfig: {
+        enabled: true,
+      },
+    };
+    const modules = new ModuleMap(logger);
     plugin.beforeCreateBroker(context, modules);
     const brokerModules = await afterCreateMessageBrokerService(context);
     const generateClientOptionsModule =
