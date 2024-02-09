@@ -16,7 +16,6 @@ import {
   CreateServerPackageJsonParams,
   CreateServerParams,
   DsgContext,
-  EntityField,
   EnumEntityAction,
   EnumEntityPermissionType,
   Events,
@@ -410,7 +409,7 @@ class AuthCorePlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateEntityControllerParams
   ) {
-    const { templateMapping, template, controllerBaseId } = eventParams;
+    const { templateMapping, template } = eventParams;
 
     interpolate(template, templateMapping);
 
@@ -497,14 +496,6 @@ class AuthCorePlugin implements AmplicationPlugin {
       ],
       builders.stringLiteral("../../auth/defaultAuth.guard")
     );
-
-    const ignoreComment = builders.commentLine("// @ts-ignore", false);
-
-    if (!defaultAuthGuardImport.comments) {
-      defaultAuthGuardImport.comments = [];
-    }
-
-    defaultAuthGuardImport.comments.push(ignoreComment);
 
     addImports(
       eventParams.template,

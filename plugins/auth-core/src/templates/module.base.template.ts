@@ -14,4 +14,4 @@ import { AuthModule } from "../../auth/auth.module";
 
   exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
 })
-export class MODULE_BASE {}
+export class MODULE_BASE { }
