@@ -14,7 +14,7 @@ import { jwtSecretFactory } from "./jwt/jwtSecretFactory";
 import { PasswordService } from "./password.service";
 import { TokenService } from "./token.service";
 
-declare class ENTITY_MODULE {}
+declare class ENTITY_MODULE { }
 @Module({
   imports: [
     forwardRef(() => ENTITY_MODULE),
@@ -55,4 +55,4 @@ declare class ENTITY_MODULE {}
   controllers: [AuthController],
   exports: [AuthService, PasswordService],
 })
-export class AuthModule {}
+export class AuthModule { }
