@@ -16,7 +16,6 @@ import {
   CreateServerPackageJsonParams,
   CreateServerParams,
   DsgContext,
-  EntityField,
   EnumEntityAction,
   EnumEntityPermissionType,
   Events,
@@ -208,10 +207,10 @@ class AuthCorePlugin implements AmplicationPlugin {
     const grants =
       context.entities && context.roles
         ? createGrantsModule(
-          context.serverDirectories.srcDirectory,
-          context.entities,
-          context.roles
-        )
+            context.serverDirectories.srcDirectory,
+            context.entities,
+            context.roles
+          )
         : null;
 
     if (grants) {
@@ -410,7 +409,7 @@ class AuthCorePlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateEntityControllerParams
   ) {
-    const { templateMapping, template, controllerBaseId } = eventParams;
+    const { templateMapping, template } = eventParams;
 
     interpolate(template, templateMapping);
 
@@ -834,7 +833,7 @@ class AuthCorePlugin implements AmplicationPlugin {
               builders.objectProperty(
                 builders.identifier("resource"),
                 eventParams.templateMapping[
-                "ENTITY_NAME"
+                  "ENTITY_NAME"
                 ] as namedTypes.StringLiteral
               ),
               builders.objectProperty(
