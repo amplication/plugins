@@ -14,7 +14,7 @@ export class MqttController {
     value: string | Record<string, any> | null,
     context: MqttContext
   ): Promise<void> {
-    const message = context.getMessage();
+    const message = context.getPacket();
     const topic = context.getTopic();
   }
 
@@ -24,7 +24,7 @@ export class MqttController {
     value: string | Record<string, any> | null,
     context: MqttContext
   ): Promise<void> {
-    const message = context.getMessage();
+    const message = context.getPacket();
     const topic = context.getTopic();
   }
 }

@@ -110,7 +110,7 @@ export const addEventPattern = async (
               builders.callExpression(
                 builders.memberExpression(
                   builders.identifier("context"),
-                  builders.identifier("getMessage"),
+                  builders.identifier("getPacket"),
                 ),
                 [],
               ),

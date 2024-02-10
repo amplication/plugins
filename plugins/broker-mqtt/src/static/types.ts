@@ -1,8 +1,4 @@
-export interface MqttMessage {
-  key: string | Record<string, unknown> | null;
-  value: string | Record<string, unknown> | null;
-  headers: MqttMessageHeaders;
-}
+export type MqttMessage = string | Record<string, unknown> | null;  
 
 export interface MqttMessageHeaders {
   [key: string]: Buffer | string | number | boolean | null;
