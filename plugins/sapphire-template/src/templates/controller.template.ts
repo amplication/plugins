@@ -1,25 +1,23 @@
 import * as common from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
-// @ts-ignore
 import { isRecordNotFoundError } from "../prisma.util";
-// @ts-ignore
 import * as errors from "../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 
-declare interface CREATE_INPUT {}
-declare interface WHERE_INPUT {}
-declare interface WHERE_UNIQUE_INPUT {}
+declare interface CREATE_INPUT { }
+declare interface WHERE_INPUT { }
+declare interface WHERE_UNIQUE_INPUT { }
 declare class FIND_MANY_ARGS {
   where: WHERE_INPUT;
 }
-declare interface UPDATE_INPUT {}
+declare interface UPDATE_INPUT { }
 
 declare const FINE_ONE_PATH: string;
 declare const UPDATE_PATH: string;
 declare const DELETE_PATH: string;
 
-declare class ENTITY {}
+declare class ENTITY { }
 
 declare interface SERVICE {
   create(args: { data: CREATE_INPUT }): Promise<ENTITY>;

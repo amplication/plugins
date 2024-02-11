@@ -5,7 +5,7 @@ import { PasswordService } from "./password.service";
 import { TokenService } from "./token.service";
 import { VALID_ID } from "../tests/auth/constants";
 
-declare class ENTITY_SERVICE {}
+declare class ENTITY_SERVICE { }
 
 const VALID_CREDENTIALS: Credentials = {
   username: "Valid User",
