@@ -21,5 +21,5 @@ export const getPluginSettings = (
 };
 
 export const serviceNameFromContext = (context: DsgContext): string => {
-  return context.resourceInfo?.name ?? "Amplication App"
-} 
+  return context.resourceInfo?.name.replace(" ", "_") ?? "Amplication_App"
+}
