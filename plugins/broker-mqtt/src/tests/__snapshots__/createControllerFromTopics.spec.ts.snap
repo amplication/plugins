@@ -8,23 +8,25 @@ import { Ctx, EventPattern, MqttContext, Payload } from "@nestjs/microservices";
 
 @Controller("mqtt-controller")
 export class MqttController {
-  @EventPattern(test-topic-name)
+  @EventPattern("test-topic-name")
   async onTestTopicName(
     @Payload()
     value: string | Record<string, any> | null,
+    @Ctx()
     context: MqttContext
   ): Promise<void> {
-    const message = context.getPacket();
+    const originalPacket = context.getPacket();
     const topic = context.getTopic();
   }
 
-  @EventPattern(should-be-added)
+  @EventPattern("should-be-added")
   async onShouldBeAdded(
     @Payload()
     value: string | Record<string, any> | null,
+    @Ctx()
     context: MqttContext
   ): Promise<void> {
-    const message = context.getPacket();
+    const originalPacket = context.getPacket();
     const topic = context.getTopic();
   }
 }

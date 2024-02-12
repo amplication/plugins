@@ -57,7 +57,7 @@ export const addEventPattern = async (
       // Step 1: Make decorators (Eventpattern, Ctx, Payload)
       const patternDecorator = builders.decorator(
         builders.callExpression(builders.identifier("EventPattern"), [
-          builders.identifier(pattern.topicName),
+          builders.stringLiteral(pattern.topicName),
         ]),
       );
 
@@ -89,7 +89,7 @@ export const addEventPattern = async (
       //@ts-expect-error - decorators is defined in the type
       value.decorators = [payloadDecorator];
       //@ts-expect-error - decorators is defined in the type
-      context.decorators - [contextDecorator];
+      context.decorators = [contextDecorator];
 
       // Step 3: Make the function
       const listener = builders.classMethod.from({
@@ -106,7 +106,7 @@ export const addEventPattern = async (
         body: builders.blockStatement([
           builders.variableDeclaration("const", [
             builders.variableDeclarator(
-              builders.identifier("message"),
+              builders.identifier("originalPacket"),
               builders.callExpression(
                 builders.memberExpression(
                   builders.identifier("context"),
