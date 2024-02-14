@@ -1,0 +1,19 @@
+{
+  "settings": {
+    "mqttPort": 1883,
+    "mqttWsPort": 8073,
+    "mqttWebUiPort": 8080,
+    "mqttBrokerHost": "localhost",
+    "mqttUsername": "admin",
+    "mqttPassword": "admin",
+    "mqttBroker": "emqx",
+    "sparkplugConfig": {
+      "enabled": false,
+      "edgeNodeIdentifier": "amplication-sparkplug-edge",
+      "groupIdentifier": "amplication-sparkplug-group"
+    }
+  },
+  "systemSettings": {
+    "requireAuthenticationEntity": "false"
+  }
+}
