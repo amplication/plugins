@@ -1,0 +1,53 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Testing the creation of topic subscription in controller should create a controller with topics if resources are found 1`] = `
+[
+  {
+    "code": "import { Controller } from "@nestjs/common";
+import { Ctx, EventPattern, MqttContext, Payload } from "@nestjs/microservices";
+
+@Controller("mqtt-controller")
+export class MqttController {
+  @EventPattern("test-topic-name")
+  async onTestTopicName(
+    @Payload()
+    value: string | Record<string, any> | null,
+    @Ctx()
+    context: MqttContext
+  ): Promise<void> {
+    const originalPacket = context.getPacket();
+    const topic = context.getTopic();
+  }
+
+  @EventPattern("should-be-added")
+  async onShouldBeAdded(
+    @Payload()
+    value: string | Record<string, any> | null,
+    @Ctx()
+    context: MqttContext
+  ): Promise<void> {
+    const originalPacket = context.getPacket();
+    const topic = context.getTopic();
+  }
+}
+",
+    "path": "src/mqtt/mqtt.controller.ts",
+  },
+]
+`;
+
+exports[`Testing the creation of topic subscription in controller should create a controller without topics if no resources are found 1`] = `
+[
+  {
+    "code": "import { Controller } from "@nestjs/common";
+import { Ctx, EventPattern, MqttContext, Payload } from "@nestjs/microservices";
+
+@Controller("mqtt-controller")
+export class MqttController {}
+",
+    "path": "src/mqtt/mqtt.controller.ts",
+  },
+]
+`;
+
+exports[`Testing the creation of topic subscription in controller should throw an error if no topic name is found 1`] = `"Topic name not found for topic id test-topic-id"`;
