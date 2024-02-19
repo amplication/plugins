@@ -21,8 +21,8 @@ processors:
 exporters:
   logging:
     loglevel: info
-  jaeger:
-    endpoint: jaeger:14250
+  otlp/jaeger:
+    endpoint: jaeger:4317
     tls:
       insecure: true
 
@@ -38,7 +38,7 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch, resource]
-      exporters: [logging, jaeger]
+      exporters: [logging, otlp/jaeger]
 ",
     "path": "otel-config.yml",
   },
@@ -66,8 +66,8 @@ processors:
 exporters:
   logging:
     loglevel: info
-  jaeger:
-    endpoint: jaeger:14250
+  otlp/jaeger:
+    endpoint: jaeger:4317
     tls:
       insecure: true
 
@@ -83,7 +83,7 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch, resource]
-      exporters: [logging, jaeger]
+      exporters: [logging, otlp/jaeger]
 ",
     "path": "otel-config.yml",
   },
