@@ -27,7 +27,7 @@ export const dockerComposeDevValues = [
         ports: [
           "${JAEGER_AGENT_PORT}:${JAEGER_AGENT_PORT}", // Jaeger agent UI
           "14268:14268",
-          "14250:14250",
+          "4317:4317",
         ],
       },
       [OTEL_NAME]: {
