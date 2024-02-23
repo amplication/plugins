@@ -9,7 +9,8 @@
     "dev": "webpack --watch",
     "build": "webpack",
     "prebuild": "rimraf dist",
-    "test": "jest"
+    "test": "jest",
+    "test:update-snapshot": "jest --updateSnapshot"
   },
   "author": "Ashish Padhy",
   "license": "Apache-2.0",
