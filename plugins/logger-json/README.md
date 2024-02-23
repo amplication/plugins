@@ -12,6 +12,15 @@ You can configure the logger plugin in the following ways:
 
 - `logLevel`: The level of messages to log. Possible values are 'fatal' , 'error' , 'warn' , 'info' , 'debug' , 'trace' or 'silent'.
 - `additionalLogProperties`: A dictionary of the extra properties that you want to add with each log messages.
+- `logRequest`: A boolean value to enable or disable logging of request and response. Default is `false`.
+- `request`: A dictionary of the properties that you want to log with each request.
+  - `logKeys`: An array of the properties that you want to log with each request. If left empty, all properties except ignored ones will be logged.
+  - `ignoreKeys`: An array of the properties that you want to ignore from logging with each request.
+  - `sensitiveKeys`: An array of the properties that you want to mask with asterisks (*) from logging with each request.
+- `response`: A dictionary of the properties that you want to log with each response.
+  - `logKeys`: An array of the properties that you want to log with each response. If left empty, all properties except ignored ones will be logged.
+  - `ignoreKeys`: An array of the properties that you want to ignore from logging with each response.
+  - `sensitiveKeys`: An array of the properties that you want to mask with asterisks (*) from logging with each response.
 
 Example:
 
