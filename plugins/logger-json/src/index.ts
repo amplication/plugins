@@ -48,16 +48,54 @@ class LoggerJSONPlugin implements AmplicationPlugin {
 
   beforeCreateServerDotEnv(
     context: DsgContext,
-    eventParams: CreateServerDotEnvParams
+    eventParams: CreateServerDotEnvParams,
   ) {
-    const { logLevel: LOG_LEVEL } = getPluginSettings(
-      context.pluginInstallations
-    );
+    const {
+      logLevel: LOG_LEVEL,
+      logRequests: LOG_REQUEST,
+      request: {
+        ignoreKeys: IGNORED_REQUEST_KEYS,
+        sensitiveKeys: SENSITIVE_REQUEST_KEYS,
+        logKeys: LOG_REQUEST_KEYS,
+      },
+      response: {
+        ignoreKeys: IGNORED_RESPONSE_KEYS,
+        sensitiveKeys: SENSITIVE_RESPONSE_KEYS,
+        logKeys: LOG_RESPONSE_KEYS,
+      },
+    } = getPluginSettings(context.pluginInstallations);
     const SERVICE_NAME = context.resourceInfo?.name ?? "";
 
     eventParams.envVariables = [
       ...eventParams.envVariables,
       ...[{ LOG_LEVEL }, { SERVICE_NAME }],
+      {
+        LOG_REQUEST: LOG_REQUEST ? "true" : "false",
+      },
+      {
+        IGNORED_REQUEST_KEYS: IGNORED_REQUEST_KEYS
+          ? IGNORED_REQUEST_KEYS.join(",")
+          : "",
+      },
+      {
+        SENSITIVE_REQUEST_KEYS: SENSITIVE_REQUEST_KEYS
+          ? SENSITIVE_REQUEST_KEYS.join(",")
+          : "",
+      },
+      { LOG_REQUEST_KEYS: LOG_REQUEST_KEYS ? LOG_REQUEST_KEYS.join(",") : "" },
+      {
+        IGNORED_RESPONSE_KEYS: IGNORED_RESPONSE_KEYS
+          ? IGNORED_RESPONSE_KEYS.join(",")
+          : "",
+      },
+      {
+        SENSITIVE_RESPONSE_KEYS: SENSITIVE_RESPONSE_KEYS
+          ? SENSITIVE_RESPONSE_KEYS.join(",")
+          : "",
+      },
+      {
+        LOG_RESPONSE_KEYS: LOG_RESPONSE_KEYS ? LOG_RESPONSE_KEYS.join(",") : "",
+      },
     ];
 
     return eventParams;
@@ -65,7 +103,7 @@ class LoggerJSONPlugin implements AmplicationPlugin {
 
   beforeCreateServerDockerCompose(
     context: DsgContext,
-    eventParams: CreateServerDockerComposeParams
+    eventParams: CreateServerDockerComposeParams,
   ) {
     eventParams.updateProperties.push({
       services: {
@@ -83,30 +121,30 @@ class LoggerJSONPlugin implements AmplicationPlugin {
   async afterCreateServer(
     context: DsgContext,
     params: CreateServerParams,
-    modules: ModuleMap
+    modules: ModuleMap,
   ) {
     const { additionalLogProperties: extras } = getPluginSettings(
-      context.pluginInstallations
+      context.pluginInstallations,
     );
 
     // Use custom logger in main.ts
     useLoggerInMain(
       context.serverDirectories.srcDirectory,
       modules,
-      context.logger
+      context.logger,
     );
 
     // Import static files
     const staticFiles = await context.utils.importStaticModules(
       resolve(__dirname, "static"),
-      join(context.serverDirectories.srcDirectory, "logger")
+      join(context.serverDirectories.srcDirectory, "logger"),
     );
 
     await modules.merge(staticFiles);
 
     // Copy templates
     const template = await readFile(
-      resolve(__dirname, "templates", "logger.config.ts")
+      resolve(__dirname, "templates", "logger.config.ts"),
     );
 
     interpolate(template, {
@@ -118,7 +156,7 @@ class LoggerJSONPlugin implements AmplicationPlugin {
       path: join(
         context.serverDirectories.srcDirectory,
         "logger",
-        "logger.config.ts"
+        "logger.config.ts",
       ),
     });
 
@@ -127,7 +165,7 @@ class LoggerJSONPlugin implements AmplicationPlugin {
 
   beforeCreateServerPackageJSON(
     _: DsgContext,
-    eventParams: CreateServerPackageJsonParams
+    eventParams: CreateServerPackageJsonParams,
   ) {
     eventParams.updateProperties.push(dependencies);
 
@@ -136,7 +174,7 @@ class LoggerJSONPlugin implements AmplicationPlugin {
 
   beforeCreateServerAppModule(
     _: DsgContext,
-    eventParams: CreateServerAppModuleParams
+    eventParams: CreateServerAppModuleParams,
   ) {
     const loggerModuleId = builders.identifier("LoggerModule");
 
@@ -153,7 +191,7 @@ class LoggerJSONPlugin implements AmplicationPlugin {
   async afterCreateServerAppModule(
     context: DsgContext,
     _: CreateServerAppModuleParams,
-    modules: ModuleMap
+    modules: ModuleMap,
   ) {
     const [appModule] = modules.modules();
 
@@ -164,7 +202,7 @@ class LoggerJSONPlugin implements AmplicationPlugin {
 
     const loggerModuleImport = importNames(
       [loggerModuleId],
-      "./logger/logger.module"
+      "./logger/logger.module",
     );
 
     appendImports(file, [loggerModuleImport]);
