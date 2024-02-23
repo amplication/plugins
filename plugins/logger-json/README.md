@@ -22,7 +22,7 @@ You can configure the logger plugin in the following ways:
   - `ignoreKeys`: An array of the properties that you want to ignore from logging with each response.
   - `sensitiveKeys`: An array of the properties that you want to mask with asterisks (*) from logging with each response.
 
-Example:
+Examples:
 
 ```json
 {
@@ -34,6 +34,19 @@ Example:
   }
 }
 ```
+
+```json
+{
+  "logRequest": true,
+  "request": {
+    "logKeys": ["url", "method", "headers", "query", "params", "body"],
+    "ignoreKeys": ["headers.authorization"],
+    "sensitiveKeys": ["cookies.sessionId"]
+  },
+}
+```
+
+
 
 ## Usage
 
