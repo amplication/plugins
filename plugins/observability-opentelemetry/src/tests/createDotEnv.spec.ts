@@ -31,7 +31,7 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
       { OTEL_COLLECTOR_PORT_HTTP: "4318" },
       {
         OTEL_EXPORTER_OTLP_ENDPOINT:
-          "http://${OTEL_COLLECTOR_HOST}:${OTEL_COLLECTOR_PORT_HTTP}",
+          "http://${OTEL_COLLECTOR_HOST}:${OTEL_COLLECTOR_PORT_GRPC}",
       },
       { JAEGER_AGENT_HOST: "jaeger" },
       { JAEGER_AGENT_PORT: "16686" },
@@ -55,7 +55,7 @@ describe("Testing beforeCreateServerDotEnv hook", () => {
       { OTEL_COLLECTOR_PORT_HTTP: "1236" },
       {
         OTEL_EXPORTER_OTLP_ENDPOINT:
-          "http://${OTEL_COLLECTOR_HOST}:${OTEL_COLLECTOR_PORT_HTTP}",
+          "http://${OTEL_COLLECTOR_HOST}:${OTEL_COLLECTOR_PORT_GRPC}",
       },
       { JAEGER_AGENT_HOST: "jaeger" },
       { JAEGER_AGENT_PORT: "1234" },
