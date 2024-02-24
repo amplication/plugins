@@ -2,16 +2,7 @@
   "settings": {
     "logLevel": "info",
     "logRequests": false,
-    "request": {
-      "sensitiveKeys": [],
-      "ignoreKeys": [],
-      "logKeys": []
-    },
-    "response": {
-      "sensitiveKeys": [],
-      "ignoreKeys": [],
-      "logKeys": []
-    },
+    "sensitiveKeys": [],
     "additionalLogProperties": {}
   },
   "systemSettings": {

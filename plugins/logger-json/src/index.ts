@@ -53,49 +53,15 @@ class LoggerJSONPlugin implements AmplicationPlugin {
     const {
       logLevel: LOG_LEVEL,
       logRequests: LOG_REQUEST,
-      request: {
-        ignoreKeys: IGNORED_REQUEST_KEYS,
-        sensitiveKeys: SENSITIVE_REQUEST_KEYS,
-        logKeys: LOG_REQUEST_KEYS,
-      },
-      response: {
-        ignoreKeys: IGNORED_RESPONSE_KEYS,
-        sensitiveKeys: SENSITIVE_RESPONSE_KEYS,
-        logKeys: LOG_RESPONSE_KEYS,
-      },
+      sensitiveKeys: SENSITIVE_KEYS,
     } = getPluginSettings(context.pluginInstallations);
     const SERVICE_NAME = context.resourceInfo?.name ?? "";
 
     eventParams.envVariables = [
       ...eventParams.envVariables,
       ...[{ LOG_LEVEL }, { SERVICE_NAME }],
-      {
-        LOG_REQUEST: LOG_REQUEST ? "true" : "false",
-      },
-      {
-        IGNORED_REQUEST_KEYS: IGNORED_REQUEST_KEYS
-          ? IGNORED_REQUEST_KEYS.join(",")
-          : "",
-      },
-      {
-        SENSITIVE_REQUEST_KEYS: SENSITIVE_REQUEST_KEYS
-          ? SENSITIVE_REQUEST_KEYS.join(",")
-          : "",
-      },
-      { LOG_REQUEST_KEYS: LOG_REQUEST_KEYS ? LOG_REQUEST_KEYS.join(",") : "" },
-      {
-        IGNORED_RESPONSE_KEYS: IGNORED_RESPONSE_KEYS
-          ? IGNORED_RESPONSE_KEYS.join(",")
-          : "",
-      },
-      {
-        SENSITIVE_RESPONSE_KEYS: SENSITIVE_RESPONSE_KEYS
-          ? SENSITIVE_RESPONSE_KEYS.join(",")
-          : "",
-      },
-      {
-        LOG_RESPONSE_KEYS: LOG_RESPONSE_KEYS ? LOG_RESPONSE_KEYS.join(",") : "",
-      },
+      { LOG_REQUEST: LOG_REQUEST ? "true" : "false" },
+      { SENSITIVE_KEYS: SENSITIVE_KEYS.join(",") },
     ];
 
     return eventParams;

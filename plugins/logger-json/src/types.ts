@@ -6,15 +6,6 @@ export type AdditionalProperties = {
 export interface Settings {
   logLevel: string;
   logRequests: boolean;
-  request: {
-    sensitiveKeys: string[];
-    ignoreKeys: string[];
-    logKeys: string[];
-  };
-  response: {
-    sensitiveKeys: string[];
-    ignoreKeys: string[];
-    logKeys: string[];
-  };
+  sensitiveKeys: string[];
   additionalLogProperties: AdditionalProperties;
 }
