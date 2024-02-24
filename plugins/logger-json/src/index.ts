@@ -61,8 +61,13 @@ class LoggerJSONPlugin implements AmplicationPlugin {
       ...eventParams.envVariables,
       ...[{ LOG_LEVEL }, { SERVICE_NAME }],
       { LOG_REQUEST: LOG_REQUEST ? "true" : "false" },
-      { SENSITIVE_KEYS: SENSITIVE_KEYS.join(",") },
     ];
+
+    if (SENSITIVE_KEYS.length > 0) {
+      eventParams.envVariables.push({
+        SENSITIVE_KEYS: SENSITIVE_KEYS.join(","),
+      });
+    }
 
     return eventParams;
   }

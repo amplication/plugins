@@ -6,7 +6,7 @@ ADDITIONAL_LOG_PROPERTIES_KEY;
 export const LoggerConfiguration = (configService: ConfigService): Params => {
   const logLevel = configService.getOrThrow("LOG_LEVEL");
   const serviceName = configService.getOrThrow("SERVICE_NAME") ?? "";
-  const sensitiveKeys = configService.get("SENSITIVE_KEYS").split(",");
+  const sensitiveKeys = configService.get("SENSITIVE_KEYS")?.split(",") ?? [];
   const logRequest = configService.get("LOG_REQUEST") === "true";
 
   const allowedLevels = ["fatal", "error", "warn", "info", "debug", "trace"];
