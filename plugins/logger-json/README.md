@@ -12,8 +12,11 @@ You can configure the logger plugin in the following ways:
 
 - `logLevel`: The level of messages to log. Possible values are 'fatal' , 'error' , 'warn' , 'info' , 'debug' , 'trace' or 'silent'.
 - `additionalLogProperties`: A dictionary of the extra properties that you want to add with each log messages.
+- `logRequest`: A boolean value to enable or disable logging of request and response. Default is `false`.
+- `sensitiveKeys`: An array of keys that you want to redact from the request and response logs. Default is `[]`.
+- `pinoPretty`: A boolean value to enable or disable pretty printing of the logs. Default is `false`.
 
-Example:
+Examples:
 
 ```json
 {
@@ -25,6 +28,15 @@ Example:
   }
 }
 ```
+
+```json
+{
+  "logRequest": true,
+  "sensitiveKeys": ["req.headers.authorization"],
+}
+```
+
+
 
 ## Usage
 
