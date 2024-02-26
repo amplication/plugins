@@ -8,4 +8,5 @@ export interface Settings {
   logRequests: boolean;
   sensitiveKeys: string[];
   additionalLogProperties: AdditionalProperties;
+  pinoPretty: boolean;
 }

@@ -54,6 +54,7 @@ class LoggerJSONPlugin implements AmplicationPlugin {
       logLevel: LOG_LEVEL,
       logRequests: LOG_REQUEST,
       sensitiveKeys: SENSITIVE_KEYS,
+      pinoPretty: PINO_PRETTY,
     } = getPluginSettings(context.pluginInstallations);
     const SERVICE_NAME = context.resourceInfo?.name ?? "";
 
@@ -61,6 +62,7 @@ class LoggerJSONPlugin implements AmplicationPlugin {
       ...eventParams.envVariables,
       ...[{ LOG_LEVEL }, { SERVICE_NAME }],
       { LOG_REQUEST: LOG_REQUEST ? "true" : "false" },
+      { PINO_PRETTY: PINO_PRETTY ? "true" : "false" },
     ];
 
     if (SENSITIVE_KEYS.length > 0) {

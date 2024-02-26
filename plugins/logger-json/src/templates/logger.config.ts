@@ -8,6 +8,7 @@ export const LoggerConfiguration = (configService: ConfigService): Params => {
   const serviceName = configService.getOrThrow("SERVICE_NAME") ?? "";
   const sensitiveKeys = configService.get("SENSITIVE_KEYS")?.split(",") ?? [];
   const logRequest = configService.get("LOG_REQUEST") === "true";
+  const pinoPretty = configService.get("PINO_PRETTY") === "true";
 
   const allowedLevels = ["fatal", "error", "warn", "info", "debug", "trace"];
 
@@ -20,13 +21,15 @@ export const LoggerConfiguration = (configService: ConfigService): Params => {
   return {
     pinoHttp: {
       level: logLevel,
-      transport: {
-        target: "pino-pretty",
-        options: {
-          colorize: true,
-          ignore: "pid,hostname",
-        },
-      },
+      transport: pinoPretty
+        ? {
+            target: "pino-pretty",
+            options: {
+              colorize: true,
+              ignore: "pid,hostname",
+            },
+          }
+        : undefined,
       redact: {
         paths: logRequest ? sensitiveKeys : ["req", "res"],
         remove: logRequest ? false : true,
