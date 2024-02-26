@@ -30,7 +30,7 @@ describe("Testing beforeServerPackageJson hook", () => {
     expect(updateProperties).toStrictEqual([
       {
         dependencies: {
-          "@amplication/opentelemetry-nestjs": "^4.4.0",
+          "@amplication/opentelemetry-nestjs": "^4.5.0",
         },
       },
     ]);
