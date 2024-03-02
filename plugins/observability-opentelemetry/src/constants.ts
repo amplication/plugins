@@ -12,7 +12,7 @@ export const placeholders = {
 
 export const packageJsonValues = {
   dependencies: {
-    "@amplication/opentelemetry-nestjs": "^4.4.0",
+    "@amplication/opentelemetry-nestjs": "^4.5.0",
   },
 };
 

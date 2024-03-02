@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-observability-opentelemetry",
-  "version": "2.0.6",
+  "version": "2.0.8",
   "description": "This plugin is created to add integrate opentelemetry to the amplication app",
   "main": "dist/index.js",
   "nx": {},
@@ -9,7 +9,8 @@
     "dev": "webpack --watch",
     "build": "webpack",
     "prebuild": "rimraf dist",
-    "test": "jest"
+    "test": "jest",
+    "test:update-snapshot": "jest --updateSnapshot"
   },
   "author": "Ashish Padhy",
   "license": "Apache-2.0",

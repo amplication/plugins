@@ -1,6 +1,8 @@
 {
   "settings": {
     "logLevel": "info",
+    "logRequests": false,
+    "sensitiveKeys": [],
     "additionalLogProperties": {}
   },
   "systemSettings": {
