@@ -1,0 +1,8 @@
+{
+  "settings": {
+    "JwtSecretKeyReference": "JWT_SECRET_KEY"
+  },
+  "systemSettings": {
+    "requireAuthenticationEntity": "false"
+  }
+}

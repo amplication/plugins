@@ -1,0 +1,61 @@
+{
+  "name": "plugin-auth-saml",
+  "version": "0.0.1",
+  "description": "Description of your plugin",
+  "main": "dist/index.js",
+  "nx": {},
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "dev": "webpack --watch",
+    "build": "webpack",
+    "prebuild": "rimraf dist",
+    "test": "jest"
+  },
+  "author": "Daniele Iasella",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@amplication/code-gen-types": "^2.0.23",
+    "@amplication/code-gen-utils": "^0.0.9",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@babel/parser": "^7.24.0",
+    "@babel/types": "^7.24.0",
+    "@types/jest": "^29.5.12",
+    "@types/lodash": "^4.14.202",
+    "@types/normalize-path": "^3.0.2",
+    "@typescript-eslint/eslint-plugin": "^7.1.0",
+    "@typescript-eslint/parser": "^7.1.0",
+    "copy-webpack-plugin": "^12.0.2",
+    "eslint": "^8.57.0",
+    "jest-mock-extended": "^3.0.5",
+    "normalize-path": "^3.0.0",
+    "prettier": "^3.2.5",
+    "rimraf": "^5.0.5",
+    "ts-jest": "^29.1.2",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3",
+    "webpack": "^5.90.3",
+    "webpack-cli": "^5.1.4"
+  },
+  "jest": {
+    "passWithNoTests": true,
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src/tests",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "testEnvironment": "node"
+  },
+  "engines": {
+    "node": ">=18.12.0"
+  }
+}
