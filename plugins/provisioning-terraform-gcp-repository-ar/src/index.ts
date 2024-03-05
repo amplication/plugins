@@ -22,10 +22,10 @@ class TerraformGcpRepositoryArPlugin implements AmplicationPlugin {
   async afterCreateServer(
     context: DsgContext,
     eventParams: CreateServerParams,
-    modules: ModuleMap,
+    modules: ModuleMap
   ): Promise<ModuleMap> {
     context.logger.info(
-      `Generating Terraform GCP Repository Artifact Registry...`,
+      `Generating Terraform GCP Repository Artifact Registry...`
     );
 
     // get the name for the service, to be used as a fallback for the
@@ -33,7 +33,7 @@ class TerraformGcpRepositoryArPlugin implements AmplicationPlugin {
     const serviceName = kebabCase(context.resourceInfo?.name);
     if (!serviceName) {
       throw new Error(
-        "TerraformAwsRepositoryEcrPlugin: Service name is undefined",
+        "TerraformAwsRepositoryEcrPlugin: Service name is undefined"
       );
     }
 
@@ -43,7 +43,7 @@ class TerraformGcpRepositoryArPlugin implements AmplicationPlugin {
     // an error if the aforementioned plugin wasnt installed.
     const terraformDirectory = getTerraformDirectory(
       context.pluginInstallations,
-      context.serverDirectories.baseDirectory,
+      context.serverDirectories.baseDirectory
     );
 
     // fetch the plugin specific settings and merge them with the defaults
@@ -59,22 +59,22 @@ class TerraformGcpRepositoryArPlugin implements AmplicationPlugin {
     const staticPath = resolve(__dirname, "./static");
     const staticFiles = await context.utils.importStaticModules(
       staticPath,
-      terraformDirectory,
+      terraformDirectory
     );
 
     staticFiles.replaceModulesPath((path) =>
-      path.replace(templateFileName, fileNamePrefix + name + fileNameSuffix),
+      path.replace(templateFileName, fileNamePrefix + name + fileNameSuffix)
     );
 
     staticFiles.replaceModulesCode((_path, code) =>
       code
         .replaceAll(moduleNameKey, "ar_" + snakeCase(name))
         .replaceAll(nameKey, kebabCase(name))
-        .replaceAll(regionKey, settings.region),
+        .replaceAll(regionKey, settings.region)
     );
 
     context.logger.info(
-      `Generated Terraform GCP Repository Artifact Registry...`,
+      `Generated Terraform GCP Repository Artifact Registry...`
     );
 
     await modules.merge(staticFiles);

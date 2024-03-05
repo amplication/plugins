@@ -29,7 +29,7 @@ export class JwtStrategyBase extends PassportStrategy(Strategy) {
 
   // Validate the received JWT and construct the user object out of the decoded token.
   async validateBase(
-    payload: KeycloakPayload,
+    payload: KeycloakPayload
   ): Promise<ENTITY_NAME_INFO | null> {
     const ENTITY = await this.ENTITY_SERVICE.FIND_ONE_FUNCTION({
       where: {
