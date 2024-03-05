@@ -4,10 +4,10 @@ import { Settings } from "./types";
 import defaultSettings from "../.amplicationrc.json";
 
 export const getPluginSettings = (
-  pluginInstallations: PluginInstallation[]
+  pluginInstallations: PluginInstallation[],
 ): Settings => {
   const plugin = pluginInstallations.find(
-    (plugin) => plugin.npm === PackageName
+    (plugin) => plugin.npm === PackageName,
   );
 
   const userSettings = plugin?.settings ?? {};
@@ -22,16 +22,16 @@ export const getPluginSettings = (
 
 export const getTerraformDirectory = (
   pluginInstallations: PluginInstallation[],
-  serverBaseDirectory: string
+  serverBaseDirectory: string,
 ): string => {
   const plugin = pluginInstallations.find(
     (plugin) =>
-      plugin.npm === "@amplication/plugin-provisioning-terraform-gcp-core"
+      plugin.npm === "@amplication/plugin-provisioning-terraform-gcp-core",
   );
 
   if (!plugin) {
     throw new Error(
-      "TerraformAwsDatabaseCloudSql: is dependent on 'Terraform - GCP Core' plugin"
+      "TerraformAwsDatabaseCloudSql: is dependent on 'Terraform - GCP Core' plugin",
     );
   }
 

@@ -37,7 +37,7 @@ class TerraformAwsDatabaseCloudSql implements AmplicationPlugin {
   async afterCreateServer(
     context: DsgContext,
     eventParams: CreateServerParams,
-    modules: ModuleMap
+    modules: ModuleMap,
   ): Promise<ModuleMap> {
     context.logger.info(`Generating Terraform GCP Database Cloud SQL...`);
 
@@ -46,7 +46,7 @@ class TerraformAwsDatabaseCloudSql implements AmplicationPlugin {
     const serviceName = kebabCase(context.resourceInfo?.name);
     if (!serviceName) {
       throw new Error(
-        "TerraformAwsDatabaseCloudSql: Service name is undefined"
+        "TerraformAwsDatabaseCloudSql: Service name is undefined",
       );
     }
 
@@ -56,31 +56,31 @@ class TerraformAwsDatabaseCloudSql implements AmplicationPlugin {
     // an error if the aforementioned plugin wasnt installed.
     const terraformDirectory = getTerraformDirectory(
       context.pluginInstallations,
-      context.serverDirectories.baseDirectory
+      context.serverDirectories.baseDirectory,
     );
 
     // fetch the plugin specific settings and merge them with the defaults
     const settings = getPluginSettings(context.pluginInstallations);
 
-    const templateFileName: string = "csql-template.tf";
-    const fileNamePrefix: string = "csql-";
-    const fileNameSuffix: string = ".tf";
+    const templateFileName = "csql-template.tf";
+    const fileNamePrefix = "csql-";
+    const fileNameSuffix = ".tf";
     const name: string = settings.global.name
       ? settings.global.name
       : serviceName;
 
     const staticPath = resolve(
       __dirname,
-      "./static/" + settings.configuration.type
+      "./static/" + settings.configuration.type,
     );
 
     const staticFiles = await context.utils.importStaticModules(
       staticPath,
-      terraformDirectory
+      terraformDirectory,
     );
 
     staticFiles.replaceModulesPath((path) =>
-      path.replace(templateFileName, fileNamePrefix + name + fileNameSuffix)
+      path.replace(templateFileName, fileNamePrefix + name + fileNameSuffix),
     );
 
     staticFiles.replaceModulesCode((_path, code) =>
@@ -98,7 +98,7 @@ class TerraformAwsDatabaseCloudSql implements AmplicationPlugin {
         .replaceAll(diskTypekey, settings.global.disk_type)
         .replaceAll(availabilityTypeKey, settings.global.availability_type)
         .replaceAll(deletionProtectionKey, settings.global.deletion_protection)
-        .replaceAll(versionKey, settings.global.version)
+        .replaceAll(versionKey, settings.global.version),
     );
 
     context.logger.info(`Generated Terraform GCP Database Cloud SQL...`);

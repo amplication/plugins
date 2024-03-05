@@ -60,9 +60,9 @@ class TerraformAwsDeploymentEcsPlugin implements AmplicationPlugin {
     // fetch the plugin specific settings and merge them with the defaults
     const settings = getPluginSettings(context.pluginInstallations);
 
-    const templateFileName: string = "ecs-template.tf";
-    const fileNamePrefix: string = "ecs-";
-    const fileNameSuffix: string = ".tf";
+    const templateFileName = "ecs-template.tf";
+    const fileNamePrefix = "ecs-";
+    const fileNameSuffix = ".tf";
     const ecsServiceName: string = settings.service.name
       ? settings.service.name
       : serviceName;
