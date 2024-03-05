@@ -41,7 +41,7 @@ jobs:
 
       - name: Setup Bun Runtime
         if: ${{ steps.cache.outputs.cache-hit != 'true' }}
-        uses: oven-sh/setup-bun@v1
+        uses: oven-sh/setup-bun@v1.1.1
 
       - name: Cache
         id: cache
