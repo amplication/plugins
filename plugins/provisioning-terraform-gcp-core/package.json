@@ -9,8 +9,7 @@
     "dev": "webpack --watch",
     "build": "webpack",
     "prebuild": "rimraf dist",
-    "test": "jest",
-    "format:write": "prettier --write \"**/*.{js,ts}\""
+    "test": "jest"
   },
   "author": "Levi van Noort <levi@amplication.com>",
   "license": "Apache-2.0",

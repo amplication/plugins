@@ -4,16 +4,9 @@
     "defaultBase": "master"
   },
   "targetDefaults": {
-    "install:clean": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm ci",
-        "cwd": "{projectRoot}/"
-      }
-    },
     "build": {
       "cache": true,
-      "dependsOn": ["install:clean", "^build", "format:write"],
+      "dependsOn": ["^build", "format:write"],
       "inputs": ["production", "^production"]
     },
     "lint": {
@@ -33,6 +26,11 @@
     "test": {
       "cache": true,
       "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"]
+    },
+    "@nx/js:tsc": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     }
   },
   "namedInputs": {
@@ -50,7 +48,8 @@
     "sharedGlobals": []
   },
   "workspaceLayout": {
-    "appsDir": "plugins"
+    "appsDir": "plugins",
+    "libsDir": "libs"
   },
   "nxCloudAccessToken": "NTVlMDE1YmItM2FmZC00MTA5LTg0YzItMDA4M2NjZWI1ODVjfHJlYWQ="
 }
