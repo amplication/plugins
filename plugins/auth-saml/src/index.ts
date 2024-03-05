@@ -22,25 +22,45 @@ import {
   createSamlStrategyBase,
 } from "./core";
 import {
+  AUTH_ENTITY_FIELD_SESSION_ID,
   AUTH_ENTITY_FIELD_USERNAME,
   updateDockerComposeProperties,
 } from "./constants";
 import { getPluginSettings } from "./util/getPluginSettings";
 import { merge } from "lodash";
-import {} from "@amplication/auth-core-shared";
+import {
+  AuthCorePlugin,
+  createAuthConstants,
+  createAuthController,
+  createAuthResolver,
+  createAuthService,
+  createAuthServiceSpec,
+  createCustomSeed,
+  createIAuthStrategy,
+  createTokenPayloadInterface,
+  createUserDataDecorator,
+  createUserInfo,
+  beforeCreateServer as authCoreBeforeCreateServer,
+  beforeCreateServerPackageJson as authCoreBeforeCreateServerPackageJson,
+  beforeCreateServerDotEnv as authCoreBeforeCreateServerDotEnv,
+} from "@amplication/auth-core";
 
-class SamlAuthPlugin implements AmplicationPlugin {
+class SamlAuthPlugin extends AuthCorePlugin implements AmplicationPlugin {
+  constructor() {
+    super(new Set([]));
+  }
+
   register(): Events {
-    return {
+    return merge(super.register(), {
       CreateServer: {
         before: this.beforeCreateServer,
       },
       CreateAdminUI: {
-        before: this.beforeCreateAdminModules,
+        before: this.beforeCreateAdminUI,
       },
       CreateServerAuth: {
-        before: this.beforeCreateAuthModules,
-        after: this.afterCreateAuthModules,
+        before: this.beforeCreateServerAuth,
+        after: this.afterCreateServerAuth,
       },
       CreateServerDockerCompose: {
         before: this.beforeCreateDockerComposeFile,
@@ -54,14 +74,12 @@ class SamlAuthPlugin implements AmplicationPlugin {
       CreateServerDotEnv: {
         before: this.beforeCreateServerDotEnv,
       },
-      CreateServerAppModule: {
-        before: beforeCreateAppModule,
-        after: afterCreateAppModule,
-      },
-    };
+    });
   }
 
   beforeCreateServer(context: DsgContext, eventParams: CreateServerParams) {
+    eventParams = authCoreBeforeCreateServer(context, eventParams);
+
     const authEntity = context.entities?.find(
       (x) => x.name === context.resourceInfo?.settings.authEntityName,
     );
@@ -69,7 +87,10 @@ class SamlAuthPlugin implements AmplicationPlugin {
       throw new Error(`Authentication entity does not exist`);
     }
 
-    const requiredFields = [AUTH_ENTITY_FIELD_USERNAME];
+    const requiredFields = [
+      AUTH_ENTITY_FIELD_USERNAME,
+      AUTH_ENTITY_FIELD_SESSION_ID,
+    ];
 
     requiredFields.forEach((requiredField) => {
       const field = authEntity.fields.find(
@@ -85,10 +106,7 @@ class SamlAuthPlugin implements AmplicationPlugin {
     return eventParams;
   }
 
-  beforeCreateAdminModules(
-    context: DsgContext,
-    eventParams: CreateAdminUIParams,
-  ) {
+  beforeCreateAdminUI(context: DsgContext, eventParams: CreateAdminUIParams) {
     if (context.resourceInfo) {
       context.resourceInfo.settings.authProvider = EnumAuthProviderType.Jwt;
     }
@@ -96,7 +114,7 @@ class SamlAuthPlugin implements AmplicationPlugin {
     return eventParams;
   }
 
-  beforeCreateAuthModules(
+  beforeCreateServerAuth(
     context: DsgContext,
     eventParams: CreateServerAuthParams,
   ) {
@@ -104,17 +122,79 @@ class SamlAuthPlugin implements AmplicationPlugin {
     return eventParams;
   }
 
-  async afterCreateAuthModules(
+  async afterCreateServerAuth(
     context: DsgContext,
     eventParams: CreateServerAuthParams,
     modules: ModuleMap,
   ): Promise<ModuleMap> {
-    const staticPath = resolve(__dirname, "./static");
+    const staticAuthPath = resolve(__dirname, "./static/auth");
+    const staticPath = resolve(__dirname, "./static/src");
 
-    const staticsFiles = await context.utils.importStaticModules(
+    const interceptorsStaticAuthPath = resolve(
+      __dirname,
+      "./static/interceptors",
+    );
+
+    const staticAuthInterceptorsFiles = await context.utils.importStaticModules(
+      interceptorsStaticAuthPath,
+      `${context.serverDirectories.srcDirectory}/interceptors`,
+    );
+
+    const staticAuthFiles = await context.utils.importStaticModules(
+      staticAuthPath,
+      context.serverDirectories.authDirectory,
+    );
+
+    const staticFiles = await context.utils.importStaticModules(
       staticPath,
       context.serverDirectories.srcDirectory,
     );
+
+    await modules.mergeMany([
+      staticAuthInterceptorsFiles,
+      staticAuthFiles,
+      staticFiles,
+    ]);
+
+    // 1. create user info
+    const userInfo = await createUserInfo(context);
+    await modules.set(userInfo);
+
+    // 2. create token payload interface
+    const tokenPayloadInterface = await createTokenPayloadInterface(context);
+    await modules.set(tokenPayloadInterface);
+
+    // 3. create constants for tests
+    const authConstants = await createAuthConstants(context);
+    await modules.set(authConstants);
+
+    // 4. create auth controller
+    const authController = await createAuthController(context);
+    await modules.set(authController);
+
+    // 5. create auth resolver
+    const authResolver = await createAuthResolver(context);
+    await modules.set(authResolver);
+
+    // 6. create auth service
+    const authService = await createAuthService(context);
+    await modules.set(authService);
+
+    // 7. create IAuthStrategy interface
+    const iAuthStrategy = await createIAuthStrategy(context);
+    await modules.set(iAuthStrategy);
+
+    // 8. create auth-service-spec
+    const authServiceSpec = await createAuthServiceSpec(context);
+    await modules.set(authServiceSpec);
+
+    // 9. create userData decorator
+    const userDataDecorator = await createUserDataDecorator(context);
+    await modules.set(userDataDecorator);
+
+    // 10. create custom seed script
+    const customSeedScript = await createCustomSeed(context);
+    await modules.set(customSeedScript);
 
     // create samlStrategy base file.
     const samlStrategyBase = await createSamlStrategyBase(context);
@@ -140,7 +220,6 @@ class SamlAuthPlugin implements AmplicationPlugin {
     const jwyStrategySpec = await createJwtStrategySpec(context);
     await modules.set(jwyStrategySpec);
 
-    await modules.merge(staticsFiles);
     return modules;
   }
 
@@ -156,7 +235,6 @@ class SamlAuthPlugin implements AmplicationPlugin {
     dsgContext: DsgContext,
     eventParams: CreateServerSecretsManagerParams,
   ): Promise<CreateServerSecretsManagerParams> {
-    await dsgContext.logger.warn("beforeCreateSecretsManager", { eventParams });
     const settings = getPluginSettings(dsgContext.pluginInstallations);
     eventParams.secretsNameKey.push({
       name: "JwtSecretKey", // Used in jwt strategy as Enum key
@@ -169,9 +247,12 @@ class SamlAuthPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerPackageJsonParams,
   ) {
+    // add default auth-core dependencies
+    eventParams = authCoreBeforeCreateServerPackageJson(context, eventParams);
+
     const myValues = {
       dependencies: {
-        "@node-saml/passport-saml": "^10.1.1",
+        "@node-saml/passport-saml": "^4.0.4",
       },
     };
 
@@ -186,6 +267,8 @@ class SamlAuthPlugin implements AmplicationPlugin {
     context: DsgContext,
     eventParams: CreateServerDotEnvParams,
   ): CreateServerDotEnvParams {
+    // add default auth-core dependencies
+    eventParams = authCoreBeforeCreateServerDotEnv(context, eventParams);
     const vars = {
       SAML_ENTRY_POINT: "${SAML_ENTRY_POINT}",
       SAML_ISSUER: "${SAML_ISSUER}",
