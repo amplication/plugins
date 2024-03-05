@@ -14,8 +14,34 @@ module.exports = {
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { from: "src/static", to: "static", noErrorOnMissing: true },
-        { from: "src/templates", to: "templates", noErrorOnMissing: true },
+        {
+          from: `${path.dirname(
+            require.resolve(`@amplication/auth-core/package.json`),
+          )}/src/static`,
+          to: "static",
+          priority: 1,
+        },
+        {
+          from: `${path.dirname(
+            require.resolve(`@amplication/auth-core/package.json`),
+          )}/src/templates`,
+          to: "templates",
+          priority: 1,
+        },
+        {
+          from: "src/static",
+          to: "static",
+          noErrorOnMissing: true,
+          force: true,
+          priority: 2,
+        },
+        {
+          from: "src/templates",
+          to: "templates",
+          noErrorOnMissing: true,
+          force: true,
+          priority: 2,
+        },
       ],
     }),
   ],
