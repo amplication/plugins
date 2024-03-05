@@ -52,5 +52,5 @@ jobs:
       - name: Evaluate affected projects
         id: calculate-affected
         run: |
-          echo affected-plugins=$(bunx nx show projects --affected --with-target npm:publish --json) >> $GITHUB_OUTPUT
+          echo affected-plugins=$(npx nx show projects --affected --with-target npm:publish --json) >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT | grep affected
