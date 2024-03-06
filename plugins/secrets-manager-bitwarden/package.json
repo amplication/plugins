@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-secrets-manager-bitwarden",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Amplication plugin to manage secrets using Bitwarden-secret-manager",
   "main": "dist/index.js",
   "nx": {},

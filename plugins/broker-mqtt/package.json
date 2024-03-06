@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-broker-mqtt",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Use a MQTT message broker to communicate between services generated with Amplication",
   "main": "dist/index.js",
   "nx": {},

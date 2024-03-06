@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-secrets-manager-azure-key-vault",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Amplication plugin for Azure Key Vault",
   "main": "dist/index.js",
   "scripts": {

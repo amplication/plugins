@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-deployment-github-actions-aws-ecs",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Adds a GitHub Actions workflow for the packaging to AWS Elastic Container Registry (ECR) and publishing to AWS Elastic Container Service (ECS). This plugin requires the ECR & ECS to be present and passed as configuration.",
   "main": "dist/index.js",
   "nx": {},
