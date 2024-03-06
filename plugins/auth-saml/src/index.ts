@@ -45,6 +45,7 @@ import {
   beforeCreateServerPackageJson as authCoreBeforeCreateServerPackageJson,
   beforeCreateServerDotEnv as authCoreBeforeCreateServerDotEnv,
 } from "@amplication/auth-core";
+import { afterCreateAdminApp, beforeCreateAdminAppModule } from "./events";
 
 class SamlAuthPlugin extends AuthCorePlugin implements AmplicationPlugin {
   constructor() {
@@ -57,7 +58,7 @@ class SamlAuthPlugin extends AuthCorePlugin implements AmplicationPlugin {
         before: this.beforeCreateServer,
       },
       CreateAdminUI: {
-        before: this.beforeCreateAdminUI,
+        after: afterCreateAdminApp,
       },
       CreateServerAuth: {
         before: this.beforeCreateServerAuth,
@@ -74,6 +75,9 @@ class SamlAuthPlugin extends AuthCorePlugin implements AmplicationPlugin {
       },
       CreateServerDotEnv: {
         before: this.beforeCreateServerDotEnv,
+      },
+      CreateAdminAppModule: {
+        before: beforeCreateAdminAppModule,
       },
     });
   }
@@ -103,14 +107,6 @@ class SamlAuthPlugin extends AuthCorePlugin implements AmplicationPlugin {
         );
       }
     });
-
-    return eventParams;
-  }
-
-  beforeCreateAdminUI(context: DsgContext, eventParams: CreateAdminUIParams) {
-    if (context.resourceInfo) {
-      context.resourceInfo.settings.authProvider = EnumAuthProviderType.Jwt;
-    }
 
     return eventParams;
   }
