@@ -13,3 +13,5 @@ export * from "./events/create-server-auth";
 export * from "./events/create-server-dotenv";
 export * from "./events/create-server-package-json";
 export * from "./events/create-server";
+
+export { AuthCorePlugin } from "./auth-core-plugin";
