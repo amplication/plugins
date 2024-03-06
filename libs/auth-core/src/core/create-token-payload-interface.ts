@@ -1,7 +1,6 @@
-import { types, Module, DsgContext } from "@amplication/code-gen-types";
+import { Module, DsgContext } from "@amplication/code-gen-types";
 import { readFile, print } from "@amplication/code-gen-utils";
 import { interpolate, removeTSClassDeclares } from "../util/ast";
-import { builders, namedTypes } from "ast-types";
 import { getUserIdType } from "../util/get-user-id-type";
 import { join } from "path";
 import { templatesPath } from "../constants";

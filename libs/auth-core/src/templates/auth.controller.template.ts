@@ -4,7 +4,6 @@ import { AuthService } from "./auth.service";
 import { Credentials } from "../auth/Credentials";
 
 declare class ENTITY_NAME_INFO {}
-// LIB
 
 @ApiTags("auth")
 @Controller()
