@@ -24,6 +24,7 @@ import {
 import {
   AUTH_ENTITY_FIELD_SESSION_ID,
   AUTH_ENTITY_FIELD_USERNAME,
+  serverStaticsPath,
   updateDockerComposeProperties,
 } from "./constants";
 import { getPluginSettings } from "./util/getPluginSettings";
@@ -128,7 +129,6 @@ class SamlAuthPlugin extends AuthCorePlugin implements AmplicationPlugin {
     modules: ModuleMap,
   ): Promise<ModuleMap> {
     const staticAuthPath = resolve(__dirname, "./static/auth");
-    const staticPath = resolve(__dirname, "./static/src");
 
     const interceptorsStaticAuthPath = resolve(
       __dirname,
@@ -146,7 +146,7 @@ class SamlAuthPlugin extends AuthCorePlugin implements AmplicationPlugin {
     );
 
     const staticFiles = await context.utils.importStaticModules(
-      staticPath,
+      serverStaticsPath,
       context.serverDirectories.srcDirectory,
     );
 

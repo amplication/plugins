@@ -1,7 +1,8 @@
 import { CreateServerDockerComposeParams } from "@amplication/code-gen-types";
 import { join } from "path";
 
-export const staticsPath = join(__dirname, "static");
+export const serverStaticsPath = join(__dirname, "static", "server");
+export const clientStaticPath = join(__dirname, "static", "client");
 export const templatesPath = join(__dirname, "templates");
 
 export const AUTH_ENTITY_ERROR = "Authentication entity does not exist";
