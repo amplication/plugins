@@ -10,6 +10,8 @@ import { AuthResolver } from "./auth.resolver";
 import { AuthService } from "./auth.service";
 import { JwtStrategy } from "./jwt/jwt.strategy";
 import { jwtSecretFactory } from "./jwt/jwtSecretFactory";
+import { SamlStrategy } from "./saml/saml.strategy";
+import { samlSecretFactory } from "./saml/samlSecretFactory";
 import { TokenService } from "./token.service";
 
 declare class ENTITY_MODULE {}
@@ -46,6 +48,8 @@ declare class ENTITY_MODULE {}
     AuthResolver,
     JwtStrategy,
     jwtSecretFactory,
+    SamlStrategy,
+    samlSecretFactory,
     TokenService,
   ],
   controllers: [AuthController],
