@@ -12,17 +12,17 @@
   "author": "Mor Hagbi",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@amplication/code-gen-types": "^2.0.22",
-    "@amplication/code-gen-utils": "^0.0.7",
+    "@amplication/code-gen-types": "^2.0.23",
+    "@amplication/code-gen-utils": "^0.0.9",
     "@babel/parser": "^7.23.0",
     "@babel/types": "^7.23.0",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
     "@typescript-eslint/parser": "^6.7.5",
-    "copy-webpack-plugin": "^11.0.0",
+    "copy-webpack-plugin": "^12.0.2",
     "eslint": "^8.51.0",
     "jest-mock-extended": "^3.0.5",
     "lodash": "^4.17.21",
-    "prettier": "^3.0.3",
+    "prettier": "^2.6.2",
     "rimraf": "^5.0.5",
     "ts-loader": "^9.5.0",
     "typescript": "^5.2.2",
@@ -31,7 +31,7 @@
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
-    "@amplication/code-gen-utils": "^0.0.6",
+    "@amplication/code-gen-utils": "^0.0.9",
     "pascal-case": "^3.1.2",
     "prisma-schema-dsl-types": "^1.1.2",
     "protobuf-dsl": "^0.0.1"

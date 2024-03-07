@@ -63,9 +63,9 @@ class TerraformAwsRepositoryEcrPlugin implements AmplicationPlugin {
       );
     }
 
-    const templateFileName: string = "ecr-template.tf";
-    const fileNamePrefix: string = "ecr-";
-    const fileNameSuffix: string = ".tf";
+    const templateFileName = "ecr-template.tf";
+    const fileNamePrefix = "ecr-";
+    const fileNameSuffix = ".tf";
     const name: string = settings.repository_name
       ? settings.repository_name
       : serviceName;

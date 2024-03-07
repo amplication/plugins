@@ -7,6 +7,11 @@ module.exports = {
   mode: "production",
   target: "node",
   entry: "./src/index.ts",
+  externals: [
+    "@amplication/code-gen-utils",
+    "@amplication/code-gen-types",
+    "prisma-schema-dsl",
+  ],
   plugins: [
     new webpack.SourceMapDevToolPlugin({
       filename: "[name].js.map",
@@ -38,8 +43,5 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
     libraryTarget: "commonjs2",
     clean: true,
-  },
-  externals: {
-    "prisma-schema-dsl": "prisma-schema-dsl",
   },
 };
