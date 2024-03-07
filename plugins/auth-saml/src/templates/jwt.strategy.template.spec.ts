@@ -6,7 +6,7 @@ import { TEST_USER } from "../constants";
 declare class ENTITY_SERVICE {}
 describe("Testing the jwtStrategyBase.validate()", () => {
   const userService = mock<ENTITY_SERVICE>();
-  const jwtStrategy = new JwtStrategyBase("Secrete", userService);
+  const jwtStrategy = new JwtStrategyBase("Secret", userService);
   beforeEach(() => {
     userService.FIND_ONE_FUNCTION.mockClear();
   });
@@ -19,6 +19,7 @@ describe("Testing the jwtStrategyBase.validate()", () => {
     const result = jwtStrategy.validate({
       id: TEST_USER.id,
       username: TEST_USER.username,
+      sessionId: TEST_USER.sessionId,
       roles: TEST_USER.roles,
     });
     //ASSERT

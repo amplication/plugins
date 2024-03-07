@@ -131,5 +131,14 @@ export async function afterCreateServerAuth(
   const jwyStrategySpec = await createJwtStrategySpec(context);
   await modules.set(jwyStrategySpec);
 
+  modules.removeMany(["Credentials.ts"]);
+
+  const filesToRemove: string[] = ["Credentials.ts", "LoginArgs.ts"];
+  modules.removeMany(
+    filesToRemove.map(
+      (file) => `${context.serverDirectories.authDirectory}/${file}`,
+    ),
+  );
+
   return modules;
 }
