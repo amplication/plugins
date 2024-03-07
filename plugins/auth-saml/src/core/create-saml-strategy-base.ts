@@ -50,6 +50,9 @@ async function mapSamlStrategyTemplate(
     const template = await readFile(templatePath);
     const authServiceNameId = builders.identifier(entityServiceName);
     const entityCreateInputNameId = builders.identifier(entityCreateInputName);
+    const entityPrismaCreateArgsId = builders.identifier(
+      `Prisma.${authEntity?.name}CreateArgs["data"]`,
+    );
 
     const entityNameToLower = authEntity?.name.toLowerCase();
 
@@ -82,7 +85,7 @@ async function mapSamlStrategyTemplate(
       UPDATE_FUNCTION: builders.identifier(
         `update${startCase(authEntityName)}`,
       ),
-      ENTITY_NAME_CREATE_INPUT: entityCreateInputNameId,
+      ENTITY_NAME_PRISMA_CREATE_INPUT: entityPrismaCreateArgsId,
     };
 
     const filePath = `${serverDirectories.authDirectory}/saml/base/${fileName}`;

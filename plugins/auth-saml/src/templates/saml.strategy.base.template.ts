@@ -4,9 +4,10 @@ import { Strategy, SamlConfig, Profile } from "@node-saml/passport-saml";
 import { ConfigService } from "@nestjs/config";
 import { DoneCallback } from "passport";
 import { SAML_STRATEGY_NAME } from "../saml.constant";
+import { Prisma } from "@prisma/client";
 
 declare class ENTITY_SERVICE {}
-declare class ENTITY_NAME_CREATE_INPUT {}
+declare class ENTITY_NAME_PRISMA_CREATE_INPUT {}
 
 export abstract class SamlStrategyBase extends PassportStrategy(Strategy) {
   constructor(protected readonly configService: ConfigService) {
@@ -56,7 +57,9 @@ export abstract class SamlStrategyBase extends PassportStrategy(Strategy) {
     super(config, signon, signout);
   }
 
-  abstract mapProfileToAuthEntity(profile: Profile): ENTITY_NAME_CREATE_INPUT;
+  abstract mapProfileToAuthEntity(
+    profile: Profile,
+  ): ENTITY_NAME_PRISMA_CREATE_INPUT;
 
   abstract mapProfileToRoles(profile: Profile): string[];
 }
