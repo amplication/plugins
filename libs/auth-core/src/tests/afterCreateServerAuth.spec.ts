@@ -11,16 +11,14 @@ import path from "path";
 import fg from "fast-glob";
 import * as fs from "fs";
 import { name } from "../../package.json";
-import AuthCorePlugin from "../index";
+import { afterCreateServerAuth } from "../events/create-server-auth";
 
 describe("Testing afterCreateServerAuth hook", () => {
-  let plugin: AuthCorePlugin;
   let context: DsgContext;
   let params: CreateServerAuthParams;
   let modules: ModuleMap;
 
   beforeEach(() => {
-    plugin = new AuthCorePlugin();
     context = mock<DsgContext>({
       pluginInstallations: [{ npm: name }],
       serverDirectories: {
@@ -43,11 +41,7 @@ describe("Testing afterCreateServerAuth hook", () => {
     modules = new ModuleMap(mock<BuildLogger>());
   });
   it("should add the necessary auth modules", async () => {
-    const newModules = await plugin.afterCreateServerAuth(
-      context,
-      params,
-      modules
-    );
+    const newModules = await afterCreateServerAuth(context, params, modules);
     const expectedModuleNames = [
       "src/auth/AuthEntityInfo.ts",
       "src/auth/ITokenService.ts",
@@ -91,7 +85,7 @@ export async function readStaticModulesInner(
   source: string,
   basePath: string
 ): Promise<ModuleMap> {
-  const directory = `${normalize(source)}/`;
+  const directory = `${normalize(source.replace("events/", ""))}/`;
   const staticModules = await fg(`${directory}**/*`, {
     absolute: false,
     dot: true,

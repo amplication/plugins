@@ -9,16 +9,14 @@ import { parse } from "@amplication/code-gen-utils";
 import { mock } from "jest-mock-extended";
 import { prettyPrint } from "recast";
 import { name } from "../../package.json";
-import AuthCorePlugin from "../index";
 import { builders } from "ast-types";
+import { beforeCreateEntityResolverToOneRelationMethods } from "../events/create-entity-resolver-to-one-relation-methods";
 
 describe("Testing beforeCreateEntityResolverToOneRelationMethods hook", () => {
-  let plugin: AuthCorePlugin;
   let context: DsgContext;
   let params: CreateEntityResolverToOneRelationMethodsParams;
 
   beforeEach(() => {
-    plugin = new AuthCorePlugin();
     context = mock<DsgContext>({
       pluginInstallations: [{ npm: name }],
     });
@@ -55,7 +53,7 @@ describe("Testing beforeCreateEntityResolverToOneRelationMethods hook", () => {
       });
   });
   it("should correctly alter the resolver to many relations template", () => {
-    const { toOneFile } = plugin.beforeCreateEntityResolverToOneRelationMethods(
+    const { toOneFile } = beforeCreateEntityResolverToOneRelationMethods(
       context,
       params
     );

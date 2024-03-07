@@ -5,16 +5,14 @@ import {
 import { mock } from "jest-mock-extended";
 import { name } from "../../package.json";
 import { builders } from "ast-types";
-import AuthCorePlugin from "../index";
 import { prettyPrint } from "recast";
+import { beforeCreateEntityModuleBase } from "../events/create-entity-module-base";
 
 describe("Testing beforeCreateEntityModuleBase hook", () => {
-  let plugin: AuthCorePlugin;
   let context: DsgContext;
   let params: CreateEntityModuleBaseParams;
 
   beforeEach(() => {
-    plugin = new AuthCorePlugin();
     context = mock<DsgContext>({
       pluginInstallations: [{ npm: name }],
     });
@@ -27,10 +25,12 @@ describe("Testing beforeCreateEntityModuleBase hook", () => {
     });
   });
   it("should add the necessary imports and alter the nestjs imports, exports lists", async () => {
-    const { templateMapping, template } =
-      await plugin.beforeCreateEntityModuleBase(context, params);
-    const importsArray = prettyPrint(templateMapping.IMPORTS_ARRAY).code;
-    const exportsArray = prettyPrint(templateMapping.EXPORT_ARRAY).code;
+    const { templateMapping, template } = await beforeCreateEntityModuleBase(
+      context,
+      params
+    );
+    const importsArray = prettyPrint(templateMapping["IMPORTS_ARRAY"]).code;
+    const exportsArray = prettyPrint(templateMapping["EXPORT_ARRAY"]).code;
     const code = prettyPrint(template).code;
     expect(importsArray).toStrictEqual("[ACLModule]");
     expect(exportsArray).toStrictEqual("[ACLModule]");

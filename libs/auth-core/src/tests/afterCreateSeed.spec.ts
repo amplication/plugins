@@ -10,16 +10,14 @@ import path from "path";
 import fg from "fast-glob";
 import * as fs from "fs";
 import { name } from "../../package.json";
-import AuthCorePlugin from "../index";
+import { afterCreateSeed } from "../index";
 
 describe("Testing afterCreateSeed hook", () => {
-  let plugin: AuthCorePlugin;
   let context: DsgContext;
   let params: CreateSeedParams;
   let modules: ModuleMap;
 
   beforeEach(() => {
-    plugin = new AuthCorePlugin();
     context = mock<DsgContext>({
       pluginInstallations: [{ npm: name }],
       serverDirectories: { scriptsDirectory: "scripts" },
@@ -32,7 +30,7 @@ describe("Testing afterCreateSeed hook", () => {
   });
 
   it("should correctly add static scripts files", async () => {
-    const newModules = await plugin.afterCreateSeed(context, params, modules);
+    const newModules = await afterCreateSeed(context, params, modules);
     expect(newModules.modules().length).toStrictEqual(0);
   });
 });

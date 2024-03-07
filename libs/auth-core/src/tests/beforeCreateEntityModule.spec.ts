@@ -6,16 +6,14 @@ import { parse } from "@amplication/code-gen-utils";
 import { mock } from "jest-mock-extended";
 import { prettyPrint } from "recast";
 import { name } from "../../package.json";
-import AuthCorePlugin from "../index";
 import { builders } from "ast-types";
+import { beforeCreateEntityModule } from "../events/create-entity-module";
 
 describe("Testing beforeCreateEntityModule hook", () => {
-  let plugin: AuthCorePlugin;
   let context: DsgContext;
   let params: CreateEntityModuleParams;
 
   beforeEach(() => {
-    plugin = new AuthCorePlugin();
     context = mock<DsgContext>({
       pluginInstallations: [{ npm: name }],
     });
@@ -35,7 +33,7 @@ describe("Testing beforeCreateEntityModule hook", () => {
     };
   });
   it("should correctly alter the entity module", async () => {
-    const { template } = await plugin.beforeCreateEntityModule(context, params);
+    const { template } = await beforeCreateEntityModule(context, params);
     const code = prettyPrint(template).code;
     const expectedCode = prettyCode(correctTemplate);
     expect(code).toStrictEqual(expectedCode);

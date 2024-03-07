@@ -5,17 +5,15 @@ import {
 import { mock } from "jest-mock-extended";
 import { name } from "../../package.json";
 import { builders } from "ast-types";
-import AuthCorePlugin from "../index";
 import { parse } from "@amplication/code-gen-utils";
 import { prettyPrint } from "recast";
+import { beforeCreateAppModule } from "../events/create-server-app-module";
 
 describe("Testing beforeCreateServerAppModule hook", () => {
-  let plugin: AuthCorePlugin;
   let context: DsgContext;
   let params: CreateServerAppModuleParams;
 
   beforeEach(() => {
-    plugin = new AuthCorePlugin();
     context = mock<DsgContext>({
       pluginInstallations: [{ npm: name }],
     });
@@ -32,9 +30,9 @@ describe("Testing beforeCreateServerAppModule hook", () => {
     };
   });
   it("should add the necessary module IDs to the modules array", () => {
-    const { templateMapping } = plugin.beforeCreateAppModule(context, params);
+    const { templateMapping } = beforeCreateAppModule(context, params);
     const expectedModules = prettyCode("[ACLModule, AuthModule];").slice(0, -1);
-    const modulesCode = prettyPrint(templateMapping.MODULES).code;
+    const modulesCode = prettyPrint(templateMapping["MODULES"]).code;
     expect(modulesCode).toBe(expectedModules);
   });
 });

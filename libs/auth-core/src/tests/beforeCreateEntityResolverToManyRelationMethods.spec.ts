@@ -9,16 +9,14 @@ import { parse } from "@amplication/code-gen-utils";
 import { mock } from "jest-mock-extended";
 import { prettyPrint } from "recast";
 import { name } from "../../package.json";
-import AuthCorePlugin from "../index";
 import { builders } from "ast-types";
+import { beforeCreateEntityResolverToManyRelationMethods } from "../events/create-entity-resolver-to-many-relation-methods";
 
 describe("Testing beforeCreateEntityResolverToManyRelationMethods hook", () => {
-  let plugin: AuthCorePlugin;
   let context: DsgContext;
   let params: CreateEntityResolverToManyRelationMethodsParams;
 
   beforeEach(() => {
-    plugin = new AuthCorePlugin();
     context = mock<DsgContext>({
       pluginInstallations: [{ npm: name }],
     });
@@ -55,8 +53,10 @@ describe("Testing beforeCreateEntityResolverToManyRelationMethods hook", () => {
       });
   });
   it("should correctly alter the resolver to many relations template", () => {
-    const { toManyFile } =
-      plugin.beforeCreateEntityResolverToManyRelationMethods(context, params);
+    const { toManyFile } = beforeCreateEntityResolverToManyRelationMethods(
+      context,
+      params
+    );
     const code = prettyPrint(toManyFile).code;
     const expectedCode = prettyCode(correctOutputTemplate);
     expect(code).toStrictEqual(expectedCode);

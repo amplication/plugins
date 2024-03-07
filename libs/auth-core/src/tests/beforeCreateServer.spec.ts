@@ -1,15 +1,12 @@
 import { CreateServerParams, DsgContext } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
 import { name } from "../../package.json";
-import AuthCorePlugin from "../index";
-import exp from "constants";
+import { beforeCreateServer } from "../events/create-server";
 
 describe("Testing beforeCreateServer hook", () => {
-  let plugin: AuthCorePlugin;
   let params: CreateServerParams;
 
   beforeEach(() => {
-    plugin = new AuthCorePlugin();
     params = mock<CreateServerParams>();
   });
   it("should throw exception when no auth entity is present", () => {
@@ -19,7 +16,7 @@ describe("Testing beforeCreateServer hook", () => {
       entities: [],
     });
 
-    expect(() => plugin.beforeCreateServer(context, params)).toThrow(
+    expect(() => beforeCreateServer(context, params)).toThrow(
       "Authentication entity does not exist"
     );
   });
@@ -30,7 +27,7 @@ describe("Testing beforeCreateServer hook", () => {
       entities: [{ name: "User", fields: [] }],
     });
 
-    expect(() => plugin.beforeCreateServer(context, params)).toThrow(
+    expect(() => beforeCreateServer(context, params)).toThrow(
       "Authentication entity does not have a field named roles"
     );
   });

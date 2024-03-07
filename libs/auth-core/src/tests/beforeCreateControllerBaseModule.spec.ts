@@ -9,16 +9,14 @@ import { parse } from "@amplication/code-gen-utils";
 import { mock } from "jest-mock-extended";
 import { prettyPrint } from "recast";
 import { name } from "../../package.json";
-import AuthCorePlugin from "../index";
 import { builders } from "ast-types";
+import { beforeCreateControllerBaseModule } from "../events/create-entity-controller-base";
 
 describe("Testing beforeCreateControllerBaseModule hook", () => {
-  let plugin: AuthCorePlugin;
   let context: DsgContext;
   let params: CreateEntityControllerBaseParams;
 
   beforeEach(() => {
-    plugin = new AuthCorePlugin();
     context = mock<DsgContext>({
       pluginInstallations: [{ npm: name }],
     });
@@ -113,10 +111,7 @@ describe("Testing beforeCreateControllerBaseModule hook", () => {
     };
   });
   it("should correctly alter the controller base module", () => {
-    const { template } = plugin.beforeCreateControllerBaseModule(
-      context,
-      params
-    );
+    const { template } = beforeCreateControllerBaseModule(context, params);
     const code = prettyPrint(template).code;
     const expectedCode = prettyCode(correctOutputTemplate);
     expect(code).toStrictEqual(expectedCode);

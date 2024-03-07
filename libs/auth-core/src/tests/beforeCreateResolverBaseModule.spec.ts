@@ -10,16 +10,14 @@ import { parse } from "@amplication/code-gen-utils";
 import { mock } from "jest-mock-extended";
 import { prettyPrint } from "recast";
 import { name } from "../../package.json";
-import AuthCorePlugin from "../index";
 import { builders } from "ast-types";
+import { beforeCreateResolverBaseModule } from "../events/create-entity-resolver-base";
 
 describe("Testing beforeCreateEntityResolverBaseModule hook", () => {
-  let plugin: AuthCorePlugin;
   let context: DsgContext;
   let params: CreateEntityResolverBaseParams;
 
   beforeEach(() => {
-    plugin = new AuthCorePlugin();
     context = mock<DsgContext>({
       pluginInstallations: [{ npm: name }],
     });
@@ -115,7 +113,7 @@ describe("Testing beforeCreateEntityResolverBaseModule hook", () => {
     };
   });
   it("should correctly alter the resolver base module", () => {
-    const { template } = plugin.beforeCreateResolverBaseModule(context, params);
+    const { template } = beforeCreateResolverBaseModule(context, params);
     const code = prettyPrint(template).code;
     const expectedCode = prettyCode(correctOutputTemplate);
     expect(code).toStrictEqual(expectedCode);

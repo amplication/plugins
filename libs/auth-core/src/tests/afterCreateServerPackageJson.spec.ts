@@ -9,16 +9,14 @@ import {
 } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
 import { parse, prettyPrint } from "recast";
-import AuthCorePlugin from "../index";
+import { afterCreateServerPackageJson } from "../events/create-server-package-json";
 
 describe("Testing afterCreateServerPackageJson hook", () => {
-  let plugin: AuthCorePlugin;
   let context: DsgContext;
   let params: CreateServerPackageJsonParams;
   let modules: ModuleMap;
 
   beforeEach(() => {
-    plugin = new AuthCorePlugin();
     context = mock<DsgContext>({
       serverDirectories: {
         srcDirectory: "src",
@@ -94,7 +92,7 @@ describe("Testing afterCreateServerPackageJson hook", () => {
     modules = new ModuleMap(mock<BuildLogger>());
   });
   it("should create the grants module when the context has entities and roles specified", async () => {
-    const updatedModules = await plugin.afterCreateServerPackageJson(
+    const updatedModules = await afterCreateServerPackageJson(
       context,
       params,
       modules
