@@ -1,4 +1,8 @@
-import { AmplicationPlugin, Events } from "@amplication/code-gen-types";
+import {
+  AmplicationPlugin,
+  EventNames,
+  Events,
+} from "@amplication/code-gen-types";
 import { merge } from "lodash";
 import { AuthCorePlugin } from "@amplication/auth-core";
 import {
@@ -15,7 +19,7 @@ import {
 
 class SamlAuthPlugin extends AuthCorePlugin implements AmplicationPlugin {
   constructor() {
-    super(new Set([]));
+    super(new Set([EventNames.CreateSeed]));
   }
 
   register(): Events {
