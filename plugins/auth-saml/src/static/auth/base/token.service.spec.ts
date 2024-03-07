@@ -3,7 +3,7 @@ import { mock } from "jest-mock-extended";
 import { TokenServiceBase } from "./token.service.base";
 import {
   INVALID_USERNAME_ERROR,
-} from "../../auth/constants";
+} from "../constants";
 
 const VALID_ID = "1";
 const SIGN_TOKEN = "SIGN_TOKEN";
@@ -38,7 +38,7 @@ describe("Testing the TokenServiceBase", () => {
     it("should reject when username missing", () => {
       const result = tokenServiceBase.createToken({
         id: VALID_ID,
-        username: null,
+        username: "",
         sessionId: VALID_CREDENTIALS.sessionId,
       });
 
