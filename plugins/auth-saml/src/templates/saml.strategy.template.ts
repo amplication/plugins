@@ -2,9 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Profile } from "@node-saml/passport-saml";
 import { SamlStrategyBase } from "./base/saml.strategy.base";
+import { Prisma } from "@prisma/client";
 
 declare class ENTITY_SERVICE {}
-declare class ENTITY_NAME_CREATE_INPUT {}
+declare class ENTITY_NAME_PRISMA_CREATE_INPUT {}
 
 @Injectable()
 export class SamlStrategy extends SamlStrategyBase {
@@ -14,7 +15,7 @@ export class SamlStrategy extends SamlStrategyBase {
    * @param profile
    * @returns
    */
-  mapProfileToAuthEntity(profile: Profile): ENTITY_NAME_CREATE_INPUT {
+  mapProfileToAuthEntity(profile: Profile): ENTITY_NAME_PRISMA_CREATE_INPUT {
     return {
       username: profile.nameID,
       roles: this.mapProfileToRoles(profile),
