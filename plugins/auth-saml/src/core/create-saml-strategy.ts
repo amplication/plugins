@@ -45,9 +45,11 @@ async function mapSamlStrategyTemplate(
 
   try {
     const entityServiceName = `${authEntity?.name}Service`;
+    const entityCreateInputName = `${authEntity?.name}CreateInput`;
 
     const template = await readFile(templatePath);
     const authServiceNameId = builders.identifier(entityServiceName);
+    const entityCreateInputNameId = builders.identifier(entityCreateInputName);
 
     const entityNameToLower = authEntity?.name.toLowerCase();
 
@@ -56,9 +58,14 @@ async function mapSamlStrategyTemplate(
       `../../${entityNameToLower}/${entityNameToLower}.service`,
     );
 
+    const entityCreateInputDtoImport = importNames(
+      [entityCreateInputNameId],
+      `../../${entityNameToLower}/base/${entityCreateInputName}`,
+    );
+
     addImports(
       template,
-      [entityServiceImport].filter(
+      [entityServiceImport, entityCreateInputDtoImport].filter(
         (x) => x, //remove nulls and undefined
       ) as namedTypes.ImportDeclaration[],
     );
