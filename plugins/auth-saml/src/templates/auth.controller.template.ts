@@ -31,13 +31,14 @@ export class AuthController {
       const user = await this.authService.login(req.user as ENTITY_NAME_INFO);
 
       // Change for the more appropriate way to handle the generated token
+      res.cookie("token", user.accessToken, {
+        httpOnly: true,
+        secure: true,
+      });
+
       if (this.callbackUrl) {
-        return res.redirect(`${this.callbackUrl}?code=${user.accessToken}`);
+        res.redirect(302, `${this.callbackUrl}?code=${user.accessToken}`);
       } else {
-        res.setHeader(
-          "Set-Cookie",
-          `token=${user.accessToken}; Path=/; HttpsOnly`,
-        );
         res.sendStatus(200);
       }
     }
