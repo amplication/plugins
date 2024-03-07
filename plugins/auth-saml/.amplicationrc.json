@@ -1,6 +1,9 @@
 {
   "settings": {
-    "JwtSecretKeyReference": "JWT_SECRET_KEY"
+    "JwtSecretKeyReference": "JWT_SECRET_KEY",
+    "SamlSPDecryptionCertReference": "SAML_DECRYPT_KEY",
+    "SamlSPPrivateCertReference": "SAML_PRIVATE_CERT",
+    "SamlIdpPublicCertReference": "SAML_PUBLIC_CERT"
   },
   "systemSettings": {
     "requireAuthenticationEntity": "false"

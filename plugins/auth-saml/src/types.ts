@@ -4,4 +4,10 @@ export interface Settings {
    * i.e. for the basic secrets provider (env variables), this would be the name of the environment variable containg the JWT Secret Key.
    */
   JwtSecretKeyReference: string;
+  /**
+   * The Secrets Provider reference for the saml secrets used to sign to SAML IdP.
+   */
+  SamlSPPrivateCertReference: string;
+  SamlIdpPublicCertReference: string;
+  SamlSPDecryptionCertReference: string;
 }
