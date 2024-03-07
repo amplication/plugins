@@ -7,6 +7,7 @@
   "devDependencies": {
     "@nx/eslint": "18.0.7",
     "@nx/eslint-plugin": "^18.0.7",
+    "@nx/jest": "^18.0.7",
     "@nx/js": "18.0.7",
     "@types/prettier": "^2.6.2",
     "eslint-config-prettier": "^9.1.0",
