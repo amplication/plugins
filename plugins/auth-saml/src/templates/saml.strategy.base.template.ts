@@ -34,12 +34,12 @@ export abstract class SamlStrategyBase extends PassportStrategy(Strategy) {
 
       if (!user) {
         user = await this.ENTITY_SERVICE.CREATE_FUNCTION({
-          data: this.getRoles(profile),
+          data: this.mapProfileToAuthEntity(profile),
         });
       } else {
         user = await this.ENTITY_SERVICE.UPDATE_FUNCTION({
           where: { username },
-          data: this.getRoles(profile),
+          data: this.mapProfileToAuthEntity(profile),
         });
       }
 
@@ -56,15 +56,7 @@ export abstract class SamlStrategyBase extends PassportStrategy(Strategy) {
     super(config, signon, signout);
   }
 
-  getRoles(profile: Profile): string[] {
-    const profileAttributes = profile.attributes as Record<string, string[]>;
-    if (profileAttributes["roles"]) {
-      return typeof profileAttributes["roles"] === "string"
-        ? [profileAttributes["roles"]]
-        : profileAttributes["roles"];
-    } else {
-      return [];
-    }
-  }
+  abstract mapProfileToAuthEntity(profile: Profile): ENTITY_NAME_CREATE_INPUT;
 
+  abstract mapProfileToRoles(profile: Profile): string[];
 }
