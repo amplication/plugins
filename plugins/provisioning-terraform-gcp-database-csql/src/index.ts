@@ -62,9 +62,9 @@ class TerraformAwsDatabaseCloudSql implements AmplicationPlugin {
     // fetch the plugin specific settings and merge them with the defaults
     const settings = getPluginSettings(context.pluginInstallations);
 
-    const templateFileName: string = "csql-template.tf";
-    const fileNamePrefix: string = "csql-";
-    const fileNameSuffix: string = ".tf";
+    const templateFileName = "csql-template.tf";
+    const fileNamePrefix = "csql-";
+    const fileNameSuffix = ".tf";
     const name: string = settings.global.name
       ? settings.global.name
       : serviceName;

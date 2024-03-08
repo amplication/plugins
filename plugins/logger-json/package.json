@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-logger-json",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Amplication plugin to display your logs in JSON",
   "main": "dist/index.js",
   "scripts": {
@@ -12,8 +12,8 @@
   "author": "sakurablossoms01",
   "license": "Apache-2.0",
   "dependencies": {
-    "@amplication/code-gen-types": "^2.0.20",
-    "@amplication/code-gen-utils": "^0.0.7",
+    "@amplication/code-gen-types": "^2.0.23",
+    "@amplication/code-gen-utils": "^0.0.9",
     "@types/json-to-ast": "^2.1.4",
     "@types/node": "^20.9.5",
     "ast-types": "^0.14.2",
@@ -31,10 +31,10 @@
     "@types/lodash": "^4.14.200",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
-    "copy-webpack-plugin": "^11.0.0",
+    "copy-webpack-plugin": "^12.0.2",
     "eslint": "^8.52.0",
     "jest-mock-extended": "^3.0.5",
-    "prettier": "^3.0.3",
+    "prettier": "^2.6.2",
     "rimraf": "^5.0.5",
     "ts-jest": "^29.1.1",
     "ts-loader": "^9.5.0",

@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-deployment-github-actions-aws-ecs",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Adds a GitHub Actions workflow for the packaging to AWS Elastic Container Registry (ECR) and publishing to AWS Elastic Container Service (ECS). This plugin requires the ECR & ECS to be present and passed as configuration.",
   "main": "dist/index.js",
   "nx": {},
@@ -13,8 +13,8 @@
   "author": "Levi van Noort <levi@amplication.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@amplication/code-gen-types": "^2.0.17",
-    "@amplication/code-gen-utils": "^0.0.7",
+    "@amplication/code-gen-types": "^2.0.23",
+    "@amplication/code-gen-utils": "^0.0.9",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
@@ -23,10 +23,10 @@
     "@types/lodash": "^4.14.199",
     "@typescript-eslint/eslint-plugin": "^5.33.0",
     "@typescript-eslint/parser": "^5.33.0",
-    "copy-webpack-plugin": "^11.0.0",
+    "copy-webpack-plugin": "^12.0.2",
     "eslint": "^8.21.0",
     "jest-mock-extended": "^3.0.1",
-    "prettier": "^2.8.7",
+    "prettier": "^2.6.2",
     "rimraf": "^4.4.1",
     "ts-loader": "^9.4.2",
     "typescript": "^4.9.3",
