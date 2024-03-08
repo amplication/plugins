@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-secrets-manager-aws-secret-manager",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Amplication plugin for AWS Secrets Manager",
   "main": "dist/index.js",
   "scripts": {

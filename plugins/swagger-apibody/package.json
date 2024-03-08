@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-swagger-apibody",
-  "version": "1.3.4",
+  "version": "1.3.5",
   "description": "Add Description of Routes and Entity properties to the REST-API Documentation",
   "main": "dist/index.js",
   "nx": {},

@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-auth-keycloak",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Keycloak Authentication plugin for Amplication",
   "main": "dist/index.js",
   "nx": {},

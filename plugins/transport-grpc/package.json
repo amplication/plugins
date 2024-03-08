@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-transport-grpc",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "add gRPC endpoints to your generated services",
   "main": "dist/index.js",
   "nx": {},
