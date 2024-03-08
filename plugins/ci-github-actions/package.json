@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-ci-github-actions",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Adds a github actions workflow to for the service used for building and testing the service.",
   "main": "dist/index.js",
   "nx": {},
