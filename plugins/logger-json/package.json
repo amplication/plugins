@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-logger-json",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Amplication plugin to display your logs in JSON",
   "main": "dist/index.js",
   "scripts": {

@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-broker-rabbitmq",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Use a RabbitMQ message broker to communicate between services generated with Amplication",
   "main": "dist/index.js",
   "nx": {},

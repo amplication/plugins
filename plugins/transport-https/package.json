@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-transport-https",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "This plugin allows you to achieve TLS termination at application level.",
   "main": "dist/index.js",
   "nx": {},
