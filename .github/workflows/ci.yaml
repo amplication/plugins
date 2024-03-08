@@ -117,6 +117,9 @@ jobs:
       - name: Install dependencies and build 🔧
         run: npm ci
 
+      - name: Build
+        run: npx nx build ${{ matrix.affected-plugin }}
+
       - name: Publish version dry-run
         run: npm publish --access public --dry-run
         working-directory: plugins/${{ matrix.affected-plugin }}
