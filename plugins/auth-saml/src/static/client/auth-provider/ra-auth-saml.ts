@@ -55,15 +55,6 @@ export const samlAuthProvider: AuthProvider = {
   },
   getPermissions: () => Promise.reject("Unknown method"),
   getIdentity: async () => {
-    // const str = localStorage.getItem(USER_DATA_LOCAL_STORAGE_ITEM);
-    // const userData: LoginMutateResult = JSON.parse(str || "");
-
-    // return Promise.resolve({
-    //   id: userData.login.username,
-    //   fullName: userData.login.username,
-    //   avatar: undefined,
-    // });
-
     return Promise.resolve({
       id: "",
       fullName: "",
