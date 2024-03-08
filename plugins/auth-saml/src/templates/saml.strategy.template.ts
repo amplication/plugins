@@ -11,8 +11,9 @@ declare class ENTITY_NAME_PRISMA_CREATE_INPUT {}
 export class SamlStrategy extends SamlStrategyBase {
   /**
    * Map the IdP profile to the auth entity.
-   * All the required fields must be mapped here or made them not required.
-   * @param profile
+   * All the required fields must be mapped here or made
+   * them not required otherwise a type error will appear.
+   * @param profile SAML profile
    * @returns
    */
   mapProfileToAuthEntity(profile: Profile): ENTITY_NAME_PRISMA_CREATE_INPUT {
