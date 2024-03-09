@@ -1,0 +1,33 @@
+{
+  "name": "lib-auth-core",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/auth-core/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "{projectRoot}/dist",
+        "main": "libs/auth-core/src/index.ts",
+        "tsConfig": "libs/auth-core/tsconfig.lib.json",
+        "assets": [
+          "libs/auth-core/*.md",
+          "libs/auth-core/**/templates/**",
+          "libs/auth-core/**/static/**"
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/auth-core/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}

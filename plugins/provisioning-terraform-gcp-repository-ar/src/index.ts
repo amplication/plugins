@@ -49,9 +49,9 @@ class TerraformGcpRepositoryArPlugin implements AmplicationPlugin {
     // fetch the plugin specific settings and merge them with the defaults
     const settings = getPluginSettings(context.pluginInstallations);
 
-    const templateFileName: string = "ar-template.tf";
-    const fileNamePrefix: string = "ar-";
-    const fileNameSuffix: string = ".tf";
+    const templateFileName = "ar-template.tf";
+    const fileNamePrefix = "ar-";
+    const fileNameSuffix = ".tf";
     const name: string = settings.repository_name
       ? settings.repository_name
       : serviceName;

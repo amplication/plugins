@@ -120,7 +120,7 @@ export function parse(source: string, options?: ParseOptions): namedTypes.File {
       ...{
         parser: {
           getOptions,
-          parse: (source: string, options?: Overrides): File => {
+          parse: (source: string, options?: Overrides) => {
             return recastBabelParser.parser.parse(source, getOptions(options));
           },
         },

@@ -56,7 +56,7 @@ class TerraformGcpCorePlugin implements AmplicationPlugin {
      *    option 2 (value: false): /[optional: mono_prefix]/<service_name>/<directory_name_value>
      */
 
-    const rootDirectoryPath: string = "./";
+    const rootDirectoryPath = "./";
     const terraformDirectoryPath: string = settings.root_level
       ? join(rootDirectoryPath, settings.directory_name)
       : join(context.serverDirectories.baseDirectory, settings.directory_name);
