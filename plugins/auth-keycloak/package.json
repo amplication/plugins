@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-auth-keycloak",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Keycloak Authentication plugin for Amplication",
   "main": "dist/index.js",
   "nx": {},
@@ -18,7 +18,9 @@
     "@amplication/code-gen-utils": "^0.0.9",
     "js-convert-case": "^4.2.0",
     "lodash": "^4.17.21",
-    "normalize-path": "^3.0.0"
+    "normalize-path": "^3.0.0",
+    "crypto-js": "^4.2.0",
+    "@types/node": "^20.11.24"
   },
   "devDependencies": {
     "@babel/parser": "^7.23.3",
