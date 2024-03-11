@@ -38,14 +38,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Get changed files
+        id: files
+        uses: tj-actions/changed-files@v42
+        with:
+          files_ignore: package-lock.json
+          base_sha: ${{ steps.setSHAs.outputs.base }}
+          separator: ","
+
       - name: Lint
-        run: npx nx affected --target=lint --parallel
+        run: npx nx affected --target=lint --parallel --files=${{ steps.files.outputs.all_changed_files }}
 
       - name: Build
-        run: npx nx affected --target=build --parallel
+        run: npx nx affected --target=build --parallel --files=${{ steps.files.outputs.all_changed_files }}
 
       - name: Test
-        run: npx nx affected --target=test --parallel
+        run: npx nx affected --target=test --parallel --files=${{ steps.files.outputs.all_changed_files }}
 
   nx:
     name: Nx
