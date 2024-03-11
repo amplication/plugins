@@ -77,9 +77,10 @@ class RedisBrokerPlugin implements AmplicationPlugin {
     );
     const topicsModule = modules.get(topicsPath);
     if (!topicsModule) {
-      throw new Error(
-        "Failed to find the topics.ts file for the message broker topics enum"
+      context.logger.warn(
+        "No message broker topics were defined and connected to your service, the generated code will not contain actual event handlers for any topic"
       );
+     return modules;
     }
 
     const topicsFile = utils.parse(topicsModule.code);
