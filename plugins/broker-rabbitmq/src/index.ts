@@ -91,6 +91,9 @@ class RabbitMQPlugin implements AmplicationPlugin {
     );
     const topicsModule = modules.get(topicsPath);
     if (!topicsModule) {
+      context.logger.warn(
+        "No message broker topics were defined and connected to your service, the generated code will not contain actual event handlers for any topic"
+      );
       return modules;
     }
 
