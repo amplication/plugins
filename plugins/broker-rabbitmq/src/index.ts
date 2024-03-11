@@ -91,9 +91,7 @@ class RabbitMQPlugin implements AmplicationPlugin {
     );
     const topicsModule = modules.get(topicsPath);
     if (!topicsModule) {
-      throw new Error(
-        "Failed to find the topics.ts file for the message broker topics enum"
-      );
+      return modules;
     }
 
     const topicsFile = parse(topicsModule.code);
