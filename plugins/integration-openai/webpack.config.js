@@ -9,9 +9,6 @@ module.exports = {
   entry: "./src/index.ts",
   externals: ["@amplication/code-gen-utils", "@amplication/code-gen-types"],
   plugins: [
-    new webpack.SourceMapDevToolPlugin({
-      filename: "[name].js.map",
-    }),
     new CopyWebpackPlugin({
       patterns: [{ from: "src/static", to: "static" }],
     }),
@@ -32,9 +29,6 @@ module.exports = {
   },
   resolve: {
     extensions: [".ts", ".js"],
-  },
-  optimization: {
-    minimize: false,
   },
   output: {
     filename: "index.js",

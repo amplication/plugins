@@ -13,9 +13,6 @@ module.exports = {
     "prisma-schema-dsl",
   ],
   plugins: [
-    new webpack.SourceMapDevToolPlugin({
-      filename: "[name].js.map",
-    }),
     new CopyWebpackPlugin({
       patterns: [
         { from: "src/static", to: "static", noErrorOnMissing: true },
@@ -34,9 +31,6 @@ module.exports = {
   },
   resolve: {
     extensions: [".ts", ".js"],
-  },
-  optimization: {
-    minimize: false,
   },
   output: {
     filename: "index.js",
