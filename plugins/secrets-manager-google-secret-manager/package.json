@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-secrets-manager-google-secret-manager",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Amplication plugin for Google Secrets Manager",
   "main": "dist/index.js",
   "scripts": {

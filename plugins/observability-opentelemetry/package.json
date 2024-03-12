@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-observability-opentelemetry",
-  "version": "2.0.10",
+  "version": "2.0.11",
   "description": "This plugin is created to add integrate opentelemetry to the amplication app",
   "main": "dist/index.js",
   "nx": {},
