@@ -34,9 +34,7 @@ node_modules
 **/credentials.json
 **/client_secrets.json
 **/client_secret.json
-*creds*
 *.dat
-*password*
 *.httr-oauth*
 
 # Terraform development
@@ -54,6 +52,9 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
+# Build Files
+dist/
+coverage/
 
 # System Files
 .DS_Store
