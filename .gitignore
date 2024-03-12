@@ -46,15 +46,13 @@ node_modules
 # misc
 /.sass-cache
 /connect.lock
-/coverage
+**/coverage/
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log
 testem.log
 /typings
-# Build Files
-dist/
-coverage/
+
 
 # System Files
 .DS_Store
