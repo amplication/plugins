@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { ClientRMQ } from "@nestjs/microservices";
+import { ClientRMQ, RmqRecordBuilder } from "@nestjs/microservices";
 import { RabbitMQMessage } from "./RabbitMQMessage";
+import { RabbitMQMessageHeaders } from "./RabbitMQMessageHeaders";
 import { AllMessageBrokerTopics } from "./topics";
 
 @Injectable()
@@ -9,17 +10,25 @@ export class RabbitMQProducerService {
 
   async emitMessage(
     topic: AllMessageBrokerTopics,
-    message: RabbitMQMessage
+    message: RabbitMQMessage,
+    headers?: RabbitMQMessageHeaders,
+    priority?: number
   ): Promise<void> {
-    return await new Promise((resolve, reject) => {
-      this.rabbitMQClient.emit(topic, message).subscribe({
-        error: (err: Error) => {
-          reject(err);
-        },
-        next: () => {
-          resolve();
-        },
-      });
+    const record = new RmqRecordBuilder(message)
+    .setOptions({
+      headers,
+      priority,
+    })
+    .build();
+      
+    const client = await this.rabbitMQClient.createClient();
+    const channel = client.createChannel();
+
+    await channel.waitForConnect();
+
+    await channel.assertExchange(topic, "fanout", { durable: true });
+    await channel.publish(topic, "", Buffer.from(JSON.stringify({ pattern : topic, data:record})), {
+      persistent: true,
     });
   }
 

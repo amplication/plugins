@@ -1,7 +1,6 @@
 import {
   CreateServerDotEnvParams,
   DsgContext,
-  VariableDictionary,
 } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
 import { name } from "../../package.json";
