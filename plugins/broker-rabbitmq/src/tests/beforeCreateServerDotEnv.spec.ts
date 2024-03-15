@@ -26,7 +26,7 @@ describe("Testing beforeCreateServerDotEnv", () => {
     const { envVariables } = plugin.beforeCreateServerDotEnv(context, params);
     expect(envVariables).toStrictEqual([
       { RABBITMQ_URLS: "amqp://user:password@localhost:5672" },
-      { RABBITMQ_QUEUE: "sample-application" },
+      { RABBITMQ_SUBSCRIBE_GROUP: "sample-application" },
     ]);
   });
 });

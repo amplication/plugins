@@ -34,76 +34,33 @@ describe("Testing afterCreateMessageBrokerClientOptionsFactory", () => {
       utils.parse(expectedRabbitMqClientOptions)
     ).code;
 
-    const testModule = modules.get(
-      path.join("/", "generateRabbitMQClientOptions.spec.ts")
-    );
-    const testCode = utils.print(utils.parse(testModule.code)).code;
-    const expectedTestCode = utils.print(utils.parse(expectedTest)).code;
-
     expect(rabbitMqClientOptionsCode).toStrictEqual(
       expectedRabbitMqClientOptionsCode
     );
-    expect(testCode).toStrictEqual(expectedTestCode);
   });
 });
 
-const expectedTest = `import { ConfigService } from "@nestjs/config"
-import { generateRabbitMQClientOptions } from "./generateRabbitMQClientOptions"
-import { mock } from "jest-mock-extended"
-
-describe("Testing the RabbitMQ Plugin", () => {
-    let ConfigService: ConfigService
-
-    describe("Testing the Generate RabbitMQ Client Options", () => {
-        beforeEach(() => {
-            ConfigService = mock<ConfigService>()
-        })
-        it("should work since we return a mock value", () => {
-            let configGet = (ConfigService.get as jest.Mock)
-            configGet.mockReset()
-            configGet.mockReturnValue("Test")
-            generateRabbitMQClientOptions(ConfigService);
-            expect(configGet.mock.calls.length).toBe(2)
-            expect(configGet.mock.calls[0][0]).toBe("RABBITMQ_URLS")
-            expect(configGet.mock.calls[1][0]).toBe("RABBITMQ_QUEUE")
-        })
-
-        it("should throw an error", () => {
-            let configGet = (ConfigService.get as jest.Mock)
-            configGet.mockReset()
-            
-            expect(() => generateRabbitMQClientOptions(ConfigService))
-                .toThrowError("RABBITMQ_URLS environment variable must be defined")
-            expect(configGet.mock.calls.length).toBe(2)
-            expect(configGet.mock.calls[0][0]).toBe("RABBITMQ_URLS")
-            expect(configGet.mock.calls[1][0]).toBe("RABBITMQ_QUEUE")
-        })
-    })
-})`;
 const expectedRabbitMqClientOptions = `import { ConfigService } from "@nestjs/config";
 import { RmqOptions, Transport } from "@nestjs/microservices";
 
 export const generateRabbitMQClientOptions = (
-  configService: ConfigService
+  configService: ConfigService,
+  topic?: string
 ): RmqOptions => {
   const RabbitMQUrlStrings = configService.get("RABBITMQ_URLS");
-  const RabbitMQQueue = configService.get("RABBITMQ_QUEUE");
 
   if (!RabbitMQUrlStrings) {
     throw new Error("RABBITMQ_URLS environment variable must be defined");
   }
-
-  if (!RabbitMQQueue) {
-    throw new Error("RABBITMQ_QUEUE environment variable must be defined");
-  }
-
+  
   return {
     transport: Transport.RMQ,
     options: {
       urls: [...RabbitMQUrlStrings.split(",")],
-      queue: RabbitMQQueue,
+      queue: topic,
       queueOptions: {
-        durable: false
+        consumerGroupId: configService.get("RABBITMQ_SUBSCRIBE_GROUP"),
+        noAssert: topic ? false : true, // If topic is not defined, then the queue is not created
       },
     },
   };

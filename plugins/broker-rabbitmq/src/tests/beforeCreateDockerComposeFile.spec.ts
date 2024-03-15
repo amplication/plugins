@@ -9,7 +9,7 @@ describe("Testing beforeCreateDockerComposeFile", () => {
   let plugin: RabbitMQPlugin;
   let context: DsgContext;
   let params: CreateServerDockerComposeDevParams;
-  let expectedDockerServiceObj;
+  let expectedDockerServiceObj: unknown;
 
   beforeEach(async () => {
     plugin = new RabbitMQPlugin();
