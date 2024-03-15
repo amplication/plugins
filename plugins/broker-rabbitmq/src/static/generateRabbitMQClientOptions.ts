@@ -1,6 +1,5 @@
 import { ConfigService } from "@nestjs/config";
 import { RmqOptions, Transport } from "@nestjs/microservices";
-import { MyMessageBrokerTopics } from "./topics";
 
 export const generateRabbitMQClientOptions = (
   configService: ConfigService,
