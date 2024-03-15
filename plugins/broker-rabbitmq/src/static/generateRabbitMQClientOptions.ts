@@ -18,6 +18,7 @@ export const generateRabbitMQClientOptions = (
       urls: [...RabbitMQUrlStrings.split(",")],
       queue: topic,
       queueOptions: {
+        consumerGroupId: configService.get("RABBITMQ_SUBSCRIBE_GROUP"),
         noAssert: topic ? false : true, // If topic is not defined, then the queue is not created
       },
     },
