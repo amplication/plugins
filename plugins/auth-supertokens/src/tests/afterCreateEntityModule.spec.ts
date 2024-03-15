@@ -81,9 +81,9 @@ import { AuthService } from "./auth.service";
 import { TheEntityModule } from "../theEntity/theEntity.module";
 
 @Module({
-  providers: [AuthService, PasswordService],
+  providers: [AuthService],
   imports: [forwardRef(() => TheEntityModule)],
-  exports: [PasswordService, AuthService]
+  exports: [AuthService]
 })
 export class AuthModule implements NestModule {
 

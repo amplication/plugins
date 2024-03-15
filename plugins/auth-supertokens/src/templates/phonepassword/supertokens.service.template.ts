@@ -76,7 +76,7 @@ export class SupertokensService {
                     (!input.userContext ||
                       !input.userContext.skipDefaultPostUserSignUp)
                   ) {
-                    userService.create({
+                    userService.createUser({
                       data: {
                         SUPERTOKENS_ID_FIELD_NAME: resp.user.id,
                         ...DEFAULT_FIELD_VALUES,
@@ -98,7 +98,7 @@ export class SupertokensService {
                   if (input.userContext.session !== undefined) {
                     return input.userContext.session;
                   }
-                  const user = await userService.findOne({
+                  const user = await userService.user({
                     where: {
                       SUPERTOKENS_ID_FIELD_NAME: input.userId,
                     },
@@ -206,7 +206,7 @@ export class SupertokensService {
   async getUserBySupertokensId(
     supertokensId: string
   ): Promise<AUTH_ENTITY_ID | null> {
-    return await this.userService.findOne({
+    return await this.userService.user({
       where: {
         SUPERTOKENS_ID_FIELD_NAME: supertokensId,
       },
