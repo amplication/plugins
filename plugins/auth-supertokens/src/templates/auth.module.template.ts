@@ -8,9 +8,9 @@ import { STAuthMiddleware } from "./supertokens/auth.middleware";
 import { AuthService } from "./auth.service";
 
 @Module({
-  providers: [AuthService, PasswordService],
+  providers: [AuthService],
   imports: [forwardRef(() => AUTH_ENTITY_MODULE_ID)],
-  exports: [PasswordService, AuthService],
+  exports: [AuthService],
 })
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

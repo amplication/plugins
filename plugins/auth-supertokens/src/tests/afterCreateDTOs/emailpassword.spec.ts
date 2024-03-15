@@ -250,7 +250,7 @@ export class SupertokensService {
                       resp.user.loginMethods.length === 1 &&
                       (!input.userContext || !input.userContext.skipDefaultPostUserSignUp)
                     ) {
-                      userService.create({
+                      userService.createUser({
                         data: {
                             stId: resp.user.id,
                             ...{
@@ -277,7 +277,7 @@ export class SupertokensService {
               return {
                 ...originalImplementation,
                 createNewSession: async function(input) {
-                  const user = await userService.findOne({
+                  const user = await userService.user({
                     where: {
                       stId: input.userId
                     },
@@ -311,7 +311,7 @@ export class SupertokensService {
   }
 
   async getUserBySupertokensId(supertokensId: string): Promise<TheEntity | null> {
-    return await this.userService.findOne({
+    return await this.userService.user({
       where: {
         stId: supertokensId
       }
