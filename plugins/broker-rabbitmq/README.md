@@ -6,7 +6,7 @@ Implement RabbitMQ as the message broker in your Amplication's generated service
 
 ## Purpose
 
-This plugin generates the relevant code to provide you with end-to-end integration for a RabbitMQ message broker.
+This plugin generates the relevant code to provide you with end-to-end integration for a RabbitMQ message broker in a Pub/Sub mode compatible with amplication Message Broker.
 
 It generates the following parts:
 
