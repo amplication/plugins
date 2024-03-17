@@ -7,6 +7,7 @@ import {
 import { builders, namedTypes } from "ast-types";
 import { memberExpression } from "@utils/ast";
 import { createEnumName, pascalCase } from "@utils/helpers";
+import * as crypto from "crypto";
 
 const DEFAULT_ADDRESS = "(32.085300, 34.781769)";
 const DEFAULT_EMAIL = "example@example.com";
@@ -29,6 +30,10 @@ export const DEFAULT_USERNAME_LITERAL = builders.stringLiteral("admin");
 export const DEFAULT_ROLE_LITERAL = builders.arrayExpression([
   builders.stringLiteral("user"),
 ]);
+
+export function generateRandomString(): string {
+  return crypto.randomBytes(10).toString("hex");
+}
 
 export function createAuthEntityObjectCustomProperties(
   authEntity: Entity,
@@ -135,8 +140,9 @@ export function createDefaultValue(
       return null;
     }
     case EnumDataType.Password: {
-      // Throw error on presence of password field in auth entity
-      throw new Error("Password field is not supported with Auth0 plugin");
+      return defaultValue
+        ? builders.stringLiteral(defaultValue as string)
+        : builders.stringLiteral(generateRandomString());
     }
     default: {
       throw new Error(`Unexpected data type: ${field.dataType}`);

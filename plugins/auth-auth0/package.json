@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-auth-auth0",
-  "version": "1.0.7",
+  "version": "1.0.9",
   "description": "Auth0 plugin for Amplication",
   "main": "dist/index.js",
   "scripts": {
@@ -16,6 +16,8 @@
     "@amplication/code-gen-types": "^2.0.23",
     "@amplication/code-gen-utils": "^0.0.9",
     "auth0": "^4.1.0",
+    "crypto-js": "^4.2.0",
+    "@types/node": "^20.11.24",
     "lodash": "^4.17.21",
     "normalize-path": "^3.0.0"
   },

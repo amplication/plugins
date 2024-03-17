@@ -8,8 +8,9 @@ import RabbitMQPlugin from "../index";
 import { mock } from "jest-mock-extended";
 import * as utils from "../util/ast";
 import path from "path";
+import { afterCreateServer } from "../events";
 
-describe("Testing afterCreateServerAuth", () => {
+describe("Testing afterCreateServer", () => {
   let plugin: RabbitMQPlugin;
   let context: DsgContext;
   let params: CreateServerAuthParams;
@@ -23,14 +24,10 @@ describe("Testing afterCreateServerAuth", () => {
   });
 
   it("should correctly add the code for generating rabbitmq controller", async () => {
-    const modules = await plugin.afterCreateServerAuth(
-      context,
-      params,
-      moduleMap
-    );
+    const modules = await afterCreateServer(context, params, moduleMap);
 
     const controllerModule = modules.get(
-      path.join("/", "rabbitmq", "rabbitmq.controller.ts")
+      path.join("/", "rabbitmq.controller.ts")
     );
     const controllerCode = utils.print(utils.parse(controllerModule.code)).code;
     const expectedControllerCode = utils.print(
@@ -40,22 +37,28 @@ describe("Testing afterCreateServerAuth", () => {
   });
 });
 
-const expectedController = `import { EventPattern, Payload } from "@nestjs/microservices";
+const expectedController = `import { Ctx, EventPattern, Payload, RmqContext } from "@nestjs/microservices";
 import { RabbitMQMessage } from "./RabbitMQMessage";
-import { Controller } from "@nestjs/common";
+import { Controller, Logger } from "@nestjs/common";
 
 @Controller("rabbitmq-controller")
 export class RabbitMQController {
+  private readonly logger = new Logger(RabbitMQController.name);
+
   @EventPattern("theFirstTopicInTheFirstBroker")
   async onTheFirstTopicInTheFirstBroker(
     @Payload()
-    message: RabbitMQMessage
+    message: RabbitMQMessage,
+    @Ctx()
+    context: RmqContext
   ): Promise<void> {}
 
   @EventPattern("theFirstTopicInTheSecondBroker")
   async onTheFirstTopicInTheSecondBroker(
     @Payload()
-    message: RabbitMQMessage
+    message: RabbitMQMessage,
+    @Ctx()
+    context: RmqContext
   ): Promise<void> {}
 }
 `;
@@ -74,6 +77,7 @@ const fakeContext = () => {
     pluginInstallations: [{}],
     serverDirectories: {
       srcDirectory: "/",
+      messageBrokerDirectory: "/",
     },
     serviceTopics: [
       {

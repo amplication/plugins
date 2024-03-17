@@ -6,6 +6,7 @@ import { mock } from "jest-mock-extended";
 import { name } from "../../package.json";
 import * as utils from "../util/ast";
 import RabbitMQPlugin from "../index";
+import { beforeCreateConnectMicroservices } from "../events";
 
 describe("Testing beforeCreateConnectMicroservices", () => {
   let plugin: RabbitMQPlugin;
@@ -16,6 +17,7 @@ describe("Testing beforeCreateConnectMicroservices", () => {
     plugin = new RabbitMQPlugin();
     context = mock<DsgContext>({
       pluginInstallations: [{ npm: name }],
+      serviceTopics: [],
     });
     params = {
       ...mock<CreateConnectMicroservicesParams>(),
@@ -30,19 +32,16 @@ describe("Testing beforeCreateConnectMicroservices", () => {
     };
   });
   it("should add the necessary code to connect the rabbitmq microservice", () => {
-    const { template } = plugin.beforeCreateConnectMicroservices(
-      context,
-      params
-    );
+    const { template } = beforeCreateConnectMicroservices(context, params);
     const expectedCode = utils.prettyCode(`
         import { INestApplication } from "@nestjs/common";
         import { ConfigService } from "@nestjs/config";
         import { generateRabbitMQClientOptions } from "./rabbitmq/generateRabbitMQClientOptions";
         import { MicroserviceOptions } from "@nestjs/microservices";
+        import { RabbitMQ } from "./rabbitmq/rabbitmq.transport";
 
         export async function connectMicroservices(app: INestApplication) {
         const configService = app.get(ConfigService);
-        app.connectMicroservice<MicroserviceOptions>(generateRabbitMQClientOptions(configService));
         }
         `);
     const templateCode = utils.prettyPrint(template).code;
