@@ -430,11 +430,13 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
     if (!checks.addedAuthModuleInAuthDir) {
       throw new Error("Failed to add the auth module to the auth directory");
     }
-    if (!checks.alteredAuthEntityController) {
-      throw new Error("Failed to alter the entity controller template");
-    }
-    if (!checks.alteredAuthEntityControllerBase) {
-      throw new Error("Failed to alter the entity controller base template");
+    if (context.resourceInfo?.settings.serverSettings.generateRestApi) {
+      if (!checks.alteredAuthEntityController) {
+        throw new Error("Failed to alter the entity controller template");
+      }
+      if (!checks.alteredAuthEntityControllerBase) {
+        throw new Error("Failed to alter the entity controller base template");
+      }
     }
     if (context.resourceInfo?.settings.serverSettings.generateGraphQL) {
       if (!checks.alteredAuthEntityResolver) {
@@ -499,8 +501,10 @@ class SupertokensAuthPlugin implements AmplicationPlugin {
       }
       newModules.set(module);
     }
-
-    alterGraphqlSettingsInAppModule(newModules, appModule, context.logger);
+    
+    if (context.resourceInfo?.settings.serverSettings.generateGraphQL) {
+      alterGraphqlSettingsInAppModule(newModules, appModule, context.logger);
+    }
 
     return newModules;
   }
