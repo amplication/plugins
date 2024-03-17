@@ -19,11 +19,19 @@ describe("Testing beforeCreateServerAppModule hook", () => {
   let moduleMap: ModuleMap;
 
   beforeEach(() => {
+    //context.resourceInfo?.settings.serverSettings.generateGraphQL
     plugin = new SupertokensAuthPlugin();
     context = mock<DsgContext>({
       pluginInstallations: [{ npm: name }],
       serverDirectories: {
         srcDirectory: "",
+      },
+      resourceInfo: {
+        settings: {
+          serverSettings: {
+            generateGraphQL: true
+          }
+        }
       },
       logger: mock<BuildLogger>(),
     });
