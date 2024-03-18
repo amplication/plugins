@@ -3,15 +3,13 @@ import { parse } from "@amplication/code-gen-utils";
 import { mock } from "jest-mock-extended";
 import { prettyPrint } from "recast";
 import { name } from "../../package.json";
-import AuthCorePlugin from "../index";
+import { beforeCreateSeed } from "../events/createSeed";
 
 describe("Testing beforeCreateSeed hook", () => {
-  let plugin: AuthCorePlugin;
   let context: DsgContext;
   let params: CreateSeedParams;
 
   beforeEach(() => {
-    plugin = new AuthCorePlugin();
     context = mock<DsgContext>({
       pluginInstallations: [{ npm: name }],
       resourceInfo: {
@@ -29,7 +27,7 @@ describe("Testing beforeCreateSeed hook", () => {
   });
 
   it("should correctly alter the template", async () => {
-    const { template } = await plugin.beforeCreateSeed(context, params);
+    const { template } = await beforeCreateSeed(context, params);
     const code = prettyPrint(template).code;
     const expectedCode = prettyCode(correctOutputTemplate);
     expect(code).toStrictEqual(expectedCode);
