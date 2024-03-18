@@ -2,7 +2,6 @@ import { EventNames, Events } from "@amplication/code-gen-types";
 import { AuthCorePlugin } from "./auth-core-plugin";
 import {
   afterCreateAppModule,
-  afterCreateSeed,
   afterCreateServerAuth,
   afterCreateServerPackageJson,
   beforeCreateAppModule,
@@ -15,7 +14,6 @@ import {
   beforeCreateEntityResolverToOneRelationMethods,
   beforeCreateResolverBaseModule,
   beforeCreateResolverModule,
-  beforeCreateSeed,
   beforeCreateServer,
   beforeCreateServerDotEnv,
   beforeCreateServerPackageJson,
@@ -84,10 +82,6 @@ describe("AuthCorePlugin", () => {
       CreateEntityResolverToOneRelationMethods: {
         before: beforeCreateEntityResolverToOneRelationMethods,
       },
-      CreateSeed: {
-        before: beforeCreateSeed,
-        after: afterCreateSeed,
-      },
       CreateServer: {
         before: beforeCreateServer,
       },
@@ -135,10 +129,6 @@ describe("AuthCorePlugin", () => {
       },
       CreateEntityResolverToOneRelationMethods: {
         before: beforeCreateEntityResolverToOneRelationMethods,
-      },
-      CreateSeed: {
-        before: beforeCreateSeed,
-        after: afterCreateSeed,
       },
       CreateServer: {
         before: beforeCreateServer,

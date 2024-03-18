@@ -5,7 +5,6 @@ import {
 } from "@amplication/code-gen-types";
 import {
   afterCreateAppModule,
-  afterCreateSeed,
   afterCreateServerAuth,
   beforeCreateAppModule,
   beforeCreateEntityControllerModule,
@@ -15,7 +14,6 @@ import {
   beforeCreateEntityResolverToOneRelationMethods,
   beforeCreateResolverBaseModule,
   beforeCreateResolverModule,
-  beforeCreateSeed,
   beforeCreateServer,
   beforeCreateServerDotEnv,
   beforeCreateServerPackageJson,
@@ -69,10 +67,6 @@ export abstract class AuthCorePlugin implements AmplicationPlugin {
       },
       CreateEntityResolverToOneRelationMethods: {
         before: beforeCreateEntityResolverToOneRelationMethods,
-      },
-      CreateSeed: {
-        before: beforeCreateSeed,
-        after: afterCreateSeed,
       },
       CreateServer: {
         before: beforeCreateServer,

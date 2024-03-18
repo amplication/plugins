@@ -3,7 +3,7 @@ import { parse } from "@amplication/code-gen-utils";
 import { mock } from "jest-mock-extended";
 import { prettyPrint } from "recast";
 import { name } from "../../package.json";
-import { beforeCreateSeed } from "../events/create-seeds";
+import { beforeCreateSeed } from "../events/createSeed";
 
 describe("Testing beforeCreateSeed hook", () => {
   let context: DsgContext;

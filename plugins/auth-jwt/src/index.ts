@@ -40,6 +40,7 @@ import {
   updateDockerComposeProperties,
 } from "./constants";
 import { getPluginSettings } from "./util/getPluginSettings";
+import { beforeCreateSeed } from "./events/createSeed";
 
 const ARGS_ID = builders.identifier("args");
 const PASSWORD_FIELD_ASYNC_METHODS = new Set(["create", "update"]);
@@ -75,6 +76,9 @@ class JwtAuthPlugin implements AmplicationPlugin {
       },
       CreateServerSecretsManager: {
         before: this.beforeCreateSecretsManager,
+      },
+      CreateSeed: {
+        before: beforeCreateSeed,
       },
     };
   }

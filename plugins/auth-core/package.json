@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-auth-core",
-  "version": "2.0.13",
+  "version": "2.0.14",
   "description": "set auth for Amplication build",
   "main": "dist/index.js",
   "nx": {},
