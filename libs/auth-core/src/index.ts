@@ -7,7 +7,6 @@ export * from "./events/create-entity-resolver-base";
 export * from "./events/create-entity-resolver-to-many-relation-methods";
 export * from "./events/create-entity-resolver-to-one-relation-methods";
 export * from "./events/create-entity-resolver";
-export * from "./events/create-seeds";
 export * from "./events/create-server-app-module";
 export * from "./events/create-server-auth";
 export * from "./events/create-server-dotenv";
