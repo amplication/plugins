@@ -23,7 +23,7 @@ export const NEW_DATE_EXPRESSION = builders.newExpression(DATE_ID, []);
 export const NEW_JSON_EXPRESSION = builders.objectExpression([
   builders.objectProperty(
     builders.stringLiteral("foo"),
-    builders.stringLiteral("bar"),
+    builders.stringLiteral("bar")
   ),
 ]);
 
@@ -32,13 +32,9 @@ export const DEFAULT_ROLE_LITERAL = builders.arrayExpression([
   builders.stringLiteral("user"),
 ]);
 
-export function generateRandomString(): string {
-  return crypto.randomBytes(10).toString("hex");
-}
-
 export function createAuthEntityObjectCustomProperties(
   authEntity: Entity,
-  defaultValues: Record<string, unknown>,
+  defaultValues: Record<string, unknown>
 ): namedTypes.ObjectProperty[] {
   return authEntity.fields
     .filter((field) => field.required)
@@ -51,15 +47,15 @@ export function createAuthEntityObjectCustomProperties(
       builders.objectProperty(
         builders.identifier(field.name),
         // @ts-expect-error: TODO: fix type
-        value,
-      ),
+        value
+      )
     );
 }
 
 export function createDefaultValue(
   field: EntityField,
   entity: Entity,
-  defaultValue: unknown,
+  defaultValue: unknown
 ): namedTypes.Expression | null {
   switch (field.dataType) {
     case EnumDataType.SingleLineText:
@@ -99,10 +95,10 @@ export function createDefaultValue(
       const [firstOption] = options;
       return defaultValue
         ? memberExpression`${createEnumName(field, entity)}.${toPascalCase(
-            defaultValue as string,
+            defaultValue as string
           )}`
         : memberExpression`${createEnumName(field, entity)}.${toPascalCase(
-            firstOption.label,
+            firstOption.label
           )}`;
     }
     case EnumDataType.Boolean: {
@@ -123,7 +119,8 @@ export function createDefaultValue(
     case EnumDataType.UpdatedAt: {
       return null;
     }
-    case EnumDataType.Username: {
+    case EnumDataType.Username:
+    case EnumDataType.Password: {
       return defaultValue
         ? builders.stringLiteral(defaultValue as string)
         : DEFAULT_USERNAME_LITERAL;
@@ -132,18 +129,13 @@ export function createDefaultValue(
       return defaultValue
         ? builders.arrayExpression(
             (defaultValue as string[]).map((item) =>
-              builders.stringLiteral(item),
-            ),
+              builders.stringLiteral(item)
+            )
           )
         : DEFAULT_ROLE_LITERAL;
     }
     case EnumDataType.Lookup: {
       return null;
-    }
-    case EnumDataType.Password: {
-      return defaultValue
-        ? builders.stringLiteral(defaultValue as string)
-        : builders.stringLiteral(generateRandomString());
     }
     default: {
       throw new Error(`Unexpected data type: ${field.dataType}`);
