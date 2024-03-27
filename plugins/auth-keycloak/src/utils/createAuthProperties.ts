@@ -8,7 +8,6 @@ import { builders, namedTypes } from "ast-types";
 import { memberExpression } from "./ast";
 import { createEnumName } from "./helpers";
 import { toPascalCase } from "js-convert-case";
-import * as crypto from "crypto";
 
 const DEFAULT_ADDRESS = "(32.085300, 34.781769)";
 const DEFAULT_EMAIL = "example@example.com";
