@@ -26,6 +26,7 @@ export const NEW_JSON_EXPRESSION = builders.objectExpression([
 ]);
 
 export const DEFAULT_USERNAME_LITERAL = builders.stringLiteral("admin");
+export const DEFAULT_PASSWORD_LITERAL = builders.stringLiteral("admin");
 export const DEFAULT_ROLE_LITERAL = builders.arrayExpression([
   builders.stringLiteral("user"),
 ]);
@@ -117,11 +118,15 @@ export function createDefaultValue(
     case EnumDataType.UpdatedAt: {
       return null;
     }
-    case EnumDataType.Username:
-    case EnumDataType.Password: {
+    case EnumDataType.Username: {
       return defaultValue
         ? builders.stringLiteral(defaultValue as string)
         : DEFAULT_USERNAME_LITERAL;
+    }
+    case EnumDataType.Password: {
+      return defaultValue
+        ? builders.stringLiteral(defaultValue as string)
+        : DEFAULT_PASSWORD_LITERAL;
     }
     case EnumDataType.Roles: {
       return defaultValue
