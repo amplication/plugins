@@ -6,7 +6,6 @@
   "peerDependencies": {
     "@amplication/code-gen-types": "^2.0.23",
     "@amplication/code-gen-utils": "^0.0.9",
-    "@babel/types": "7.24.0",
     "ast-types": "0.14.2",
     "dotenv": "16.3.2",
     "lodash": "^4.17.21",

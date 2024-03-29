@@ -1,20 +1,14 @@
-import {
-  DsgContext,
-  CreateSeedParams,
-  ModuleMap,
-} from "@amplication/code-gen-types";
+import { CreateSeedParams, DsgContext } from "@amplication/code-gen-types";
+import { addImports, importNames, interpolate } from "../util/ast";
 import { builders, namedTypes } from "ast-types";
-import { interpolate, importNames, addImports } from "../util/ast";
 import {
-  BlockStatement,
   IfStatement,
-  Statement,
   FunctionDeclaration,
+  BlockStatement,
+  Statement,
   Identifier,
   TSTypeAnnotation,
 } from "@babel/types";
-import { resolve } from "path";
-import { getStaticFiles } from "../util/file";
 
 export async function beforeCreateSeed(
   context: DsgContext,
@@ -174,19 +168,4 @@ export async function beforeCreateSeed(
   ifBlock.body.push(saltConstVariable, saltExpression);
 
   return eventParams;
-}
-
-export async function afterCreateSeed(
-  context: DsgContext,
-  eventParams: CreateSeedParams,
-  modules: ModuleMap
-): Promise<ModuleMap> {
-  const staticPath = resolve(__dirname, "./static/scripts");
-  const staticsFiles = await getStaticFiles(
-    context,
-    context.serverDirectories.scriptsDirectory,
-    staticPath
-  );
-  await modules.merge(staticsFiles);
-  return modules;
 }

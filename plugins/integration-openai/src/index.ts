@@ -54,7 +54,7 @@ class IntegrationOpenaiPlugin implements AmplicationPlugin {
     const staticPath = resolve(__dirname, "./static");
     const staticsFiles = await context.utils.importStaticModules(
       staticPath,
-      context.serverDirectories.baseDirectory
+      context.serverDirectories.srcDirectory
     );
 
     await modules.merge(staticsFiles);

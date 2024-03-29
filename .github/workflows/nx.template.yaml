@@ -54,7 +54,7 @@ jobs:
         uses: tj-actions/changed-files@v42
         with:
           files_ignore: package-lock.json
-          base_sha: ${{ steps.setSHAs.outputs.base }}
+          base_sha: ${{ env.NX_BASE }}
           separator: ","
 
       - name: Evaluate affected projects
