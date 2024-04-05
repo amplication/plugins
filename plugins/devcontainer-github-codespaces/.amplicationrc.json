@@ -2,7 +2,7 @@
   "settings": {
     "includeAdminUI": false,
     "customLocation": null,
-    "generateBasedOnServiceName": true
+    "generateBasedOnServiceName": false
   },
   "systemSettings": {
     "requireAuthenticationEntity": "false"
