@@ -16,7 +16,7 @@ import fs from "fs"
 
 const DEFAULT_SERVICE_NAME = "Amplication App"
 
-class GithubCode implements AmplicationPlugin {
+class GithubCodespaces implements AmplicationPlugin {
   /**
    * This is mandatory function that returns an object with the event name. Each event can have before or/and after
    */
@@ -92,4 +92,4 @@ class GithubCode implements AmplicationPlugin {
   }
 }
 
-export default GithubCode;
+export default GithubCodespaces;
