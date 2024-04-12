@@ -1,8 +1,17 @@
-import type { AmplicationPlugin, Events } from "@amplication/code-gen-types";
+import {
+  EventNames,
+  type AmplicationPlugin,
+  type Events,
+} from "@amplication/code-gen-types";
+import { beforeCreateServerPackageJson } from "./events";
 
 class FileUploadCorePlugin implements AmplicationPlugin {
   register(): Events {
-    return {};
+    return {
+      [EventNames.CreateServerPackageJson]: {
+        before: beforeCreateServerPackageJson,
+      },
+    };
   }
 }
 
