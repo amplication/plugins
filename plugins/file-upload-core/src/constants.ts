@@ -1,6 +1,6 @@
 import { join } from "path";
 
-export const staticsPath = join(__dirname, "static");
+export const serverStaticsPath = join(__dirname, "static/server");
 export const templatesPath = join(__dirname, "templates");
 
 export const serverPackageJsonValues = {
