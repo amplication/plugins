@@ -31,8 +31,6 @@ const prepareStorageModuleTemplate = async (
     )
     .map((plugin) => plugin.pluginId.replace("file-upload-", ""));
 
-  console.log(fileUploadPlugins);
-
   // local -> LocalStorageService, s3 -> S3StorageService
   const storageServices = fileUploadPlugins.map((plugin) => {
     return builders.identifier(`${pascalCase(plugin)}StorageService`);
