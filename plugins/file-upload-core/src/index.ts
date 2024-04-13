@@ -9,6 +9,7 @@ import {
   beforCreateMainFile,
   beforeCreateEntityControllerBase,
   beforeCreateEntityModuleBase,
+  beforeCreateEntityResolverBase,
   beforeCreateServerAppModule,
   beforeCreateServerPackageJson,
 } from "./events";
@@ -35,7 +36,10 @@ class FileUploadCorePlugin implements AmplicationPlugin {
       [EventNames.CreateEntityControllerBase]: {
         before: beforeCreateEntityControllerBase,
       },
-      [EventNames.CreateEntityResolverBase]: {},
+      [EventNames.CreateEntityResolverBase]: {
+        before: beforeCreateEntityResolverBase,
+      },
+      [EventNames.CreateEntityServiceBase]: {},
     };
   }
 }

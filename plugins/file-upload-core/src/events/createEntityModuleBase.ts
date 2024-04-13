@@ -1,6 +1,7 @@
 import {
   CreateEntityModuleBaseParams,
   DsgContext,
+  EnumDataType,
 } from "@amplication/code-gen-types";
 import { addImports, importNames } from "../util/ast";
 import { builders } from "ast-types";
@@ -18,7 +19,7 @@ export const beforeCreateEntityModuleBase = async (
   if (
     entities
       ?.find((entity) => camelCase(entity.name) === entityName)
-      ?.fields?.some((field) => field.dataType === "File")
+      ?.fields?.some((field) => field.dataType === EnumDataType.File)
   ) {
     const storageModuleId = builders.identifier("StorageModule");
     const storageModuleImport = importNames(
