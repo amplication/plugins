@@ -14,7 +14,7 @@
   "author": "Ashish Padhy <100484401+Shurtu-gal@users.noreply.github.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@amplication/code-gen-types": "^2.0.19",
+    "@amplication/code-gen-types": "file:../../../amplication/packages/amplication-code-gen-types",
     "@amplication/code-gen-utils": "^0.0.7",
     "lodash": "^4.17.21",
     "pascal-case": "^3.1.2"
