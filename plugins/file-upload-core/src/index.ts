@@ -8,6 +8,7 @@ import {
   afterCreateServerAppModule,
   beforCreateMainFile,
   beforeCreateEntityControllerBase,
+  beforeCreateEntityModuleBase,
   beforeCreateServerAppModule,
   beforeCreateServerPackageJson,
 } from "./events";
@@ -28,7 +29,9 @@ class FileUploadCorePlugin implements AmplicationPlugin {
       [EventNames.CreateMainFile]: {
         before: beforCreateMainFile,
       },
-      [EventNames.CreateEntityModule]: {},
+      [EventNames.CreateEntityModuleBase]: {
+        before: beforeCreateEntityModuleBase,
+      },
       [EventNames.CreateEntityControllerBase]: {
         before: beforeCreateEntityControllerBase,
       },
