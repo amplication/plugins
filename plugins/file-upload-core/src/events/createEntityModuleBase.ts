@@ -34,7 +34,13 @@ export const beforeCreateEntityModuleBase = async (
       ...templateMapping["IMPORTS_ARRAY"].elements,
     ]);
 
+    const exportArray = builders.arrayExpression([
+      storageModuleId,
+      ...templateMapping["EXPORT_ARRAY"].elements,
+    ]);
+
     templateMapping["IMPORTS_ARRAY"] = importArray;
+    templateMapping["EXPORT_ARRAY"] = exportArray;
   }
 
   return eventParams;

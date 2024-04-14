@@ -4,6 +4,7 @@ import {
   BadRequestException,
   Injectable,
   StreamableFile,
+  NotFoundException,
 } from "@nestjs/common";
 import {
   createReadStream,
@@ -38,7 +39,7 @@ export class LocalStorageService extends StorageServiceBase {
       }${filename}`;
 
       //if directory does not exist, create it
-      mkdirSync(`./${this.basePath}`, { recursive: true });
+      mkdirSync(`./${this.basePath}/${containerPath}`, { recursive: true });
 
       const uploadFile = {
         filename,
@@ -89,6 +90,10 @@ export class LocalStorageService extends StorageServiceBase {
   }
 
   async deleteFile(file: LocalStorageFile): Promise<boolean> {
+    if (!file || !file.uuid) {
+      throw new NotFoundException("File not found");
+    }
+
     const path = file.uuid;
     return new Promise((resolve, reject) =>
       unlink(path, (err) => {

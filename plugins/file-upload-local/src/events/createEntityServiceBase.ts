@@ -14,6 +14,7 @@ import {
 import { STORAGE_SERVICE_ID, STORAGE_SERVICE_MEMBER_ID } from "../constants";
 import { builders } from "ast-types";
 import { camelCase } from "lodash";
+import { pascalCase } from "pascal-case";
 
 export const beforeCreateEntityServiceBase = async (
   context: DsgContext,
@@ -69,31 +70,13 @@ export const beforeCreateEntityServiceBase = async (
   return eventParams;
 };
 
-/*
-  async uploadProfilePicture<T extends Prisma.UserFindUniqueArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserFindUniqueArgs>,
-    file: FileUpload,
-  ): Promise<PrismaUser> {
-    file.filename = `profilePicture-${args.where.id}.${file.filename.split(".").pop()}`;
-    const containerPath = 'profilePictures';
-
-    const profilePicture = await this.localStorageService.uploadFile(file, ["image"], 1000000, containerPath);
-    return this.prisma.user.update({
-      where: args.where,
-      data: {
-        profilePicture: profilePicture as InputJsonValue,
-      },
-    });
-  }
-*/
-
 const getUploadFunction = (entityName: string, field: EntityField) => {
   const fieldName = field.name;
 
   const { properties } = field;
 
-  const pascalEntityName = builders.identifier(entityName);
-  const pascalFieldName = builders.identifier(fieldName);
+  const pascalEntityName = builders.identifier(pascalCase(entityName));
+  const pascalFieldName = builders.identifier(pascalCase(fieldName));
   const camelCaseEntityName = builders.identifier(camelCase(entityName));
   const camelCaseFieldName = builders.identifier(camelCase(fieldName));
 
@@ -123,22 +106,55 @@ const getUploadFunction = (entityName: string, field: EntityField) => {
           builders.identifier("file"),
           builders.identifier("filename"),
         ),
+        // `profilePicture-${args.where.id}.${file.filename.split(".").pop()}`;
         builders.templateLiteral(
           [
             builders.templateElement(
-              { raw: `${fieldName}-`, cooked: `${fieldName}-` },
-              false,
-            ),
-            builders.templateElement({ raw: ".", cooked: "." }, true),
-            builders.templateElement(
               {
-                raw: '${args.where.id}.${file.filename.split(".").pop()}',
-                cooked: '${args.where.id}.${file.filename.split(".").pop()}',
+                raw: "profilePicture-",
+                cooked: "profilePicture-",
               },
               false,
             ),
+            builders.templateElement(
+              {
+                raw: ".",
+                cooked: ".",
+              },
+              false,
+            ),
+            builders.templateElement(
+              {
+                raw: "",
+                cooked: "",
+              },
+              true,
+            ),
           ],
-          [],
+          [
+            builders.memberExpression(
+              builders.memberExpression(
+                builders.identifier("args"),
+                builders.identifier("where"),
+              ),
+              builders.identifier("id"),
+            ),
+            builders.callExpression(
+              builders.memberExpression(
+                builders.memberExpression(
+                  builders.memberExpression(
+                    builders.identifier("file"),
+                    builders.identifier("filename"),
+                  ),
+                  builders.callExpression(builders.identifier("split"), [
+                    builders.stringLiteral("."),
+                  ]),
+                ),
+                builders.identifier("pop"),
+              ),
+              [],
+            ),
+          ],
         ),
       ),
     ),
@@ -160,6 +176,18 @@ const getUploadFunction = (entityName: string, field: EntityField) => {
         builders.identifier(`Promise<Prisma${pascalEntityName.name}>`),
       ),
     ),
+    typeParameters: builders.tsTypeParameterDeclaration.from({
+      params: [
+        builders.tsTypeParameter.from({
+          name: "T",
+          constraint: builders.tsTypeReference(
+            builders.identifier(
+              `Prisma.${pascalEntityName.name}FindUniqueArgs`,
+            ),
+          ),
+        }),
+      ],
+    }),
     body: builders.blockStatement([
       ...initialReassignmentStatement,
       builders.variableDeclaration("const", [
@@ -211,7 +239,7 @@ const getUploadFunction = (entityName: string, field: EntityField) => {
                   builders.objectExpression([
                     builders.property(
                       "init",
-                      pascalFieldName,
+                      camelCaseFieldName,
                       builders.tsAsExpression(
                         camelCaseFieldName,
                         builders.tsTypeReference(
@@ -231,8 +259,8 @@ const getUploadFunction = (entityName: string, field: EntityField) => {
 };
 
 const getDeleteFunction = (entityName: string, fieldName: string) => {
-  const pascalEntityName = builders.identifier(entityName);
-  const pascalFieldName = builders.identifier(fieldName);
+  const pascalEntityName = builders.identifier(pascalCase(entityName));
+  const pascalFieldName = builders.identifier(pascalCase(fieldName));
   const camelCaseEntityName = builders.identifier(camelCase(entityName));
   const camelCaseFieldName = builders.identifier(camelCase(fieldName));
 
@@ -259,20 +287,40 @@ const getDeleteFunction = (entityName: string, fieldName: string) => {
         builders.identifier(`Promise<Prisma${pascalEntityName.name}>`),
       ),
     ),
+    typeParameters: builders.tsTypeParameterDeclaration.from({
+      params: [
+        builders.tsTypeParameter.from({
+          name: "T",
+          constraint: builders.tsTypeReference(
+            builders.identifier(
+              `Prisma.${pascalEntityName.name}FindUniqueArgs`,
+            ),
+          ),
+        }),
+      ],
+    }),
     body: builders.blockStatement([
       builders.variableDeclaration("const", [
         builders.variableDeclarator(
           builders.objectPattern([
-            builders.property("init", camelCaseFieldName, camelCaseFieldName),
+            builders.property.from({
+              key: camelCaseFieldName,
+              kind: "init",
+              value: camelCaseFieldName,
+              shorthand: true,
+            }),
           ]),
           builders.awaitExpression(
             builders.callExpression(
               builders.memberExpression(
                 builders.memberExpression(
-                  builders.thisExpression(),
-                  builders.identifier("prisma"),
+                  builders.memberExpression(
+                    builders.thisExpression(),
+                    builders.identifier("prisma"),
+                  ),
+                  builders.identifier(camelCaseEntityName.name),
                 ),
-                builders.identifier(camelCaseEntityName.name),
+                builders.identifier("findUniqueOrThrow"),
               ),
               [
                 builders.objectExpression([
@@ -299,7 +347,10 @@ const getDeleteFunction = (entityName: string, fieldName: string) => {
             ),
             [
               builders.tsAsExpression(
-                camelCaseFieldName,
+                builders.tsAsExpression(
+                  camelCaseFieldName,
+                  builders.tsUnknownKeyword(),
+                ),
                 builders.tsTypeReference(
                   builders.identifier("LocalStorageFile"),
                 ),
@@ -331,7 +382,7 @@ const getDeleteFunction = (entityName: string, fieldName: string) => {
                   builders.objectExpression([
                     builders.property(
                       "init",
-                      pascalFieldName,
+                      camelCaseFieldName,
                       builders.identifier("Prisma.DbNull"),
                     ),
                   ]),
@@ -346,8 +397,8 @@ const getDeleteFunction = (entityName: string, fieldName: string) => {
 };
 
 const getDownloadFunction = (entityName: string, fieldName: string) => {
-  const pascalEntityName = builders.identifier(entityName);
-  const pascalFieldName = builders.identifier(fieldName);
+  const pascalEntityName = builders.identifier(pascalCase(entityName));
+  const pascalFieldName = builders.identifier(pascalCase(fieldName));
   const camelCaseEntityName = builders.identifier(camelCase(entityName));
   const camelCaseFieldName = builders.identifier(camelCase(fieldName));
 
@@ -372,20 +423,40 @@ const getDownloadFunction = (entityName: string, fieldName: string) => {
     returnType: builders.tsTypeAnnotation(
       builders.tsTypeReference(builders.identifier("Promise<FileDownload>")),
     ),
+    typeParameters: builders.tsTypeParameterDeclaration.from({
+      params: [
+        builders.tsTypeParameter.from({
+          name: "T",
+          constraint: builders.tsTypeReference(
+            builders.identifier(
+              `Prisma.${pascalEntityName.name}FindUniqueArgs`,
+            ),
+          ),
+        }),
+      ],
+    }),
     body: builders.blockStatement([
       builders.variableDeclaration("const", [
         builders.variableDeclarator(
           builders.objectPattern([
-            builders.property("init", camelCaseFieldName, camelCaseFieldName),
+            builders.property.from({
+              key: camelCaseFieldName,
+              kind: "init",
+              value: camelCaseFieldName,
+              shorthand: true,
+            }),
           ]),
           builders.awaitExpression(
             builders.callExpression(
               builders.memberExpression(
                 builders.memberExpression(
-                  builders.thisExpression(),
-                  builders.identifier("prisma"),
+                  builders.memberExpression(
+                    builders.thisExpression(),
+                    builders.identifier("prisma"),
+                  ),
+                  builders.identifier(camelCaseEntityName.name),
                 ),
-                builders.identifier(camelCaseEntityName.name),
+                builders.identifier("findUniqueOrThrow"),
               ),
               [
                 builders.objectExpression([
@@ -412,7 +483,10 @@ const getDownloadFunction = (entityName: string, fieldName: string) => {
             ),
             [
               builders.tsAsExpression(
-                camelCaseFieldName,
+                builders.tsAsExpression(
+                  camelCaseFieldName,
+                  builders.tsUnknownKeyword(),
+                ),
                 builders.tsTypeReference(
                   builders.identifier("LocalStorageFile"),
                 ),
