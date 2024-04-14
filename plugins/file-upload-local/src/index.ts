@@ -6,6 +6,7 @@ import {
 import {
   afterCreateServer,
   beforeCreateEntityService,
+  beforeCreateEntityServiceBase,
   beforeCreateServerGitIgnore,
 } from "./events";
 
@@ -18,7 +19,9 @@ class FileUploadLocalPlugin implements AmplicationPlugin {
       [EventNames.CreateEntityService]: {
         before: beforeCreateEntityService,
       },
-      [EventNames.CreateEntityServiceBase]: {},
+      [EventNames.CreateEntityServiceBase]: {
+        before: beforeCreateEntityServiceBase,
+      },
       [EventNames.CreateServerGitIgnore]: {
         before: beforeCreateServerGitIgnore,
       },
