@@ -11,7 +11,7 @@ export const beforeCreateServerGitIgnore = async (
   const { gitignorePaths } = eventParams;
   const { fileBasePath } = getPluginSettings(context.pluginInstallations);
 
-  gitignorePaths.push(`/${fileBasePath}`);
+  gitignorePaths.push(`/${fileBasePath || "uploads"}`);
 
   return eventParams;
 };
