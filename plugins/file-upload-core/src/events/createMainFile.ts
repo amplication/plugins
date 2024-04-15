@@ -8,13 +8,8 @@ export const beforCreateMainFile = async (
   eventParams: CreateMainFileParams,
 ) => {
   const templatePath = resolve(templatesPath, "main.template.ts");
-  const bigIntTemplatePath = resolve(
-    templatesPath,
-    "main.with-bigint.template.ts",
-  );
 
   eventParams.template = await readFile(templatePath);
-  eventParams.bigIntTemplate = await readFile(bigIntTemplatePath);
 
   return eventParams;
 };
