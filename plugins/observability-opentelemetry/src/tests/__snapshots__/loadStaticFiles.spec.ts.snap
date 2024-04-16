@@ -19,10 +19,10 @@ processors:
         value: "test-value"
         action: insert
 exporters:
-  logging:
-    loglevel: info
-  jaeger:
-    endpoint: jaeger:14250
+  debug:
+    verbosity: detailed
+  otlp/jaeger:
+    endpoint: jaeger:4317 # This is the default port for Jaeger
     tls:
       insecure: true
 
@@ -38,7 +38,7 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch, resource]
-      exporters: [logging, jaeger]
+      exporters: [debug, otlp/jaeger]
 ",
     "path": "otel-config.yml",
   },
@@ -64,10 +64,10 @@ processors:
         value: "test-value"
         action: insert
 exporters:
-  logging:
-    loglevel: info
-  jaeger:
-    endpoint: jaeger:14250
+  debug:
+    verbosity: detailed
+  otlp/jaeger:
+    endpoint: jaeger:4317 # This is the default port for Jaeger
     tls:
       insecure: true
 
@@ -83,7 +83,7 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch, resource]
-      exporters: [logging, jaeger]
+      exporters: [debug, otlp/jaeger]
 ",
     "path": "otel-config.yml",
   },

@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-broker-rabbitmq",
-  "version": "0.0.4",
+  "version": "1.0.0",
   "description": "Use a RabbitMQ message broker to communicate between services generated with Amplication",
   "main": "dist/index.js",
   "nx": {},
@@ -15,8 +15,8 @@
   "author": "Meyazhagan",
   "license": "Apache-2.0",
   "dependencies": {
-    "@amplication/code-gen-types": "^2.0.17",
-    "@amplication/code-gen-utils": "^0.0.7",
+    "@amplication/code-gen-types": "^2.0.23",
+    "@amplication/code-gen-utils": "^0.0.9",
     "lodash": "^4.17.21",
     "pascal-case": "^3.1.2"
   },
@@ -27,10 +27,10 @@
     "@types/lodash": "^4.14.200",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
-    "copy-webpack-plugin": "^11.0.0",
+    "copy-webpack-plugin": "^12.0.2",
     "eslint": "^8.52.0",
     "jest-mock-extended": "^3.0.5",
-    "prettier": "^3.0.3",
+    "prettier": "^2.6.2",
     "rimraf": "^5.0.5",
     "ts-jest": "^29.1.1",
     "ts-loader": "^9.5.0",

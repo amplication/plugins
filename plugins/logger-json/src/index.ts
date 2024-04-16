@@ -48,24 +48,35 @@ class LoggerJSONPlugin implements AmplicationPlugin {
 
   beforeCreateServerDotEnv(
     context: DsgContext,
-    eventParams: CreateServerDotEnvParams
+    eventParams: CreateServerDotEnvParams,
   ) {
-    const { logLevel: LOG_LEVEL } = getPluginSettings(
-      context.pluginInstallations
-    );
+    const {
+      logLevel: LOG_LEVEL,
+      logRequests: LOG_REQUEST,
+      sensitiveKeys: SENSITIVE_KEYS,
+      pinoPretty: PINO_PRETTY,
+    } = getPluginSettings(context.pluginInstallations);
     const SERVICE_NAME = context.resourceInfo?.name ?? "";
 
     eventParams.envVariables = [
       ...eventParams.envVariables,
       ...[{ LOG_LEVEL }, { SERVICE_NAME }],
+      { LOG_REQUEST: LOG_REQUEST ? "true" : "false" },
+      { PINO_PRETTY: PINO_PRETTY ? "true" : "false" },
     ];
+
+    if (SENSITIVE_KEYS.length > 0) {
+      eventParams.envVariables.push({
+        SENSITIVE_KEYS: SENSITIVE_KEYS.join(","),
+      });
+    }
 
     return eventParams;
   }
 
   beforeCreateServerDockerCompose(
     context: DsgContext,
-    eventParams: CreateServerDockerComposeParams
+    eventParams: CreateServerDockerComposeParams,
   ) {
     eventParams.updateProperties.push({
       services: {
@@ -83,30 +94,30 @@ class LoggerJSONPlugin implements AmplicationPlugin {
   async afterCreateServer(
     context: DsgContext,
     params: CreateServerParams,
-    modules: ModuleMap
+    modules: ModuleMap,
   ) {
     const { additionalLogProperties: extras } = getPluginSettings(
-      context.pluginInstallations
+      context.pluginInstallations,
     );
 
     // Use custom logger in main.ts
     useLoggerInMain(
       context.serverDirectories.srcDirectory,
       modules,
-      context.logger
+      context.logger,
     );
 
     // Import static files
     const staticFiles = await context.utils.importStaticModules(
       resolve(__dirname, "static"),
-      join(context.serverDirectories.srcDirectory, "logger")
+      join(context.serverDirectories.srcDirectory, "logger"),
     );
 
     await modules.merge(staticFiles);
 
     // Copy templates
     const template = await readFile(
-      resolve(__dirname, "templates", "logger.config.ts")
+      resolve(__dirname, "templates", "logger.config.ts"),
     );
 
     interpolate(template, {
@@ -118,7 +129,7 @@ class LoggerJSONPlugin implements AmplicationPlugin {
       path: join(
         context.serverDirectories.srcDirectory,
         "logger",
-        "logger.config.ts"
+        "logger.config.ts",
       ),
     });
 
@@ -127,7 +138,7 @@ class LoggerJSONPlugin implements AmplicationPlugin {
 
   beforeCreateServerPackageJSON(
     _: DsgContext,
-    eventParams: CreateServerPackageJsonParams
+    eventParams: CreateServerPackageJsonParams,
   ) {
     eventParams.updateProperties.push(dependencies);
 
@@ -136,7 +147,7 @@ class LoggerJSONPlugin implements AmplicationPlugin {
 
   beforeCreateServerAppModule(
     _: DsgContext,
-    eventParams: CreateServerAppModuleParams
+    eventParams: CreateServerAppModuleParams,
   ) {
     const loggerModuleId = builders.identifier("LoggerModule");
 
@@ -153,7 +164,7 @@ class LoggerJSONPlugin implements AmplicationPlugin {
   async afterCreateServerAppModule(
     context: DsgContext,
     _: CreateServerAppModuleParams,
-    modules: ModuleMap
+    modules: ModuleMap,
   ) {
     const [appModule] = modules.modules();
 
@@ -164,7 +175,7 @@ class LoggerJSONPlugin implements AmplicationPlugin {
 
     const loggerModuleImport = importNames(
       [loggerModuleId],
-      "./logger/logger.module"
+      "./logger/logger.module",
     );
 
     appendImports(file, [loggerModuleImport]);

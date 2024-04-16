@@ -5,5 +5,8 @@ export type AdditionalProperties = {
 
 export interface Settings {
   logLevel: string;
+  logRequests: boolean;
+  sensitiveKeys: string[];
   additionalLogProperties: AdditionalProperties;
+  pinoPretty: boolean;
 }

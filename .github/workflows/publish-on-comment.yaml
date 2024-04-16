@@ -108,8 +108,10 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Install dependencies and build 🔧
-        run: npm ci && npm run build
-        working-directory: plugins/${{ matrix.affected-plugin }}
+        run: npm ci
+
+      - name: Build
+        run: npx nx build ${{ matrix.affected-plugin }}
 
       - name: Publish version dry-run
         run: npm publish --access public --tag beta --dry-run

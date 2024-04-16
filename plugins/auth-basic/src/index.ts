@@ -31,6 +31,7 @@ import {
   AUTH_ENTITY_FIELD_PASSWORD,
   AUTH_ENTITY_FIELD_USERNAME,
 } from "./constants";
+import { beforeCreateSeed } from "./events/createSeed";
 
 const ARGS_ID = builders.identifier("args");
 const PASSWORD_FIELD_ASYNC_METHODS = new Set(["create", "update"]);
@@ -60,6 +61,9 @@ class BasicAuthPlugin implements AmplicationPlugin {
       },
       CreateEntityServiceBase: {
         before: this.beforeCreateEntityServiceBase,
+      },
+      CreateSeed: {
+        before: beforeCreateSeed,
       },
     };
   }

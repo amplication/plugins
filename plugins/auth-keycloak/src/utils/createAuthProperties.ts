@@ -22,18 +22,19 @@ export const NEW_DATE_EXPRESSION = builders.newExpression(DATE_ID, []);
 export const NEW_JSON_EXPRESSION = builders.objectExpression([
   builders.objectProperty(
     builders.stringLiteral("foo"),
-    builders.stringLiteral("bar"),
+    builders.stringLiteral("bar")
   ),
 ]);
 
 export const DEFAULT_USERNAME_LITERAL = builders.stringLiteral("admin");
+export const DEFAULT_PASSWORD_LITERAL = builders.stringLiteral("admin");
 export const DEFAULT_ROLE_LITERAL = builders.arrayExpression([
   builders.stringLiteral("user"),
 ]);
 
 export function createAuthEntityObjectCustomProperties(
   authEntity: Entity,
-  defaultValues: Record<string, unknown>,
+  defaultValues: Record<string, unknown>
 ): namedTypes.ObjectProperty[] {
   return authEntity.fields
     .filter((field) => field.required)
@@ -46,15 +47,15 @@ export function createAuthEntityObjectCustomProperties(
       builders.objectProperty(
         builders.identifier(field.name),
         // @ts-expect-error: TODO: fix type
-        value,
-      ),
+        value
+      )
     );
 }
 
 export function createDefaultValue(
   field: EntityField,
   entity: Entity,
-  defaultValue: unknown,
+  defaultValue: unknown
 ): namedTypes.Expression | null {
   switch (field.dataType) {
     case EnumDataType.SingleLineText:
@@ -94,10 +95,10 @@ export function createDefaultValue(
       const [firstOption] = options;
       return defaultValue
         ? memberExpression`${createEnumName(field, entity)}.${toPascalCase(
-            defaultValue as string,
+            defaultValue as string
           )}`
         : memberExpression`${createEnumName(field, entity)}.${toPascalCase(
-            firstOption.label,
+            firstOption.label
           )}`;
     }
     case EnumDataType.Boolean: {
@@ -123,21 +124,22 @@ export function createDefaultValue(
         ? builders.stringLiteral(defaultValue as string)
         : DEFAULT_USERNAME_LITERAL;
     }
+    case EnumDataType.Password: {
+      return defaultValue
+        ? builders.stringLiteral(defaultValue as string)
+        : DEFAULT_PASSWORD_LITERAL;
+    }
     case EnumDataType.Roles: {
       return defaultValue
         ? builders.arrayExpression(
             (defaultValue as string[]).map((item) =>
-              builders.stringLiteral(item),
-            ),
+              builders.stringLiteral(item)
+            )
           )
         : DEFAULT_ROLE_LITERAL;
     }
     case EnumDataType.Lookup: {
       return null;
-    }
-    case EnumDataType.Password: {
-      // Throw error on presence of password field in auth entity
-      throw new Error("Password field is not supported with Keycloak plugin");
     }
     default: {
       throw new Error(`Unexpected data type: ${field.dataType}`);

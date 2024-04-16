@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-transport-https",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "This plugin allows you to achieve TLS termination at application level.",
   "main": "dist/index.js",
   "nx": {},
@@ -14,8 +14,8 @@
   "author": "Ashish Padhy <100484401+Shurtu-gal@users.noreply.github.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@amplication/code-gen-types": "^2.0.21",
-    "@amplication/code-gen-utils": "^0.0.7",
+    "@amplication/code-gen-types": "^2.0.23",
+    "@amplication/code-gen-utils": "^0.0.9",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
@@ -25,10 +25,10 @@
     "@types/lodash": "^4.14.201",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "@typescript-eslint/parser": "^6.11.0",
-    "copy-webpack-plugin": "^11.0.0",
+    "copy-webpack-plugin": "^12.0.2",
     "eslint": "^8.53.0",
     "jest-mock-extended": "^3.0.5",
-    "prettier": "^3.1.0",
+    "prettier": "^2.6.2",
     "rimraf": "^5.0.5",
     "ts-jest": "^29.1.1",
     "ts-loader": "^9.5.1",

@@ -66,9 +66,9 @@ class TerraformAwsDatabaseRdsPlugin implements AmplicationPlugin {
     const underscoreName: string = snakeCase(serviceName);
     const hyphenName: string = kebabCase(serviceName);
 
-    const templateFileName: string = "rds-template.tf";
-    const fileNamePrefix: string = "rds-";
-    const fileNameSuffix: string = ".tf";
+    const templateFileName = "rds-template.tf";
+    const fileNamePrefix = "rds-";
+    const fileNameSuffix = ".tf";
 
     // default database type to postgres, when new
     // database types are added the template for these

@@ -1,6 +1,8 @@
-import { EventPattern, Payload } from "@nestjs/microservices";
+import { Ctx, EventPattern, Payload, RmqContext } from "@nestjs/microservices";
 import { RabbitMQMessage } from "./RabbitMQMessage";
-import { Controller } from "@nestjs/common";
+import { Controller, Logger } from "@nestjs/common";
 
 @Controller("rabbitmq-controller")
-export class CONTROLLER {}
+export class CONTROLLER {
+  private readonly logger = new Logger(CONTROLLER.name);
+}

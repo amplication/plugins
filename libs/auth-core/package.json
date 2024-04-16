@@ -1,0 +1,23 @@
+{
+  "name": "@amplication/auth-core",
+  "version": "0.0.0",
+  "description": "Core authentication logic for auth plugins. This package is an internal package and should not be published to npm.",
+  "dependencies": {},
+  "peerDependencies": {
+    "@amplication/code-gen-types": "^2.0.23",
+    "@amplication/code-gen-utils": "^0.0.9",
+    "ast-types": "0.14.2",
+    "dotenv": "16.3.2",
+    "lodash": "^4.17.21",
+    "jest-mock-extended": "3.0.5",
+    "normalize-path": "3.0.0",
+    "recast": "0.20.5",
+    "tslib": "^2.3.0"
+  },
+  "type": "commonjs",
+  "main": "./dist/src/index.js",
+  "typings": "./src/index.d.ts",
+  "devDependencies": {
+    "@types/lodash": "^4.14.202"
+  }
+}

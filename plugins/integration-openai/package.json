@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-integrate-openai",
-  "version": "2.0.1",
+  "version": "2.0.4",
   "description": "Add a module and a service to use OpenAI API to Amplication generated code",
   "main": "dist/index.js",
   "nx": {},
@@ -12,7 +12,7 @@
   "author": "Yuval Hazaz",
   "license": "Apache-2.0",
   "dependencies": {
-    "@amplication/code-gen-types": "^2.0.21",
+    "@amplication/code-gen-types": "^2.0.23",
     "@amplication/code-gen-utils": "^0.0.9",
     "openai": "^4.24.2"
   },
@@ -22,10 +22,10 @@
     "@types/jest": "^29.5.11",
     "@typescript-eslint/eslint-plugin": "^6.18.1",
     "@typescript-eslint/parser": "^6.18.1",
-    "copy-webpack-plugin": "^11.0.0",
+    "copy-webpack-plugin": "^12.0.2",
     "eslint": "^8.56.0",
     "jest-mock-extended": "^3.0.5",
-    "prettier": "^3.1.1",
+    "prettier": "^2.6.2",
     "rimraf": "^5.0.5",
     "ts-jest": "^29.1.1",
     "ts-loader": "^9.5.1",
@@ -35,19 +35,13 @@
   },
   "jest": {
     "passWithNoTests": true,
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
+    "moduleFileExtensions": ["js", "json", "ts"],
     "rootDir": "src/tests",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
+    "collectCoverageFrom": ["**/*.(t|j)s"],
     "testEnvironment": "node"
   }
 }

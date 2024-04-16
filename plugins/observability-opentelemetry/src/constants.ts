@@ -12,7 +12,7 @@ export const placeholders = {
 
 export const packageJsonValues = {
   dependencies: {
-    "@amplication/opentelemetry-nestjs": "^4.4.0",
+    "@amplication/opentelemetry-nestjs": "^4.5.0",
   },
 };
 
@@ -27,7 +27,7 @@ export const dockerComposeDevValues = [
         ports: [
           "${JAEGER_AGENT_PORT}:${JAEGER_AGENT_PORT}", // Jaeger agent UI
           "14268:14268",
-          "14250:14250",
+          "14250:4317",
         ],
       },
       [OTEL_NAME]: {

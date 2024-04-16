@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  admin-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_SERVER_URL: https://$CODESPACE_NAME-3000.app.github.dev
+    ports:
+      - 3001:3001
+    
