@@ -1,6 +1,0 @@
-{
-  "targets": {
-    "install:clean": {},
-    "lint": {}
-  }
-}
