@@ -10,6 +10,19 @@ import { getPluginSettings } from "../utils";
 import { interpolate } from "../util/ast";
 import { builders } from "ast-types";
 
+export const beforeCreateServer = async (context: DsgContext) => {
+  const { pluginInstallations } = context;
+  if (
+    !pluginInstallations.some(
+      (plugin) => plugin.npm === "@amplication/plugin-storage-core",
+    )
+  ) {
+    throw new Error(
+      "The storage-core plugin must be installed for the storage-local plugin to function",
+    );
+  }
+};
+
 export const afterCreateServer = async (
   context: DsgContext,
   eventParams: CreateServerParams,

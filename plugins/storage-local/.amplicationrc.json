@@ -1,6 +1,6 @@
 {
   "settings": {
     "fileBaseLocation": "uploads",
-    "maxFileSize": 100000000
+    "maxFileSize": 10485760
   }
 }

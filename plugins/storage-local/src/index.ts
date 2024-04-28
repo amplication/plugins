@@ -7,6 +7,7 @@ import {
   afterCreateServer,
   beforeCreateEntityService,
   beforeCreateEntityServiceBase,
+  beforeCreateServer,
   beforeCreateServerGitIgnore,
 } from "./events";
 
@@ -14,6 +15,7 @@ class FileUploadLocalPlugin implements AmplicationPlugin {
   register(): Events {
     return {
       [EventNames.CreateServer]: {
+        before: beforeCreateServer,
         after: afterCreateServer,
       },
       [EventNames.CreateEntityService]: {
