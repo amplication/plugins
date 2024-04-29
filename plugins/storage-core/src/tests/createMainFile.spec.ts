@@ -1,6 +1,7 @@
 import { CreateMainFileParams, DsgContext } from "@amplication/code-gen-types";
 import { mock } from "jest-mock-extended";
 import { beforCreateMainFile } from "../events";
+import { print } from "@amplication/code-gen-utils";
 
 describe("Testing createMainFile hook", () => {
   let context: DsgContext;
@@ -21,6 +22,6 @@ describe("Testing createMainFile hook", () => {
     eventParams = await beforCreateMainFile(context, eventParams);
 
     expect(eventParams).toBeDefined();
-    expect(eventParams.template).toMatchSnapshot();
+    expect(print(eventParams.template).code).toMatchSnapshot();
   });
 });
