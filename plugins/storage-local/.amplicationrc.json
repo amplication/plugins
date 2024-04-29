@@ -1,0 +1,6 @@
+{
+  "settings": {
+    "fileBaseLocation": "uploads",
+    "maxFileSize": 10485760
+  }
+}
