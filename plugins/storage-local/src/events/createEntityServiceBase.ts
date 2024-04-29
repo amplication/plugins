@@ -207,7 +207,7 @@ const getUploadFunction = (entityName: string, field: EntityField) => {
                 builders.arrayExpression(
                   properties?.allowedFileTypes?.map((mimeType: string) =>
                     builders.stringLiteral(mimeType),
-                  ),
+                  ) || [],
                 ),
                 builders.numericLiteral(properties?.maxFileSize || 1000000),
                 builders.identifier("containerPath"),
