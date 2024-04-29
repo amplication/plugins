@@ -29,7 +29,7 @@ const prepareStorageModuleTemplate = async (
         plugin.enabled &&
         plugin.pluginId !== "storage-core",
     )
-    .map((plugin) => plugin.pluginId.replace("storage", ""));
+    .map((plugin) => plugin.pluginId.replace("storage-", ""));
 
   // local -> LocalStorageService, s3 -> S3StorageService
   const storageServices = fileUploadPlugins.map((plugin) => {

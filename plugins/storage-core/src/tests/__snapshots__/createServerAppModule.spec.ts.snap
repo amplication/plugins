@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test createServerAppModule should return a valid app module 1`] = `
+{
+  "code": "import { Module } from "@nestjs/common";
+import { LocalStorageService } from "./providers/local/local.storage.service";
+import { S3StorageService } from "./providers/s3/s3.storage.service";
+
+@Module({
+  providers: [LocalStorageService, S3StorageService],
+  exports: [LocalStorageService, S3StorageService],
+})
+export class StorageModule {}
+",
+  "path": "/storage/storage.module.ts",
+}
+`;
