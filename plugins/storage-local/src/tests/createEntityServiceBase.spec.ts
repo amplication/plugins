@@ -8,7 +8,6 @@ import { builders } from "ast-types";
 import { beforeCreateEntityServiceBase } from "../events";
 import { print, readFile } from "@amplication/code-gen-utils";
 import { resolve, join } from "path";
-import { SERVICE_BASE } from "./fixtures/service.base.template";
 
 describe("Test createEntityServiceBase hook", () => {
   let context: DsgContext;

@@ -4,7 +4,7 @@ import {
   DsgContext,
   ModuleMap,
 } from "@amplication/code-gen-types";
-import { print, readFile } from "@amplication/code-gen-utils";
+import { readFile } from "@amplication/code-gen-utils";
 import { mock } from "jest-mock-extended";
 import { join } from "path";
 import { builders } from "ast-types";
