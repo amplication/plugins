@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-storage-core",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Adds the core functionality for file upload to Amplication",
   "main": "dist/index.js",
   "nx": {},

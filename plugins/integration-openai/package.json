@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-integrate-openai",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Add a module and a service to use OpenAI API to Amplication generated code",
   "main": "dist/index.js",
   "nx": {},
@@ -35,13 +35,19 @@
   },
   "jest": {
     "passWithNoTests": true,
-    "moduleFileExtensions": ["js", "json", "ts"],
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
     "rootDir": "src/tests",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
-    "collectCoverageFrom": ["**/*.(t|j)s"],
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
     "testEnvironment": "node"
   }
 }

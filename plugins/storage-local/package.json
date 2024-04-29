@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-storage-local",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Adds the local storage functionality for file upload to Amplication",
   "main": "dist/index.js",
   "nx": {},
