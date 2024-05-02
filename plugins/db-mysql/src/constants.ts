@@ -21,7 +21,7 @@ export const updateDockerComposeProperties: CreateServerDockerComposeParams["upd
           ports: ["1234:8080"],
         },
         db: {
-          image: "mysql",
+          image: "mysql:8.3",
           command: "--default-authentication-plugin=mysql_native_password",
           restart: "always",
           ports: ["${DB_PORT}:3306"],
@@ -55,7 +55,7 @@ export const updateDockerComposeDevProperties: CreateServerDockerComposeParams["
     {
       services: {
         db: {
-          image: "mysql",
+          image: "mysql:8.3",
           command: "--default-authentication-plugin=mysql_native_password",
           restart: "always",
           ports: ["${DB_PORT}:3306"],
