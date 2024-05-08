@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-devcontainer-github-codespaces",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Quickly setup your GitHub codespaces configuration for your Amplication app",
   "main": "dist/index.js",
   "nx": {},
