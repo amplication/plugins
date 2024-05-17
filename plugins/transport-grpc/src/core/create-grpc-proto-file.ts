@@ -356,6 +356,11 @@ export const createProtobufSchemaFieldsHandler: {
     countField: number,
     field: EntityField
   ) => createScalarField(fieldName, "string", countField, false),
+  [EnumDataType.File]: (
+    fieldName: string,
+    countField: number,
+    field: EntityField
+  ) => createScalarField(fieldName, "string", countField, false),
 };
 
 export const idTypeToProtobufScalarType: {
