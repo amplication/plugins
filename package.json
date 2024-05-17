@@ -5,15 +5,15 @@
   "scripts": {},
   "private": true,
   "devDependencies": {
-    "@nx/eslint": "18.0.7",
-    "@nx/eslint-plugin": "^18.0.7",
-    "@nx/jest": "^18.0.7",
-    "@nx/js": "18.0.7",
+    "@nx/eslint": "19.0.4",
+    "@nx/eslint-plugin": "19.0.4",
+    "@nx/jest": "19.0.4",
+    "@nx/js": "19.0.4",
     "@types/prettier": "^2.6.2",
     "eslint-config-prettier": "^9.1.0",
-    "nx": "18.0.7",
+    "nx": "19.0.4",
     "prettier": "^2.6.2",
-    "typescript": "5.3.3"
+    "typescript": "5.4.5"
   },
   "engines": {
     "node": "^18.12.1",
@@ -24,3 +24,4 @@
     "libs/*"
   ]
 }
+
