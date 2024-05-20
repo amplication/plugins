@@ -1,8 +1,5 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "affected": {
-    "defaultBase": "master"
-  },
   "targetDefaults": {
     "build": {
       "cache": true,
@@ -54,5 +51,6 @@
     "appsDir": "plugins",
     "libsDir": "libs"
   },
-  "nxCloudAccessToken": "NTVlMDE1YmItM2FmZC00MTA5LTg0YzItMDA4M2NjZWI1ODVjfHJlYWQ="
+  "nxCloudAccessToken": "NTVlMDE1YmItM2FmZC00MTA5LTg0YzItMDA4M2NjZWI1ODVjfHJlYWQ=",
+  "defaultBase": "master"
 }
