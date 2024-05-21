@@ -2,8 +2,7 @@
   "settings": {
     "host": "localhost",
     "port": 1433,
-    "user": "sa",
     "password": "SqlAdminChangeMe1234!",
-    "dbName": "my-db"
+    "dbName": "my-service-db"
   }
 }
