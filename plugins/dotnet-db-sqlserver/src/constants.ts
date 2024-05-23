@@ -11,7 +11,7 @@ export const updateDockerComposeProperties = (
       services: {
         server: {
           environment: {
-            ConnectionStrings__DbContext: `sqlserver://db:${port};database=${dbName};user=${user};password=${password};TrustServerCertificate=true`,
+            ConnectionStrings__DbContext: `sqlserver://db:1433;database=${dbName};user=${user};password=${password};TrustServerCertificate=true`,
           },
           depends_on: {
             migrate: {
@@ -21,15 +21,15 @@ export const updateDockerComposeProperties = (
         },
         migrate: {
           environment: {
-            MIGRATION_CONNECTION: `sqlserver://db:${port};database=${dbName};user=${user};password=${password};TrustServerCertificate=true`,
+            MIGRATION_CONNECTION: `sqlserver://db:1433;database=${dbName};user=${user};password=${password};TrustServerCertificate=true`,
           },
         },
         db: {
           image: "mcr.microsoft.com/mssql/server:2022-latest",
           restart: "unless-stopped",
-          ports: ["${DB_PORT}:1433"],
+          ports: [`${port}:1433`],
           environment: {
-            MSSQL_SA_PASSWORD: "${DB_PASSWORD}",
+            MSSQL_SA_PASSWORD: password,
             ACCEPT_EULA: "Y",
           },
           healthcheck: {
@@ -39,9 +39,9 @@ export const updateDockerComposeProperties = (
               "-S",
               "localhost",
               "-U",
-              "${DB_USER}",
+              user,
               "-P",
-              "${DB_PASSWORD}",
+              password,
               "-Q",
               "SELECT 1",
               "-b",
