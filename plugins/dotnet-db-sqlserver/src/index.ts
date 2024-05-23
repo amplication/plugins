@@ -4,10 +4,7 @@ import {
   dotnetTypes,
 } from "@amplication/code-gen-types";
 import { ClassReference, CodeBlock } from "@amplication/csharp-ast";
-import {
-  updateDockerComposeDevProperties,
-  updateDockerComposeProperties,
-} from "./constants";
+import { updateDockerComposeProperties } from "./constants";
 import { getPluginSettings } from "./utils";
 import { pascalCase } from "pascal-case";
 
@@ -18,9 +15,6 @@ class MSSQLServerPlugin implements dotnetTypes.AmplicationPlugin {
     return {
       CreateServerDockerCompose: {
         before: this.beforeCreateServerDockerCompose,
-      },
-      CreateServerDockerComposeDev: {
-        before: this.beforeCreateServerDockerComposeDev,
       },
       CreateServerCsproj: {
         before: this.beforeCreateServerCsproj,
@@ -35,18 +29,14 @@ class MSSQLServerPlugin implements dotnetTypes.AmplicationPlugin {
   }
 
   beforeCreateServerDockerCompose(
-    _: dotnetTypes.DsgContext,
+    context: dotnetTypes.DsgContext,
     eventParams: dotnet.CreateServerDockerComposeParams
   ) {
-    eventParams.updateProperties.push(...updateDockerComposeProperties);
-    return eventParams;
-  }
+    const settings = getPluginSettings(context.pluginInstallations);
 
-  beforeCreateServerDockerComposeDev(
-    _: dotnetTypes.DsgContext,
-    eventParams: dotnet.CreateServerDockerComposeDevParams
-  ) {
-    eventParams.updateProperties.push(...updateDockerComposeDevProperties);
+    eventParams.updateProperties.push(
+      ...updateDockerComposeProperties(settings)
+    );
     return eventParams;
   }
 
@@ -84,17 +74,18 @@ class MSSQLServerPlugin implements dotnetTypes.AmplicationPlugin {
     eventParams: dotnet.CreateProgramFileParams
   ) {
     const serviceNamespace = pascalCase(resourceInfo?.name ?? "");
+    const serviceDbContext = `${pascalCase(resourceInfo?.name ?? "")}DbContext`;
 
     eventParams.builderServicesBlocks.push(
       new CodeBlock({
-        code: `builder.services.AddDbContext<DbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("${CONNECTION_STRING}")));`,
+        code: `builder.services.AddDbContext<${serviceDbContext}>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("${CONNECTION_STRING}")));`,
         references: [
           new ClassReference({
             name: "AddDbContext",
             namespace: "Microsoft.EntityFrameworkCore",
           }),
           new ClassReference({
-            name: "DbContext",
+            name: serviceDbContext,
             namespace: `${serviceNamespace}.Infrastructure`,
           }),
         ],

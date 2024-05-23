@@ -10,7 +10,6 @@ This plugin adds the required code to use MS SQL Server database in the service 
 It updates the following parts:
 
 - Adds the required services and variables to `docker-compose.yml`
-- Add the `db` service to the `docker-compose.dev.yml`
 - Add the required environment variables to `appsettings.json`
 - Configure Entity Framework Core to work with Microsoft SQL Server
 
