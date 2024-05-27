@@ -78,7 +78,7 @@ class MSSQLServerPlugin implements dotnetTypes.AmplicationPlugin {
 
     eventParams.builderServicesBlocks.push(
       new CodeBlock({
-        code: `builder.services.AddDbContext<${serviceDbContext}>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("${CONNECTION_STRING}")));`,
+        code: `builder.Services.AddDbContext<${serviceDbContext}>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("${CONNECTION_STRING}")));`,
         references: [
           new ClassReference({
             name: "AddDbContext",
