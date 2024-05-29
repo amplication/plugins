@@ -2,11 +2,11 @@ import {
   dotnetPluginEventsTypes,
   dotnetPluginEventsParams as dotnet,
   dotnetTypes,
-  FileMap,
   EnumEntityAction,
   EnumModuleActionType,
+  FileMap,
 } from "@amplication/code-gen-types";
-import { Class } from "@amplication/csharp-ast";
+import { Class, CsharpSupport } from "@amplication/csharp-ast";
 import { pascalCase } from "pascal-case";
 import {
   createMethodAuthorizeAnnotation,
@@ -21,7 +21,32 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
       CreateEntityControllerBase: {
         after: this.afterCreateControllerBase,
       },
+      CreateEntityModel: {
+        after: this.afterCreateEntityModel,
+      },
     };
+  }
+  afterCreateEntityModel(
+    context: dotnetTypes.DsgContext,
+    eventParams: dotnet.CreateEntityModelParams,
+    files: FileMap<Class>
+  ): FileMap<Class> {
+    const { apisDir, entity } = eventParams;
+    const { resourceInfo } = context;
+    const authEntityName = resourceInfo?.settings.authEntityName;
+
+    if (entity.name !== authEntityName) return files;
+
+    const modelFile = files.get(`${apisDir}${authEntityName}.cs`);
+
+    if (!modelFile) return files;
+
+    modelFile.code.parentClassReference = CsharpSupport.classReference({
+      name: "IdentityUser",
+      namespace: "",
+    });
+
+    return files;
   }
 
   afterCreateControllerBase(
