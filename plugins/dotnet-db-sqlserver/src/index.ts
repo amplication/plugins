@@ -63,7 +63,7 @@ class MSSQLServerPlugin implements dotnetTypes.AmplicationPlugin {
     eventParams.updateProperties = {
       ...eventParams.updateProperties,
       ConnectionStrings: {
-        [CONNECTION_STRING]: `sqlserver://${host}:${port};database=${dbName};user=${user};password=${password};TrustServerCertificate=true`,
+        [CONNECTION_STRING]: `Data Source=${host},${port};Initial Catalog=${dbName};User Id=${user};Password=${password};TrustServerCertificate=true;`,
       },
     };
     return eventParams;
