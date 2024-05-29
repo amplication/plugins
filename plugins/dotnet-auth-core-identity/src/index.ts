@@ -5,15 +5,18 @@ import {
   EnumEntityAction,
   EnumModuleActionType,
   FileMap,
+  IFile,
 } from "@amplication/code-gen-types";
-import { Class, CsharpSupport } from "@amplication/csharp-ast";
+import { Class, CodeBlock, CsharpSupport } from "@amplication/csharp-ast";
 import { pascalCase } from "pascal-case";
 import {
   createMethodAuthorizeAnnotation,
   createRelatedMethodAuthorizeAnnotation,
   getEntityRoleMap,
 } from "./core";
-import pluralize from "pluralize";
+//import pluralize from "pluralize";
+import { readFile } from "fs/promises";
+import { resolve } from "path";
 
 class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
   register(): dotnetPluginEventsTypes.DotnetEvents {
@@ -24,7 +27,35 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
       CreateEntityModel: {
         after: this.afterCreateEntityModel,
       },
+      LoadStaticFiles: {
+        after: this.afterLoadStaticFiles,
+      },
     };
+  }
+
+  async afterLoadStaticFiles(
+    context: dotnetTypes.DsgContext,
+    eventParams: dotnet.LoadStaticFilesParams,
+    files: FileMap<CodeBlock>
+  ): Promise<FileMap<CodeBlock>> {
+    const filePath = resolve(
+      __dirname,
+      "./static/common/auth/ProgramAuthExtensions.cs"
+    );
+
+    const fileContent = await readFile(filePath, "utf-8");
+    const destPath = `${eventParams.basePath}/src/APIs/Common/Auth/ProgramAuthExtensions.cs`;
+    const fileMap = new FileMap<CodeBlock>(context.logger);
+
+    const file: IFile<CodeBlock> = {
+      path: destPath,
+      code: new CodeBlock({ code: fileContent }),
+    };
+    fileMap.set(file);
+
+    files.merge(fileMap);
+
+    return files;
   }
   afterCreateEntityModel(
     context: dotnetTypes.DsgContext,
@@ -103,7 +134,8 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
         }
         case EnumModuleActionType.Find: {
           const createMethod = methods?.find(
-            (m) => m.name === pluralize(entity.name)
+            // (m) => m.name === pluralize(entity.name)
+            (m) => m.name === entity.name
           );
           createMethod &&
             createMethodAuthorizeAnnotation(
