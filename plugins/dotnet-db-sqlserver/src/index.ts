@@ -44,6 +44,10 @@ class MSSQLServerPlugin implements dotnetTypes.AmplicationPlugin {
     _: dotnetTypes.DsgContext,
     eventParams: dotnet.CreateServerCsprojParams
   ) {
+    eventParams.propertyGroup = {
+      InvariantGlobalization: "false",
+    };
+
     eventParams.packageReferences.push({
       include: "Microsoft.EntityFrameworkCore.SqlServer",
       version: "8.0.5",
