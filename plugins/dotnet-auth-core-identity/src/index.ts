@@ -27,6 +27,9 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
       CreateEntityModel: {
         after: this.afterCreateEntityModel,
       },
+      CreateResourceDbContextFile: {
+        after: this.afterCreateResourceDbContextFile,
+      },
       LoadStaticFiles: {
         after: this.afterLoadStaticFiles,
       },
@@ -74,6 +77,33 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
 
     modelFile.code.parentClassReference = CsharpSupport.classReference({
       name: "IdentityUser",
+      namespace: "",
+    });
+
+    return files;
+  }
+
+  afterCreateResourceDbContextFile(
+    context: dotnetTypes.DsgContext,
+    eventParams: dotnet.CreateResourceDbContextFileParams,
+    files: FileMap<Class>
+  ): FileMap<Class> {
+    const { resourceDbContextPath, entities, resourceName } = eventParams;
+    const { resourceInfo } = context;
+    const authEntityName = resourceInfo?.settings.authEntityName;
+
+    const authEntityCheck = entities.find((e) => e.name === authEntityName);
+
+    if (!authEntityCheck) return files;
+
+    const modelFile = files.get(
+      `${resourceDbContextPath}${resourceName}DbContext.cs`
+    );
+
+    if (!modelFile) return files;
+
+    modelFile.code.parentClassReference = CsharpSupport.classReference({
+      name: `IdentityDbContext<${authEntityName}>`,
       namespace: "",
     });
 
