@@ -2,10 +2,9 @@ using GraphQL;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.OpenApi.Models;
-using MyService.Infrastructure;
 using Swashbuckle.AspNetCore.Filters;
 
-namespace MyService.APIs;
+namespace ServiceName.APIs;
 
 public static class ProgramAuthExtensions
 {

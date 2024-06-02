@@ -5,17 +5,16 @@ import {
   EnumEntityAction,
   EnumModuleActionType,
   FileMap,
-  IFile,
 } from "@amplication/code-gen-types";
 import { Class, CodeBlock, CsharpSupport } from "@amplication/csharp-ast";
 import { pascalCase } from "pascal-case";
 import {
   createMethodAuthorizeAnnotation,
   createRelatedMethodAuthorizeAnnotation,
+  createStaticFileFileMap,
   getEntityRoleMap,
 } from "./core";
 //import pluralize from "pluralize";
-import { readFile } from "fs/promises";
 import { resolve } from "path";
 
 class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
@@ -41,22 +40,40 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
     eventParams: dotnet.LoadStaticFilesParams,
     files: FileMap<CodeBlock>
   ): Promise<FileMap<CodeBlock>> {
+    const { resourceInfo } = context;
+    if (!resourceInfo) return files;
+
+    const resourceName = pascalCase(resourceInfo.name);
+
+    const destPath = `${eventParams.basePath}/src/APIs/Common/Auth/ProgramAuthExtensions.cs`;
     const filePath = resolve(
       __dirname,
       "./static/common/auth/ProgramAuthExtensions.cs"
     );
 
-    const fileContent = await readFile(filePath, "utf-8");
-    const destPath = `${eventParams.basePath}/src/APIs/Common/Auth/ProgramAuthExtensions.cs`;
-    const fileMap = new FileMap<CodeBlock>(context.logger);
+    const programAuthExtensionsFileMap = await createStaticFileFileMap(
+      destPath,
+      filePath,
+      context,
+      CsharpSupport.classReference({
+        name: `${resourceName}`,
+        namespace: `${resourceName}.Infrastructure`,
+      })
+    );
 
-    const file: IFile<CodeBlock> = {
-      path: destPath,
-      code: new CodeBlock({ code: fileContent }),
-    };
-    fileMap.set(file);
+    const rolesManagerDestPath = `${eventParams.basePath}/src/Infrastructure/RolesManager.cs`;
+    const rolesManagerFilePath = resolve(
+      __dirname,
+      "./static/infrastructure/RolesManager.cs"
+    );
 
-    files.merge(fileMap);
+    const rolesManagerFileMap = await createStaticFileFileMap(
+      rolesManagerDestPath,
+      rolesManagerFilePath,
+      context
+    );
+
+    files.mergeMany([programAuthExtensionsFileMap, rolesManagerFileMap]);
 
     return files;
   }
