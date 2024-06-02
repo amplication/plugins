@@ -45,9 +45,29 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
       CreateSeedDevelopmentDataFile: {
         after: this.afterCreateSeedDevelopmentDataFile,
       },
+      CreateServerCsproj: {
+        before: this.beforeCreateServerCsproj,
+      },
     };
   }
 
+  async beforeCreateServerCsproj(
+    context: dotnetTypes.DsgContext,
+    eventParams: dotnet.CreateServerCsprojParams
+  ): Promise<dotnet.CreateServerCsprojParams> {
+    const { packageReferences } = eventParams;
+
+    packageReferences.push({
+      include: "Microsoft.AspNetCore.Identity.EntityFrameworkCore",
+      version: "8.0.4",
+    });
+
+    packageReferences.push({
+      include: "Swashbuckle.AspNetCore.Filters",
+      version: "8.0.1",
+    });
+    return eventParams;
+  }
   async beforeCreateProgramFile(
     context: dotnetTypes.DsgContext,
     eventParams: dotnet.CreateProgramFileParams
