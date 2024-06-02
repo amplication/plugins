@@ -12,7 +12,7 @@
   "author": "Mor Hagbi",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@amplication/code-gen-types": "2.0.33-beta.22",
+    "@amplication/code-gen-types": "2.0.33-beta.23",
     "@amplication/code-gen-utils": "^0.0.9",
     "@amplication/csharp-ast": "0.0.3-beta.2",
     "@babel/parser": "^7.18.11",

@@ -30,6 +30,9 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
       CreateEntityControllerBase: {
         after: this.afterCreateControllerBase,
       },
+      CreateControllerBaseModuleFile: {
+        after: this.afterCreateControllerBaseModule,
+      },
       CreateEntityModel: {
         after: this.afterCreateEntityModel,
       },
@@ -330,6 +333,31 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
     return files;
   }
 
+  afterCreateControllerBaseModule(
+    context: dotnetTypes.DsgContext,
+    eventParams: dotnet.CreateControllerBaseModuleFileParams,
+    files: FileMap<Class>
+  ): FileMap<Class> {
+    const { controllerBaseModuleBasePath, moduleActionsAndDtos } = eventParams;
+    const { roles } = context;
+    const roleNames = roles?.map((role) => role.name).join(",");
+
+    const moduleName = moduleActionsAndDtos.moduleContainer.name;
+    const pascalPluralName = pascalCase(moduleName);
+
+    const controllerBaseFile = files.get(
+      `${controllerBaseModuleBasePath}/${moduleName}/Base/${pascalPluralName}ControllerBase.cs`
+    );
+    if (!controllerBaseFile) return files;
+
+    const methods = controllerBaseFile.code.getMethods();
+    roleNames &&
+      methods?.forEach((method) => {
+        createMethodAuthorizeAnnotation(method, roleNames);
+      });
+
+    return files;
+  }
   afterCreateSeedDevelopmentDataFile(
     context: dotnetTypes.DsgContext,
     eventParams: dotnet.CreateSeedDevelopmentDataFileParams,
