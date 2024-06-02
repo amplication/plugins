@@ -9,6 +9,8 @@ import {
 import { Class, CodeBlock, CsharpSupport } from "@amplication/csharp-ast";
 import { pascalCase } from "pascal-case";
 import {
+  createAppServices,
+  createBuildersServices,
   createMethodAuthorizeAnnotation,
   createRelatedMethodAuthorizeAnnotation,
   createStaticFileFileMap,
@@ -32,7 +34,24 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
       LoadStaticFiles: {
         after: this.afterLoadStaticFiles,
       },
+      CreateProgramFile: {
+        before: this.beforeCreateProgramFile,
+      },
     };
+  }
+
+  async beforeCreateProgramFile(
+    context: dotnetTypes.DsgContext,
+    eventParams: dotnet.CreateProgramFileParams
+  ): Promise<dotnet.CreateProgramFileParams> {
+    const { builderServicesBlocks, appBlocks } = eventParams;
+    const { resourceInfo } = context;
+    if (!resourceInfo) return eventParams;
+    const serviceNamespace = pascalCase(resourceInfo.name);
+    createBuildersServices(serviceNamespace, builderServicesBlocks);
+    createAppServices(appBlocks);
+
+    return eventParams;
   }
 
   async afterLoadStaticFiles(
