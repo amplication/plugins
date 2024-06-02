@@ -6,9 +6,15 @@ import {
   EnumModuleActionType,
   FileMap,
 } from "@amplication/code-gen-types";
-import { Class, CodeBlock, CsharpSupport } from "@amplication/csharp-ast";
+import {
+  Class,
+  CodeBlock,
+  CsharpSupport,
+  MethodType,
+} from "@amplication/csharp-ast";
 import { pascalCase } from "pascal-case";
 import {
+  CreateSeedDevelopmentDataBody,
   createAppServices,
   createBuildersServices,
   createMethodAuthorizeAnnotation,
@@ -16,7 +22,6 @@ import {
   createStaticFileFileMap,
   getEntityRoleMap,
 } from "./core";
-//import pluralize from "pluralize";
 import { resolve } from "path";
 
 class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
@@ -36,6 +41,9 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
       },
       CreateProgramFile: {
         before: this.beforeCreateProgramFile,
+      },
+      CreateSeedDevelopmentDataFile: {
+        after: this.afterCreateSeedDevelopmentDataFile,
       },
     };
   }
@@ -200,9 +208,9 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
         }
         case EnumModuleActionType.Find: {
           const createMethod = methods?.find(
-            // (m) => m.name === pluralize(entity.name)
-            (m) => m.name === entity.name
+            (m) => m.name === pascalCase(entity.pluralName)
           );
+
           createMethod &&
             createMethodAuthorizeAnnotation(
               createMethod,
@@ -298,6 +306,54 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
         }
       }
     }
+
+    return files;
+  }
+
+  afterCreateSeedDevelopmentDataFile(
+    context: dotnetTypes.DsgContext,
+    eventParams: dotnet.CreateSeedDevelopmentDataFileParams,
+    files: FileMap<Class>
+  ): FileMap<Class> {
+    const { seedFilePath, resourceName } = eventParams;
+    const { resourceInfo, entities } = context;
+
+    const authEntity = entities?.find(
+      (e) => e.name === resourceInfo?.settings.authEntityName
+    );
+
+    if (!authEntity || !entities) return files;
+
+    const seedFile = files.get(seedFilePath);
+    seedFile?.code.addMethod(
+      CsharpSupport.method({
+        name: "SeedDevUser",
+        access: "public",
+        isAsync: true,
+        body: CreateSeedDevelopmentDataBody(resourceName, authEntity, entities),
+        type: MethodType.STATIC,
+        parameters: [
+          CsharpSupport.parameter({
+            name: "serviceProvider",
+            type: CsharpSupport.Types.reference(
+              CsharpSupport.classReference({
+                name: "IServiceProvider",
+                namespace: "",
+              })
+            ),
+          }),
+          CsharpSupport.parameter({
+            name: "configuration",
+            type: CsharpSupport.Types.reference(
+              CsharpSupport.classReference({
+                name: "IConfiguration",
+                namespace: "",
+              })
+            ),
+          }),
+        ],
+      })
+    );
 
     return files;
   }
