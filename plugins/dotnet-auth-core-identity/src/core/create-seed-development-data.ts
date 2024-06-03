@@ -11,7 +11,7 @@ export function CreateSeedDevelopmentDataBody(
   const { name, pluralName } = entity;
   const entityNameToCamelCase = camelCase(name);
   const entityNamePluralize = pascalCase(pluralName);
-  const entityFirstLatter = entityNameToCamelCase.slice(0, 1);
+  const entityFirstLetter = entityNameToCamelCase.slice(0, 1);
   return new CodeBlock({
     references: [
       CsharpSupport.classReference({
