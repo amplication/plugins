@@ -11,7 +11,7 @@ export const updateDockerComposeProperties = (
       services: {
         server: {
           environment: {
-            ConnectionStrings__DbContext: `sqlserver://db:1433;database=${dbName};user=${user};password=${password};TrustServerCertificate=true`,
+            ConnectionStrings__DbContext: `Data Source=db,1433;Initial Catalog=${dbName};User Id=${user};Password=${password};TrustServerCertificate=true;`,
           },
           depends_on: {
             migrate: {
@@ -21,7 +21,7 @@ export const updateDockerComposeProperties = (
         },
         migrate: {
           environment: {
-            MIGRATION_CONNECTION: `sqlserver://db:1433;database=${dbName};user=${user};password=${password};TrustServerCertificate=true`,
+            MIGRATION_CONNECTION: `Data Source=db,1433;Initial Catalog=${dbName};User Id=${user};Password=${password};TrustServerCertificate=true;`,
           },
         },
         db: {
