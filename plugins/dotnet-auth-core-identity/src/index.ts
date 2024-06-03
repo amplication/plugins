@@ -127,6 +127,7 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
 
     return files;
   }
+
   afterCreateEntityModel(
     context: dotnetTypes.DsgContext,
     eventParams: dotnet.CreateEntityModelParams,
@@ -210,44 +211,44 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
           break;
         }
         case EnumModuleActionType.Delete: {
-          const createMethod = methods?.find(
+          const deleteMethod = methods?.find(
             (m) => m.name === `Delete${entity.name}`
           );
-          createMethod &&
+          deleteMethod &&
             createMethodAuthorizeAnnotation(
-              createMethod,
+              deleteMethod,
               entityRolesMap[EnumEntityAction.Delete].roles
             );
           break;
         }
         case EnumModuleActionType.Read: {
-          const createMethod = methods?.find((m) => m.name === entity.name);
-          createMethod &&
+          const readMethod = methods?.find((m) => m.name === entity.name);
+          readMethod &&
             createMethodAuthorizeAnnotation(
-              createMethod,
+              readMethod,
               entityRolesMap[EnumEntityAction.View].roles //check if this is the correct type
             );
           break;
         }
         case EnumModuleActionType.Find: {
-          const createMethod = methods?.find(
+          const findMethod = methods?.find(
             (m) => m.name === pascalCase(entity.pluralName)
           );
 
-          createMethod &&
+          findMethod &&
             createMethodAuthorizeAnnotation(
-              createMethod,
+              findMethod,
               entityRolesMap[EnumEntityAction.Search].roles //check if this is the correct type
             );
           break;
         }
         case EnumModuleActionType.Update: {
-          const createMethod = methods?.find(
+          const updateMethod = methods?.find(
             (m) => m.name === `Update${entity.name}`
           );
-          createMethod &&
+          updateMethod &&
             createMethodAuthorizeAnnotation(
-              createMethod,
+              updateMethod,
               entityRolesMap[EnumEntityAction.Update].roles
             );
           break;
@@ -347,19 +348,25 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
     eventParams: dotnet.CreateControllerBaseModuleFileParams,
     files: FileMap<Class>
   ): FileMap<Class> {
+    console.log("afterCreateControllerBaseModule");
+
     const { controllerBaseModuleBasePath, moduleActionsAndDtos } = eventParams;
     const { roles } = context;
     const roleNames = roles?.map((role) => role.name).join(",");
 
     const moduleName = moduleActionsAndDtos.moduleContainer.name;
     const pascalPluralName = pascalCase(moduleName);
+    console.log(files);
 
     const controllerBaseFile = files.get(
       `${controllerBaseModuleBasePath}/${moduleName}/Base/${pascalPluralName}ControllerBase.cs`
     );
+    console.log(controllerBaseFile);
+
     if (!controllerBaseFile) return files;
 
     const methods = controllerBaseFile.code.getMethods();
+    console.log({ methods });
     roleNames &&
       methods?.forEach((method) => {
         createMethodAuthorizeAnnotation(method, roleNames);
