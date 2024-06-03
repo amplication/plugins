@@ -5,13 +5,13 @@ import { pascalCase } from "pascal-case";
 
 export function CreateSeedDevelopmentDataBody(
   resourceName: string,
-  entity: Entity,
+  authEntity: Entity,
   entities: Entity[]
 ): CodeBlock {
-  const { name, pluralName } = entity;
+  const { name, pluralName } = authEntity;
   const entityNameToCamelCase = camelCase(name);
   const entityNamePluralize = pascalCase(pluralName);
-  const entityFirstLatter = entityNameToCamelCase.slice(0, 1);
+  const entityFirstLetter = entityNameToCamelCase.slice(0, 1);
   return new CodeBlock({
     references: [
       CsharpSupport.classReference({
@@ -35,10 +35,10 @@ export function CreateSeedDevelopmentDataBody(
           .Select(x => x.Value.ToString())
           .ToArray();
   
-          ${authEntityDto(entity, entities)}
+          ${authEntityDto(authEntity, entities)}
       
       
-      if (!context.${entityNamePluralize}.Any(${entityFirstLatter} => ${entityFirstLatter}.UserName == ${entityNameToCamelCase}.UserName))
+      if (!context.${entityNamePluralize}.Any(${entityFirstLetter} => ${entityFirstLetter}.UserName == ${entityNameToCamelCase}.UserName))
       {
           var password = new PasswordHasher<${name}>();
           var hashed = password.HashPassword(${entityNameToCamelCase}, "password");
@@ -57,8 +57,8 @@ export function CreateSeedDevelopmentDataBody(
   });
 }
 
-const authEntityDto = (entity: Entity, entities: Entity[]): string => {
-  const { fields } = entity;
+const authEntityDto = (authEntity: Entity, entities: Entity[]): string => {
+  const { fields } = authEntity;
   let codeBlock = "";
 
   for (const field of fields) {
@@ -77,7 +77,7 @@ const authEntityDto = (entity: Entity, entities: Entity[]): string => {
           codeBlock +
           `${fieldNamePascalCase} = model.${relatedEntityFieldName}.Select(x => new ${relatedEntity?.name}IdDto {Id = x.Id}).ToList(),\n`;
       } else {
-        if (field.properties.fkHolderName === entity.name) {
+        if (field.properties.fkHolderName === authEntity.name) {
           break;
         } else {
           // the "one" side of the relation
@@ -92,7 +92,7 @@ const authEntityDto = (entity: Entity, entities: Entity[]): string => {
     }
   }
 
-  return `var ${camelCase(entity.name)} = new ${entity.name}
+  return `var ${camelCase(authEntity.name)} = new ${authEntity.name}
     {
       ${codeBlock}
     };`;
