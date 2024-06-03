@@ -1,7 +1,7 @@
 {
   "name": "@amplication/plugin-dotnet-auth-core-identity",
   "version": "0.0.1",
-  "description": "set auth for Amplication build",
+  "description": "Add Authentication and Authorization to your .NET Services",
   "main": "dist/index.js",
   "nx": {},
   "scripts": {
