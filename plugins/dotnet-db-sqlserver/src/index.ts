@@ -63,7 +63,7 @@ class MSSQLServerPlugin implements dotnetTypes.AmplicationPlugin {
     eventParams.updateProperties = {
       ...eventParams.updateProperties,
       ConnectionStrings: {
-        [CONNECTION_STRING]: `sqlserver://${host}:${port};database=${dbName};user=${user};password=${password};TrustServerCertificate=true`,
+        [CONNECTION_STRING]: `Data Source=${host},${port};Initial Catalog=${dbName};User Id=${user};Password=${password};TrustServerCertificate=true;`,
       },
     };
     return eventParams;
@@ -78,7 +78,7 @@ class MSSQLServerPlugin implements dotnetTypes.AmplicationPlugin {
 
     eventParams.builderServicesBlocks.push(
       new CodeBlock({
-        code: `builder.services.AddDbContext<${serviceDbContext}>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("${CONNECTION_STRING}")));`,
+        code: `builder.Services.AddDbContext<${serviceDbContext}>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("${CONNECTION_STRING}")));`,
         references: [
           new ClassReference({
             name: "AddDbContext",
