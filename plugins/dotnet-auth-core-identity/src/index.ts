@@ -71,6 +71,7 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
     });
     return eventParams;
   }
+
   async beforeCreateProgramFile(
     context: dotnetTypes.DsgContext,
     eventParams: dotnet.CreateProgramFileParams
@@ -374,6 +375,7 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
 
     return files;
   }
+
   afterCreateSeedDevelopmentDataFile(
     context: dotnetTypes.DsgContext,
     eventParams: dotnet.CreateSeedDevelopmentDataFileParams,
