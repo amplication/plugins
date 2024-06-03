@@ -349,25 +349,20 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
     eventParams: dotnet.CreateControllerBaseModuleFileParams,
     files: FileMap<Class>
   ): FileMap<Class> {
-    console.log("afterCreateControllerBaseModule");
-
     const { controllerBaseModuleBasePath, moduleActionsAndDtos } = eventParams;
     const { roles } = context;
     const roleNames = roles?.map((role) => role.name).join(",");
 
     const moduleName = moduleActionsAndDtos.moduleContainer.name;
     const pascalPluralName = pascalCase(moduleName);
-    console.log(files);
 
     const controllerBaseFile = files.get(
       `${controllerBaseModuleBasePath}/${moduleName}/Base/${pascalPluralName}ControllerBase.cs`
     );
-    console.log(controllerBaseFile);
 
     if (!controllerBaseFile) return files;
 
     const methods = controllerBaseFile.code.getMethods();
-    console.log({ methods });
     roleNames &&
       methods?.forEach((method) => {
         createMethodAuthorizeAnnotation(method, roleNames);
