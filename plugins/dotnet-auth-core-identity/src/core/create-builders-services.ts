@@ -10,12 +10,11 @@ export function createBuildersServices(
     })
   );
 
-  const swaggerBuilder = builderServicesBlocks.find((builder) =>
-    builder.toString().includes("AddSwaggerGen")
+  const swaggerBuilderIndex = builderServicesBlocks.findIndex((b) =>
+    b.toString().includes("AddSwaggerGen")
   );
-  if (!swaggerBuilder) return;
 
-  const swaggerBuilderIndex = builderServicesBlocks.indexOf(swaggerBuilder);
+  if (swaggerBuilderIndex === -1) return;
 
   builderServicesBlocks[swaggerBuilderIndex] = new CodeBlock({
     references: [
