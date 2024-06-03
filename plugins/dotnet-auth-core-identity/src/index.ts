@@ -327,6 +327,15 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
             );
           break;
         }
+        case EnumModuleActionType.Custom: {
+          const createMethod = methods?.find(
+            (m) => m.name.toLowerCase() === moduleAction.name.toLowerCase()
+          );
+          createMethod &&
+            roleNames &&
+            createMethodAuthorizeAnnotation(createMethod, roleNames);
+          break;
+        }
       }
     }
 
