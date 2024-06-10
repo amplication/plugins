@@ -7,7 +7,8 @@ export async function createStaticFileFileMap(
   destPath: string,
   filePath: string,
   context: dotnetTypes.DsgContext,
-  classReference?: ClassReference
+  authEntityName?: string,
+  classReferences?: ClassReference[]
 ): Promise<FileMap<CodeBlock>> {
   const fileMap = new FileMap<CodeBlock>(context.logger);
 
@@ -15,12 +16,19 @@ export async function createStaticFileFileMap(
   const resourceName = pascalCase(context.resourceInfo.name);
   let fileContent = await readFile(filePath, "utf-8");
   fileContent = fileContent.replace("ServiceName", resourceName);
+  fileContent = fileContent.replace(
+    "ServiceNameDbContext",
+    `${resourceName}DbContext`
+  );
+
+  if (authEntityName)
+    fileContent = fileContent.replaceAll("authEntityName", authEntityName);
 
   const file: IFile<CodeBlock> = {
     path: destPath,
     code: new CodeBlock({
       code: fileContent,
-      references: classReference && [classReference],
+      references: classReferences && classReferences,
     }),
   };
 
