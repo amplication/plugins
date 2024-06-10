@@ -33,9 +33,6 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
       CreateControllerBaseModuleFile: {
         after: this.afterCreateControllerBaseModule,
       },
-      CreateEntityModel: {
-        after: this.afterCreateEntityModel,
-      },
       CreateResourceDbContextFile: {
         after: this.afterCreateResourceDbContextFile,
       },
@@ -92,7 +89,7 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
     files: FileMap<CodeBlock>
   ): Promise<FileMap<CodeBlock>> {
     const { resourceInfo } = context;
-    if (!resourceInfo || !resourceInfo.settings.authEntityName) return files;
+    if (!resourceInfo) return files;
 
     const resourceName = pascalCase(resourceInfo.name);
 
@@ -106,7 +103,6 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
       destPath,
       filePath,
       context,
-      resourceInfo.settings.authEntityName,
       [
         CsharpSupport.classReference({
           name: `${resourceName}`,
@@ -136,41 +132,12 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
     return files;
   }
 
-  afterCreateEntityModel(
-    context: dotnetTypes.DsgContext,
-    eventParams: dotnet.CreateEntityModelParams,
-    files: FileMap<Class>
-  ): FileMap<Class> {
-    const { apisDir, entity } = eventParams;
-    const { resourceInfo } = context;
-    const authEntityName = resourceInfo?.settings.authEntityName;
-
-    if (entity.name !== authEntityName) return files;
-
-    const modelFile = files.get(`${apisDir}${authEntityName}.cs`);
-
-    if (!modelFile) return files;
-
-    modelFile.code.parentClassReference = CsharpSupport.classReference({
-      name: "IdentityUser",
-      namespace: "Microsoft.AspNetCore.Identity",
-    });
-
-    return files;
-  }
-
   afterCreateResourceDbContextFile(
     context: dotnetTypes.DsgContext,
     eventParams: dotnet.CreateResourceDbContextFileParams,
     files: FileMap<Class>
   ): FileMap<Class> {
-    const { resourceDbContextPath, entities, resourceName } = eventParams;
-    const { resourceInfo } = context;
-    const authEntityName = resourceInfo?.settings.authEntityName;
-
-    const authEntityCheck = entities.find((e) => e.name === authEntityName);
-
-    if (!authEntityCheck) return files;
+    const { resourceDbContextPath, resourceName } = eventParams;
 
     const modelFile = files.get(
       `${resourceDbContextPath}${resourceName}DbContext.cs`
@@ -179,8 +146,8 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
     if (!modelFile) return files;
 
     modelFile.code.parentClassReference = CsharpSupport.classReference({
-      name: `IdentityDbContext<${authEntityName}>`,
-      namespace: "Microsoft.AspNetCore.Identity.EntityFrameworkCore",
+      name: `IdentityDbContext<IdentityUser>`,
+      namespace: "Microsoft.AspNetCore.Identity",
     });
 
     return files;
@@ -384,13 +351,9 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
     files: FileMap<Class>
   ): FileMap<Class> {
     const { seedFilePath, resourceName } = eventParams;
-    const { resourceInfo, entities } = context;
+    const { entities } = context;
 
-    const authEntity = entities?.find(
-      (e) => e.name === resourceInfo?.settings.authEntityName
-    );
-
-    if (!authEntity || !entities) return files;
+    if (!entities) return files;
 
     const seedFile = files.get(seedFilePath);
     seedFile?.code.addMethod(
@@ -398,7 +361,7 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
         name: "SeedDevUser",
         access: "public",
         isAsync: true,
-        body: CreateSeedDevelopmentDataBody(resourceName, authEntity, entities),
+        body: CreateSeedDevelopmentDataBody(resourceName),
         type: MethodType.STATIC,
         parameters: [
           CsharpSupport.parameter({

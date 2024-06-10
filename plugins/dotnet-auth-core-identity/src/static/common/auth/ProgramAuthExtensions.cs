@@ -12,14 +12,14 @@ public static class ProgramAuthExtensions
     {
         services.AddAuthorization();
         services
-            .AddIdentityApiEndpoints<authEntityName>()
+            .AddIdentityApiEndpoints<IdentityUser>()
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ServiceNameDbContext>();
     }
 
     public static void UseApiAuthentication(this WebApplication app)
     {
-        app.MapGroup($"/auth").MapIdentityApi<authEntityName>();
+        app.MapGroup($"/auth").MapIdentityApi<IdentityUser>();
         app.UseAuthorization();
     }
 
