@@ -92,7 +92,7 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
     files: FileMap<CodeBlock>
   ): Promise<FileMap<CodeBlock>> {
     const { resourceInfo } = context;
-    if (!resourceInfo) return files;
+    if (!resourceInfo || !resourceInfo.settings.authEntityName) return files;
 
     const resourceName = pascalCase(resourceInfo.name);
 
@@ -106,10 +106,17 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
       destPath,
       filePath,
       context,
-      CsharpSupport.classReference({
-        name: `${resourceName}`,
-        namespace: `${resourceName}.Infrastructure`,
-      })
+      resourceInfo.settings.authEntityName,
+      [
+        CsharpSupport.classReference({
+          name: `${resourceName}`,
+          namespace: `${resourceName}.Infrastructure`,
+        }),
+        CsharpSupport.classReference({
+          name: `${resourceName}`,
+          namespace: `${resourceName}.Infrastructure.Models`,
+        }),
+      ]
     );
 
     const rolesManagerDestPath = `${eventParams.basePath}/src/Infrastructure/RolesManager.cs`;
@@ -146,7 +153,7 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
 
     modelFile.code.parentClassReference = CsharpSupport.classReference({
       name: "IdentityUser",
-      namespace: "",
+      namespace: "Microsoft.AspNetCore.Identity",
     });
 
     return files;
@@ -173,7 +180,7 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
 
     modelFile.code.parentClassReference = CsharpSupport.classReference({
       name: `IdentityDbContext<${authEntityName}>`,
-      namespace: "",
+      namespace: "Microsoft.AspNetCore.Identity.EntityFrameworkCore",
     });
 
     return files;
@@ -191,7 +198,7 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
     const roleNames = roles?.map((role) => role.name).join(",");
 
     const controllerBaseFile = files.get(
-      `${apisDir}/${entity.name}/base/${pascalPluralName}ControllerBase.cs`
+      `${apisDir}/${entity.name}/Base/${pascalPluralName}ControllerBase.cs`
     );
 
     const methods = controllerBaseFile?.code.getMethods();
@@ -399,7 +406,7 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
             type: CsharpSupport.Types.reference(
               CsharpSupport.classReference({
                 name: "IServiceProvider",
-                namespace: "",
+                namespace: `${resourceName}.Infrastructure.Models`,
               })
             ),
           }),
