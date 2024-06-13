@@ -14,11 +14,7 @@ export async function createStaticFileFileMap(
   if (!context.resourceInfo) return fileMap;
   const resourceName = pascalCase(context.resourceInfo.name);
   let fileContent = await readFile(filePath, "utf-8");
-  fileContent = fileContent.replace("ServiceName", resourceName);
-  fileContent = fileContent.replace(
-    "ServiceNameDbContext",
-    `${resourceName}DbContext`
-  );
+  fileContent = fileContent.replaceAll("ServiceName", resourceName);
 
   const file: IFile<CodeBlock> = {
     path: destPath,
