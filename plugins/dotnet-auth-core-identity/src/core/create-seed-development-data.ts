@@ -28,7 +28,7 @@ export function CreateSeedDevelopmentDataBody(resourceName: string): CodeBlock {
         
  
           var password = new PasswordHasher<IdentityUser>();
-          var hashed = password.HashPassword(user, "password");
+          var hashed = password.HashPassword(user, "P@ssw0rd!");
           user.PasswordHash = hashed;
           var userStore = new UserStore<IdentityUser>(context);
           await userStore.CreateAsync(user);
