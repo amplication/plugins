@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-dotnet-auth-core-identity",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Add Authentication and Authorization to your .NET Services",
   "main": "dist/index.js",
   "nx": {},
