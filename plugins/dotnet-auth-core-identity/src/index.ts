@@ -141,9 +141,17 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
 
     if (!modelFile) return files;
 
-    modelFile.code.parentClassReference = CsharpSupport.classReference({
-      name: `IdentityDbContext<IdentityUser>`,
-      namespace: "Microsoft.AspNetCore.Identity",
+    modelFile.code.parentClassReference = CsharpSupport.genericClassReference({
+      reference: CsharpSupport.classReference({
+        name: `IdentityDbContext`,
+        namespace: "Microsoft.AspNetCore.Identity.EntityFrameworkCore",
+      }),
+      innerType: CsharpSupport.Types.reference(
+        CsharpSupport.classReference({
+          name: `IdentityUser`,
+          namespace: "Microsoft.AspNetCore.Identity",
+        })
+      ),
     });
 
     return files;
