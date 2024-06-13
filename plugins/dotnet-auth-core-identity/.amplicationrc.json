@@ -1,6 +1,6 @@
 {
-  "settings": {},
-  "systemSettings": {
-    "requireAuthenticationEntity": "true"
+  "settings": {
+    "seedUserEmail": "test@email.com",
+    "seedUserPassword": "P@ssw0rd!"
   }
 }

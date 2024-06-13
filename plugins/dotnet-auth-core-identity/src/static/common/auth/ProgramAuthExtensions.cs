@@ -1,4 +1,3 @@
-using GraphQL;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.OpenApi.Models;
@@ -12,14 +11,14 @@ public static class ProgramAuthExtensions
     {
         services.AddAuthorization();
         services
-            .AddIdentityApiEndpoints<User>()
+            .AddIdentityApiEndpoints<IdentityUser>()
             .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<MyServiceContext>();
+            .AddEntityFrameworkStores<ServiceNameDbContext>();
     }
 
     public static void UseApiAuthentication(this WebApplication app)
     {
-        app.MapGroup($"/auth").MapIdentityApi<User>();
+        app.MapGroup($"/auth").MapIdentityApi<IdentityUser>();
         app.UseAuthorization();
     }
 
@@ -34,7 +33,7 @@ public static class ProgramAuthExtensions
             {
                 tag = controllerActionDescriptor.ControllerName;
             }
-            tag = tag ?? api.RelativePath?.Split('/')?.FirstOrDefault()?.ToPascalCase();
+            tag = tag ?? api.RelativePath?.Split('/')?.FirstOrDefault();
             return new[] { tag };
         });
 

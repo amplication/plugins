@@ -3,6 +3,12 @@ import { CodeBlock } from "@amplication/csharp-ast";
 export function createAppServices(builderServicesBlocks: CodeBlock[]): void {
   builderServicesBlocks.push(
     new CodeBlock({
+      code: `app.UseApiAuthentication();`,
+    })
+  );
+
+  builderServicesBlocks.push(
+    new CodeBlock({
       code: `using (var scope = app.Services.CreateScope())
   {
       var services = scope.ServiceProvider;
