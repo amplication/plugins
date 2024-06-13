@@ -108,10 +108,6 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
           name: `${resourceName}`,
           namespace: `${resourceName}.Infrastructure`,
         }),
-        CsharpSupport.classReference({
-          name: `${resourceName}`,
-          namespace: `${resourceName}.Infrastructure.Models`,
-        }),
       ]
     );
 
