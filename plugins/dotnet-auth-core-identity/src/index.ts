@@ -365,7 +365,7 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
         name: "SeedDevUser",
         access: "public",
         isAsync: true,
-        body: CreateSeedDevelopmentDataBody(resourceName),
+        body: CreateSeedDevelopmentDataBody(resourceName, context),
         type: MethodType.STATIC,
         parameters: [
           CsharpSupport.parameter({

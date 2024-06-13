@@ -1,6 +1,15 @@
+import { dotnetTypes } from "@amplication/code-gen-types";
 import { CodeBlock, CsharpSupport } from "@amplication/csharp-ast";
+import { getPluginSettings } from "../utils";
 
-export function CreateSeedDevelopmentDataBody(resourceName: string): CodeBlock {
+export function CreateSeedDevelopmentDataBody(
+  resourceName: string,
+  context: dotnetTypes.DsgContext
+): CodeBlock {
+  const { seedUserEmail, seedUserPassword } = getPluginSettings(
+    context.pluginInstallations
+  );
+
   return new CodeBlock({
     references: [
       CsharpSupport.classReference({
@@ -24,11 +33,18 @@ export function CreateSeedDevelopmentDataBody(resourceName: string): CodeBlock {
           .Select(x => x.Value.ToString())
           .ToArray();
 
-          var user = new IdentityUser { Email = "test@email.com", UserName = "admin" };
-        
+          var usernameValue = "${seedUserEmail}";
+          var passwordValue = "${seedUserPassword}";
+          var user = new IdentityUser
+          {
+              Email = usernameValue,
+              UserName = usernameValue,
+              NormalizedUserName = usernameValue.ToUpperInvariant(),
+              NormalizedEmail = usernameValue.ToUpperInvariant(),
+          };
  
           var password = new PasswordHasher<IdentityUser>();
-          var hashed = password.HashPassword(user, "P@ssw0rd!");
+          var hashed = password.HashPassword(user, passwordValue);
           user.PasswordHash = hashed;
           var userStore = new UserStore<IdentityUser>(context);
           await userStore.CreateAsync(user);
