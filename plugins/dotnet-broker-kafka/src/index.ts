@@ -33,24 +33,39 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
       CreateServerCsproj: {
         before: this.beforeCreateServerCsproj,
       },
-      // CreateServer: {
-      //   after: this.afterCreateServer,
-      // },
-      CreateEntityController:{
-        after:this.afterCreateEntityController
+      CreateServerDockerCompose: {
+        before: this.beforeCreateDockerComposeFile,
       },
-      // CreateServerDockerCompose: {
-      //   before: this.beforeCreateDockerComposeFile,
-      // },
-      //HAiM: not implemented
+     
+      //HAiM: uncomment when implemented
       // CreateMessageBrokerService: {
       //   after: this.afterCreateMessageBrokerService,
       // },
-      // CreateServerDockerComposeDev: {
-      //   before: this.beforeCreateDockerComposeDevFile,
-      // },
+      //HAiM: comment this when CreateMessageBrokerService is activated
+      CreateEntityController:{
+        after:this.afterCreateEntityController
+      },
+      CreateServerAppsettings: {
+        before: this.beforeCreateServerAppsettings,
+      },
     };
   }
+  //add kafka settungs to appsettings.json
+  beforeCreateServerAppsettings(
+    context: dotnetTypes.DsgContext,
+    eventParams: dotnet.CreateServerAppsettingsParams
+  ) {
+ 
+    eventParams.updateProperties = {
+      ...eventParams.updateProperties,
+      kafka:{
+        //haim: should we get this from plugin settings?
+        BootstrapServers: "localhost:9092"
+      }
+    };
+    return eventParams;
+  }
+
   //add confluent kafka package reference
   beforeCreateServerCsproj(
     _: dotnetTypes.DsgContext,
@@ -151,25 +166,7 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
 
     return files;
   }
-  // beforeCreateBroker(
-  //   dsgContext: dotnetTypes.DsgContext,
-  //   eventParams: dotnet.CreateMessageBrokerParams
-  // ): dotnet.CreateMessageBrokerParams {
-  //   //add Broker1ConsumerService
-  //   // add Broker1ProducerService
-  //   // add Broker1ServiceCollectionExtensions
-  //   // add Broker1MessageHandlersController - method per model
-  //   const templates = [""];
-  //   return eventParams;
-  // }
-  afterCreateServer(
-    dsgContext: dotnetTypes.DsgContext,
-    eventParams: dotnet.CreateServerParams
-  ): Promise<FileMap<Class>> {
-    
-    console.log('afterCreateServer');
-    return createMessageBroker(dsgContext);
-  }
+  
   afterCreateEntityController(
     dsgContext: dotnetTypes.DsgContext,
     eventParams: dotnet.CreateEntityControllerParams
@@ -177,12 +174,13 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
     console.log('afterCreateController');
     return createMessageBroker(dsgContext);
   }
-  // async afterCreateMessageBrokerService(
-  //   dsgContext: dotnetTypes.DsgContext,
-  //   eventParams: dotnet.CreateMessageBrokerServiceParams
-  // ): Promise<FileMap<Class>> {
-  //   return createMessageBroker(dsgContext);
-  // }
+
+  async afterCreateMessageBrokerService(
+    dsgContext: dotnetTypes.DsgContext,
+    eventParams: dotnet.CreateMessageBrokerServiceParams
+  ): Promise<FileMap<Class>> {
+    return createMessageBroker(dsgContext);
+  }
 
   beforeCreateDockerComposeFile(
     dsgContext: dotnetTypes.DsgContext,
@@ -213,6 +211,7 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
     });
     return eventParams;
   }
+
 }
 
 export default DotnetKafkaPlugin;
