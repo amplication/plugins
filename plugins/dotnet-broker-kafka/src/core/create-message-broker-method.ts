@@ -1,7 +1,9 @@
 import {
   dotnetTypes,
+  EnumMessagePatternConnectionOptions,
   EnumResourceType,
   FileMap,
+  ServiceTopics,
 } from "@amplication/code-gen-types";
 import {
   Class,
@@ -15,8 +17,13 @@ import { pascalCase } from "pascal-case";
 export async function createMessageBroker(
   dsgContext: dotnetTypes.DsgContext
 ): Promise<FileMap<Class>> {
-  const { serverDirectories, logger, otherResources, resourceInfo } =
-    dsgContext;
+  const {
+    serverDirectories,
+    logger,
+    otherResources,
+    resourceInfo,
+    serviceTopics,
+  } = dsgContext;
   // const { messageBrokerDirectory } = serverDirectories;
   const files = new FileMap<Class>(dsgContext.logger);
   logger.info("afterCreateMessageBrokerService");
@@ -54,7 +61,8 @@ export async function createMessageBroker(
 
   const messageHandlerController = getController(
     resourceName,
-    messageBrokerName
+    messageBrokerName,
+    serviceTopics
   );
   files.set({
     path: `${brokerBasePath}/${messageBrokerName}MessageHandlersController.cs`,
@@ -88,9 +96,11 @@ export async function createMessageBroker(
         access: "public",
         type: MethodType.STATIC,
         isAsync: false,
-        return_: CsharpSupport.Types.reference( CsharpSupport.classReference({
-          name: "IServiceCollection",
-          namespace: `Microsoft.Extensions.DependencyInjection`,})
+        return_: CsharpSupport.Types.reference(
+          CsharpSupport.classReference({
+            name: "IServiceCollection",
+            namespace: `Microsoft.Extensions.DependencyInjection`,
+          })
         ),
         classReference: CsharpSupport.classReference({
           name: "KafkaOptions",
@@ -116,19 +126,17 @@ export async function createMessageBroker(
             }),
           ],
         }),
-        parameters:[],
-        extensionParameter: 
-          CsharpSupport.parameter({
-            name: "app",
-            
-            type: CsharpSupport.Types.reference(
-              CsharpSupport.classReference({
-                name: "IHostApplicationBuilder",
-                namespace: `Microsoft.Extensions.Hosting`,
-              })
-            ),
-          }),
-        
+        parameters: [],
+        extensionParameter: CsharpSupport.parameter({
+          name: "app",
+
+          type: CsharpSupport.Types.reference(
+            CsharpSupport.classReference({
+              name: "IHostApplicationBuilder",
+              namespace: `Microsoft.Extensions.Hosting`,
+            })
+          ),
+        }),
       })
     );
 
@@ -136,7 +144,8 @@ export async function createMessageBroker(
   }
   function getController(
     resourceName: string,
-    messageBrokerName: string
+    messageBrokerName: string,
+    serviceTopics?: ServiceTopics[]
   ): Class {
     const messageControllerClassName = `${messageBrokerName}MessageHandlersController`;
     //add message controller
@@ -147,6 +156,49 @@ export async function createMessageBroker(
       sealed: false,
       partial: false,
       access: "public",
+    });
+    logger.info(
+      `generating topic handler methods for ${messageBrokerName} message controller`
+    );
+    if (!serviceTopics) {
+      logger.warn("No service topics found");
+      return messageHandlerController;
+    }
+    serviceTopics.map((serviceTopic) => {
+      logger.info(  `Creating message handler method for topic messageBrokerId: ${serviceTopic.messageBrokerId}` );
+      serviceTopic.patterns.forEach((topic) => {
+        logger.info(
+          `Creating message handler method for topic ${topic.topicName}`
+        );
+        if (!topic.topicName) {
+          throw new Error(`Topic name not found for topic id ${topic.topicId}`);
+        }
+
+        if (topic.type !== EnumMessagePatternConnectionOptions.Receive) return;
+        const topicHandler = CsharpSupport.method({
+          name: `Handle${topic.topicName}`,
+          access: "public",
+          type: MethodType.INSTANCE,
+          isAsync: true,
+          return_: CsharpSupport.Types.reference(
+            CsharpSupport.classReference({
+              name: "Task",
+              namespace: `System.Threading.Tasks`,
+            })
+          ),
+          body: CsharpSupport.codeblock({
+            code: `//set your message handling logic here`,
+          }),
+          parameters: [
+            CsharpSupport.parameter({
+              name: "message",
+              type: CsharpSupport.Types.string(),
+            }),
+          ],
+        });
+
+        messageHandlerController.addMethod(topicHandler);
+      });
     });
     return messageHandlerController;
   }
@@ -159,7 +211,7 @@ export async function createMessageBroker(
       abstract: false,
       sealed: false,
       partial: false,
-      access: "public", 
+      access: "public",
 
       parentClassReference: CsharpSupport.genericClassReference({
         reference: CsharpSupport.classReference({
