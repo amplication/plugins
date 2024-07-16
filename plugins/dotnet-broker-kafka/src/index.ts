@@ -35,14 +35,10 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
         before: this.beforeCreateDockerComposeFile,
       },
 
-      //HAiM: uncomment when implemented
-      // CreateMessageBrokerService: {
-      //   after: this.afterCreateMessageBrokerService,
-      // },
-      //HAiM: comment this when CreateMessageBrokerService is activated
-      CreateEntityController: {
-        after: this.afterCreateEntityController,
+      CreateMessageBrokerService: {
+        after: this.afterCreateMessageBrokerService,
       },
+
       CreateServerAppsettings: {
         before: this.beforeCreateServerAppsettings,
       },
@@ -162,14 +158,6 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
     }
 
     return files;
-  }
-
-  afterCreateEntityController(
-    dsgContext: dotnetTypes.DsgContext,
-    eventParams: dotnet.CreateEntityControllerParams
-  ): Promise<FileMap<Class>> {
-    console.log("afterCreateController");
-    return createMessageBroker(dsgContext);
   }
 
   async afterCreateMessageBrokerService(

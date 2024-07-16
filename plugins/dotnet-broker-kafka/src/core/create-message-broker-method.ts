@@ -26,7 +26,6 @@ export async function createMessageBroker(
   } = dsgContext;
   // const { messageBrokerDirectory } = serverDirectories;
   const files = new FileMap<Class>(dsgContext.logger);
-  logger.info("afterCreateMessageBrokerService");
   let messageBrokerName =
     otherResources?.find(
       (resource) => resource.resourceType === EnumResourceType.MessageBroker
@@ -165,7 +164,9 @@ export async function createMessageBroker(
       return messageHandlerController;
     }
     serviceTopics.map((serviceTopic) => {
-      logger.info(  `Creating message handler method for topic messageBrokerId: ${serviceTopic.messageBrokerId}` );
+      logger.info(
+        `Creating message handler method for topic messageBrokerId: ${serviceTopic.messageBrokerId}`
+      );
       serviceTopic.patterns.forEach((topic) => {
         logger.info(
           `Creating message handler method for topic ${topic.topicName}`
