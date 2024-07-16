@@ -5,13 +5,7 @@ import {
   FileMap,
   ServiceTopics,
 } from "@amplication/code-gen-types";
-import {
-  Class,
-  ClassReference,
-  CodeBlock,
-  CsharpSupport,
-  MethodType,
-} from "@amplication/csharp-ast";
+import { Class, CsharpSupport, MethodType } from "@amplication/csharp-ast";
 import { pascalCase } from "pascal-case";
 
 export async function createMessageBroker(
@@ -24,7 +18,6 @@ export async function createMessageBroker(
     resourceInfo,
     serviceTopics,
   } = dsgContext;
-  // const { messageBrokerDirectory } = serverDirectories;
   const files = new FileMap<Class>(dsgContext.logger);
   let messageBrokerName =
     otherResources?.find(
