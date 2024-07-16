@@ -1,49 +1,40 @@
 import {
   dotnetTypes,
   EnumMessagePatternConnectionOptions,
-  EnumResourceType,
   FileMap,
   ServiceTopics,
 } from "@amplication/code-gen-types";
 import { Class, CsharpSupport, MethodType } from "@amplication/csharp-ast";
 import { pascalCase } from "pascal-case";
+import { getMessageBrokerName } from "./get-message-broker-name";
+import { createConsumerServiceFile } from "./create-consumer-service-file";
 
 export async function createMessageBroker(
   dsgContext: dotnetTypes.DsgContext
 ): Promise<FileMap<Class>> {
-  const {
-    serverDirectories,
-    logger,
-    otherResources,
-    resourceInfo,
-    serviceTopics,
-  } = dsgContext;
+  const { serverDirectories, logger, resourceInfo, serviceTopics } = dsgContext;
+
   const files = new FileMap<Class>(dsgContext.logger);
-  let messageBrokerName =
-    otherResources?.find(
-      (resource) => resource.resourceType === EnumResourceType.MessageBroker
-    )?.resourceInfo?.name ?? null;
   if (!resourceInfo) return files;
   const resourceName = pascalCase(resourceInfo.name);
-  if (!messageBrokerName) {
-    logger.warn(
-      "Message broker name not found. Did you forget to add a message broker resource?"
-    );
-    messageBrokerName = "kafka";
-  }
+
+  const messageBrokerName = getMessageBrokerName(dsgContext);
+
   const brokerBasePath = `${serverDirectories.baseDirectory}/src/Brokers/${messageBrokerName}`;
   logger.info(
     `Creating message broker service for ${messageBrokerName}. using path ${brokerBasePath}`
   );
 
-  //add consumerService
-  const consumerService = getConsumerService(resourceName, messageBrokerName);
+  //add consumerService file
+  const consumerServiceFile = createConsumerServiceFile(
+    resourceName,
+    messageBrokerName,
+    brokerBasePath
+  );
   //add consumerService to files
-  files.set({
-    path: `${brokerBasePath}/${messageBrokerName}ConsumerService.cs`,
-    code: consumerService,
-  });
-  //add producerService
+  files.set(consumerServiceFile);
+
+  //add producerService file
   const producerService = getProducerService(resourceName, messageBrokerName);
 
   files.set({
@@ -195,57 +186,6 @@ export async function createMessageBroker(
       });
     });
     return messageHandlerController;
-  }
-
-  function getConsumerService(resourceName: string, messageBrokerName: string) {
-    const messageControllerClassName = `${messageBrokerName}MessageHandlersController`;
-    const consumerService: Class = CsharpSupport.class_({
-      name: `${messageBrokerName}ConsumerService`,
-      namespace: `${resourceName}.Brokers.${messageBrokerName}`,
-      abstract: false,
-      sealed: false,
-      partial: false,
-      access: "public",
-
-      parentClassReference: CsharpSupport.genericClassReference({
-        reference: CsharpSupport.classReference({
-          name: "KafkaConsumerService",
-          namespace: `${resourceName}.Brokers.Infrastructure`,
-        }),
-        innerType: CsharpSupport.Types.reference(
-          CsharpSupport.classReference({
-            name: messageControllerClassName,
-            namespace: `${resourceName}.Brokers.${messageBrokerName}`,
-          })
-        ),
-      }),
-    });
-    consumerService.addConstructor({
-      access: "public",
-      parameters: [
-        CsharpSupport.parameter({
-          name: "serviceScopeFactory",
-          type: CsharpSupport.Types.reference(
-            CsharpSupport.classReference({
-              name: "IServiceScopeFactory",
-              namespace: `Microsoft.Extensions.DependencyInjection`,
-            })
-          ),
-        }),
-        CsharpSupport.parameter({
-          name: "kafkaOptions",
-          type: CsharpSupport.Types.reference(
-            CsharpSupport.classReference({
-              name: "KafkaOptions",
-              namespace: `DotnetService.Brokers.Infrastructure`,
-            })
-          ),
-        }),
-      ],
-
-      bases: ["serviceScopeFactory", "kafkaOptions"],
-    });
-    return consumerService;
   }
 
   function getProducerService(resourceName: string, messageBrokerName: string) {
