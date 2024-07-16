@@ -2,7 +2,6 @@ import {
   dotnetPluginEventsTypes,
   dotnetPluginEventsParams as dotnet,
   dotnetTypes,
-  EnumResourceType,
   FileMap,
 } from "@amplication/code-gen-types";
 import {
@@ -18,7 +17,11 @@ import {
 } from "@amplication/csharp-ast";
 import { pascalCase } from "pascal-case";
 import { resolve } from "path";
-import { createMessageBroker, createStaticFileFileMap } from "./core";
+import {
+  createMessageBroker,
+  createStaticFileFileMap,
+  getMessageBrokerName,
+} from "./core";
 class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
   register(): dotnetPluginEventsTypes.DotnetEvents {
     return {
@@ -76,20 +79,11 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
     context: dotnetTypes.DsgContext,
     eventParams: dotnet.CreateProgramFileParams
   ) {
-    const { logger, otherResources, resourceInfo } = context;
+    const { resourceInfo } = context;
     const serviceNamespace = pascalCase(resourceInfo?.name ?? "");
 
-    let messageBrokerName =
-      otherResources?.find(
-        (resource) => resource.resourceType === EnumResourceType.MessageBroker
-      )?.resourceInfo?.name ?? null;
+    const messageBrokerName = getMessageBrokerName(context);
 
-    if (!messageBrokerName) {
-      logger.warn(
-        "Message broker name not found. Did you forget to add a message broker resource?"
-      );
-      messageBrokerName = "kafka";
-    }
     eventParams.builderServicesBlocks.push(
       new CodeBlock({
         code: `builder.Add${messageBrokerName}();`,
