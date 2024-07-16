@@ -162,9 +162,10 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
 
   async afterCreateMessageBrokerService(
     dsgContext: dotnetTypes.DsgContext,
-    eventParams: dotnet.CreateMessageBrokerServiceParams
+    eventParams: dotnet.CreateMessageBrokerServiceParams,
+    files: FileMap<Class>
   ): Promise<FileMap<Class>> {
-    return createMessageBroker(dsgContext);
+    return files.merge(await createMessageBroker(dsgContext));
   }
 
   beforeCreateDockerComposeFile(
