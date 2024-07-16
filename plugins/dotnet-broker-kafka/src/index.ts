@@ -5,7 +5,6 @@ import {
   EnumResourceType,
   FileMap,
 } from "@amplication/code-gen-types";
-import { readFile } from "fs/promises";
 import {
   DOCKER_SERVICE_KAFKA_NAME,
   DOCKER_SERVICE_KAFKA_PORT,
@@ -20,7 +19,6 @@ import {
 import { pascalCase } from "pascal-case";
 import { resolve } from "path";
 import { createMessageBroker, createStaticFileFileMap } from "./core";
-import { returnStatement } from "@babel/types";
 class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
   register(): dotnetPluginEventsTypes.DotnetEvents {
     return {
@@ -36,14 +34,14 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
       CreateServerDockerCompose: {
         before: this.beforeCreateDockerComposeFile,
       },
-     
+
       //HAiM: uncomment when implemented
       // CreateMessageBrokerService: {
       //   after: this.afterCreateMessageBrokerService,
       // },
       //HAiM: comment this when CreateMessageBrokerService is activated
-      CreateEntityController:{
-        after:this.afterCreateEntityController
+      CreateEntityController: {
+        after: this.afterCreateEntityController,
       },
       CreateServerAppsettings: {
         before: this.beforeCreateServerAppsettings,
@@ -55,13 +53,12 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
     context: dotnetTypes.DsgContext,
     eventParams: dotnet.CreateServerAppsettingsParams
   ) {
- 
     eventParams.updateProperties = {
       ...eventParams.updateProperties,
-      kafka:{
+      kafka: {
         //haim: should we get this from plugin settings?
-        BootstrapServers: "localhost:9092"
-      }
+        BootstrapServers: "localhost:9092",
+      },
     };
     return eventParams;
   }
@@ -166,12 +163,12 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
 
     return files;
   }
-  
+
   afterCreateEntityController(
     dsgContext: dotnetTypes.DsgContext,
     eventParams: dotnet.CreateEntityControllerParams
   ): Promise<FileMap<Class>> {
-    console.log('afterCreateController');
+    console.log("afterCreateController");
     return createMessageBroker(dsgContext);
   }
 
@@ -211,7 +208,6 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
     });
     return eventParams;
   }
-
 }
 
 export default DotnetKafkaPlugin;
