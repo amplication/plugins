@@ -1,19 +1,15 @@
-import {
-  dotnetTypes,
-  EnumMessagePatternConnectionOptions,
-  FileMap,
-  ServiceTopics,
-} from "@amplication/code-gen-types";
+import { dotnetTypes, FileMap } from "@amplication/code-gen-types";
 import { Class, CsharpSupport, MethodType } from "@amplication/csharp-ast";
 import { pascalCase } from "pascal-case";
 import { getMessageBrokerName } from "./get-message-broker-name";
 import { createConsumerServiceFile } from "./create-consumer-service-file";
 import { createProducerServiceFile } from "./create-producer-service-file";
+import { createMessageBrokerControllerFile } from "./create-message-broker-controller-file";
 
 export async function createMessageBroker(
   dsgContext: dotnetTypes.DsgContext
 ): Promise<FileMap<Class>> {
-  const { serverDirectories, logger, resourceInfo, serviceTopics } = dsgContext;
+  const { serverDirectories, logger, resourceInfo } = dsgContext;
 
   const files = new FileMap<Class>(dsgContext.logger);
   if (!resourceInfo) return files;
@@ -26,16 +22,15 @@ export async function createMessageBroker(
     `Creating message broker service for ${messageBrokerName}. using path ${brokerBasePath}`
   );
 
-  //add consumerService file
+  //create consumerService file
   const consumerServiceFile = createConsumerServiceFile(
     resourceName,
     messageBrokerName,
     brokerBasePath
   );
-  //add consumerService to files
   files.set(consumerServiceFile);
 
-  //add producerService file
+  //create producerService file
   const producerServiceFile = createProducerServiceFile(
     resourceName,
     messageBrokerName,
@@ -44,15 +39,15 @@ export async function createMessageBroker(
 
   files.set(producerServiceFile);
 
-  const messageHandlerController = getController(
+  //create messageHandlerController file
+  const messageHandlerControllerFile = createMessageBrokerControllerFile(
     resourceName,
     messageBrokerName,
-    serviceTopics
+    brokerBasePath,
+    dsgContext
   );
-  files.set({
-    path: `${brokerBasePath}/${messageBrokerName}MessageHandlersController.cs`,
-    code: messageHandlerController,
-  });
+  files.set(messageHandlerControllerFile);
+
   const serviceInstaller = getServiceInstaller(resourceName, messageBrokerName);
   files.set({
     path: `${brokerBasePath}/${messageBrokerName}ServiceCollection.cs`,
@@ -126,67 +121,5 @@ export async function createMessageBroker(
     );
 
     return serviceInstaller;
-  }
-  function getController(
-    resourceName: string,
-    messageBrokerName: string,
-    serviceTopics?: ServiceTopics[]
-  ): Class {
-    const messageControllerClassName = `${messageBrokerName}MessageHandlersController`;
-    //add message controller
-    const messageHandlerController: Class = CsharpSupport.class_({
-      name: messageControllerClassName,
-      namespace: `${resourceName}.Brokers.${messageBrokerName}`,
-      abstract: false,
-      sealed: false,
-      partial: false,
-      access: "public",
-    });
-    logger.info(
-      `generating topic handler methods for ${messageBrokerName} message controller`
-    );
-    if (!serviceTopics) {
-      logger.warn("No service topics found");
-      return messageHandlerController;
-    }
-    serviceTopics.map((serviceTopic) => {
-      logger.info(
-        `Creating message handler method for topic messageBrokerId: ${serviceTopic.messageBrokerId}`
-      );
-      serviceTopic.patterns.forEach((topic) => {
-        logger.info(
-          `Creating message handler method for topic ${topic.topicName}`
-        );
-        if (!topic.topicName) {
-          throw new Error(`Topic name not found for topic id ${topic.topicId}`);
-        }
-
-        if (topic.type !== EnumMessagePatternConnectionOptions.Receive) return;
-        const topicHandler = CsharpSupport.method({
-          name: `Handle${topic.topicName}`,
-          access: "public",
-          type: MethodType.INSTANCE,
-          isAsync: true,
-          return_: CsharpSupport.Types.reference(
-            CsharpSupport.classReference({
-              name: "Task",
-              namespace: `System.Threading.Tasks`,
-            })
-          ),
-          body: CsharpSupport.codeblock({
-            code: `//set your message handling logic here`,
-          }),
-          parameters: [
-            CsharpSupport.parameter({
-              name: "message",
-              type: CsharpSupport.Types.string(),
-            }),
-          ],
-        });
-
-        messageHandlerController.addMethod(topicHandler);
-      });
-    });
-    return messageHandlerController;
   }
 }
