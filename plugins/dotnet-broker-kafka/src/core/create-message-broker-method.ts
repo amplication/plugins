@@ -8,6 +8,7 @@ import { Class, CsharpSupport, MethodType } from "@amplication/csharp-ast";
 import { pascalCase } from "pascal-case";
 import { getMessageBrokerName } from "./get-message-broker-name";
 import { createConsumerServiceFile } from "./create-consumer-service-file";
+import { createProducerServiceFile } from "./create-producer-service-file";
 
 export async function createMessageBroker(
   dsgContext: dotnetTypes.DsgContext
@@ -35,12 +36,13 @@ export async function createMessageBroker(
   files.set(consumerServiceFile);
 
   //add producerService file
-  const producerService = getProducerService(resourceName, messageBrokerName);
+  const producerServiceFile = createProducerServiceFile(
+    resourceName,
+    messageBrokerName,
+    brokerBasePath
+  );
 
-  files.set({
-    path: `${brokerBasePath}/${messageBrokerName}ProducerService.cs`,
-    code: producerService,
-  });
+  files.set(producerServiceFile);
 
   const messageHandlerController = getController(
     resourceName,
@@ -186,35 +188,5 @@ export async function createMessageBroker(
       });
     });
     return messageHandlerController;
-  }
-
-  function getProducerService(resourceName: string, messageBrokerName: string) {
-    const messageControllerClassName = `${messageBrokerName}MessageHandlersController`;
-    const producerService: Class = CsharpSupport.class_({
-      name: `${messageBrokerName}ProducerService`,
-      namespace: `${resourceName}.Brokers.${messageBrokerName}`,
-      abstract: false,
-      sealed: false,
-      partial: false,
-      access: "public",
-
-      parentClassReference: CsharpSupport.classReference({
-        name: "InternalProducer",
-        namespace: `${resourceName}.Brokers.Infrastructure`,
-      }),
-    });
-    producerService.addConstructor({
-      access: "public",
-      parameters: [
-        CsharpSupport.parameter({
-          name: "bootstrapServers",
-          type: CsharpSupport.Types.string(),
-        }),
-      ],
-
-      bases: ["bootstrapServers"],
-    });
-
-    return producerService;
   }
 }
