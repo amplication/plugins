@@ -57,6 +57,7 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
       kafka: {
         //haim: should we get this from plugin settings?
         BootstrapServers: "localhost:9092",
+        ConsumerGroupId: "consumerGroupId",
       },
     };
     return eventParams;
