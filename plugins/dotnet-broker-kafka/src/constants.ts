@@ -46,7 +46,7 @@ export const updateDockerComposeDevProperties = {
   },
 };
 export const SERVICE_INSTALLER_METHOD_CODE_BLOCK = `
-var kafkaOptions = app.Configuration.GetSection("[messageBrokerName]").Get<KafkaOptions>();
+var kafkaOptions = app.Configuration.GetSection("kafka").Get<KafkaOptions>();
 if (kafkaOptions == null)
     throw new Exception("KafkaOptions not found in configuration section [messageBrokerName]");
 if (kafkaOptions.ConsumerGroupId == null)

@@ -47,7 +47,7 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
       },
     };
   }
-  //add kafka settungs to appsettings.json
+  //add kafka settings to appsettings.json
   beforeCreateServerAppsettings(
     context: dotnetTypes.DsgContext,
     eventParams: dotnet.CreateServerAppsettingsParams
