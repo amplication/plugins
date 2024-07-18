@@ -74,7 +74,8 @@ function createMethod(topicName: string): Method {
       })
     ),
     body: CsharpSupport.codeblock({
-      code: `//set your message handling logic here`,
+      code: `//set your message handling logic here \n
+      return Task.FromResult<string>("");`,
     }),
     parameters: [
       CsharpSupport.parameter({
