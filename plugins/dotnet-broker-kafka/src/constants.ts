@@ -48,11 +48,11 @@ export const updateDockerComposeDevProperties = {
 export const SERVICE_INSTALLER_METHOD_CODE_BLOCK = `
 var kafkaOptions = app.Configuration.GetSection("kafka").Get<KafkaOptions>();
 if (kafkaOptions == null)
-    throw new Exception("KafkaOptions not found in configuration section [messageBrokerName]");
+    throw new Exception("KafkaOptions not found in configuration section kafka");
 if (kafkaOptions.ConsumerGroupId == null)
-    throw new Exception("ConsumerGroupId not found in configuration section [messageBrokerName]");
+    throw new Exception("ConsumerGroupId not found in configuration section kafka");
 if (kafkaOptions.BootstrapServers == null)
-    throw new Exception("BootstrapServers not found in configuration section [messageBrokerName]");
+    throw new Exception("BootstrapServers not found in configuration section kafka");
 return app.Services.AddHostedService(x => new [messageBrokerName]ConsumerService(x.GetRequiredService<IServiceScopeFactory>(), kafkaOptions))
     .AddSingleton(x => new [messageBrokerName]ProducerService(kafkaOptions.BootstrapServers))
     .AddScoped<[messageBrokerName]MessageHandlersController>();`;
