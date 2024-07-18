@@ -1,4 +1,5 @@
 import { dotnetTypes, EnumResourceType } from "@amplication/code-gen-types";
+import { pascalCase } from "pascal-case";
 
 export function getMessageBrokerName(
   dsgContext: dotnetTypes.DsgContext
@@ -14,5 +15,5 @@ export function getMessageBrokerName(
     );
     messageBrokerName = "kafka";
   }
-  return messageBrokerName;
+  return pascalCase(messageBrokerName.replaceAll(" ", ""));
 }
