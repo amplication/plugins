@@ -19,7 +19,7 @@ public abstract class KafkaConsumerService<T> : BackgroundService
         _kafkaOptions = kafkaOptions;
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         LoadTopicMappings();
         foreach (var topic in _topicMethodMappings.Keys)
@@ -36,10 +36,9 @@ public abstract class KafkaConsumerService<T> : BackgroundService
                 methodInfo.Invoke(kafkaControllerInstance, [JsonSerializer.Serialize(message)]);
             };
 
+            await internalConsumer.CreateTopicIfNeeded();
             internalConsumer.StartConsume(stoppingToken);
         }
-
-        return Task.CompletedTask;
     }
 
     private void LoadTopicMappings()
