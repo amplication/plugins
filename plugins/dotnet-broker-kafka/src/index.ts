@@ -185,7 +185,7 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
       services: {
         [DOCKER_SERVICE_KAFKA_NAME]: {
           environment: {
-            KAFKA_ADVERTISED_LISTENERS: `PLAINTEXT://${DOCKER_SERVICE_KAFKA_NAME}:29092,PLAINTEXT_HOST://${DOCKER_SERVICE_KAFKA_NAME}:${DOCKER_SERVICE_KAFKA_PORT}`,
+            KAFKA_ADVERTISED_LISTENERS: `PLAINTEXT://${DOCKER_SERVICE_KAFKA_NAME}:29092,PLAINTEXT_HOST://localhost:${DOCKER_SERVICE_KAFKA_PORT}`,
           },
         },
       },
