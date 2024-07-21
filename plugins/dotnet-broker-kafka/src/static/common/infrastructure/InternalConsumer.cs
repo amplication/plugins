@@ -1,4 +1,5 @@
 using Confluent.Kafka;
+using Confluent.Kafka.Admin;
 
 namespace ServiceName.Brokers.Infrastructure;
 
@@ -22,6 +23,18 @@ public class InternalConsumer : IDisposable
             BootstrapServers = bootstrapServers,
             AutoOffsetReset = AutoOffsetReset.Earliest
         };
+    }
+
+    /// <summary>
+    /// Create topic if not exists
+    /// </summary>
+    /// <returns></returns>
+    public async Task CreateTopicIfNeeded()
+    {
+        using IAdminClient? adminClient = new AdminClientBuilder(_config).Build();
+        await adminClient.CreateTopicsAsync([
+            new TopicSpecification { Name = _topic, ReplicationFactor = 1, NumPartitions = 1 }
+        ]);
     }
 
     /// <summary>
