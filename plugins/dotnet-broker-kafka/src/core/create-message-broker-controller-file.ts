@@ -50,7 +50,7 @@ export function createMessageBrokerControllerFile(
       }
 
       if (topic.type !== EnumMessagePatternConnectionOptions.Receive) return;
-      const topicHandlerMethod = createMethod(topic.topicName);
+      const topicHandlerMethod = createMethod(resourceName, topic.topicName);
 
       messageHandlerController.addMethod(topicHandlerMethod);
     });
@@ -61,18 +61,27 @@ export function createMessageBrokerControllerFile(
   };
 }
 
-function createMethod(topicName: string): Method {
+function createMethod(resourceName: string, topicName: string): Method {
   return CsharpSupport.method({
     name: `Handle${topicName}`,
     access: "public",
     type: MethodType.INSTANCE,
-    isAsync: true,
+    isAsync: false,
     return_: CsharpSupport.Types.reference(
       CsharpSupport.classReference({
         name: "Task",
         namespace: `System.Threading.Tasks`,
       })
     ),
+    annotations: [
+      CsharpSupport.annotation({
+        reference: CsharpSupport.classReference({
+          name: "Topic",
+          namespace: `${resourceName}.Brokers.Infrastructure`,
+        }),
+        argument: `"${topicName}"`,
+      }),
+    ],
     body: CsharpSupport.codeblock({
       code: `//set your message handling logic here \n
       return Task.CompletedTask;`,
