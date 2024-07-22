@@ -32,9 +32,17 @@ public class InternalConsumer : IDisposable
     public async Task CreateTopicIfNeeded()
     {
         using IAdminClient? adminClient = new AdminClientBuilder(_config).Build();
-        await adminClient.CreateTopicsAsync([
-            new TopicSpecification { Name = _topic, ReplicationFactor = 1, NumPartitions = 1 }
-        ]);
+        try
+        {
+            await adminClient.CreateTopicsAsync([
+                new TopicSpecification
+                {
+                    Name = _topic, ReplicationFactor = 1, NumPartitions = 1,
+
+                }
+            ]);
+        }
+        catch (CreateTopicsException e) when (e.Message.Contains("already exists")) { }
     }
 
     /// <summary>
