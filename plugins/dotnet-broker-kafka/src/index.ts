@@ -22,6 +22,7 @@ import {
   createStaticFileFileMap,
   getMessageBrokerName,
 } from "./core";
+import { camelCase } from "lodash";
 class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
   register(): dotnetPluginEventsTypes.DotnetEvents {
     return {
@@ -52,12 +53,14 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
     context: dotnetTypes.DsgContext,
     eventParams: dotnet.CreateServerAppsettingsParams
   ) {
+    const { resourceInfo } = context;
+    const serviceName = camelCase(resourceInfo?.name ?? "");
+
     eventParams.updateProperties = {
       ...eventParams.updateProperties,
       kafka: {
-        //haim: should we get this from plugin settings?
         BootstrapServers: "localhost:9092",
-        ConsumerGroupId: "consumerGroupId",
+        ConsumerGroupId: `${serviceName}ConsumerGroup`,
       },
     };
     return eventParams;
