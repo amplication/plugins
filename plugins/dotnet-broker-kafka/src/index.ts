@@ -116,23 +116,23 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
     const destPathBase = `${eventParams.basePath}/src/Brokers/Infrastructure`;
     const staticFiles = [
       {
-        src: "./static/common/Infrastructure/InternalConsumer.cs",
+        src: "./static/common/infrastructure/InternalConsumer.cs",
         des: `${destPathBase}/InternalConsumer.cs`,
       },
       {
-        src: "./static/common/Infrastructure/InternalProducer.cs",
+        src: "./static/common/infrastructure/InternalProducer.cs",
         des: `${destPathBase}/InternalProducer.cs`,
       },
       {
-        src: "./static/common/Infrastructure/KafkaConsumerService.cs",
+        src: "./static/common/infrastructure/KafkaConsumerService.cs",
         des: `${destPathBase}/KafkaConsumerService.cs`,
       },
       {
-        src: "./static/common/Infrastructure/KafkaOptions.cs",
+        src: "./static/common/infrastructure/KafkaOptions.cs",
         des: `${destPathBase}/KafkaOptions.cs`,
       },
       {
-        src: "./static/common/Infrastructure/TopicAttribute.cs",
+        src: "./static/common/infrastructure/TopicAttribute.cs",
         des: `${destPathBase}/TopicAttribute.cs`,
       },
     ];
