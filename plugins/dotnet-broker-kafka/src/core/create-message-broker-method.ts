@@ -29,7 +29,7 @@ export async function createMessageBroker(
     messageBrokerName,
     brokerBasePath
   );
-  files.set(consumerServiceFile);
+  await files.set(consumerServiceFile);
 
   //create producerService file
   const producerServiceFile = createProducerServiceFile(
@@ -38,7 +38,7 @@ export async function createMessageBroker(
     brokerBasePath
   );
 
-  files.set(producerServiceFile);
+  await files.set(producerServiceFile);
 
   //create messageHandlerController file
   const messageHandlerControllerFile = createMessageBrokerControllerFile(
@@ -47,13 +47,13 @@ export async function createMessageBroker(
     brokerBasePath,
     dsgContext
   );
-  files.set(messageHandlerControllerFile);
+  await files.set(messageHandlerControllerFile);
 
   const serviceInstallerFile = createServiceInstallerFile(
     resourceName,
     messageBrokerName,
     brokerBasePath
   );
-  files.set(serviceInstallerFile);
+  await files.set(serviceInstallerFile);
   return files;
 }
