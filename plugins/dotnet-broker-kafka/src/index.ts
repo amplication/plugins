@@ -152,7 +152,7 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
           }),
         ]
       );
-      files.merge(fileMap);
+      await files.merge(fileMap);
     }
 
     return files;
@@ -164,7 +164,8 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
     files: FileMap<Class>
   ): Promise<FileMap<Class>> {
     const messageBrokerFiles = await createMessageBroker(dsgContext);
-    return await files.merge(messageBrokerFiles);
+    await files.merge(messageBrokerFiles);
+    return files;
   }
 
   beforeCreateDockerComposeFile(
