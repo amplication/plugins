@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "${{ SERVICE_NAME }}.fullname" . }}
+  labels:
+    {{- include "${{ SERVICE_NAME }}.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "${{ SERVICE_NAME }}.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.variables.configMap }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      {{- end }}
+      labels:
+        {{- include "${{ SERVICE_NAME }}.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "${{ SERVICE_NAME }}.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if or .Values.variables.configmap.DB_URL .Values.variables.secret.DB_URL }}
+      initContainers:
+        - name: {{ .Chart.Name }}-prisma-migrate
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command: ["sh", "-c", "npx prisma migrate deploy; exit 0"]
+          {{- if .Values.variables.configmap.DB_URL }}
+          env:
+            - name: DATABASE_URL
+              value: {{ required ".Values.variables.configmap.DB_URL is required" .Values.variables.configmap.DB_URL }}
+          {{- else if .Values.variables.secret.DB_URL }}
+          env:
+            - name: DATABASE_URL
+              value: {{ required ".Values.variables.configmap.DB_URL is required" .Values.variables.configmap.DB_URL }}
+          {{- end }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- if or .Values.variables.configmap .Values.variables.secret }}
+          envFrom:
+          {{- if .Values.variables.configmap }}
+          - configMapRef:
+              name: {{ include "${{ SERVICE_NAME }}.fullname" . }}
+          {{- end }}
+          {{- if .Values.variables.secret }}
+          - secretRef:
+              name: {{ include "${{ SERVICE_NAME }}.fullname" . }}''
+          {{- end }}
+          {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
