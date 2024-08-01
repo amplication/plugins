@@ -68,8 +68,7 @@ class TerraformAwsCorePlugin implements dotnetTypes.AmplicationPlugin {
       ? serviceName
       : settings.global.name;
 
-      let backendConfiguration: string;
-    backendConfiguration = "";
+      let backendConfiguration = "";
     switch (settings.backend.type) {
       case BackendTypes.Local:
         backendConfiguration = `terraform {
