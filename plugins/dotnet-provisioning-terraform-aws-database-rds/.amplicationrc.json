@@ -1,0 +1,28 @@
+{
+  "settings": {
+    "postgres": {
+      "identifier": "",
+      "instance_class": "db.t4g.medium",
+      "database_name": "",
+      "username": "postgres",
+      "port": 5432,
+      "storage": {
+        "allocated": 20,
+        "maximum": 100
+      },
+      "maintenance": {
+        "window": "Mon:00:00-Mon:03:00"
+      },
+      "backup": {
+        "window": "03:00-06:00",
+        "retention_period": 14
+      },
+      "security_group": {
+        "name": ""
+      }
+    }
+  },
+  "systemSettings": {
+    "requireAuthenticationEntity": "false"
+  }
+}
