@@ -1,0 +1,25 @@
+{
+  "settings": {
+    "global": {
+      "name": "",
+      "environment": "sandbox",
+      "team": "development",
+      "region": "europe-west2",
+      "zone_suffix": "a",
+      "availability_type": "ZONAL",
+      "tier": "db-custom-2-3840",
+      "disk_size": "10",
+      "disk_type": "PD_SSD",
+      "charset": "UTF8",
+      "collation": "en_US.UTF8",
+      "deletion_protection": "true",
+      "version": "POSTGRES_15"
+    },
+    "configuration": {
+      "type": "postgres"
+    }
+  },
+  "systemSettings": {
+    "requireAuthenticationEntity": "false"
+  }
+}
