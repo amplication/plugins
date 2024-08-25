@@ -12,8 +12,8 @@
   "author": "Daniele Iasella",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@amplication/csharp-ast": "^0.0.3",
-    "@amplication/code-gen-types": "2.0.34",
+    "@amplication/csharp-ast": "^0.0.4",
+    "@amplication/code-gen-types": "2.0.37",
     "@amplication/code-gen-utils": "^0.0.9",
     "@babel/parser": "^7.18.11",
     "@babel/types": "^7.18.10",
