@@ -2,8 +2,9 @@ import {
   dotnetPluginEventsTypes,
   dotnetPluginEventsParams as dotnet,
   dotnetTypes,
+  FileMap,
 } from "@amplication/code-gen-types";
-import { ClassReference, CodeBlock } from "@amplication/csharp-ast";
+import { ClassReference, CodeBlock, ProgramClass } from "@amplication/csharp-ast";
 import { updateDockerComposeProperties } from "./constants";
 import { getPluginSettings } from "./utils";
 import { pascalCase } from "pascal-case";
@@ -23,7 +24,7 @@ class PostgreSQLPlugin implements dotnetTypes.AmplicationPlugin {
         before: this.beforeCreateServerAppsettings,
       },
       CreateProgramFile: {
-        before: this.beforeCreateProgramFile,
+        after: this.afterCreateProgramFile,
       },
     };
   }
@@ -69,13 +70,15 @@ class PostgreSQLPlugin implements dotnetTypes.AmplicationPlugin {
     return eventParams;
   }
 
-  beforeCreateProgramFile(
+  afterCreateProgramFile(
     { resourceInfo }: dotnetTypes.DsgContext,
-    eventParams: dotnet.CreateProgramFileParams
-  ) {
+    eventParams: dotnet.CreateProgramFileParams,
+    programClass: FileMap<ProgramClass>
+  ): FileMap<ProgramClass> {
     const serviceNamespace = pascalCase(resourceInfo?.name ?? "");
     const serviceDbContext = `${pascalCase(resourceInfo?.name ?? "")}DbContext`;
-    eventParams.builderServicesBlocks.push(
+    const programCs = programClass.get("Program.cs");
+    programCs?.code.builderServicesBlocks.push(
       new CodeBlock({
         code: `builder.Services.AddDbContext<${serviceDbContext}>(opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("${CONNECTION_STRING}")));`,
         references: [
@@ -91,7 +94,7 @@ class PostgreSQLPlugin implements dotnetTypes.AmplicationPlugin {
       })
     );
 
-    return eventParams;
+    return programClass;
   }
 }
 
