@@ -1,22 +1,22 @@
-import { CodeBlock, CsharpSupport } from "@amplication/csharp-ast";
+import { CodeBlock, CsharpSupport,ProgramClass } from "@amplication/csharp-ast";
 
 export function createBuildersServices(
   resourceName: string,
-  builderServicesBlocks: CodeBlock[]
+  programClass: ProgramClass
 ): void {
-  builderServicesBlocks.push(
+  programClass.builderServicesBlocks.push(
     new CodeBlock({
       code: `builder.Services.AddApiAuthentication();`,
     })
   );
 
-  const swaggerBuilderIndex = builderServicesBlocks.findIndex((b) =>
+  const swaggerBuilderIndex = programClass.builderServicesBlocks.findIndex((b) =>
     b.toString().includes("AddSwaggerGen")
   );
 
   if (swaggerBuilderIndex === -1) return;
 
-  builderServicesBlocks[swaggerBuilderIndex] = new CodeBlock({
+  programClass.builderServicesBlocks[swaggerBuilderIndex] = new CodeBlock({
     references: [
       CsharpSupport.classReference({
         namespace: `${resourceName}.APIs`,
