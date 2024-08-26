@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-dotnet-broker-kafka",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "description": "Use a Kafka message broker to communicate between services generated with Amplication",
   "main": "dist/index.js",
   "nx": {},
@@ -12,8 +12,8 @@
   "author": "Haim Bell",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@amplication/csharp-ast": "^0.0.3",
-    "@amplication/code-gen-types": "2.0.34",
+    "@amplication/csharp-ast": "^0.0.4",
+    "@amplication/code-gen-types": "2.0.37",
     "@amplication/code-gen-utils": "^0.0.9",
     "@babel/parser": "^7.18.11",
     "@babel/types": "^7.18.10",

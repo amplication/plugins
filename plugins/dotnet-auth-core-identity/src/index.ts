@@ -11,6 +11,7 @@ import {
   CodeBlock,
   CsharpSupport,
   MethodType,
+  ProgramClass,
 } from "@amplication/csharp-ast";
 import { pascalCase } from "pascal-case";
 import {
@@ -22,7 +23,7 @@ import {
   createStaticFileFileMap,
   getEntityRoleMap,
 } from "./core";
-import { resolve } from "path";
+import { resolve, join } from "path";
 
 class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
   register(): dotnetPluginEventsTypes.DotnetEvents {
@@ -40,7 +41,7 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
         after: this.afterLoadStaticFiles,
       },
       CreateProgramFile: {
-        before: this.beforeCreateProgramFile,
+        after: this.afterCreateProgramFile,
       },
       CreateSeedDevelopmentDataFile: {
         after: this.afterCreateSeedDevelopmentDataFile,
@@ -69,18 +70,22 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
     return eventParams;
   }
 
-  async beforeCreateProgramFile(
-    context: dotnetTypes.DsgContext,
-    eventParams: dotnet.CreateProgramFileParams
-  ): Promise<dotnet.CreateProgramFileParams> {
-    const { builderServicesBlocks, appBlocks } = eventParams;
-    const { resourceInfo } = context;
-    if (!resourceInfo) return eventParams;
+  afterCreateProgramFile(
+    { resourceInfo, serverDirectories }: dotnetTypes.DsgContext,
+    eventParams: dotnet.CreateProgramFileParams,
+    programClassMap: FileMap<ProgramClass>
+  ): FileMap<ProgramClass> {
+    if (!resourceInfo) return programClassMap;
     const serviceNamespace = pascalCase(resourceInfo.name);
-    createBuildersServices(serviceNamespace, builderServicesBlocks);
-    createAppServices(appBlocks);
+    const programCsPath = join(serverDirectories.srcDirectory, "Program.cs");
+    const programClass = programClassMap.get(programCsPath);
+    if (!programClass) 
+      return programClassMap;
+ 
+    createBuildersServices(serviceNamespace, programClass.code);
+    createAppServices( programClass.code);
 
-    return eventParams;
+    return programClassMap;
   }
 
   async afterLoadStaticFiles(

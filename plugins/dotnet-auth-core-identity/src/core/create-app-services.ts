@@ -1,13 +1,13 @@
-import { CodeBlock } from "@amplication/csharp-ast";
+import { CodeBlock, ProgramClass } from "@amplication/csharp-ast";
 
-export function createAppServices(builderServicesBlocks: CodeBlock[]): void {
-  builderServicesBlocks.push(
+export function createAppServices(programClass: ProgramClass): void {
+  programClass.builderServicesBlocks.push(
     new CodeBlock({
       code: `app.UseApiAuthentication();`,
     })
   );
 
-  builderServicesBlocks.push(
+  programClass.builderServicesBlocks.push(
     new CodeBlock({
       code: `using (var scope = app.Services.CreateScope())
   {
@@ -17,7 +17,7 @@ export function createAppServices(builderServicesBlocks: CodeBlock[]): void {
     })
   );
 
-  builderServicesBlocks.push(
+  programClass.builderServicesBlocks.push(
     new CodeBlock({
       code: `
     using (var scope = app.Services.CreateScope())
