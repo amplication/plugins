@@ -23,7 +23,7 @@ import {
   createStaticFileFileMap,
   getEntityRoleMap,
 } from "./core";
-import { resolve } from "path";
+import { resolve, join } from "path";
 
 class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
   register(): dotnetPluginEventsTypes.DotnetEvents {
@@ -71,14 +71,16 @@ class AuthCorePlugin implements dotnetTypes.AmplicationPlugin {
   }
 
   afterCreateProgramFile(
-    { resourceInfo }: dotnetTypes.DsgContext,
+    { resourceInfo, serverDirectories }: dotnetTypes.DsgContext,
     eventParams: dotnet.CreateProgramFileParams,
     programClassMap: FileMap<ProgramClass>
   ): FileMap<ProgramClass> {
     if (!resourceInfo) return programClassMap;
     const serviceNamespace = pascalCase(resourceInfo.name);
-    const programClass = programClassMap.get("Program.cs");
-    if(!programClass) return programClassMap;
+    const programCsPath = join(serverDirectories.srcDirectory, "Program.cs");
+    const programClass = programClassMap.get(programCsPath);
+    if (!programClass) 
+      return programClassMap;
  
     createBuildersServices(serviceNamespace, programClass.code);
     createAppServices( programClass.code);

@@ -17,7 +17,7 @@ import {
   ProgramClass,
 } from "@amplication/csharp-ast";
 import { pascalCase } from "pascal-case";
-import { resolve } from "path";
+import { resolve, join } from "path";
 import {
   createMessageBroker,
   createStaticFileFileMap,
@@ -88,8 +88,11 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
     const { resourceInfo } = context;
     const serviceNamespace = pascalCase(resourceInfo?.name ?? "");
     const messageBrokerName = getMessageBrokerName(context);
-    const programClass = programClassMap.get("Program.cs");
-    if(!programClass) return programClassMap;
+    const programCsPath = join(context.serverDirectories.srcDirectory, "Program.cs");
+    const programClass = programClassMap.get(programCsPath);
+    if (!programClass) 
+      return programClassMap;
+
     programClass.code.builderServicesBlocks.push(
       new CodeBlock({
         code: `builder.Add${messageBrokerName}();`,

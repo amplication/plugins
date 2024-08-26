@@ -8,6 +8,7 @@ import { ClassReference, CodeBlock, ProgramClass } from "@amplication/csharp-ast
 import { updateDockerComposeProperties } from "./constants";
 import { getPluginSettings } from "./utils";
 import { pascalCase } from "pascal-case";
+import { join } from "path";
 
 const CONNECTION_STRING = "DefaultConnection";
 
@@ -71,14 +72,18 @@ class MSSQLServerPlugin implements dotnetTypes.AmplicationPlugin {
   }
 
   afterCreateProgramFile(
-    { resourceInfo }: dotnetTypes.DsgContext,
+    { resourceInfo, serverDirectories }: dotnetTypes.DsgContext,
     eventParams: dotnet.CreateProgramFileParams,
     programClass: FileMap<ProgramClass>
   ): FileMap<ProgramClass> {
     const serviceNamespace = pascalCase(resourceInfo?.name ?? "");
     const serviceDbContext = `${pascalCase(resourceInfo?.name ?? "")}DbContext`;
-    const programCs = programClass.get("Program.cs");
-    programCs?.code.builderServicesBlocks.push(
+    const programCsPath = join(serverDirectories.srcDirectory, "Program.cs");
+    const programCs = programClass.get(programCsPath);
+    if (!programCs) 
+      return programClass;
+
+    programCs.code.builderServicesBlocks.push(
       new CodeBlock({
         code: `builder.Services.AddDbContext<${serviceDbContext}>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("${CONNECTION_STRING}")));`,
         references: [
