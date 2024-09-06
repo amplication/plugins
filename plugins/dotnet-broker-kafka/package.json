@@ -1,6 +1,6 @@
 {
   "name": "@amplication/plugin-dotnet-broker-kafka",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Use a Kafka message broker to communicate between services generated with Amplication",
   "main": "dist/index.js",
   "nx": {},

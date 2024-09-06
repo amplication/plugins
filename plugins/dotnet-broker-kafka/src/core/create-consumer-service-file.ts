@@ -45,7 +45,7 @@ export function createConsumerServiceFile(
         type: CsharpSupport.Types.reference(
           CsharpSupport.classReference({
             name: "KafkaOptions",
-            namespace: `DotnetService.Brokers.Infrastructure`,
+            namespace: `${resourceName}.Brokers.Infrastructure`,
           })
         ),
       }),
