@@ -17,6 +17,6 @@ export const afterCreateAdminApp = async (
   );
 
   // Merge the static files with the existing modules replacing any existing files
-  await merge(modules, staticFiles);
+  merge(modules, staticFiles);
   return modules;
 };
