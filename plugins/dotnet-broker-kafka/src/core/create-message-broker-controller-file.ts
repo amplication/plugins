@@ -9,6 +9,7 @@ import {
   Method,
   MethodType,
 } from "@amplication/csharp-ast";
+import { pascalCase } from "pascal-case";
 
 export function createMessageBrokerControllerFile(
   resourceName: string,
@@ -63,7 +64,7 @@ export function createMessageBrokerControllerFile(
 
 function createMethod(resourceName: string, topicName: string): Method {
   return CsharpSupport.method({
-    name: `Handle${topicName}`,
+    name: `Handle${pascalCase(topicName)}`,
     access: "public",
     type: MethodType.INSTANCE,
     isAsync: false,
