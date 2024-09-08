@@ -2,11 +2,13 @@ import {
   dotnetPluginEventsTypes,
   dotnetPluginEventsParams as dotnet,
   dotnetTypes,
+  FileMap,
 } from "@amplication/code-gen-types";
-import { ClassReference, CodeBlock } from "@amplication/csharp-ast";
+import { ClassReference, CodeBlock, ProgramClass } from "@amplication/csharp-ast";
 import { updateDockerComposeProperties } from "./constants";
 import { getPluginSettings } from "./utils";
 import { pascalCase } from "pascal-case";
+import { join } from "path";
 
 const CONNECTION_STRING = "DefaultConnection";
 
@@ -23,7 +25,7 @@ class MSSQLServerPlugin implements dotnetTypes.AmplicationPlugin {
         before: this.beforeCreateServerAppsettings,
       },
       CreateProgramFile: {
-        before: this.beforeCreateProgramFile,
+        after: this.afterCreateProgramFile,
       },
     };
   }
@@ -69,14 +71,19 @@ class MSSQLServerPlugin implements dotnetTypes.AmplicationPlugin {
     return eventParams;
   }
 
-  beforeCreateProgramFile(
-    { resourceInfo }: dotnetTypes.DsgContext,
-    eventParams: dotnet.CreateProgramFileParams
-  ) {
+  afterCreateProgramFile(
+    { resourceInfo, serverDirectories }: dotnetTypes.DsgContext,
+    eventParams: dotnet.CreateProgramFileParams,
+    programClass: FileMap<ProgramClass>
+  ): FileMap<ProgramClass> {
     const serviceNamespace = pascalCase(resourceInfo?.name ?? "");
     const serviceDbContext = `${pascalCase(resourceInfo?.name ?? "")}DbContext`;
+    const programCsPath = join(serverDirectories.srcDirectory, "Program.cs");
+    const programCs = programClass.get(programCsPath);
+    if (!programCs) 
+      return programClass;
 
-    eventParams.builderServicesBlocks.push(
+    programCs.code.builderServicesBlocks.push(
       new CodeBlock({
         code: `builder.Services.AddDbContext<${serviceDbContext}>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("${CONNECTION_STRING}")));`,
         references: [
@@ -91,8 +98,8 @@ class MSSQLServerPlugin implements dotnetTypes.AmplicationPlugin {
         ],
       })
     );
+    return programClass;
 
-    return eventParams;
   }
 }
 

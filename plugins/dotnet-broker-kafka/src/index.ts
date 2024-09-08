@@ -14,9 +14,10 @@ import {
   ClassReference,
   CodeBlock,
   CsharpSupport,
+  ProgramClass,
 } from "@amplication/csharp-ast";
 import { pascalCase } from "pascal-case";
-import { resolve } from "path";
+import { resolve, join } from "path";
 import {
   createMessageBroker,
   createStaticFileFileMap,
@@ -27,7 +28,7 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
   register(): dotnetPluginEventsTypes.DotnetEvents {
     return {
       CreateProgramFile: {
-        before: this.beforeCreateProgramFile,
+        after: this.afterCreateProgramFile,
       },
       LoadStaticFiles: {
         after: this.afterLoadStaticFiles,
@@ -79,16 +80,20 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
     return eventParams;
   }
   // set the program.cs code
-  beforeCreateProgramFile(
+  afterCreateProgramFile(
     context: dotnetTypes.DsgContext,
-    eventParams: dotnet.CreateProgramFileParams
-  ) {
+    eventParams: dotnet.CreateProgramFileParams,
+    programClassMap: FileMap<ProgramClass>
+  ): FileMap<ProgramClass> {
     const { resourceInfo } = context;
     const serviceNamespace = pascalCase(resourceInfo?.name ?? "");
-
     const messageBrokerName = getMessageBrokerName(context);
+    const programCsPath = join(context.serverDirectories.srcDirectory, "Program.cs");
+    const programClass = programClassMap.get(programCsPath);
+    if (!programClass) 
+      return programClassMap;
 
-    eventParams.builderServicesBlocks.push(
+    programClass.code.builderServicesBlocks.push(
       new CodeBlock({
         code: `builder.Add${messageBrokerName}();`,
         references: [
@@ -100,7 +105,7 @@ class DotnetKafkaPlugin implements dotnetTypes.AmplicationPlugin {
       })
     );
     //mandatory
-    return eventParams;
+    return programClassMap;
   }
   //add infrastructure files
   async afterLoadStaticFiles(
