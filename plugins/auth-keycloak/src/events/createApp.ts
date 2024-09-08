@@ -4,7 +4,6 @@ import {
   ModuleMap,
 } from "@amplication/code-gen-types";
 import { clientStaticPath } from "../constants";
-import { merge } from "lodash";
 
 export const afterCreateAdminApp = async (
   context: DsgContext,
@@ -17,6 +16,6 @@ export const afterCreateAdminApp = async (
   );
 
   // Merge the static files with the existing modules replacing any existing files
-  merge(modules, staticFiles);
+  await modules.merge(staticFiles);
   return modules;
 };
