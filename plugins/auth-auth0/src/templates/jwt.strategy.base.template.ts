@@ -29,7 +29,7 @@ export class JwtStrategyBase extends PassportStrategy(Strategy) {
   async validateBase(payload: {
     user: Auth0User;
   }): Promise<ENTITY_NAME_INFO | null> {
-    const ENTITY = await this.ENTITY_SERVICE.findOne({
+    const ENTITY = await this.ENTITY_SERVICE.FIND_ONE_FUNCTION({
       where: {
         SEARCHABLE_AUTH_FIELD: payload.user.email,
       },

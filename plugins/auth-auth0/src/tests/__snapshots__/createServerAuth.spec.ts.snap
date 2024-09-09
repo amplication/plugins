@@ -35,7 +35,7 @@ export class JwtStrategy extends JwtStrategyBase implements IAuthStrategy {
       priority: EnumUserPriority.High
     };
 
-    const newUser = await this.userService.create({
+    const newUser = await this.userService.createUser({
       data: defaultData,
     });
 
@@ -91,7 +91,7 @@ export class JwtStrategyBase extends PassportStrategy(Strategy) {
   async validateBase(payload: {
     user: Auth0User;
   }): Promise<UserInfo | null> {
-    const user = await this.userService.findOne({
+    const user = await this.userService.user({
       where: {
         email: payload.user.email,
       },

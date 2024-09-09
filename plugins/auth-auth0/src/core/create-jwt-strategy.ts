@@ -31,6 +31,8 @@ import { IRecipe } from "../types";
 import { createAuthEntityObjectCustomProperties } from "@utils/createAuthProperties";
 import { getSearchableAuthField } from "@utils/helpers";
 import { getDTONameToPath, getImportableDTOs } from "@utils/addDTOImports";
+import { toPascalCase } from "js-convert-case";
+
 
 const jwtStrategyPath = join(templatesPath, "jwt.strategy.template.ts");
 
@@ -170,6 +172,9 @@ const mapJwtStrategyTemplate = async (
           entityFields,
           searchableAuthField
         )
+      ),
+      CREATE_FUNCTION: builders.identifier(
+        `create${toPascalCase(authEntity?.name)}`,
       ),
     };
 
