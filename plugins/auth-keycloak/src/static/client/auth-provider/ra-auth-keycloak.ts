@@ -3,9 +3,9 @@ import { AuthProvider } from "react-admin";
 import { jwtDecode } from "jwt-decode";
 
 const keycloakConfig: KeycloakConfig = {
-  realm: process.env.REACT_APP_KEYCLOAK_REALM || "master",
-  url: process.env.REACT_APP_KEYCLOAK_URL || "http://localhost:8080/auth",
-  clientId: process.env.REACT_APP_KEYCLOAK_CLIENT_ID || "admin-ui",
+  realm: process.env.VITE_REACT_APP_KEYCLOAK_REALM || "master",
+  url: process.env.VITE_REACT_APP_KEYCLOAK_URL || "http://localhost:8080/auth",
+  clientId: process.env.VITE_REACT_APP_KEYCLOAK_CLIENT_ID || "admin-ui",
 };
 
 export const keycloakClient = new Keycloak(keycloakConfig);

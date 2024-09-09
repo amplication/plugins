@@ -7,7 +7,7 @@ import { getPluginSettings } from "../utils/getPluginSettings";
 
 export const beforeCreateAdminDotEnv = async (
   context: DsgContext,
-  eventParams: CreateAdminDotEnvParams,
+  eventParams: CreateAdminDotEnvParams
 ): Promise<CreateAdminDotEnvParams> => {
   const settings = getPluginSettings(context.pluginInstallations);
 
@@ -15,13 +15,13 @@ export const beforeCreateAdminDotEnv = async (
 
   const envVariables = {
     // Keycloak
-    REACT_APP_KEYCLOAK_URL: `http://localhost:${port}`,
-    REACT_APP_KEYCLOAK_REALM: realmID,
-    REACT_APP_KEYCLOAK_CLIENT_ID: clientID,
+    VITE_REACT_APP_KEYCLOAK_URL: `http://localhost:${port}`,
+    VITE_REACT_APP_KEYCLOAK_REALM: realmID,
+    VITE_REACT_APP_KEYCLOAK_CLIENT_ID: clientID,
   };
 
   eventParams.envVariables = eventParams.envVariables.concat(
-    convertToVarDict(envVariables),
+    convertToVarDict(envVariables)
   );
 
   return eventParams;
