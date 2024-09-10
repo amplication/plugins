@@ -3,24 +3,16 @@ import { useState } from "react";
 import {
   useLogin,
   useNotify,
-  Notification,
-  defaultTheme,
-  Create,
 } from "react-admin";
-import { ThemeProvider } from "@material-ui/styles";
-import { createTheme } from "@material-ui/core/styles";
-import { Button } from "@material-ui/core";
+import { Button } from "@mui/material";
 import Passwordless from "supertokens-web-js/recipe/passwordless";
 import { parsePhoneNumber } from "libphonenumber-js";
-import "./login.scss";
 
-const CLASS_NAME = "login-page";
 
-const Login = ({ theme }: any) => {
+const LoginForm = ({ theme }: any) => {
   const [shouldEnterOTP, setShouldEnterOTP] = useState(false);
   const login = useLogin();
   const notify = useNotify();
-  const BASE_URI = process.env.REACT_APP_SERVER_URL;
   const submit = async (otp: string) => {
     login({ otp }).catch((err) =>
       err ? notify(err) : notify("Failed to login")
@@ -31,56 +23,14 @@ const Login = ({ theme }: any) => {
   };
 
   return (
-    <ThemeProvider theme={createTheme(defaultTheme)}>
-      <div className={`${CLASS_NAME}`}>
-        <div className={`${CLASS_NAME}__wrapper`}>
-          <div className={`${CLASS_NAME}__box`}>
-            <img
-              src="https://amplication.com/assets/react-admin.png"
-              alt="React-Admin"
-            />
-            <h2>Admin UI</h2>
-            <div className={`${CLASS_NAME}__box__message`}>
-              Sign in to a React-Admin client with ready-made forms for creating
-              and editing all the data models of your application
-            </div>
-            {shouldEnterOTP ? (
+    <>
+        {shouldEnterOTP ? (
               <EnterOTPForm submit={submit} />
             ) : (
               <CreateOTPForm notify={notify} moveToNextStep={moveToNextStep} />
             )}
-          </div>
-          <div className={`${CLASS_NAME}__box`}>
-            <img
-              src="https://amplication.com/assets/restapi.png"
-              alt="REST API"
-            />
-            <h2>Connect via REST API</h2>
-            <div className={`${CLASS_NAME}__box__message`}>
-              Connect to the server using REST API with a built-in Swagger
-              documentation
-            </div>
-            <Button
-              type="button"
-              variant="contained"
-              color="primary"
-              href={`${BASE_URI}/api`}
-            >
-              Continue
-            </Button>
-          </div>
-
-          <Notification />
-        </div>
-        <div className={`${CLASS_NAME}__read-more`}>
-          <span>Read </span>
-          <a href="https://docs.amplication.com/api" target="docs">
-            Amplication docs
-          </a>
-          <span> to learn more</span>
-        </div>
-      </div>
-    </ThemeProvider>
+    </>
+  
   );
 };
 
@@ -170,4 +120,4 @@ const EnterOTPForm = ({ submit }: any) => {
   );
 };
 
-export default Login;
+export default LoginForm;
