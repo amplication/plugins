@@ -26,9 +26,9 @@ describe("Testing beforeCreateAdminDotEnv hook", () => {
     eventParams = await beforeCreateAdminDotEnv(context, eventParams);
 
     const expectedEnvVariables = [
-      { REACT_APP_KEYCLOAK_URL: "http://localhost:8080" },
-      { REACT_APP_KEYCLOAK_REALM: "amplication-sample-realm" },
-      { REACT_APP_KEYCLOAK_CLIENT_ID: "amplication-server" },
+      { VITE_REACT_APP_KEYCLOAK_URL: "http://localhost:8080" },
+      { VITE_REACT_APP_KEYCLOAK_REALM: "amplication-sample-realm" },
+      { VITE_REACT_APP_KEYCLOAK_CLIENT_ID: "amplication-server" },
     ];
 
     expect(eventParams.envVariables).toEqual(expectedEnvVariables);
@@ -43,9 +43,9 @@ describe("Testing beforeCreateAdminDotEnv hook", () => {
     eventParams = await beforeCreateAdminDotEnv(context, eventParams);
 
     const expectedEnvVariables = [
-      { REACT_APP_KEYCLOAK_URL: "http://localhost:3000" },
-      { REACT_APP_KEYCLOAK_REALM: "CUSTOM_KEYCLOAK_REALM_ID" },
-      { REACT_APP_KEYCLOAK_CLIENT_ID: "CUSTOM_KEYCLOAK_CLIENT_ID" },
+      { VITE_REACT_APP_KEYCLOAK_URL: "http://localhost:3000" },
+      { VITE_REACT_APP_KEYCLOAK_REALM: "CUSTOM_KEYCLOAK_REALM_ID" },
+      { VITE_REACT_APP_KEYCLOAK_CLIENT_ID: "CUSTOM_KEYCLOAK_CLIENT_ID" },
     ];
 
     expect(eventParams.envVariables).toEqual(expectedEnvVariables);
