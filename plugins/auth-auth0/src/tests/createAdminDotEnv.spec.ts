@@ -26,16 +26,17 @@ describe("Testing beforeCreateAdminDotEnv hook", () => {
     eventParams = await beforeCreateAdminDotEnv(context, eventParams);
 
     const expectedEnvVariables = [
-      { REACT_APP_AUTH0_DOMAIN: "AUTH0_DOMAIN" },
-      { REACT_APP_AUTH0_CLIENT_ID: "AUTH0_CLIENT_ID" },
-      { REACT_APP_AUTH0_AUDIENCE: "AUTH0_AUDIENCE" },
+      { VITE_REACT_APP_AUTH0_DOMAIN: "AUTH0_DOMAIN" },
+      { VITE_REACT_APP_AUTH0_CLIENT_ID: "AUTH0_CLIENT_ID" },
+      { VITE_REACT_APP_AUTH0_AUDIENCE: "AUTH0_AUDIENCE" },
       {
-        REACT_APP_AUTH0_REDIRECT_URI: "http://localhost:3001/auth-callback",
+        VITE_REACT_APP_AUTH0_REDIRECT_URI:
+          "http://localhost:3001/auth-callback",
       },
       {
-        REACT_APP_AUTH0_LOGOUT_REDIRECT_URI: "http://localhost:3001/login",
+        VITE_REACT_APP_AUTH0_LOGOUT_REDIRECT_URI: "http://localhost:3001/login",
       },
-      { REACT_APP_AUTH0_SCOPE: "openid profile email" },
+      { VITE_REACT_APP_AUTH0_SCOPE: "openid profile email" },
     ];
 
     expect(eventParams.envVariables).toEqual(expectedEnvVariables);
@@ -51,16 +52,17 @@ describe("Testing beforeCreateAdminDotEnv hook", () => {
     eventParams = await beforeCreateAdminDotEnv(context, eventParams);
 
     const expectedEnvVariables = [
-      { REACT_APP_AUTH0_DOMAIN: "CUSTOM_AUTH0_DOMAIN" },
-      { REACT_APP_AUTH0_CLIENT_ID: "CUSTOM_AUTH0_CLIENT_ID" },
-      { REACT_APP_AUTH0_AUDIENCE: "CUSTOM_AUTH0_AUDIENCE" },
+      { VITE_REACT_APP_AUTH0_DOMAIN: "CUSTOM_AUTH0_DOMAIN" },
+      { VITE_REACT_APP_AUTH0_CLIENT_ID: "CUSTOM_AUTH0_CLIENT_ID" },
+      { VITE_REACT_APP_AUTH0_AUDIENCE: "CUSTOM_AUTH0_AUDIENCE" },
       {
-        REACT_APP_AUTH0_REDIRECT_URI: "http://localhost:3001/auth-callback",
+        VITE_REACT_APP_AUTH0_REDIRECT_URI:
+          "http://localhost:3001/auth-callback",
       },
       {
-        REACT_APP_AUTH0_LOGOUT_REDIRECT_URI: "http://localhost:3001/login",
+        VITE_REACT_APP_AUTH0_LOGOUT_REDIRECT_URI: "http://localhost:3001/login",
       },
-      { REACT_APP_AUTH0_SCOPE: "openid profile email" },
+      { VITE_REACT_APP_AUTH0_SCOPE: "openid profile email" },
     ];
 
     expect(eventParams.envVariables).toEqual(expectedEnvVariables);
