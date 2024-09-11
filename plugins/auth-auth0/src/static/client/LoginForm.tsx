@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useLogin, useNotify } from "react-admin";
-import { Button } from "@mui/material";
+import { Button } from "@material-ui/core";
 
 const LoginForm = ({ theme }: any) => {
   const login = useLogin();
