@@ -46,7 +46,7 @@ const getLoginCode = async (settings: Settings) => {
     staticsPath,
     "admin-ui",
     settings.recipe.name,
-    "Login.tsx"
+    "LoginForm.tsx"
   );
   return print(await readFile(path)).code;
 };
@@ -76,7 +76,7 @@ const getPasswordlessLoginCode = async (settings: Settings) => {
     "admin-ui",
     name,
     flowTypeToSubDir[flowType],
-    "Login.template.tsx"
+    "LoginForm.template.tsx"
   );
   const template = await readFile(templatePath);
   interpolate(template, {
@@ -96,11 +96,12 @@ const getThirdPartyLoginCode = async (settings: Settings) => {
     throw new Error("Expected only third party recipes");
   }
   const selectedProviders = getSelectedThirdPartyProviders(settings);
+
   const loginPath = resolve(
     templatesPath,
     "admin-ui",
     settings.recipe.name,
-    "Login.tsx"
+    "LoginForm.tsx"
   );
   const loginPage = await readFile(loginPath);
   addThirdPartyLoginButtonImports(loginPage, selectedProviders);

@@ -4,11 +4,11 @@ import { AuthProvider, UserIdentity } from "react-admin";
 export const PreviousLocationStorageKey = "@react-admin/nextPathname";
 
 export const client = new Auth0Client({
-  domain: process.env.REACT_APP_AUTH0_DOMAIN || "",
-  clientId: process.env.REACT_APP_AUTH0_CLIENT_ID || "",
+  domain: process.env.VITE_REACT_APP_AUTH0_DOMAIN || "",
+  clientId: process.env.VITE_REACT_APP_AUTH0_CLIENT_ID || "",
   cacheLocation: "localstorage",
   authorizationParams: {
-    audience: process.env.REACT_APP_AUTH0_AUDIENCE,
+    audience: process.env.VITE_REACT_APP_AUTH0_AUDIENCE,
     scope: "openid profile email",
   },
   useRefreshTokens: true,
@@ -18,7 +18,7 @@ export const auth0AuthProvider: AuthProvider = {
   login: async () => {
     await client.loginWithPopup({
       authorizationParams: {
-        redirect_uri: process.env.REACT_APP_AUTH0_REDIRECT_URI,
+        redirect_uri: process.env.VITE_REACT_APP_AUTH0_REDIRECT_URI,
       },
     });
 
@@ -28,7 +28,7 @@ export const auth0AuthProvider: AuthProvider = {
   logout: async () => {
     await client.logout({
       logoutParams: {
-        returnTo: process.env.REACT_APP_AUTH0_LOGOUT_REDIRECT_URI,
+        returnTo: process.env.VITE_REACT_APP_AUTH0_LOGOUT_REDIRECT_URI,
       },
     });
 
