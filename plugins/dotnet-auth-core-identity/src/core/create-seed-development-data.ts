@@ -25,36 +25,41 @@ export function CreateSeedDevelopmentDataBody(
         namespace: `${resourceName}.Infrastructure`,
       }),
     ],
-    code: `var context = serviceProvider.GetRequiredService<${resourceName}DbContext>();
+    code: `
+      var context = serviceProvider.GetRequiredService<${resourceName}DbContext>();
+      var userStore = new UserStore<IdentityUser>(context);
+      var usernameValue = "${seedUserEmail}";
+      var passwordValue = "${seedUserPassword}";
+
+      var existingUser = await userStore.FindByEmailAsync(usernameValue);
+      if (existingUser != null)
+      {
+        return;
+      }
+         
+      var user = new IdentityUser
+      {
+          Email = usernameValue,
+          UserName = usernameValue,
+          NormalizedUserName = usernameValue.ToUpperInvariant(),
+          NormalizedEmail = usernameValue.ToUpperInvariant(),
+      };
+      var password = new PasswordHasher<IdentityUser>();
+      var hashed = password.HashPassword(user, passwordValue);
+      user.PasswordHash = hashed;
+      await userStore.CreateAsync(user);
+      
       var amplicationRoles = configuration
           .GetSection("AmplicationRoles")
           .AsEnumerable()
           .Where(x => x.Value != null)
           .Select(x => x.Value.ToString())
           .ToArray();
-
-          var usernameValue = "${seedUserEmail}";
-          var passwordValue = "${seedUserPassword}";
-          var user = new IdentityUser
-          {
-              Email = usernameValue,
-              UserName = usernameValue,
-              NormalizedUserName = usernameValue.ToUpperInvariant(),
-              NormalizedEmail = usernameValue.ToUpperInvariant(),
-          };
- 
-          var password = new PasswordHasher<IdentityUser>();
-          var hashed = password.HashPassword(user, passwordValue);
-          user.PasswordHash = hashed;
-          var userStore = new UserStore<IdentityUser>(context);
-          await userStore.CreateAsync(user);
-          var _roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-      
-          foreach (var role in amplicationRoles)
-          {
-              await userStore.AddToRoleAsync(user, _roleManager.NormalizeKey(role));
-          }
-      
+      var _roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+      foreach (var role in amplicationRoles)
+      {
+          await userStore.AddToRoleAsync(user, _roleManager.NormalizeKey(role));
+      }
       
       await context.SaveChangesAsync();`,
   });
