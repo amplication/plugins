@@ -1,7 +1,7 @@
 {
-  "name": "plugin-backstage",
+  "name": "plugin-backstage-catalog-entity",
   "version": "0.0.1",
-  "description": "Description of your plugin",
+  "description": "This plugin responsible for creating the yaml file which describes the service, which can be used to onboard onto backstage.",
   "main": "dist/index.js",
   "scripts": {
     "prepublishOnly": "npm run build",
