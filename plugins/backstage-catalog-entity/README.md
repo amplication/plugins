@@ -12,10 +12,29 @@ Documentation:
 
 - register: https://backstage.io/docs/features/software-catalog/#manually-register-components
 - documentation: https://backstage.io/docs/features/software-catalog/descriptor-format/
+- annotations: https://backstage.io/docs/features/software-catalog/well-known-annotations
 
 ## Configuration
 
-If a configuration is required, add it here.
+`example`
+
+```json
+{
+  "labels": {
+    "vendor": "amplication"
+  },
+  "annotations": {
+    "github.com/project-slug": "backstage/backstage",
+    "github.com/team-slug": "backstage/maintainers"
+  },
+  "tags": ["Node.js"],
+  "spec": {
+    "type": "service",
+    "lifecycle": "production",
+    "owner": "development"
+  }
+}
+```
 
 ## Scripts
 

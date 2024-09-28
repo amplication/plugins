@@ -3,17 +3,12 @@ kind: Component
 metadata:
   name: ${{ METADATA_NAME }}
   description: ${{ METADATA_DESCRIPTION }}
-  labels:
-    ${{ METADATA_LABELS_CUSTOM }}
-  annotations:
-    ${{ METADATA_ANNOTATIONS }}
-    github.com/project-slug: [GitHub repo of the service]
-  tags:
-    ${{ METDATA_TAGS }}
+  ${{ METADATA_LABELS }}
+  ${{ METADATA_ANNOTATIONS }}
+  ${{ METADATA_TAGS }}
   links:
-    - url: https://app.amplication.com/${{ WORKSPACE_ID }}/${{ PROJECT_ID }}/${{ SERVICE_ID }}
+    - url: ${{ APP_URL }}
       title: Amplication Platform
-      icon: [Amplication icon - The icon field value is meant to be a semantic key that will map to a specific icon that may be provided by an icon library (e.g. material-ui icons)]
 spec:
   type: ${{ SPEC_TYPE }}
   lifecycle: ${{ SPEC_LIFECYCLE }}

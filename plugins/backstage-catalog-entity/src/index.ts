@@ -11,6 +11,7 @@ import {
   metadataLabelsKey,
   metadataAnnotationsKey,
   metadataTagsKey,
+  appUrlKey,
   specLifecycleKey,
   specOwnerKey,
   specTypeKey,
@@ -18,6 +19,7 @@ import {
   defaultDescription,
   defaultLabels,
   defaultAnnotations,
+  defaultUrl,
   defaultTags,
   defaultLifecycle,
   defaultOwner,
@@ -47,14 +49,15 @@ class BackstageCatalogEntityPlugin implements AmplicationPlugin {
 
     const serviceName = kebabCase(context.resourceInfo?.name);
     const serviceDescription = context.resourceInfo?.description;
-    const serviceType = context.resourceType.toLowerCase();
+    const serviceType = "service";
+    const serviceUrl = context.resourceInfo?.url;
 
     const settings = getPluginSettings(context.pluginInstallations);
 
     const staticPath = resolve(__dirname, "./static/");
     const staticFiles = await context.utils.importStaticModules(
       staticPath,
-      "."
+      "./"
     );
 
     const templateFileName = "template.yaml";
@@ -64,9 +67,9 @@ class BackstageCatalogEntityPlugin implements AmplicationPlugin {
       path.replace(templateFileName, destinationFileName)
     );
 
-    let labels = "";
-    let annotations = "";
-    let tags = "";
+    let labels = `labels:`;
+    let annotations = `annotations:`;
+    let tags = `tags:`;
 
     const indentation = "    ";
 
@@ -78,25 +81,44 @@ class BackstageCatalogEntityPlugin implements AmplicationPlugin {
 
     const l = settings.labels ?? defaultLabels;
 
-    l.forEach((value, name) => {
-      labels = `${labels}\n${indentation}${name}: "${value}"`;
-    });
+    if (typeof l === "object" && l !== null) {
+      Object.entries(l).forEach(([name, value]) => {
+        labels = `${labels}\n${indentation}${name}: "${value}"`;
+      });
+    } else {
+      context.logger.info(`"Labels should be an object:"`, l);
+    }
 
     const a = settings.annotations ?? defaultAnnotations;
 
-    a.forEach((value, name) => {
-      annotations = `${annotations}\n${indentation}${name}: "${value}"`;
-    });
+    if (typeof a === "object" && a !== null) {
+      Object.entries(a).forEach(([name, value]) => {
+        annotations = `${annotations}\n${indentation}${name}: "${value}"`;
+      });
+    } else {
+      context.logger.info(`"Annotations should be an object:"`, a);
+    }
 
+    // Handling tags (Array)
     const t = settings.tags ?? defaultTags;
 
-    t.forEach((tag) => {
-      tags = `${tags}\n${indentation}- "${tag}"`;
-    });
+    if (Array.isArray(t)) {
+      t.forEach((tag) => {
+        tags = `${tags}\n${indentation}- "${tag}"`;
+      });
+    } else {
+      context.logger.info(`"Tags should be an array:"`, t);
+    }
+
+    const appUrl = serviceUrl ?? defaultUrl;
 
     const type = settings.spec?.type ?? serviceType;
     const lifecycle = settings.spec?.life_cycle ?? defaultLifecycle;
     const owner = settings.spec?.owner ?? defaultOwner;
+
+    staticFiles.replaceModulesPath((path) =>
+      path.replace(templateFileName, destinationFileName)
+    );
 
     staticFiles.replaceModulesCode((_path, code) =>
       code
@@ -105,11 +127,13 @@ class BackstageCatalogEntityPlugin implements AmplicationPlugin {
         .replace(metadataLabelsKey, labels)
         .replace(metadataAnnotationsKey, annotations)
         .replace(metadataTagsKey, tags)
+        .replace(appUrlKey, appUrl)
         .replace(specTypeKey, type)
         .replace(specLifecycleKey, lifecycle)
         .replace(specOwnerKey, owner)
     );
 
+    await modules.merge(staticFiles);
     context.logger.info(`Generated ${pluginDescription}...`);
     return modules;
   }
