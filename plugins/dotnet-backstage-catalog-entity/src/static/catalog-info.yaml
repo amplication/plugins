@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{ METADATA_NAME }}
+  description: ${{ METADATA_DESCRIPTION }}
+  ${{ METADATA_LABELS }}
+  ${{ METADATA_ANNOTATIONS }}
+  ${{ METADATA_TAGS }}
+  links:
+    - url: ${{ APP_URL }}
+      title: Amplication Platform
+spec:
+  type: ${{ SPEC_TYPE }}
+  lifecycle: ${{ SPEC_LIFECYCLE }}
+  owner: ${{ SPEC_OWNER }}
