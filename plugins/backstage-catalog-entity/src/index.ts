@@ -60,13 +60,6 @@ class BackstageCatalogEntityPlugin implements AmplicationPlugin {
       "./"
     );
 
-    const templateFileName = "template.yaml";
-    const destinationFileName = "catalog-info.yaml";
-
-    staticFiles.replaceModulesPath((path) =>
-      path.replace(templateFileName, destinationFileName)
-    );
-
     let labels = `labels:`;
     let annotations = `annotations:`;
     let tags = `tags:`;
@@ -115,10 +108,6 @@ class BackstageCatalogEntityPlugin implements AmplicationPlugin {
     const type = settings.spec?.type ?? serviceType;
     const lifecycle = settings.spec?.life_cycle ?? defaultLifecycle;
     const owner = settings.spec?.owner ?? defaultOwner;
-
-    staticFiles.replaceModulesPath((path) =>
-      path.replace(templateFileName, destinationFileName)
-    );
 
     staticFiles.replaceModulesCode((_path, code) =>
       code

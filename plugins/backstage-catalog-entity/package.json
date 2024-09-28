@@ -10,7 +10,7 @@
     "prebuild": "rimraf dist",
     "test": "jest"
   },
-  "author": "Amplication Contributor",
+  "author": "Levi van Noort",
   "license": "Apache-2.0",
   "dependencies": {
     "@amplication/code-gen-types": "^2.0.23",
