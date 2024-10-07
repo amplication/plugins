@@ -27,7 +27,7 @@ Documentation:
     "github.com/project-slug": "backstage/backstage",
     "github.com/team-slug": "backstage/maintainers"
   },
-  "tags": ["Node.js"],
+  "tags": [".NET"],
   "spec": {
     "type": "service",
     "lifecycle": "production",
