@@ -31,7 +31,7 @@ export function CreateSeedDevelopmentDataBody(
       var usernameValue = "${seedUserEmail}";
       var passwordValue = "${seedUserPassword}";
 
-      var existingUser = await userStore.FindByEmailAsync(usernameValue);
+      var existingUser = await userStore.FindByEmailAsync(usernameValue.ToUpperInvariant());
       if (existingUser != null)
       {
         return;
