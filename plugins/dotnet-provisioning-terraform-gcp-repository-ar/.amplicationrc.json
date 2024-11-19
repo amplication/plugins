@@ -1,0 +1,9 @@
+{
+  "settings": {
+    "repository_name": "",
+    "region": "europe-west1"
+  },
+  "systemSettings": {
+    "requireAuthenticationEntity": "false"
+  }
+}
