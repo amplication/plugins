@@ -1,5 +1,5 @@
 {
-  "name": "@amplication/dotnet-plugin-deployment-helm-chart",
+  "name": "@amplication/plugin-dotnet-deployment-helm-chart",
   "version": "0.0.1",
   "description": "Add helm chart for deployment of the service",
   "main": "dist/index.js",
