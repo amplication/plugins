@@ -1,6 +1,6 @@
-# @amplication/dotnet-plugin-deployment-helm-chart
+# @amplication/plugin-dotnet-deployment-helm-chart
 
-[![NPM Downloads](https://img.shields.io/npm/dt/@amplication/dotnet-plugin-deployment-helm-chart)](https://www.npmjs.com/package/@amplication/dotnet-plugin-deployment-helm-chart)
+[![NPM Downloads](https://img.shields.io/npm/dt/@amplication/plugin-dotnet-deployment-helm-chart)](https://www.npmjs.com/package/@amplication/plugin-dotnet-deployment-helm-chart)
 
 Adds a helm chart for the generated service.
 
