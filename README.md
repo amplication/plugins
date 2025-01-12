@@ -21,7 +21,7 @@ You will soon be able to develop your plugins to implement standards, best pract
 
 ## Publishing Plugins
 
-An GitHub Actions worflow has been added to publish a plugin the npm registry. It lets you specify a pre-determined list of plugin names (additional plugins will have to be added to this list).
+A GitHub Actions workflow has been added to publish a plugin in the npm registry. It lets you specify a pre-determined list of plugin names (additional plugins will have to be added to this list).
 
 - `latest` tag: when using the default branch for this repository when triggering the workflow, the package will be tagged with latest.
 
