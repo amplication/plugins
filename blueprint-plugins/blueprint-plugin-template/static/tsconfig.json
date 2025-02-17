@@ -18,5 +18,5 @@
     "noFallthroughCasesInSwitch": true // Prevent fallthrough in switch statements
   },
   "include": ["src/**/*"], // Include all files in the src directory
-  "exclude": ["node_modules", "dist", "src/static"] // Exclude unnecessary and template files
+  "exclude": ["node_modules", "dist", "src/static", "static"] // Exclude unnecessary and template files
 }

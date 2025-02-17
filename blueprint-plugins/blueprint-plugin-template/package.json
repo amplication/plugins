@@ -16,7 +16,7 @@
   "author": "Yuval Hazaz",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@amplication/code-gen-types": "3.2.0",
+    "@amplication/code-gen-types": "3.2.1",
     "@amplication/code-gen-utils": "^0.0.9",
     "@babel/parser": "^7.23.0",
     "@babel/types": "^7.23.0",

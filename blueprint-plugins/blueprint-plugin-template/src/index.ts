@@ -2,14 +2,13 @@ import {
   blueprintPluginEventsParams as blueprint,
   blueprintPluginEventsTypes,
   blueprintTypes,
-  FileMap,
   IFile,
 } from "@amplication/code-gen-types";
 import { CodeBlock } from "@amplication/csharp-ast";
 import { camelCase, kebabCase } from "lodash";
 import { resolve, join } from "path";
 import { REPLACEMENTS } from "./constants";
-import { replacePlaceholders, getPluginSettings } from "./utils";
+import { getPluginSettings } from "./utils";
 
 class BlueprintPluginTemplatePlugin
   implements blueprintTypes.AmplicationPlugin
@@ -17,19 +16,18 @@ class BlueprintPluginTemplatePlugin
   register(): blueprintPluginEventsTypes.BlueprintEvents {
     return {
       createBlueprint: {
-        after: this.afterLoadStaticFiles,
+        before: this.beforeCreateBlueprint,
       },
     };
   }
-  async afterLoadStaticFiles(
+  async beforeCreateBlueprint(
     context: blueprintTypes.DsgContext,
     eventParams: blueprint.CreateBlueprintParams,
-    files: FileMap<CodeBlock>,
-  ): Promise<FileMap<CodeBlock>> {
+  ): Promise<blueprint.CreateBlueprintParams> {
     context.logger.info("Generating Static Files ...");
 
-    // determine the name of the service which will be used as the name for the workflow
-    // workflow names must be lower case letters and numbers. words may be separated with dashes (-):
+    // determine the name of the plugin which will be used as the ID for the plugin
+    // plugin ID must be in kebab case (lowercase letters and numbers. words may be separated with dashes (-))
     const pluginName = context.resourceInfo?.name || "plugin";
 
     const kebabCasePluginName = kebabCase(pluginName.trim());
@@ -51,33 +49,37 @@ class BlueprintPluginTemplatePlugin
       2,
     );
 
+    const stringReplacements = {
+      PluginName: REPLACEMENTS.PLUGIN_CAMEL_CASE_NAME,
+    };
+
     const basePluginPath = `./plugins/${kebabCasePluginName}`;
 
     context.logger.info(`base plugin path: ${basePluginPath}`);
 
     // set the path to the static files and fetch them for manipulation
     const staticPath = resolve(__dirname, "./static");
-    const staticFiles = await context.utils.importStaticFiles(staticPath, "./");
+    const files = await context.utils.importStaticFilesWithReplacements(
+      staticPath,
+      ".",
+      REPLACEMENTS,
+      stringReplacements,
+    );
 
-    for (const item of staticFiles.getAll()) {
-      item.code = replacePlaceholders(item.code, REPLACEMENTS);
-
-      item.path = join(
-        basePluginPath,
-        replacePlaceholders(item.path, REPLACEMENTS),
-      );
-
-      context.logger.info(`generating file at path: ${item.path}`);
-
-      const file: IFile<CodeBlock> = {
-        path: item.path,
+    for (const file of files.getAll()) {
+      const codeBlock: IFile<CodeBlock> = {
+        path: join(
+          basePluginPath,
+          context.utils.replacePlaceholders(file.path, REPLACEMENTS),
+        ),
         code: new CodeBlock({
-          code: item.code,
+          code: file.code,
         }),
       };
-      files.set(file);
+      context.files.set(codeBlock);
     }
-    return files;
+
+    return eventParams;
   }
 }
 

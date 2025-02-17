@@ -16,8 +16,9 @@
   "author": "{{PLUGIN_AUTHOR}}",
   "license": "{{PLUGIN_LICENSE}}",
   "devDependencies": {
-    "@amplication/code-gen-types": "^3.2.0",
+    "@amplication/code-gen-types": "^3.2.1",
     "@amplication/code-gen-utils": "^0.0.9",
+    "@amplication/csharp-ast": "^0.0.7",
     "@babel/parser": "^7.23.0",
     "@babel/types": "^7.23.0",
     "@types/lodash": "^4.14.200",
@@ -34,6 +35,7 @@
     "ts-loader": "^9.5.0",
     "typescript": "^5.2.2",
     "webpack": "^5.89.0",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "pascal-case": "^3.1.2"
   }
 }
