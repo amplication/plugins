@@ -42,7 +42,7 @@ jobs:
         id: files
         uses: tj-actions/changed-files@v42
         with:
-          files_ignore: package-lock.json
+          files_ignore: package-lock.json,plugin-templates/**
           base_sha: ${{ steps.setSHAs.outputs.base }}
           separator: ","
 
@@ -90,7 +90,7 @@ jobs:
       - name: Get current latest plugin version from the base branch
         id: get-current-latest-version
         run: |
-          PLUGIN_PATH="plugins/${{ matrix.affected-plugin }}/package.json" 
+          PLUGIN_PATH="plugins/${{ matrix.affected-plugin }}/package.json"
           echo "version=$(cat $PLUGIN_PATH | jq -r '.version')" >> $GITHUB_OUTPUT
 
       - name: Check if versions are equal
