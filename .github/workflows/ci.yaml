@@ -3,9 +3,13 @@ name: Continuous Integration
 on:
   pull_request:
     types: [opened, reopened, synchronize]
+    paths-ignore:
+      - "plugin-templates/**"
   push:
     branches:
       - master
+    paths-ignore:
+      - "plugin-templates/**"
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
@@ -42,7 +46,7 @@ jobs:
         id: files
         uses: tj-actions/changed-files@v42
         with:
-          files_ignore: package-lock.json,plugin-templates/**
+          files_ignore: package-lock.json
           base_sha: ${{ steps.setSHAs.outputs.base }}
           separator: ","
 
