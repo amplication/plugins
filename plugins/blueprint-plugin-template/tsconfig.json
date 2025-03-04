@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2021", // Latest features supported by Node.js
+    "module": "CommonJS", // CommonJS for Node.js compatibility
+    "lib": ["ES2021"], // Use modern ECMAScript features
+    "strict": true, // Enable strict type-checking
+    "esModuleInterop": true, // Allow default imports from CommonJS modules
+    "skipLibCheck": true, // Skip type checks for declaration files
+    "forceConsistentCasingInFileNames": true, // Enforce consistent casing
+    "outDir": "dist", // Output directory for compiled files
+    "rootDir": "src", // Root directory for source files
+    "declaration": true, // Generate .d.ts files for TypeScript definitions
+    "moduleResolution": "node", // Resolve modules in Node.js style
+    "resolveJsonModule": true, // Support importing JSON files
+    "allowSyntheticDefaultImports": true, // Allow default imports with interop
+    "noImplicitAny": true, // Disallow `any` unless explicitly stated
+    "noUnusedLocals": true, // Warn about unused local variables
+    "noFallthroughCasesInSwitch": true // Prevent fallthrough in switch statements
+  },
+  "include": ["src/**/*"], // Include all files in the src directory
+  "exclude": ["node_modules", "dist", "src/static", "static/**/*"] // Exclude unnecessary and template files
+}

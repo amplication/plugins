@@ -1,0 +1,11 @@
+{
+  "settings": {
+    "author": "Blueprint Plugin Author Placeholder",
+    "license": "Apache-2.0",
+    "copyPluginSettings": {
+      "param1": "param1-value",
+      "param2": "param2-value",
+      "array": ["array-value1", "array-value2"]
+    }
+  }
+}
