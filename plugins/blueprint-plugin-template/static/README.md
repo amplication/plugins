@@ -1,0 +1,9 @@
+# {{PLUGIN_DISPLAY_NAME}}
+
+## Overview
+
+{{PLUGIN_DESCRIPTION}}
+
+## Domain
+
+{{PLUGIN_DOMAIN}}
