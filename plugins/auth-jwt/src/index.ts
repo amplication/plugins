@@ -41,7 +41,7 @@ import {
 } from "./constants";
 import { getPluginSettings } from "./util/getPluginSettings";
 import { beforeCreateSeed } from "./events/createSeed";
-
+import { replacePlaceholdersInModuleMap } from "./static-file-utils";
 const ARGS_ID = builders.identifier("args");
 const PASSWORD_FIELD_ASYNC_METHODS = new Set(["create", "update"]);
 const DATA_ID = builders.identifier("data");
@@ -139,6 +139,16 @@ class JwtAuthPlugin implements AmplicationPlugin {
     const staticsFiles = await context.utils.importStaticModules(
       staticPath,
       context.serverDirectories.srcDirectory
+    );
+
+    const updatedModuleMap = replacePlaceholdersInModuleMap(
+      modules,
+      {
+        "{{USER_SERVICE}}": "userService",
+      },
+      {
+        "{{USER_SERVICE}}": "userService",
+      }
     );
 
     // 1. create jwtStrategy base file.
