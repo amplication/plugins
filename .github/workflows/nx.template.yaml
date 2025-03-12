@@ -24,7 +24,7 @@ env:
 jobs:
   nx:
     name: Nx Affected Publishable Plugins
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     outputs:
       affected-plugins: ${{ steps.calculate-affected.outputs.affected-plugins }}
     steps:
