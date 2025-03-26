@@ -1,0 +1,6 @@
+{
+  "targets": {
+    "lint": {},
+    "npm:publish": {}
+  }
+}
