@@ -28,7 +28,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "jest-mock-extended": "^3.0.5",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "prettier": "^3.3.3",
     "rimraf": "^5.0.5",
     "ts-loader": "^9.5.0",
